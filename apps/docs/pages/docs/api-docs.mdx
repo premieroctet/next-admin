@@ -1,0 +1,237 @@
+# API
+
+## `nextAdminRouter` function
+
+`nextAdminRouter` is a function that returns a promise of a _Node Router_ that you can use in your getServerSideProps function to start using Next Admin.
+
+Usage example:
+
+```ts
+// pages/api/admin/[[...nextadmin]].ts
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const { nextAdminRouter } = await import(
+    "@premieroctet/next-admin/dist/router"
+  );
+  const adminRouter = await nextAdminRouter(prisma, schema);
+  return adminRouter.run(req, res) as Promise<
+    GetServerSidePropsResult<{ [key: string]: any }>
+  >;
+};
+```
+
+It takes 3 parameters:
+
+- Your Prisma client instance, _required
+- Your Prisma schema, _required
+
+and an _optional_ object of type [`NextAdminOptions`](#nextadminoptions) to customize your admin with the following properties:
+
+```ts
+import { NextAdminOptions } from "@premieroctet/next-admin";
+
+const options: NextAdminOptions = {
+  modelOptions: {
+    user: {
+      toString: (user) => `${user.email} / ${user.name}`,
+    },
+  },
+};
+
+const adminRouter = await nextAdminRouter(prisma, schema, options);
+```
+
+## Authentication
+
+The library does not provide an authentication system. If you want to add your own, you can do so by adding a role check to the `getServerSideProps` function:
+
+> The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
+
+```ts
+// pages/api/admin/[[...nextadmin]].ts
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const session = await getServerSession(req, res, authOptions);
+  const isAdmin = session?.user?.role === 'SUPERADMIN'; // your role check
+
+  if (!isAdmin) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  const { nextAdminRouter } = await import(
+    '@premieroctet/next-admin/dist/nextAdminRouter'
+  );
+  return nextAdminRouter(client).run(req, res);
+};
+```
+
+## `<NextAdmin />` component
+
+`<NextAdmin />` is a React component that contains the entire UI of Next Admin. It can take two types of props:
+- `AdminComponentProps`, which are passed by the [router function](#nextadminrouter-function) via getServerSideProps
+- CustomUIProps' used to customize the UI of Next Admin
+
+> ⚠️ : Do not override these `AdminComponentProps` props, they are used internally by Next Admin.
+
+
+With the `CustomUIProps` you can customize the dashboard part of Next Admin:
+
+Custom Dashboard:
+
+```tsx
+// components/CustomDashboard.tsx
+const Dashboard = () => {
+    return <div>Custom Dashboard</div>
+}
+
+export default Dashboard;
+```
+
+
+This is an example of using the `NextAdmin` component (`CustomUIProps` are optional):
+
+```tsx
+// pages/admin/[[...nextadmin]].tsx
+import Dashboard from "../../components/CustomDashboard";
+
+export default function Admin(props: AdminComponentProps) {
+  /* Props are passed from the nextAdminRouter function via getServerSideProps */
+  return <NextAdmin {...props} dashboard={Dashboard}/>;
+}
+```
+
+## Next Admin Options
+
+Next Admin options is the third parameter of the [router function](#nextadminrouter-function) and it's an object of options that has the following properties:
+
+### `model`
+
+`model` is an object that represents the customization options for each model in your schema, it takes as **_key_** a model name of your schema as **_value_** an object to customize your model GUI (Graphical User Interface) with the following properties:
+
+| Name              | Description                                                    | Default value |
+| ----------------- | -------------------------------------------------------------- | ------------- |
+| [fields](#fields) | an object that define options for the fields of your model     | undefined     |
+| toString          | a function that is used to display your record in related list | `id` field    |
+
+You can customize the following for each model:
+- ##### `list` property
+
+This property determines how your data is displayed in the [List View](/docs/glossary#list-view)
+
+You can disable a feature for any field in the `fields` that follow this form:
+
+| Name    | Description                                                                    | Default value |
+| ------- | ------------------------------------------------------------------------------ | ------------- |
+| search  | a boolean that define wether this field is searchable                          | true          |
+| display | a boolean that define wether this field should be visible in the list view     | true (*)      |
+
+> Note that the `search` property is only available for `scalar` fields.
+
+> (*) If `display` isn't set anywhere, all fields are displayed; once you set a display property to true, all fields are hidden by default except the ones you set to `display: true.
+
+> 💡 By default, all fields are searchable and visible, use the `list` property to return a limited subset of fields instead of all fields in the list view.
+
+- ##### `edit` property
+
+This property determines how your data is displayed in the [edit view](/docs/glossary#edit-view)
+
+You can disable a property for any field in the `fields` that follow this form:
+
+| Name    | Description                                                | Default value |
+| ------- | ---------------------------------------------------------- | ------------- |
+| display | a boolean that define whether this field should be editable | true (*)        |
+
+> (*) If `display` is not set anywhere, all fields are displayed; once you set a display property to true, all fields are hidden by default except the ones you've set to `display: true`.
+
+> 💡 By default all fields are searchable and visible, use the `edit` property to return a limited subset of fields instead of all fields in the edit view.
+
+Here is an example of using `NextAdminOptions` for the following schema :
+
+```prisma
+// prisma/schema.prisma
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String   @default("")
+  posts     Post[]   @relation("author") // One-to-many relation
+  profile   Profile? @relation("profile") // One-to-one relation
+  birthDate DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  role      Role     @default(USER)
+}
+```
+
+```tsx
+// pages/api/admin/[[...nextadmin]].ts
+const options: NextAdminOptions = {
+  model: {
+    user: {
+      toString: (user) => `${user.name} (${user.email})`,
+      list: {
+        fields: {
+          id: {
+            search: true,
+            display: true,
+          },
+          name: {
+            search: true,
+            display: true,
+          },
+          email: {
+            search: true,
+            display: true,
+          },
+          role: {
+            search: true,
+            display: true,
+          },
+          // @ts-expect-error
+          posts: {
+            search: true,
+            display: true,
+          },
+        },
+      },
+      edit: {
+        fields: {
+          id: {
+            display: true,
+          },
+          name: {
+            display: true,
+          },
+          email: {
+            display: true,
+          },
+          role: {
+            display: true,
+          },
+          // @ts-expect-error
+          posts: {
+            display: true,
+          },
+          profile: {
+            display: true,
+          },
+        },
+      },
+    },
+  },
+};
+
+const adminRouter = await nextAdminRouter(prisma, schema, options);
+```
+
+> Why do we have `@ts-expect-error` comments in the code above? 
+> We don't know if a relational field belongs to a model because of the Prisma type constraint. So if you want to use a relational field in the `fields` property, you need to add the `@ts-expect-error` comment to avoid TypeScript errors.

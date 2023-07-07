@@ -1,0 +1,14 @@
+@import "../../../node_modules/react-querybuilder/dist/query-builder.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-size: 1rem;
+}
+
+body {
+  overflow-x: hidden;
+  width: 100%;
+}

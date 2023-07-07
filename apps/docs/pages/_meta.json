@@ -1,0 +1,10 @@
+{
+  "index": "Introduction",
+  "docs": "Documentation",
+  "demo": {
+    "title": "Demo",
+    "type": "page",
+    "href": "https://next-admin-po.vercel.app",
+    "newWindow": true
+  }
+}

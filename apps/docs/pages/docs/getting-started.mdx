@@ -1,0 +1,77 @@
+# Getting Started
+
+## Installation
+
+###### yarn
+
+```bash
+yarn add @premieroctet/next-admin prisma-json-schema-generator
+```
+
+###### npm
+
+```bash
+npm install -S @premieroctet/next-admin prisma-json-schema-generator
+```
+
+###### pnpm
+
+```bash
+pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
+```
+
+## Quick Start
+
+Add the `prisma-json-schema-generator` generator to your `schema.prisma` file:
+
+```prisma
+generator jsonSchema {
+  provider = "prisma-json-schema-generator"
+  includeRequiredFields = "true"
+}
+```
+
+Then run the following command :
+
+```bash
+yarn run prisma generate
+```
+
+This will create a `json-schema.json` file in the `prisma/json-schema` directory.
+
+Then create an `admin` folder in the `pages` directory.
+
+Within this directory, create a `[[...nextadmin]].tsx` file and copy this code:
+
+```tsx
+// pages/admin/[[...nextadmin]].tsx
+import { GetServerSideProps, GetServerSidePropsResult } from "next";
+import { NextAdmin, AdminComponentProps } from "@premieroctet/next-admin";
+import schema from "./../../prisma/json-schema/json-schema.json"; // import the json-schema.json file
+import "@premieroctet/next-admin/dist/styles.css";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+export default function Admin(props: AdminComponentProps) {
+  return <NextAdmin {...props} />;
+}
+
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const { nextAdminRouter } = await import(
+    "@premieroctet/next-admin/dist/router"
+  );
+  const adminRouter = await nextAdminRouter(prisma, schema);
+  return adminRouter.run(req, res) as Promise<
+    GetServerSidePropsResult<{ [key: string]: any }>
+  >;
+};
+```
+
+The nextAdminRouter function accepts a third optional parameter, which is a Next Admin [options](/docs/api-docs#next-admin-options) object.
+
+## Usage
+
+Once you have created the `[[...nextadmin]].tsx` file, you can start the server and go to the `/admin` route.
+
+You should be able to see the admin dashboard.
