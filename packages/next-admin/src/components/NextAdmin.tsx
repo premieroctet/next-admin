@@ -66,6 +66,7 @@ export function NextAdmin({
     if (Array.isArray(data) && ressource && typeof total != "undefined") {
       return (
         <List
+          key={ressource}
           ressource={ressource}
           data={data}
           total={total}
