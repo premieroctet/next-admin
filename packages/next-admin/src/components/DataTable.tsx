@@ -16,7 +16,6 @@ import {
 } from "./radix/Table";
 import { useRouter } from "next/compat/router";
 import { ADMIN_BASE_PATH } from "../config";
-import { ressourceToUrl } from "../utils/tools";
 import { ListData, ListDataItem, ModelName } from "../types";
 
 interface DataTableProps {
@@ -25,11 +24,7 @@ interface DataTableProps {
   ressource: ModelName;
 }
 
-export function DataTable({
-  columns,
-  data,
-  ressource,
-}: DataTableProps) {
+export function DataTable({ columns, data, ressource }: DataTableProps) {
   const router = useRouter();
   const table = useReactTable({
     data,
@@ -50,9 +45,9 @@ export function DataTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 );
               })}
@@ -68,9 +63,7 @@ export function DataTable({
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
                   router?.push({
-                    pathname: `${ADMIN_BASE_PATH}/${ressourceToUrl(
-                      ressource
-                    )}/${row.original.id}`,
+                    pathname: `${ADMIN_BASE_PATH}/${ressource}/${row.original.id}`,
                   });
                 }}
               >
@@ -90,6 +83,6 @@ export function DataTable({
           )}
         </TableBody>
       </Table>
-      </div>
+    </div>
   );
 }

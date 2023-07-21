@@ -267,4 +267,4 @@ export const schema = {
       },
     },
   },
-} as Schema;
+};

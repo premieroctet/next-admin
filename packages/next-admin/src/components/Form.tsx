@@ -12,7 +12,6 @@ import clsx from "clsx";
 import { Schemas, getSchemas } from "../utils/jsonSchema";
 import { Prisma } from "@prisma/client";
 import SelectWidget from "./inputs/SelectWidget";
-import { capitalize, formatCamelCase } from "../utils/tools";
 import { ModelName } from "../types";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
@@ -65,7 +64,7 @@ const templates = {
           className="block text-sm font-medium leading-6 text-gray-900"
           htmlFor={id}
         >
-          {formatCamelCase(label)}
+          {label}
           {required ? "*" : null}
         </label>
         {description}
@@ -134,7 +133,7 @@ const Form = ({ data, schema, dmmfSchema, ressource }: FormProps) => {
     <div className="relative">
       <div className="sm:flex sm:items-center">
         <h1 className="text-base font-semibold leading-6 text-gray-900">
-          {capitalize(ressource)}
+          {ressource}
         </h1>
       </div>
       <CustomForm

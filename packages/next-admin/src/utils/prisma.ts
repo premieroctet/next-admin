@@ -64,20 +64,17 @@ export const preparePrismaListRequest = <M extends ModelName>(
     ?.fields as ListFieldsOptions<M>;
   if (list) {
     const listKeys = Object.keys(list) as Array<keyof ListFieldsOptions<M>>;
-    select = listKeys.reduce(
-      (acc, column) => {
-        const field = model?.fields.find(({ name }) => name === column);
-        if (field?.kind === "object") {
-          if(!acc._count) acc._count = { select: {} };
-          acc._count.select = { ...acc._count.select, [column]: true };
-        } else {
-          // @ts-expect-error
-          acc[column] = true;
-        }
-        return acc;
-      },
-      {} as Select<M>
-    );
+    select = listKeys.reduce((acc, column) => {
+      const field = model?.fields.find(({ name }) => name === column);
+      if (field?.kind === "object") {
+        if (!acc._count) acc._count = { select: {} };
+        acc._count.select = { ...acc._count.select, [column]: true };
+      } else {
+        // @ts-expect-error
+        acc[column] = true;
+      }
+      return acc;
+    }, {} as Select<M>);
 
     fieldsFiltered =
       model?.fields.filter(
