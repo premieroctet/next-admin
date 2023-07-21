@@ -41,7 +41,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
               search: true,
               display: true,
             },
-            // @ts-expect-error Les types pour les relations ne peuvent pas être déterminés
             posts: {
               search: true,
               display: true,
@@ -62,7 +61,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
             role: {
               display: true,
             },
-            // @ts-expect-error Les types pour les relations ne peuvent pas être déterminés
             posts: {
               display: true,
             },
@@ -72,7 +70,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
           },
         },
       },
-      post: {
+      Post: {
         toString: (post) => `${post.title}`,
         list: {
           fields: {
