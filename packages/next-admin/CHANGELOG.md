@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 1.3.5
+
+### Patch Changes
+
+- c7bbf42: Support differents name case
+
 ## 1.3.4
 
 ### Patch Changes
