@@ -19,4 +19,4 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Check changeset
-        run: yarn changeset status --since=main
+        run: yarn changeset status
