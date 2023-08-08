@@ -3,7 +3,6 @@ import { ADMIN_BASE_PATH } from "../config";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ChangeEvent } from "react";
 import Loader from "../assets/icons/Loader";
-import { ressourceToUrl } from "../utils/tools";
 import { ModelName } from "../types";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { buttonVariants } from "./radix/Button";
@@ -44,7 +43,7 @@ export default function ListHeader({
         </div>
       </div>
       <Link
-        href={`${ADMIN_BASE_PATH}/${ressourceToUrl(ressource)}/new`}
+        href={`${ADMIN_BASE_PATH}/${ressource}/new`}
         role="button"
         className={buttonVariants({
           variant: "default",

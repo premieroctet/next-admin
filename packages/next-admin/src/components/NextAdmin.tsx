@@ -11,7 +11,6 @@ import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
 import { Prisma } from "@prisma/client";
-import { capitalize, ressourceToUrl } from "../utils/tools";
 import { ListData, ModelName, Schema } from "../types";
 import Message from "./Message";
 
@@ -58,7 +57,7 @@ export function NextAdmin({
   }> =
     ressources?.map((ressource) => ({
       name: ressource,
-      href: `${ADMIN_BASE_PATH}/${ressourceToUrl(ressource)}`,
+      href: `${ADMIN_BASE_PATH}/${ressource}`,
       current: false,
     })) || [];
 
@@ -66,6 +65,7 @@ export function NextAdmin({
     if (Array.isArray(data) && ressource && typeof total != "undefined") {
       return (
         <List
+          key={ressource}
           ressource={ressource}
           data={data}
           total={total}
@@ -184,7 +184,7 @@ export function NextAdmin({
                                       aria-hidden="true"
                                     />
                                   )}
-                                  {capitalize(item.name)}
+                                  {item.name}
                                 </Link>
                               </li>
                             ))}
@@ -234,7 +234,7 @@ export function NextAdmin({
                               aria-hidden="true"
                             />
                           )}
-                          {capitalize(item.name)}
+                          {item.name}
                         </Link>
                       </li>
                     ))}

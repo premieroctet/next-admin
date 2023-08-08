@@ -2,7 +2,6 @@ import { useRouter } from "next/compat/router";
 import { ITEMS_PER_PAGE } from "../config";
 import { ChangeEvent, useTransition } from "react";
 import debounce from "lodash/debounce";
-import { capitalize } from "../utils/tools";
 import { ListData, ListDataItem, ModelName, SchemaModel } from "../types";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
@@ -23,7 +22,7 @@ export type ListProps = {
   ressource: ModelName;
   data: ListData<ModelName>;
   total: number;
-  modelSchema: SchemaModel<Capitalize<ModelName>>;
+  modelSchema: SchemaModel<ModelName>;
 };
 
 function List({ ressource, data, total, modelSchema }: ListProps) {
@@ -86,7 +85,7 @@ function List({ ressource, data, total, modelSchema }: ListProps) {
     <>
       <div className="mt-4">
         <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
-          {capitalize(ressource)}
+          {ressource}
         </h1>
       </div>
       <div className="mt-4 flow-root">

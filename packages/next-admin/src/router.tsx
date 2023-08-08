@@ -26,7 +26,6 @@ import {
   EditFieldsOptions,
 } from "./types";
 import { preparePrismaListRequest } from "./utils/prisma";
-import { ressourceToUrl } from "./utils/tools";
 import { ADMIN_BASE_PATH } from "./config";
 
 // Router
@@ -86,7 +85,7 @@ export const nextAdminRouter = async (
 
       // Edit
       const ressourceId = getRessourceIdFromUrl(req.url!, ressource);
-      
+
       const dmmfSchema = getPrismaModelyForRessource(ressource);
       if (ressourceId !== undefined) {
         // @ts-expect-error
@@ -249,7 +248,7 @@ export const nextAdminRouter = async (
 
           return {
             redirect: {
-              destination: `${ADMIN_BASE_PATH}/${ressourceToUrl(ressource)}`,
+              destination: `${ADMIN_BASE_PATH}/${ressource}`,
               permanent: false,
             },
           };
@@ -277,16 +276,16 @@ export const nextAdminRouter = async (
           data = flatRelationInData(data, ressource);
           const fromCreate = req.headers.referer
             ?.split("?")[0]
-            .endsWith(`${ADMIN_BASE_PATH}/${ressourceToUrl(ressource)}/new`);
+            .endsWith(`${ADMIN_BASE_PATH}/${ressource}/new`);
           const message = fromCreate
             ? {
-              type: "success",
-              content: "Created successfully",
-            }
+                type: "success",
+                content: "Created successfully",
+              }
             : {
-              type: "success",
-              content: "Updated successfully",
-            };
+                type: "success",
+                content: "Updated successfully",
+              };
 
           return {
             props: {
@@ -316,7 +315,7 @@ export const nextAdminRouter = async (
         data = flatRelationInData(data, ressource);
         return {
           redirect: {
-            destination: `${ADMIN_BASE_PATH}/${ressourceToUrl(ressource)}/${data.id}`,
+            destination: `${ADMIN_BASE_PATH}/${ressource}/${data.id}`,
             permanent: false,
           },
         };

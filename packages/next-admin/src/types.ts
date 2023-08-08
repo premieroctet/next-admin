@@ -7,12 +7,14 @@ if (typeof window === "undefined") {
   prisma = new PrismaClient();
 }
 
-export type ModelName = Uncapitalize<Prisma.ModelName>;
+export type ModelName = Prisma.ModelName;
+
+// type test = keyof (typeof Prisma)['user']
 
 export type Field<P extends Prisma.ModelName> =
-  keyof (typeof Prisma)[`${P}ScalarFieldEnum`];
+  keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`];
 
-export type UField<M extends ModelName> = Field<Capitalize<M>>;
+export type UField<M extends ModelName> = Field<M>;
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
@@ -27,14 +29,14 @@ export type ModelOptions<T extends ModelName> = {
 };
 
 export type ListFieldsOptions<T extends ModelName> = {
-  [P in Field<Capitalize<T>>]?: {
+  [P in Field<T>]?: {
     display?: true;
     search?: true;
   };
 };
 
 export type EditFieldsOptions<T extends ModelName> = {
-  [P in Field<Capitalize<T>>]?: {
+  [P in Field<T>]?: {
     display?: boolean;
   };
 };
@@ -62,7 +64,7 @@ export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
 };
 
 export type FormData<M extends ModelName> = {
-  [P in Field<Capitalize<M>>]?: string;
+  [P in Field<M>]?: string;
 };
 
 export type Body<F> = {
@@ -72,11 +74,11 @@ export type Body<F> = {
 };
 
 export type Order<M extends ModelName> = {
-  [P in Field<Capitalize<M>>]?: Prisma.SortOrder;
+  [P in Field<M>]?: Prisma.SortOrder;
 };
 
 export type Select<M extends ModelName> = {
-  [P in Field<Capitalize<M>>]?: boolean;
+  [P in Field<M>]?: boolean;
 } & {
   _count: {
     select: {
@@ -99,10 +101,10 @@ export type PrismaListRequest<M extends ModelName> = {
 };
 
 export type Collection<M extends ModelName> = Awaited<
-  ReturnType<(typeof prisma)[M]["findMany"]>
+  ReturnType<(typeof prisma)[Uncapitalize<M>]["findMany"]>
 >;
 
-export type Model<M extends ModelName> = Collection<M>[number];
+export type Model<M extends ModelName> = Collection<M>;
 
 export type ListData<T extends ModelName> = ListDataItem<T>[];
 

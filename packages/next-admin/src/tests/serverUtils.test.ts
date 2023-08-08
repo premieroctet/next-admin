@@ -23,7 +23,8 @@ describe("fillRelationInSchema", () => {
         role: "ADMIN",
       },
     ]);
-    const result = await fillRelationInSchema(schema, prismaMock, "post", {});
+    // @ts-expect-error
+    const result = await fillRelationInSchema(schema, prismaMock, "Post", {});
     expect(result.definitions.Post.properties.authorId.enum).toEqual([
       { label: 1, value: 1 },
       { label: 2, value: 2 },

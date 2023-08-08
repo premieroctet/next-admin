@@ -13,20 +13,17 @@ import {
   EditFieldsOptions,
 } from "../types";
 import { createWherePredicate } from "./prisma";
-import { capitalize, isNativeFunction, ressourceToUrl, uncapitalize, urlToRessource } from "./tools";
+import { isNativeFunction, uncapitalize } from "./tools";
 import { ADMIN_BASE_PATH } from "../config";
 export const getBody = util.promisify(bodyParser.urlencoded());
 
 export const models = Prisma.dmmf.datamodel.models;
-export const ressources = models.map(
-  (model) => uncapitalize(model.name) as ModelName
-);
-export type CapitilizeModelName = Capitalize<ModelName>;
+export const ressources = models.map((model) => model.name as ModelName);
 
 export const getPrismaModelyForRessource = (
   ressource: ModelName
 ): Prisma.DMMF.Model | undefined =>
-  models.find((datamodel) => datamodel.name === capitalize(ressource));
+  models.find((datamodel) => datamodel.name === ressource);
 
 /**
  * Fill fields with relations with the values of the related model, and inject them into the schema
@@ -43,7 +40,7 @@ export const fillRelationInSchema = async (
   requestOptions: any,
   options?: NextAdminOptions
 ) => {
-  const modelName = capitalize(ressource);
+  const modelName = ressource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return schema;
   await Promise.all(
@@ -56,7 +53,7 @@ export const fillRelationInSchema = async (
       if (fieldKind === "enum") {
         const fieldValue =
           schema.definitions[modelName].properties[
-          field.name as Field<typeof modelName>
+            field.name as Field<typeof modelName>
           ];
         if (fieldValue) {
           fieldValue.enum = fieldValue.enum?.map((item) =>
@@ -65,9 +62,9 @@ export const fillRelationInSchema = async (
         }
       }
       if (fieldKind === "object") {
-        const modelNameRelation = uncapitalize(fieldType as ModelName);
+        const modelNameRelation = fieldType as ModelName;
         const remoteModel = models.find(
-          (model) => model.name === capitalize(modelNameRelation)
+          (model) => model.name === modelNameRelation
         );
         type ListFieldOptionsModel = ListFieldsOptions<
           typeof modelNameRelation
@@ -87,10 +84,11 @@ export const fillRelationInSchema = async (
         );
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
-        const nonChekedToString = options?.model?.[modelNameRelation]?.toString
+        const nonChekedToString = options?.model?.[modelNameRelation]?.toString;
         const toStringForRelations =
-          (nonChekedToString && !isNativeFunction(nonChekedToString)) ? nonChekedToString :
-            ((item: any) => item[relationToFields?.[0]] ?? item.id);
+          nonChekedToString && !isNativeFunction(nonChekedToString)
+            ? nonChekedToString
+            : (item: any) => item[relationToFields?.[0]] ?? item.id;
         if (
           relationFromFields &&
           relationFromFields.length > 0 &&
@@ -99,7 +97,7 @@ export const fillRelationInSchema = async (
           //Relation One-to-Many, Many side
           const relationRemoteProperty = relationToFields![0];
           let enumeration: Enumeration[] = [];
-          await prisma[modelNameRelation]
+          await prisma[uncapitalize(modelNameRelation)]
             // @ts-expect-error
             .findMany({
               where,
@@ -121,11 +119,11 @@ export const fillRelationInSchema = async (
         } else {
           const fieldValue =
             schema.definitions[modelName].properties[
-            field.name as Field<typeof modelName>
+              field.name as Field<typeof modelName>
             ];
           if (fieldValue) {
             let enumeration: Enumeration[] = [];
-            await prisma[modelNameRelation]
+            await prisma[uncapitalize(modelNameRelation)]
               // @ts-expect-error
               .findMany({
                 where,
@@ -160,7 +158,7 @@ export const fillRelationInSchema = async (
 };
 
 export const flatRelationInData = (data: any, ressource: ModelName) => {
-  const modelName = capitalize(ressource);
+  const modelName = ressource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
   return Object.keys(data).reduce((acc, key) => {
@@ -173,16 +171,15 @@ export const flatRelationInData = (data: any, ressource: ModelName) => {
         acc[key] = data[key] ? data[key].id : null;
       }
     } else {
-      const fieldTypes = field?.type
+      const fieldTypes = field?.type;
       if (fieldTypes === "DateTime") {
-        acc[key] = data[key] ? data[key].toISOString() : null
+        acc[key] = data[key] ? data[key].toISOString() : null;
       } else {
-        acc[key] = data[key] ? data[key] : null
+        acc[key] = data[key] ? data[key] : null;
       }
     }
     return acc;
   }, {} as any);
-
 };
 
 /**
@@ -214,9 +211,9 @@ export const findRelationInData = async (
               type: "link",
               value: {
                 label: item[relationProperty],
-                url: `${ressourceToUrl(
-                  uncapitalize(dmmfProperty.type) as ModelName
-                )}/${item[relationProperty]}`,
+                url: `${dmmfProperty.type as ModelName}/${
+                  item[relationProperty]
+                }`,
               },
             };
           } else {
@@ -266,20 +263,23 @@ export const formattedFormData = <M extends ModelName>(
   creating: boolean
 ) => {
   const formattedData: any = {};
-  const modelName = capitalize(ressource);
+  const modelName = ressource;
   dmmfSchema.forEach((dmmfProperty) => {
     if (dmmfProperty.name in formData) {
-      const dmmfPropertyName = dmmfProperty.name as Field<Capitalize<M>>;
+      const dmmfPropertyName = dmmfProperty.name as Field<M>;
       const dmmfPropertyType = dmmfProperty.type;
       const dmmfPropertyKind = dmmfProperty.kind;
       if (dmmfPropertyKind === "object") {
         const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
         const fieldValue =
           schema.definitions[modelName].properties[
-          dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
+            dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
           ];
         const model = models.find((model) => model.name === dmmfPropertyType);
-        const formatId = (value?: string) => model?.fields.find((field) => field.name === "id")?.type === "Int" ? Number(value) : value;
+        const formatId = (value?: string) =>
+          model?.fields.find((field) => field.name === "id")?.type === "Int"
+            ? Number(value)
+            : value;
         if (fieldValue.type === "array") {
           formData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName]!);
           formattedData[dmmfPropertyName] = {
@@ -342,7 +342,7 @@ export const removeHiddenProperties = <M extends ModelName>(
   ressource: M
 ) => {
   if (!editOptions) return schema;
-  const properties = schema.definitions[capitalize(ressource)].properties;
+  const properties = schema.definitions[ressource].properties;
   Object.keys(properties).forEach((property) => {
     if (!editOptions[property as UField<M>]?.display) {
       delete properties[property as UField<M>];
@@ -351,32 +351,28 @@ export const removeHiddenProperties = <M extends ModelName>(
   return schema;
 };
 
+// TODO Add test
 export const getRessourceFromUrl = (url: string): ModelName | undefined => {
-  const matching = url.match(`${ADMIN_BASE_PATH}/([a-z-]+)[/?\.]?`);
-  const ressource = matching
-    ? ressources.find((r) => r === urlToRessource(matching[1]))
-    : undefined;
-  return ressource;
+  return ressources.find((r) => url.includes(`/${r}`));
 };
 
+// TODO Add test
 export const getRessourceIdFromUrl = (
   url: string,
   ressource: ModelName
 ): string | number | undefined => {
-  const matching = url.match(
-    `${ADMIN_BASE_PATH}/${ressourceToUrl(ressource)}/([0-9a-z-]+)`
-  );
+  const matching = url.match(`${ADMIN_BASE_PATH}/${ressource}/([0-9a-z-]+)`);
 
   if (!matching) return undefined;
   if (matching[1] === "new") return undefined;
 
-  const model = models.find((model) => model.name === capitalize(ressource));
-  const idType = model?.fields.find((field) => field.name === "id")?.type
+  const model = models.find((model) => model.name === ressource);
+
+  const idType = model?.fields.find((field) => field.name === "id")?.type;
 
   if (idType === "Int") {
     return Number(matching[1]);
   }
-
 
   return matching ? matching[1] : undefined;
 };
