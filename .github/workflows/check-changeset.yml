@@ -1,27 +1,21 @@
-name: Check Changelog and Diff
-
+name: Check Changelog
 on:
   pull_request:
     paths:
       - "packages/next-admin/**"
-
 jobs:
   check-changelog-diff:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
-      - run: git diff --name-only origin/${{ github.base_ref }} origin/${{ github.head_ref }}
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
-
       - name: Install dependencies
         run: yarn install
-
       - name: Check for changeset
-        run: yarn changeset status
+        run: yarn changeset status --since=origin/main
