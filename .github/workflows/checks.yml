@@ -1,9 +1,8 @@
-name: 'Checks'
+name: "Checks"
 on:
-  push:
+  pull_request:
     branches:
       - main
-  pull_request:
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -17,4 +16,4 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Check changeset
-        run: yarn changeset status
+        run: yarn changeset status --since=main
