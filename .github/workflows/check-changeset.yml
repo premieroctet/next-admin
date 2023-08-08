@@ -12,8 +12,7 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+      - run: git fetch origin main 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
