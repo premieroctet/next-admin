@@ -11,7 +11,7 @@
     "dev": "turbo run dev",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-package": "turbo run build lint && changeset publish"
+    "publish-package": "changeset publish"
   },
   "devDependencies": {
     "eslint-config-custom": "*",
