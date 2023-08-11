@@ -1,5 +1,13 @@
 # @premieroctet/next-admin
 
+## 1.3.7
+
+### Patch Changes
+
+- 7bcf33c: change package properties
+
+  Change type: fix
+
 ## 1.3.6
 
 ### Patch Changes
