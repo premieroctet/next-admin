@@ -18,7 +18,7 @@ export type UField<M extends ModelName> = Field<M>;
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
-    toString?: (item: Model<P>) => string;
+    toString?: (item: Model<P>[number]) => string;
     list?: {
       fields: ListFieldsOptions<P>;
     };
@@ -118,13 +118,13 @@ export type ListDataFieldValue =
   | boolean
   | { type: "count"; value: number }
   | {
-      type: "link";
-      value: {
-        label: string;
-        url: string;
-      };
-    }
-  | {
-      type: "date";
-      value: Date;
+    type: "link";
+    value: {
+      label: string;
+      url: string;
     };
+  }
+  | {
+    type: "date";
+    value: Date;
+  };
