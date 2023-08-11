@@ -9,6 +9,8 @@ jobs:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: yarn install && npx playwright install --with-deps
+      - name: Get deployement status
+        run: echo ${{ github.event.deployment_status.id }} ${{ github.event.deployment_status.node_id}}
       - name: Run e2e tests
         run: yarn dotenv turbo test:e2e
         env:
