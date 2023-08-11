@@ -10,7 +10,8 @@
     "build": "npm run css && npm run js",
     "dev": "concurrently \"npm run css -- --watch\" \"npm run js -- --watch\"",
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "test": "jest --coverage",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "tsc": "tsc --noemit"
   },
   "peerDependencies": {

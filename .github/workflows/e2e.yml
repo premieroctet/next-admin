@@ -1,0 +1,15 @@
+name: E2E tests
+on:
+  deployment_status:
+jobs:
+  run-e2es:
+    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: yarn install && npx playwright install --with-deps
+      - name: Run e2e tests
+        run: yarn dotenv turbo test:e2e
+        env:
+          BASE_URL: ${{ github.event.deployment_status.target_url }}

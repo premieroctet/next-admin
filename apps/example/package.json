@@ -10,7 +10,8 @@
     "database": "prisma migrate dev && prisma db seed",
     "postinstall": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "vercel-build": "prisma generate && prisma migrate deploy && next build",
+    "test:e2e": "playwright test"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -30,6 +31,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "@playwright/test": "^1.37.0",
     "@types/node": "^17.0.12",
     "@types/react": "^18.0.22",
     "@types/react-dom": "^18.0.7",
