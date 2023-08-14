@@ -2,14 +2,28 @@ name: E2E tests
 on:
   deployment_status:
 jobs:
+  only-next-admin-deployment:
+    if: github.event.deployment_status.state == 'success' && contains(github.event.deployment_status.target_url, 'next-admin-docs')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deployment status
+        id: deployment-status
+        run: |
+          echo "${{ github.event.deployment_status.target_url }}" > deployment_url.txt
+
   run-e2e:
-    if: github.event.deployment_status.state == 'success' && !contains(github.event.deployment_status.target_url, 'next-admin-docs')
+    needs: only-next-admin-deployment
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Install dependencies
         run: yarn install && npx playwright install --with-deps
+      - name: Read deployment URL from file
+        id: read-deployment-url
+        run: |
+          cat deployment_url.txt
+          echo "::set-output name=deployment_url::$(cat deployment_url.txt)"
       - name: Run e2e tests
         run: yarn dotenv turbo test:e2e
         env:
-          BASE_URL: ${{ github.event.deployment_status.target_url }}
+          BASE_URL: ${{ steps.read-deployment-url.outputs.deployment_url }}
