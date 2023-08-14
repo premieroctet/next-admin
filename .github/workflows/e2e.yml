@@ -3,7 +3,7 @@ on:
   deployment_status:
 jobs:
   run-e2e:
-    if: github.event_name == 'deployment_status' && github.event.deployment_status.state == 'success' && !contains(github.event.deployment_status.target_url, 'next-admin-docs')
+    if: github.event.deployment_status.state == 'success' && !contains(github.event.deployment_status.target_url, 'next-admin-docs')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
