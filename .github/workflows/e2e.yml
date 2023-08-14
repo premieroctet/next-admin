@@ -6,7 +6,7 @@ jobs:
     if: github.event.deployment_status.state == 'success' && !contains(github.event.deployment_status.target_url, 'next-admin-docs')
     runs-on: ubuntu-latest
     concurrency:
-      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+      group: ${{ github.repository }}
       cancel-in-progress: true
     steps:
       - uses: actions/checkout@v3
