@@ -33,7 +33,7 @@ export type FormProps = {
   data: any;
   schema: any;
   dmmfSchema: Prisma.DMMF.Field[];
-  ressource: ModelName;
+  resource: ModelName;
 };
 
 const fields = {
@@ -98,7 +98,7 @@ const templates = {
   },
 };
 
-const Form = ({ data, schema, dmmfSchema, ressource }: FormProps) => {
+const Form = ({ data, schema, dmmfSchema, resource }: FormProps) => {
   const schemas: Schemas = getSchemas(data, schema, dmmfSchema);
   const edit = data?.id !== undefined;
   const submitButton = (props: SubmitButtonProps) => {
@@ -133,7 +133,7 @@ const Form = ({ data, schema, dmmfSchema, ressource }: FormProps) => {
     <div className="relative">
       <div className="sm:flex sm:items-center">
         <h1 className="text-base font-semibold leading-6 text-gray-900">
-          {ressource}
+          {resource}
         </h1>
       </div>
       <CustomForm

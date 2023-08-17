@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { getPrismaModelyForRessource } from "./server";
+import { getPrismaModelyForResource } from "./server";
 import {
   ListFieldsOptions,
   ModelName,
@@ -37,22 +37,22 @@ export const createWherePredicate = (
 };
 
 export const preparePrismaListRequest = <M extends ModelName>(
-  ressource: M,
+  resource: M,
   searchParams: any,
   options?: NextAdminOptions
 ): PrismaListRequest<M> => {
-  const model = getPrismaModelyForRessource(ressource);
+  const model = getPrismaModelyForResource(resource);
   const search = searchParams.get("search") || "";
   const page = Number(searchParams.get("page")) || 1;
   const itemsPerPage =
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
-  let orderBy: Order<typeof ressource> = {};
-  const sortParam = searchParams.get("sortColumn") as UField<typeof ressource>;
+  let orderBy: Order<typeof resource> = {};
+  const sortParam = searchParams.get("sortColumn") as UField<typeof resource>;
   const orderValue = searchParams.get("sortDirection") as Prisma.SortOrder;
   if (
     orderValue in Prisma.SortOrder &&
-    sortParam in Prisma[`${capitalize(ressource)}ScalarFieldEnum`]
+    sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]
   ) {
     orderBy[sortParam] = orderValue;
   }
@@ -60,7 +60,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
   let select: Select<M> | undefined;
   let where = {};
   let fieldsFiltered = model?.fields;
-  const list = options?.model?.[ressource]?.list
+  const list = options?.model?.[resource]?.list
     ?.fields as ListFieldsOptions<M>;
   if (list) {
     const listKeys = Object.keys(list) as Array<keyof ListFieldsOptions<M>>;

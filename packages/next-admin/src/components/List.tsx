@@ -19,13 +19,13 @@ import TableRowsIndicator from "./TableRowsIndicator";
 import { Pagination } from "./Pagination";
 
 export type ListProps = {
-  ressource: ModelName;
+  resource: ModelName;
   data: ListData<ModelName>;
   total: number;
   modelSchema: SchemaModel<ModelName>;
 };
 
-function List({ ressource, data, total, modelSchema }: ListProps) {
+function List({ resource, data, total, modelSchema }: ListProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const pageIndex =
@@ -85,19 +85,19 @@ function List({ ressource, data, total, modelSchema }: ListProps) {
     <>
       <div className="mt-4">
         <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
-          {ressource}
+          {resource}
         </h1>
       </div>
       <div className="mt-4 flow-root">
         <ListHeader
-          ressource={ressource}
+          resource={resource}
           search={(router?.query.search as string) || ""}
           onSearchChange={onSearchChange}
           isPending={isPending}
         />
         <div className="max-w-full mt-2 py-2 align-middle">
           <DataTable
-            ressource={ressource}
+            resource={resource}
             data={data}
             columns={columns}
           />

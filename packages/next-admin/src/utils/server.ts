@@ -18,12 +18,12 @@ import { ADMIN_BASE_PATH } from "../config";
 export const getBody = util.promisify(bodyParser.urlencoded());
 
 export const models = Prisma.dmmf.datamodel.models;
-export const ressources = models.map((model) => model.name as ModelName);
+export const resources = models.map((model) => model.name as ModelName);
 
-export const getPrismaModelyForRessource = (
-  ressource: ModelName
+export const getPrismaModelyForResource = (
+  resource: ModelName
 ): Prisma.DMMF.Model | undefined =>
-  models.find((datamodel) => datamodel.name === ressource);
+  models.find((datamodel) => datamodel.name === resource);
 
 /**
  * Fill fields with relations with the values of the related model, and inject them into the schema
@@ -36,11 +36,11 @@ export const getPrismaModelyForRessource = (
 export const fillRelationInSchema = async (
   schema: Schema,
   prisma: PrismaClient,
-  ressource: ModelName,
+  resource: ModelName,
   requestOptions: any,
   options?: NextAdminOptions
 ) => {
-  const modelName = ressource;
+  const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return schema;
   await Promise.all(
@@ -157,8 +157,8 @@ export const fillRelationInSchema = async (
   return schema;
 };
 
-export const flatRelationInData = (data: any, ressource: ModelName) => {
-  const modelName = ressource;
+export const flatRelationInData = (data: any, resource: ModelName) => {
+  const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
   return Object.keys(data).reduce((acc, key) => {
@@ -259,11 +259,11 @@ export const formattedFormData = <M extends ModelName>(
   formData: FormData<M>,
   dmmfSchema: Prisma.DMMF.Field[],
   schema: Schema,
-  ressource: M,
+  resource: M,
   creating: boolean
 ) => {
   const formattedData: any = {};
-  const modelName = ressource;
+  const modelName = resource;
   dmmfSchema.forEach((dmmfProperty) => {
     if (dmmfProperty.name in formData) {
       const dmmfPropertyName = dmmfProperty.name as Field<M>;
@@ -339,10 +339,10 @@ export const formatSearchFields = (uri: string) =>
 export const removeHiddenProperties = <M extends ModelName>(
   schema: Schema,
   editOptions: EditFieldsOptions<M>,
-  ressource: M
+  resource: M
 ) => {
   if (!editOptions) return schema;
-  const properties = schema.definitions[ressource].properties;
+  const properties = schema.definitions[resource].properties;
   Object.keys(properties).forEach((property) => {
     if (!editOptions[property as UField<M>]?.display) {
       delete properties[property as UField<M>];
@@ -352,21 +352,21 @@ export const removeHiddenProperties = <M extends ModelName>(
 };
 
 // TODO Add test
-export const getRessourceFromUrl = (url: string): ModelName | undefined => {
-  return ressources.find((r) => url.includes(`/${r}`));
+export const getResourceFromUrl = (url: string): ModelName | undefined => {
+  return resources.find((r) => url.includes(`/${r}`));
 };
 
 // TODO Add test
-export const getRessourceIdFromUrl = (
+export const getResourceIdFromUrl = (
   url: string,
-  ressource: ModelName
+  resource: ModelName
 ): string | number | undefined => {
-  const matching = url.match(`${ADMIN_BASE_PATH}/${ressource}/([0-9a-z-]+)`);
+  const matching = url.match(`${ADMIN_BASE_PATH}/${resource}/([0-9a-z-]+)`);
 
   if (!matching) return undefined;
   if (matching[1] === "new") return undefined;
 
-  const model = models.find((model) => model.name === ressource);
+  const model = models.find((model) => model.name === resource);
 
   const idType = model?.fields.find((field) => field.name === "id")?.type;
 
