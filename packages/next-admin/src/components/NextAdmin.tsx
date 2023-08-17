@@ -1,18 +1,35 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Bars3Icon, HomeIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import { clsx } from "clsx";
 import Head from "next/head";
 import Link from "next/link";
-import React, { Fragment, useState } from "react";
-import { clsx } from "clsx";
+import React, { Fragment, ReactNode, useState } from "react";
 
+import { Prisma } from "@prisma/client";
 import { ADMIN_BASE_PATH } from "../config";
+import { Field, ListData, ListDataItem, Model, ModelName, Schema } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
-import { Prisma } from "@prisma/client";
-import { ListData, ModelName, Schema } from "../types";
 import Message from "./Message";
+
+export type ListComponentFieldsOptions<T extends ModelName> = {
+  [P in Field<T>]?: {
+    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
+  };
+};
+
+export type AdminComponentOptions<T extends ModelName> = {
+  model?: {
+    [P in T]?: {
+      toString?: (item: Model<P>[number]) => string;
+      list?: {
+        fields: ListComponentFieldsOptions<P>;
+      };
+    };
+  };
+};
 
 export type AdminComponentProps = {
   schema: Schema;
@@ -26,6 +43,7 @@ export type AdminComponentProps = {
   resources?: ModelName[];
   total?: number;
   dmmfSchema: Prisma.DMMF.Field[];
+  options?: AdminComponentOptions<ModelName>;
 };
 
 export type CustomUIProps = {
@@ -33,7 +51,6 @@ export type CustomUIProps = {
 };
 
 // Components
-
 export function NextAdmin({
   data,
   resource,
@@ -44,6 +61,7 @@ export function NextAdmin({
   total,
   dmmfSchema,
   dashboard,
+  options,
 }: AdminComponentProps & CustomUIProps) {
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
@@ -69,7 +87,7 @@ export function NextAdmin({
           resource={resource}
           data={data}
           total={total}
-          modelSchema={modelSchema}
+          options={options?.model && options?.model[resource]}
         />
       );
     }

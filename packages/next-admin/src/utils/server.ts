@@ -199,6 +199,7 @@ export const findRelationInData = async (
     const dmmfPropertyKind = dmmfProperty.kind;
     const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
     const dmmfPropertyRelationToFields = dmmfProperty.relationToFields;
+    
     if (dmmfPropertyKind === "object") {
       if (
         dmmfPropertyRelationFromFields!.length > 0 &&

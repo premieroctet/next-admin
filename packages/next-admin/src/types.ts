@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
+import { ReactNode } from "react";
 
 let prisma: PrismaClient;
 

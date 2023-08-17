@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
-import { Selector } from "./Selector";
-import MultiSelectItem from "./MultiSelectItem";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
+import MultiSelectItem from "./MultiSelectItem";
+import { Selector } from "./Selector";
 
 const MultiSelectWidget = (props: any) => {
   const { formData, onChange, options, name } = props;
