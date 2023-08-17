@@ -6,7 +6,7 @@ import React, { Fragment, useState } from "react";
 import { clsx } from "clsx";
 
 import { ADMIN_BASE_PATH } from "../config";
-import { getSchemaForRessource } from "../utils/jsonSchema";
+import { getSchemaForResource } from "../utils/jsonSchema";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
@@ -17,13 +17,13 @@ import Message from "./Message";
 export type AdminComponentProps = {
   schema: Schema;
   data?: ListData<ModelName>;
-  ressource: ModelName;
+  resource: ModelName;
   message?: {
     type: "success" | "info";
     content: string;
   };
   error?: string;
-  ressources?: ModelName[];
+  resources?: ModelName[];
   total?: number;
   dmmfSchema: Prisma.DMMF.Field[];
 };
@@ -36,9 +36,9 @@ export type CustomUIProps = {
 
 export function NextAdmin({
   data,
-  ressource,
+  resource,
   schema,
-  ressources,
+  resources,
   message,
   error,
   total,
@@ -46,7 +46,7 @@ export function NextAdmin({
   dashboard,
 }: AdminComponentProps & CustomUIProps) {
   const modelSchema =
-    ressource && schema ? getSchemaForRessource(schema, ressource) : undefined;
+    resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigation: Array<{
@@ -55,18 +55,18 @@ export function NextAdmin({
     current: boolean;
     icon?: React.ElementType;
   }> =
-    ressources?.map((ressource) => ({
-      name: ressource,
-      href: `${ADMIN_BASE_PATH}/${ressource}`,
+    resources?.map((resource) => ({
+      name: resource,
+      href: `${ADMIN_BASE_PATH}/${resource}`,
       current: false,
     })) || [];
 
   const renderMainComponent = () => {
-    if (Array.isArray(data) && ressource && typeof total != "undefined") {
+    if (Array.isArray(data) && resource && typeof total != "undefined") {
       return (
         <List
-          key={ressource}
-          ressource={ressource}
+          key={resource}
+          resource={resource}
           data={data}
           total={total}
           modelSchema={modelSchema}
@@ -80,12 +80,12 @@ export function NextAdmin({
           data={data}
           schema={modelSchema}
           dmmfSchema={dmmfSchema}
-          ressource={ressource}
+          resource={resource}
         />
       );
     }
 
-    if (ressources) {
+    if (resources) {
       if (dashboard && typeof dashboard === "function") return dashboard();
       return dashboard || <Dashboard />;
     }

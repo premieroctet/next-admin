@@ -21,10 +21,10 @@ import { ListData, ListDataItem, ModelName } from "../types";
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>, { id: string }>[];
   data: ListData<ModelName>;
-  ressource: ModelName;
+  resource: ModelName;
 }
 
-export function DataTable({ columns, data, ressource }: DataTableProps) {
+export function DataTable({ columns, data, resource }: DataTableProps) {
   const router = useRouter();
   const table = useReactTable({
     data,
@@ -63,7 +63,7 @@ export function DataTable({ columns, data, ressource }: DataTableProps) {
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
                   router?.push({
-                    pathname: `${ADMIN_BASE_PATH}/${ressource}/${row.original.id}`,
+                    pathname: `${ADMIN_BASE_PATH}/${resource}/${row.original.id}`,
                   });
                 }}
               >
@@ -77,7 +77,7 @@ export function DataTable({ columns, data, ressource }: DataTableProps) {
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                <div className="text-center text-gray-500">{`No ${ressource} found`}</div>
+                <div className="text-center text-gray-500">{`No ${resource} found`}</div>
               </TableCell>
             </TableRow>
           )}
