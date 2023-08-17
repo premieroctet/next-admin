@@ -110,7 +110,11 @@ Next Admin options is the third parameter of the [router function](#nextadminrou
 
 ### `model`
 
-`model` is an object that represents the customization options for each model in your schema, it takes as **_key_** a model name of your schema as **_value_** an object to customize your model GUI (Graphical User Interface) with the following properties:
+`model` is an object that represents the customization options for each model in your schema. 
+
+It takes as **_key_** a model name of your schema as **_value_** an object to customize your it.
+
+By default if no models are defined, they will all be displayed in the admin. If you want more control, you have to define each model individually as empty objects or with the following properties:
 
 | Name              | Description                                                    | Default value |
 | ----------------- | -------------------------------------------------------------- | ------------- |
