@@ -12,11 +12,11 @@ import {
   formatSearchFields,
   formattedFormData,
   getBody,
-  getPrismaModelyForResource,
+  getPrismaModelForResource,
   getResourceFromUrl,
   getResourceIdFromUrl,
   removeHiddenProperties,
-  resources,
+  getResources,
 } from "./utils/server";
 import {
   NextAdminOptions,
@@ -33,8 +33,10 @@ export const nextAdminRouter = async (
   prisma: PrismaClient,
   schema: any,
   options?: NextAdminOptions
-) =>
-  createRouter()
+) => {
+  const resources = getResources(options);
+
+  return createRouter()
     // Error handling middleware
     .use(async (req, res, next) => {
       try {
@@ -50,14 +52,14 @@ export const nextAdminRouter = async (
       }
     })
     .get(async (req, res) => {
-      const resource = getResourceFromUrl(req.url!);
+      const resource = getResourceFromUrl(req.url!, resources);
       const requestOptions = formatSearchFields(req.url!);
 
       // Dashboard
       if (!resource) {
         return { props: { resources } };
       }
-      const model = getPrismaModelyForResource(resource);
+      const model = getPrismaModelForResource(resource);
 
       let selectedFields = model?.fields.reduce((acc, field) => {
         // @ts-expect-error
@@ -86,7 +88,7 @@ export const nextAdminRouter = async (
       // Edit
       const resourceId = getResourceIdFromUrl(req.url!, resource);
 
-      const dmmfSchema = getPrismaModelyForResource(resource);
+      const dmmfSchema = getPrismaModelForResource(resource);
       if (resourceId !== undefined) {
         // @ts-expect-error
         let data = await prisma[resource].findUniqueOrThrow({
@@ -163,14 +165,14 @@ export const nextAdminRouter = async (
       };
     })
     .post(async (req, res) => {
-      const resource = getResourceFromUrl(req.url!);
+      const resource = getResourceFromUrl(req.url!, resources);
       const requestOptions = formatSearchFields(req.url!);
 
       if (!resource) {
         return { notFound: true };
       }
       const resourceId = getResourceIdFromUrl(req.url!, resource);
-      const model = getPrismaModelyForResource(resource);
+      const model = getPrismaModelForResource(resource);
 
       let selectedFields = model?.fields.reduce((acc, field) => {
         // @ts-expect-error
@@ -207,7 +209,7 @@ export const nextAdminRouter = async (
       await getBody(req, res);
       // @ts-expect-error
       const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
-      const dmmfSchema = getPrismaModelyForResource(resource);
+      const dmmfSchema = getPrismaModelForResource(resource);
       try {
         // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
         if (resourceId === undefined && formData.action === "delete") {
@@ -279,13 +281,13 @@ export const nextAdminRouter = async (
             .endsWith(`${ADMIN_BASE_PATH}/${resource}/new`);
           const message = fromCreate
             ? {
-                type: "success",
-                content: "Created successfully",
-              }
+              type: "success",
+              content: "Created successfully",
+            }
             : {
-                type: "success",
-                content: "Updated successfully",
-              };
+              type: "success",
+              content: "Updated successfully",
+            };
 
           return {
             props: {
@@ -357,4 +359,5 @@ export const nextAdminRouter = async (
         }
         throw error;
       }
-    });
+    })
+}
