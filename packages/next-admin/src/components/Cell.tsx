@@ -1,6 +1,6 @@
 import React from "react";
 
-import { ListDataFieldValue, ModelName } from "../types";
+import { ListDataFieldValue } from "../types";
 import { ADMIN_BASE_PATH } from "../config";
 import Link from "next/link";
 import clsx from "clsx";
@@ -10,7 +10,9 @@ type Props = {
 };
 export default function Cell({ cell }: Props) {
   if (cell !== null) {
-    if (typeof cell === "object") {
+    if (React.isValidElement(cell)) {
+      return cell;
+    } else if (typeof cell === "object") {
       if (cell.type === "link") {
         return (
           <Link
@@ -61,6 +63,7 @@ export default function Cell({ cell }: Props) {
         </div>
       );
     }
+
     return <div>{JSON.stringify(cell)}</div>;
   }
   return null;
