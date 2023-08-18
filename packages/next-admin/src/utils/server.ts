@@ -20,10 +20,20 @@ export const getBody = util.promisify(bodyParser.urlencoded());
 export const models = Prisma.dmmf.datamodel.models;
 export const resources = models.map((model) => model.name as ModelName);
 
-export const getPrismaModelyForResource = (
+export const getPrismaModelForResource = (
   resource: ModelName
 ): Prisma.DMMF.Model | undefined =>
   models.find((datamodel) => datamodel.name === resource);
+
+export const getResources = (
+  options?: NextAdminOptions
+): Prisma.ModelName[] => {
+  const definedModels =
+    options && options.model
+      ? (Object.keys(options.model) as Prisma.ModelName[])
+      : [];
+  return definedModels.length > 0 ? definedModels : resources;
+};
 
 /**
  * Fill fields with relations with the values of the related model, and inject them into the schema
@@ -352,7 +362,10 @@ export const removeHiddenProperties = <M extends ModelName>(
 };
 
 // TODO Add test
-export const getResourceFromUrl = (url: string): ModelName | undefined => {
+export const getResourceFromUrl = (
+  url: string,
+  resources: Prisma.ModelName[]
+): ModelName | undefined => {
   return resources.find((r) => url.includes(`/${r}`));
 };
 

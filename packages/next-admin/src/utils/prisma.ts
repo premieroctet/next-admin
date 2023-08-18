@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { getPrismaModelyForResource } from "./server";
+import { getPrismaModelForResource } from "./server";
 import {
   ListFieldsOptions,
   ModelName,
@@ -41,7 +41,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
   searchParams: any,
   options?: NextAdminOptions
 ): PrismaListRequest<M> => {
-  const model = getPrismaModelyForResource(resource);
+  const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
   const page = Number(searchParams.get("page")) || 1;
   const itemsPerPage =
