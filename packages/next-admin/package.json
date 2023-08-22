@@ -34,6 +34,7 @@
     "lodash.range": "^3.2.0",
     "next": "13.2.4",
     "next-connect": "^1.0.0-next.3",
+    "nextjs-progressbar": "^0.0.16",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-querybuilder": "^6.1.2",

@@ -4,6 +4,7 @@ import { clsx } from "clsx";
 import Head from "next/head";
 import Link from "next/link";
 import React, { Fragment, ReactNode, useState } from "react";
+import NextNProgress from 'nextjs-progressbar';
 
 import { Prisma } from "@prisma/client";
 import { ADMIN_BASE_PATH } from "../config";
@@ -111,6 +112,7 @@ export function NextAdmin({
 
   return (
     <>
+      <NextNProgress color="#6366f1" />
       <Head>
         <title>Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
