@@ -4,7 +4,6 @@ import NextNProgress from 'nextjs-progressbar';
 import { ReactNode } from "react";
 
 import { Prisma } from "@prisma/client";
-import { ADMIN_BASE_PATH } from "../config";
 import { Field, ListData, ListDataItem, Model, ModelName, Schema } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import Dashboard from "./Dashboard";
@@ -12,6 +11,7 @@ import Form from "./Form";
 import List from "./List";
 import Menu from "./Menu";
 import Message from "./Message";
+import { ConfigProvider } from "../context/ConfigContext";
 
 export type ListComponentFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
@@ -31,6 +31,7 @@ export type AdminComponentOptions<T extends ModelName> = {
 };
 
 export type AdminComponentProps = {
+  basePath: string;
   schema: Schema;
   data?: ListData<ModelName>;
   resource: ModelName;
@@ -51,6 +52,7 @@ export type CustomUIProps = {
 
 // Components
 export function NextAdmin({
+  basePath,
   data,
   resource,
   schema,
@@ -96,7 +98,7 @@ export function NextAdmin({
   };
 
   return (
-    <>
+    <ConfigProvider basePath={basePath}>
       <NextNProgress color="#6366f1" />
       <Head>
         <title>Admin</title>
@@ -111,7 +113,7 @@ export function NextAdmin({
             <h1>
               <Link
                 className="text-neutral-500 hover:text-neutral-700 hover:underline cursor-pointer"
-                href={`${ADMIN_BASE_PATH}`}
+                href={basePath}
               >
                 Admin
               </Link>
@@ -124,6 +126,6 @@ export function NextAdmin({
           </div>
         </main>
       </div>
-    </>
+    </ConfigProvider>
   );
 }

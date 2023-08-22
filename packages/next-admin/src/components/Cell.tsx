@@ -1,14 +1,17 @@
 import React from "react";
 
 import { ListDataFieldValue } from "../types";
-import { ADMIN_BASE_PATH } from "../config";
 import Link from "next/link";
 import clsx from "clsx";
+import { useConfig } from "../context/ConfigContext";
 
 type Props = {
   cell: ListDataFieldValue;
 };
+
 export default function Cell({ cell }: Props) {
+  const { basePath } = useConfig()
+
   if (cell !== null) {
     if (React.isValidElement(cell)) {
       return cell;
@@ -17,7 +20,7 @@ export default function Cell({ cell }: Props) {
         return (
           <Link
             onClick={(e) => e.stopPropagation()}
-            href={`${ADMIN_BASE_PATH}/${cell.value.url}`}
+            href={`${basePath}/${cell.value.url}`}
             className="hover:underline cursor-pointer text-indigo-700 hover:text-indigo-900 font-semibold"
           >
             {cell.value.label}

@@ -4,8 +4,8 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 
-import { ADMIN_BASE_PATH } from "../config";
 import { ModelName } from "../types";
+import { useConfig } from "../context/ConfigContext";
 
 export type MenuProps = {
     resource: ModelName;
@@ -14,6 +14,7 @@ export type MenuProps = {
 
 export default function Menu({ resources, resource: currentResource }: MenuProps) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+    const { basePath } = useConfig()
     const navigation: Array<{
         name: string;
         href: string;
@@ -22,7 +23,7 @@ export default function Menu({ resources, resource: currentResource }: MenuProps
     }> =
         resources?.map((resource) => ({
             name: resource,
-            href: `${ADMIN_BASE_PATH}/${resource}`,
+            href: `${basePath}/${resource}`,
             current: resource === currentResource,
         })) || [];
 
@@ -82,7 +83,7 @@ export default function Menu({ resources, resource: currentResource }: MenuProps
                             {/* Sidebar component, swap this element with another sidebar if you like */}
                             <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
                                 <div className="flex h-16 shrink-0 items-center">
-                                    <Link href={ADMIN_BASE_PATH}>
+                                    <Link href={basePath}>
                                         <HomeIcon className="h-6 w-6 text-indigo-600" />
                                     </Link>
                                 </div>
@@ -132,7 +133,7 @@ export default function Menu({ resources, resource: currentResource }: MenuProps
             {/* Sidebar component, swap this element with another sidebar if you like */}
             <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
                 <div className="flex h-16 shrink-0 items-center">
-                    <Link href={ADMIN_BASE_PATH}>
+                    <Link href={basePath}>
                         <HomeIcon className="h-6 w-6 text-indigo-600" />
                     </Link>
                 </div>

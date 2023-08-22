@@ -14,7 +14,6 @@ import {
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
-import { ADMIN_BASE_PATH } from "../config";
 export const getBody = util.promisify(bodyParser.urlencoded());
 
 export const models = Prisma.dmmf.datamodel.models;
@@ -375,7 +374,7 @@ export const getResourceIdFromUrl = (
   url: string,
   resource: ModelName
 ): string | number | undefined => {
-  const matching = url.match(`${ADMIN_BASE_PATH}/${resource}/([0-9a-z-]+)`);
+  const matching = url.match(`/${resource}/([0-9a-z-]+)`);
 
   if (!matching) return undefined;
   if (matching[1] === "new") return undefined;

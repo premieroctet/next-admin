@@ -26,15 +26,15 @@ import {
   EditFieldsOptions,
 } from "./types";
 import { preparePrismaListRequest } from "./utils/prisma";
-import { ADMIN_BASE_PATH } from "./config";
 
 // Router
 export const nextAdminRouter = async (
   prisma: PrismaClient,
   schema: any,
-  options?: NextAdminOptions
+  options: NextAdminOptions
 ) => {
   const resources = getResources(options);
+  const defaultProps = { resources, basePath: options.basePath };
 
   return createRouter()
     // Error handling middleware
@@ -47,7 +47,7 @@ export const nextAdminRouter = async (
         }
 
         return {
-          props: { resources, error: e.message },
+          props: { ...defaultProps, error: e.message },
         };
       }
     })
@@ -57,7 +57,7 @@ export const nextAdminRouter = async (
 
       // Dashboard
       if (!resource) {
-        return { props: { resources } };
+        return { props: defaultProps };
       }
       const model = getPrismaModelForResource(resource);
 
@@ -99,7 +99,7 @@ export const nextAdminRouter = async (
         data = flatRelationInData(data, resource);
         return {
           props: {
-            resources,
+            ...defaultProps,
             resource,
             data,
             schema,
@@ -111,7 +111,7 @@ export const nextAdminRouter = async (
       if (req.url!.includes("/new")) {
         return {
           props: {
-            resources,
+            ...defaultProps,
             resource,
             schema,
             dmmfSchema: dmmfSchema?.fields,
@@ -154,7 +154,7 @@ export const nextAdminRouter = async (
 
       return {
         props: {
-          resources,
+          ...defaultProps,
           resource,
           data,
           total,
@@ -227,7 +227,7 @@ export const nextAdminRouter = async (
 
           return {
             props: {
-              resources,
+              ...defaultProps,
               resource,
               message: {
                 type: "success",
@@ -250,7 +250,7 @@ export const nextAdminRouter = async (
 
           return {
             redirect: {
-              destination: `${ADMIN_BASE_PATH}/${resource}`,
+              destination: `${options.basePath}/${resource}`,
               permanent: false,
             },
           };
@@ -278,7 +278,7 @@ export const nextAdminRouter = async (
           data = flatRelationInData(data, resource);
           const fromCreate = req.headers.referer
             ?.split("?")[0]
-            .endsWith(`${ADMIN_BASE_PATH}/${resource}/new`);
+            .endsWith(`${options.basePath}/${resource}/new`);
           const message = fromCreate
             ? {
               type: "success",
@@ -291,7 +291,7 @@ export const nextAdminRouter = async (
 
           return {
             props: {
-              resources,
+              ...defaultProps,
               resource,
               data,
               message,
@@ -317,7 +317,7 @@ export const nextAdminRouter = async (
         data = flatRelationInData(data, resource);
         return {
           redirect: {
-            destination: `${ADMIN_BASE_PATH}/${resource}/${data.id}`,
+            destination: `${options.basePath}/${resource}/${data.id}`,
             permanent: false,
           },
         };
@@ -336,7 +336,7 @@ export const nextAdminRouter = async (
             data = flatRelationInData(data, resource);
             return {
               props: {
-                resources,
+                ...defaultProps,
                 resource,
                 data,
                 schema,
@@ -348,7 +348,7 @@ export const nextAdminRouter = async (
 
           return {
             props: {
-              resources,
+              ...defaultProps,
               resource,
               schema,
               dmmfSchema: dmmfSchema?.fields,

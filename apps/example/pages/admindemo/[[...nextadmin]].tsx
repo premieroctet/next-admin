@@ -34,6 +34,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   );
 
   const options: NextAdminOptions = {
+    basePath: "/admindemo",
     model: {
       user: {
         toString: (user) => `${user.name} (${user.email})`,
@@ -55,7 +56,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
               search: true,
               display: true,
             },
-            // @ts-expect-error Cannot get types for relationships
             posts: {
               search: true,
               display: true,
@@ -76,7 +76,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
             role: {
               display: true,
             },
-            // @ts-expect-error Cannot get types for relationships
             posts: {
               display: true,
             },
@@ -110,7 +109,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
               search: true,
               display: true,
             },
-            // @ts-expect-error Les types pour les relations ne peuvent pas être déterminés
             categories: {
               search: true,
               display: true,

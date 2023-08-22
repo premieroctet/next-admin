@@ -1,6 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
-import { ReactNode } from "react";
 
 let prisma: PrismaClient;
 
@@ -10,10 +9,12 @@ if (typeof window === "undefined") {
 
 export type ModelName = Prisma.ModelName;
 
-// type test = keyof (typeof Prisma)['user']
-
 export type Field<P extends Prisma.ModelName> =
-  keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`];
+  | keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`]
+  | keyof Omit<
+      (typeof Prisma)[`Prisma__${P}Client`]["prototype"],
+      "then" | "catch" | "finally"
+    >;
 
 export type UField<M extends ModelName> = Field<M>;
 
@@ -43,6 +44,7 @@ export type EditFieldsOptions<T extends ModelName> = {
 };
 
 export type NextAdminOptions = {
+  basePath: string;
   model?: ModelOptions<ModelName>;
 };
 
@@ -119,13 +121,13 @@ export type ListDataFieldValue =
   | boolean
   | { type: "count"; value: number }
   | {
-    type: "link";
-    value: {
-      label: string;
-      url: string;
-    };
-  }
+      type: "link";
+      value: {
+        label: string;
+        url: string;
+      };
+    }
   | {
-    type: "date";
-    value: Date;
-  };
+      type: "date";
+      value: Date;
+    };
