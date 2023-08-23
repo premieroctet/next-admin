@@ -12,6 +12,7 @@ import List from "./List";
 import Menu from "./Menu";
 import Message from "./Message";
 import { ConfigProvider } from "../context/ConfigContext";
+import { PropertyValidationError } from "../exceptions/ValidationError";
 
 export type ListComponentFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
@@ -40,6 +41,7 @@ export type AdminComponentProps = {
     content: string;
   };
   error?: string;
+  validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
   dmmfSchema: Prisma.DMMF.Field[];
@@ -63,6 +65,7 @@ export function NextAdmin({
   dmmfSchema,
   dashboard,
   options,
+  validation,
 }: AdminComponentProps & CustomUIProps) {
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
@@ -87,6 +90,7 @@ export function NextAdmin({
           schema={modelSchema}
           dmmfSchema={dmmfSchema}
           resource={resource}
+          validation={validation}
         />
       );
     }

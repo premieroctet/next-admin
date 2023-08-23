@@ -40,6 +40,8 @@ export type ListFieldsOptions<T extends ModelName> = {
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     display?: boolean;
+    // TODO Improve typing
+    validate?: (value: any) => true | string;
   };
 };
 

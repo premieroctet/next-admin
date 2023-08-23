@@ -72,6 +72,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
             },
             email: {
               display: true,
+              validate: (email) => email.includes("@") || "Invalid email",
             },
             role: {
               display: true,
@@ -102,15 +103,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
               display: true,
             },
             published: {
-              search: true,
               display: true,
             },
             authorId: {
-              search: true,
               display: true,
             },
             categories: {
-              search: true,
               display: true,
             },
           },
