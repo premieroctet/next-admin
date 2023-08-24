@@ -9,18 +9,15 @@ if (typeof window === "undefined") {
 
 export type ModelName = Prisma.ModelName;
 
-export type Field<P extends Prisma.ModelName> =
+export type Field<P extends ModelName> =
   | keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`]
-  | keyof Omit<
-      (typeof Prisma)[`Prisma__${P}Client`]["prototype"],
-      "then" | "catch" | "finally"
-    >;
+  | Awaited<(typeof Prisma)[`Prisma__${P}Client`]["prototype"]>
 
 export type UField<M extends ModelName> = Field<M>;
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
-    toString?: (item: Model<P>[number]) => string;
+    toString?: (item: Model<P>) => string;
     list?: {
       fields: ListFieldsOptions<P>;
     };
@@ -50,18 +47,18 @@ export type NextAdminOptions = {
   model?: ModelOptions<ModelName>;
 };
 
-export type SchemaProperty<M extends Prisma.ModelName> = {
+export type SchemaProperty<M extends ModelName> = {
   [P in Field<M>]: JSONSchema7;
 };
 
-export type SchemaModel<M extends Prisma.ModelName> = Partial<
+export type SchemaModel<M extends ModelName> = Partial<
   Omit<JSONSchema7, "properties">
 > & {
   properties: SchemaProperty<M>;
 };
 
 export type SchemaDefinitions = {
-  [M in Prisma.ModelName]: SchemaModel<M>;
+  [M in ModelName]: SchemaModel<M>;
 };
 
 export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
@@ -109,7 +106,7 @@ export type Collection<M extends ModelName> = Awaited<
   ReturnType<(typeof prisma)[Uncapitalize<M>]["findMany"]>
 >;
 
-export type Model<M extends ModelName> = Collection<M>;
+export type Model<M extends ModelName> = Collection<M>[number];
 
 export type ListData<T extends ModelName> = ListDataItem<T>[];
 
@@ -123,13 +120,13 @@ export type ListDataFieldValue =
   | boolean
   | { type: "count"; value: number }
   | {
-      type: "link";
-      value: {
-        label: string;
-        url: string;
-      };
-    }
-  | {
-      type: "date";
-      value: Date;
+    type: "link";
+    value: {
+      label: string;
+      url: string;
     };
+  }
+  | {
+    type: "date";
+    value: Date;
+  };
