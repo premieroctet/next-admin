@@ -16,6 +16,8 @@ jobs:
       - name: Build packages
         run: yarn build
       - name: Fill database
-        run: cd apps/example && yarn database && yarn start
+        run: yarn database
+      - name: Start server
+        run: yarn start:example
       - name: Run tests
         run: yarn turbo test:e2e
