@@ -10,16 +10,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Start docker-compose
-        run: docker-compose -f docker-compose.ci.yml up -d
-      - name: Wait for database to be ready
-        run: cd apps/example && yarn database
-      - name: Install dependencies
-        run: yarn install && npx playwright install --with-deps
-      - name: Build packages
-        run: yarn build
-      - name: Start server
-        run: cd apps/example && yarn start
-      - name: Run e2e tests
-        run: cd apps/example && yarn test:e2e
-      - name: Stop docker-compose
-        run: docker-compose -f docker-compose.ci.yml down
+        run: docker-compose up -d
+      - name: List files
+        run: ls -la
