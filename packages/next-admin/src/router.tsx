@@ -12,11 +12,11 @@ import {
   formatSearchFields,
   formattedFormData,
   getBody,
-  getPrismaModelyForRessource,
-  getRessourceFromUrl,
-  getRessourceIdFromUrl,
+  getPrismaModelForResource,
+  getResourceFromUrl,
+  getResourceIdFromUrl,
   removeHiddenProperties,
-  ressources,
+  getResources,
 } from "./utils/server";
 import {
   NextAdminOptions,
@@ -33,8 +33,10 @@ export const nextAdminRouter = async (
   prisma: PrismaClient,
   schema: any,
   options?: NextAdminOptions
-) =>
-  createRouter()
+) => {
+  const resources = getResources(options);
+
+  return createRouter()
     // Error handling middleware
     .use(async (req, res, next) => {
       try {
@@ -45,60 +47,60 @@ export const nextAdminRouter = async (
         }
 
         return {
-          props: { ressources, error: e.message },
+          props: { resources, error: e.message },
         };
       }
     })
     .get(async (req, res) => {
-      const ressource = getRessourceFromUrl(req.url!);
+      const resource = getResourceFromUrl(req.url!, resources);
       const requestOptions = formatSearchFields(req.url!);
 
       // Dashboard
-      if (!ressource) {
-        return { props: { ressources } };
+      if (!resource) {
+        return { props: { resources } };
       }
-      const model = getPrismaModelyForRessource(ressource);
+      const model = getPrismaModelForResource(resource);
 
       let selectedFields = model?.fields.reduce((acc, field) => {
         // @ts-expect-error
         acc[field.name] = true;
         return acc;
-      }, {} as Select<typeof ressource>);
+      }, {} as Select<typeof resource>);
 
       schema = await fillRelationInSchema(
         schema,
         prisma,
-        ressource,
+        resource,
         requestOptions,
         options
       );
-      const edit = options?.model?.[ressource]?.edit
-        ?.fields as EditFieldsOptions<typeof ressource>;
+      const edit = options?.model?.[resource]?.edit
+        ?.fields as EditFieldsOptions<typeof resource>;
       const editKeys =
         edit &&
-        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof ressource>>);
+        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof resource>>);
       const editSelect = editKeys?.reduce((acc, column) => {
         if (edit[column]?.display) acc[column] = true;
         return acc;
-      }, {} as Select<typeof ressource>);
+      }, {} as Select<typeof resource>);
       selectedFields = editSelect ?? selectedFields;
 
       // Edit
-      const ressourceId = getRessourceIdFromUrl(req.url!, ressource);
+      const resourceId = getResourceIdFromUrl(req.url!, resource);
 
-      const dmmfSchema = getPrismaModelyForRessource(ressource);
-      if (ressourceId !== undefined) {
+      const dmmfSchema = getPrismaModelForResource(resource);
+      if (resourceId !== undefined) {
         // @ts-expect-error
-        let data = await prisma[ressource].findUniqueOrThrow({
-          where: { id: ressourceId },
+        let data = await prisma[resource].findUniqueOrThrow({
+          where: { id: resourceId },
           select: selectedFields,
         });
-        schema = removeHiddenProperties(schema, edit, ressource);
-        data = flatRelationInData(data, ressource);
+        schema = removeHiddenProperties(schema, edit, resource);
+        data = flatRelationInData(data, resource);
         return {
           props: {
-            ressources,
-            ressource,
+            resources,
+            resource,
             data,
             schema,
             dmmfSchema: dmmfSchema?.fields,
@@ -109,8 +111,8 @@ export const nextAdminRouter = async (
       if (req.url!.includes("/new")) {
         return {
           props: {
-            ressources,
-            ressource,
+            resources,
+            resource,
             schema,
             dmmfSchema: dmmfSchema?.fields,
           },
@@ -120,7 +122,7 @@ export const nextAdminRouter = async (
       // List
       const searchParams = new URLSearchParams(req.url!.split("?")[1]);
       const prismaListRequest = preparePrismaListRequest(
-        ressource,
+        resource,
         searchParams,
         options
       );
@@ -130,21 +132,21 @@ export const nextAdminRouter = async (
 
       try {
         // @ts-expect-error
-        data = await prisma[ressource].findMany(prismaListRequest);
+        data = await prisma[resource].findMany(prismaListRequest);
         // @ts-expect-error
-        total = await prisma[ressource].count({
+        total = await prisma[resource].count({
           where: prismaListRequest.where,
         });
       } catch (e: any) {
         const { skip, take, orderBy } = prismaListRequest;
         // @ts-expect-error
-        data = await prisma[ressource].findMany({
+        data = await prisma[resource].findMany({
           skip,
           take,
           orderBy,
         });
         // @ts-expect-error
-        total = await prisma[ressource].count();
+        total = await prisma[resource].count();
         error = e.message ? e.message : e;
         console.error(e);
       }
@@ -152,8 +154,8 @@ export const nextAdminRouter = async (
 
       return {
         props: {
-          ressources,
-          ressource,
+          resources,
+          resource,
           data,
           total,
           error,
@@ -163,70 +165,70 @@ export const nextAdminRouter = async (
       };
     })
     .post(async (req, res) => {
-      const ressource = getRessourceFromUrl(req.url!);
+      const resource = getResourceFromUrl(req.url!, resources);
       const requestOptions = formatSearchFields(req.url!);
 
-      if (!ressource) {
+      if (!resource) {
         return { notFound: true };
       }
-      const ressourceId = getRessourceIdFromUrl(req.url!, ressource);
-      const model = getPrismaModelyForRessource(ressource);
+      const resourceId = getResourceIdFromUrl(req.url!, resource);
+      const model = getPrismaModelForResource(resource);
 
       let selectedFields = model?.fields.reduce((acc, field) => {
         // @ts-expect-error
         acc[field.name] = true;
         return acc;
-      }, {} as Select<typeof ressource>);
+      }, {} as Select<typeof resource>);
 
       schema = await fillRelationInSchema(
         schema,
         prisma,
-        ressource,
+        resource,
         requestOptions,
         options
       );
-      const edit = options?.model?.[ressource]?.edit
-        ?.fields as EditFieldsOptions<typeof ressource>;
+      const edit = options?.model?.[resource]?.edit
+        ?.fields as EditFieldsOptions<typeof resource>;
       const editKeys =
         edit &&
-        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof ressource>>);
+        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof resource>>);
       const editSelect = editKeys?.reduce((acc, column) => {
         if (edit[column]?.display) acc[column] = true;
         return acc;
-      }, {} as Select<typeof ressource>);
+      }, {} as Select<typeof resource>);
       selectedFields = editSelect ?? selectedFields;
 
       schema = await fillRelationInSchema(
         schema,
         prisma,
-        ressource,
+        resource,
         requestOptions,
         options
       );
-      schema = removeHiddenProperties(schema, edit, ressource);
+      schema = removeHiddenProperties(schema, edit, resource);
       await getBody(req, res);
       // @ts-expect-error
-      const { id, ...formData } = req.body as Body<FormData<typeof ressource>>;
-      const dmmfSchema = getPrismaModelyForRessource(ressource);
+      const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
+      const dmmfSchema = getPrismaModelForResource(resource);
       try {
         // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
-        if (ressourceId === undefined && formData.action === "delete") {
+        if (resourceId === undefined && formData.action === "delete") {
           const searchParams = new URLSearchParams(req.url!.split("?")[1]);
           const prismaListRequest = preparePrismaListRequest(
-            ressource,
+            resource,
             searchParams,
             options
           );
           // @ts-expect-error
-          let data = await prisma[ressource].findMany(prismaListRequest);
+          let data = await prisma[resource].findMany(prismaListRequest);
           data = await findRelationInData(data, dmmfSchema?.fields);
           // @ts-expect-error
-          const total = await prisma[ressource].count();
+          const total = await prisma[resource].count();
 
           return {
             props: {
-              ressources,
-              ressource,
+              resources,
+              resource,
               message: {
                 type: "success",
                 content: "Deleted successfully",
@@ -238,17 +240,17 @@ export const nextAdminRouter = async (
         }
 
         // Delete
-        if (ressourceId !== undefined && formData.action === "delete") {
+        if (resourceId !== undefined && formData.action === "delete") {
           // @ts-expect-error
-          await prisma[ressource].delete({
+          await prisma[resource].delete({
             where: {
-              id: ressourceId,
+              id: resourceId,
             },
           });
 
           return {
             redirect: {
-              destination: `${ADMIN_BASE_PATH}/${ressource}`,
+              destination: `${ADMIN_BASE_PATH}/${resource}`,
               permanent: false,
             },
           };
@@ -257,40 +259,40 @@ export const nextAdminRouter = async (
         // Update
         let data;
 
-        if (ressourceId !== undefined) {
+        if (resourceId !== undefined) {
           // @ts-expect-error
-          data = await prisma[ressource].update({
+          data = await prisma[resource].update({
             where: {
-              id: ressourceId,
+              id: resourceId,
             },
             data: formattedFormData(
               formData,
               dmmfSchema?.fields!,
               schema,
-              ressource,
+              resource,
               false
             ),
             select: selectedFields,
           });
 
-          data = flatRelationInData(data, ressource);
+          data = flatRelationInData(data, resource);
           const fromCreate = req.headers.referer
             ?.split("?")[0]
-            .endsWith(`${ADMIN_BASE_PATH}/${ressource}/new`);
+            .endsWith(`${ADMIN_BASE_PATH}/${resource}/new`);
           const message = fromCreate
             ? {
-                type: "success",
-                content: "Created successfully",
-              }
+              type: "success",
+              content: "Created successfully",
+            }
             : {
-                type: "success",
-                content: "Updated successfully",
-              };
+              type: "success",
+              content: "Updated successfully",
+            };
 
           return {
             props: {
-              ressources,
-              ressource,
+              resources,
+              resource,
               data,
               message,
               schema,
@@ -301,21 +303,21 @@ export const nextAdminRouter = async (
 
         // Create
         // @ts-expect-error
-        data = await prisma[ressource].create({
+        data = await prisma[resource].create({
           data: formattedFormData(
             formData,
             dmmfSchema?.fields!,
             schema,
-            ressource,
+            resource,
             true
           ),
           select: selectedFields,
         });
 
-        data = flatRelationInData(data, ressource);
+        data = flatRelationInData(data, resource);
         return {
           redirect: {
-            destination: `${ADMIN_BASE_PATH}/${ressource}/${data.id}`,
+            destination: `${ADMIN_BASE_PATH}/${resource}/${data.id}`,
             permanent: false,
           },
         };
@@ -325,17 +327,17 @@ export const nextAdminRouter = async (
           error.constructor.name === PrismaClientKnownRequestError.name
         ) {
           let data;
-          if (ressourceId !== undefined) {
+          if (resourceId !== undefined) {
             // @ts-expect-error
-            data = await prisma[ressource].findUnique({
-              where: { id: ressourceId },
+            data = await prisma[resource].findUnique({
+              where: { id: resourceId },
               select: selectedFields,
             });
-            data = flatRelationInData(data, ressource);
+            data = flatRelationInData(data, resource);
             return {
               props: {
-                ressources,
-                ressource,
+                resources,
+                resource,
                 data,
                 schema,
                 dmmfSchema: dmmfSchema?.fields,
@@ -346,8 +348,8 @@ export const nextAdminRouter = async (
 
           return {
             props: {
-              ressources,
-              ressource,
+              resources,
+              resource,
               schema,
               dmmfSchema: dmmfSchema?.fields,
               error: error.message,
@@ -357,4 +359,5 @@ export const nextAdminRouter = async (
         }
         throw error;
       }
-    });
+    })
+}

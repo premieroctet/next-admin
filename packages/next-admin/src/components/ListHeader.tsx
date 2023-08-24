@@ -8,14 +8,14 @@ import { PlusIcon } from "@heroicons/react/24/solid";
 import { buttonVariants } from "./radix/Button";
 
 type Props = {
-  ressource: ModelName;
+  resource: ModelName;
   isPending: boolean;
   onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
   search: string;
 };
 
 export default function ListHeader({
-  ressource,
+  resource,
   isPending,
   onSearchChange,
   search,
@@ -43,7 +43,7 @@ export default function ListHeader({
         </div>
       </div>
       <Link
-        href={`${ADMIN_BASE_PATH}/${ressource}/new`}
+        href={`${ADMIN_BASE_PATH}/${resource}/new`}
         role="button"
         className={buttonVariants({
           variant: "default",

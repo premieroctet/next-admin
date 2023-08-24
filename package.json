@@ -13,7 +13,7 @@
     "test": "turbo run test",
     "test:e2e": "dotenv turbo test:e2e",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-package": "turbo run build lint && changeset version && changeset publish"
+    "publish-package": "turbo run build && changeset publish"
   },
   "devDependencies": {
     "eslint-config-custom": "*",

@@ -1,13 +1,17 @@
-import { useRouter } from "next/compat/router";
-import { ITEMS_PER_PAGE } from "../config";
-import { ChangeEvent, useTransition } from "react";
+import { ColumnDef } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
-import { ListData, ListDataItem, ModelName, SchemaModel } from "../types";
+import { useRouter } from "next/compat/router";
+import { ChangeEvent, useTransition } from "react";
+
+import { ITEMS_PER_PAGE } from "../config";
+import { ListData, ListDataItem, ListFieldsOptions, ModelName } from "../types";
+import Cell from "./Cell";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
-import { ColumnDef } from "@tanstack/react-table";
-import Cell from "./Cell";
+import { AdminComponentOptions } from "./NextAdmin";
+import { Pagination } from "./Pagination";
 import TableHead from "./TableHead";
+import TableRowsIndicator from "./TableRowsIndicator";
 import {
   Select,
   SelectContent,
@@ -15,17 +19,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
-import TableRowsIndicator from "./TableRowsIndicator";
-import { Pagination } from "./Pagination";
 
 export type ListProps = {
-  ressource: ModelName;
+  resource: ModelName;
   data: ListData<ModelName>;
   total: number;
-  modelSchema: SchemaModel<ModelName>;
+  options?: (Required<AdminComponentOptions<ModelName>>)['model'][ModelName]
 };
 
-function List({ ressource, data, total, modelSchema }: ListProps) {
+function List({ resource, data, total, options }: ListProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const pageIndex =
@@ -72,7 +74,9 @@ function List({ ressource, data, total, modelSchema }: ListProps) {
             );
           },
           cell: ({ row }) => {
-            const cellData = row.original[property];
+            const modelData = row.original;
+            const cellData = options?.list?.fields[property as keyof ListFieldsOptions<ModelName>]?.formatter?.(modelData) ?? modelData[property];
+
             return (
               <Cell cell={cellData} />
             );
@@ -85,19 +89,19 @@ function List({ ressource, data, total, modelSchema }: ListProps) {
     <>
       <div className="mt-4">
         <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
-          {ressource}
+          {resource}
         </h1>
       </div>
       <div className="mt-4 flow-root">
         <ListHeader
-          ressource={ressource}
+          resource={resource}
           search={(router?.query.search as string) || ""}
           onSearchChange={onSearchChange}
           isPending={isPending}
         />
         <div className="max-w-full mt-2 py-2 align-middle">
           <DataTable
-            ressource={ressource}
+            resource={resource}
             data={data}
             columns={columns}
           />

@@ -11,7 +11,21 @@ import {
 import Dashboard from "../../components/Dashboard";
 
 export default function Admin(props: AdminComponentProps) {
-  return <NextAdmin {...props} dashboard={Dashboard} />;
+  return <NextAdmin {...props} dashboard={Dashboard} options={{
+    model: {
+      user: {
+        list: {
+          fields: {
+            role: {
+              formatter: (user) => {
+                return <strong>{user.role as string}</strong>;
+              },
+            }
+          }
+        }
+      }
+    }
+  }} />;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {

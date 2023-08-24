@@ -1,5 +1,13 @@
 # @premieroctet/next-admin
 
+## 1.3.8
+
+### Patch Changes
+
+- 649b547: feat: field formatter option
+- 1c3f590: feat: hide models that are not defined in admin options
+- bb27872: refactor: ressource -> resource
+
 ## 1.3.7
 
 ### Patch Changes

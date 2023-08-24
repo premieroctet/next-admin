@@ -24,16 +24,16 @@ function filterProperties(properties: any): Record<string, any> {
   return filteredProperties;
 }
 
-export function getSchemaForRessource(schema: any, ressource: string) {
-  let ressourceSchema =
-    schema.definitions[ressource as keyof typeof schema.definitions];
+export function getSchemaForResource(schema: any, resource: string) {
+  let resourceSchema =
+    schema.definitions[resource as keyof typeof schema.definitions];
 
   // Filters refs for now since we don't support them, this will be removed in a future version
-  ressourceSchema = {
-    ...ressourceSchema,
-    properties: filterProperties(ressourceSchema.properties),
+  resourceSchema = {
+    ...resourceSchema,
+    properties: filterProperties(resourceSchema.properties),
   };
-  return ressourceSchema;
+  return resourceSchema;
 }
 
 export function getSchemas(
