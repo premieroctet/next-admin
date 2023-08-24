@@ -1,15 +1,25 @@
 name: E2E tests
 on:
-  deployment_status:
+  pull_request:
+    paths:
+      - "packages/next-admin/**"
+      - "apps/example/**"
 jobs:
-  run-e2e:
-    if: github.event.deployment_status.state == 'success' && !contains(github.event.deployment_status.target_url, 'next-admin-docs')
+  start:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
+      - name: Start docker-compose
+        run: docker-compose -f docker-compose.ci.yml up -d
+      - name: Wait for database to be ready
+        run: cd apps/example && yarn database
       - name: Install dependencies
         run: yarn install && npx playwright install --with-deps
+      - name: Build packages
+        run: yarn build
+      - name: Start server
+        run: cd apps/example && yarn start
       - name: Run e2e tests
-        run: yarn dotenv turbo test:e2e
-        env:
-          BASE_URL: ${{ github.event.deployment_status.target_url }}
+        run: cd apps/example && yarn test:e2e
+      - name: Stop docker-compose
+        run: docker-compose -f docker-compose.ci.yml down
