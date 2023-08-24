@@ -12,6 +12,10 @@ jobs:
       - name: Start docker-compose
         run: docker-compose up -d
       - name: Install dependencies
-        run: cd apps/example && yarn install && npx playwright install --with-deps
-      - name: List
-        run: ls -la
+        run: yarn install && npx playwright install --with-deps
+      - name: Build packages
+        run: yarn build
+      - name: Fill database
+        run: cd apps/example && yarn database && yarn start
+      - name: Run tests
+        run: yarn turbo test:e2e
