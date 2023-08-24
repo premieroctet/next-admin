@@ -18,7 +18,7 @@ jobs:
       - name: Install dependencies
         run: yarn install && npx playwright install --with-deps
       - name: Build packages
-        run: yarn build
+        run: yarn build:example
       - name: Fill database
         run: yarn database
       - name: Start server
