@@ -5,7 +5,7 @@ import {
   ValidationError,
 } from "../exceptions/ValidationError";
 
-export default function validate<ModelName extends Prisma.ModelName>(
+export function validate<ModelName extends Prisma.ModelName>(
   formData: { [key: string]: string },
   fieldsOptions?: EditFieldsOptions<ModelName>
 ) {

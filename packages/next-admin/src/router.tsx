@@ -26,7 +26,7 @@ import {
   EditFieldsOptions,
 } from "./types";
 import { preparePrismaListRequest } from "./utils/prisma";
-import validate from "./utils/validator";
+import { validate } from "./utils/validator";
 
 // Router
 export const nextAdminRouter = async (
