@@ -13,7 +13,7 @@ export type ModelName = Prisma.ModelName;
 
 export type Field<P extends ModelName> =
   | keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`]
-  | keyof Omit<(typeof Prisma)[`Prisma__${P}Client`]["prototype"], keyof Prisma.PrismaPromise<P>>;
+  | keyof Prisma.TypeMap["model"][P]["payload"]["objects"];
 
 export type UField<M extends ModelName> = Field<M>;
 
