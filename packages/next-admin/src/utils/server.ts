@@ -290,7 +290,7 @@ export const formattedFormData = <M extends ModelName>(
           model?.fields.find((field) => field.name === "id")?.type === "Int"
             ? Number(value)
             : value;
-        if (fieldValue.type === "array") {
+        if (fieldValue?.type === "array") {
           formData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName]!);
           formattedData[dmmfPropertyName] = {
             // @ts-expect-error

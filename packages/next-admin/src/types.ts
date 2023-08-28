@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
+import { ReactNode } from "react";
+import { PropertyValidationError } from "./exceptions/ValidationError";
 
 let prisma: PrismaClient;
 
@@ -11,7 +13,7 @@ export type ModelName = Prisma.ModelName;
 
 export type Field<P extends ModelName> =
   | keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`]
-  | Awaited<(typeof Prisma)[`Prisma__${P}Client`]["prototype"]>
+  | keyof Omit<(typeof Prisma)[`Prisma__${P}Client`]["prototype"], keyof Prisma.PrismaPromise<P>>;
 
 export type UField<M extends ModelName> = Field<M>;
 
@@ -48,7 +50,7 @@ export type NextAdminOptions = {
 };
 
 export type SchemaProperty<M extends ModelName> = {
-  [P in Field<M>]: JSONSchema7;
+  [P in Field<M>]?: JSONSchema7;
 };
 
 export type SchemaModel<M extends ModelName> = Partial<
@@ -129,4 +131,42 @@ export type ListDataFieldValue =
   | {
     type: "date";
     value: Date;
+  };
+
+  export type ListComponentFieldsOptions<T extends ModelName> = {
+    [P in Field<T>]?: {
+      formatter?: (item: ListDataItem<ModelName>) => ReactNode;
+    };
+  };
+  
+  export type AdminComponentOptions<T extends ModelName> = {
+    model?: {
+      [P in T]?: {
+        toString?: (item: Model<P>) => string;
+        list?: {
+          fields: ListComponentFieldsOptions<P>;
+        };
+      };
+    };
+  };
+  
+  export type AdminComponentProps = {
+    basePath: string;
+    schema: Schema;
+    data?: ListData<ModelName>;
+    resource: ModelName;
+    message?: {
+      type: "success" | "info";
+      content: string;
+    };
+    error?: string;
+    validation?: PropertyValidationError[];
+    resources?: ModelName[];
+    total?: number;
+    dmmfSchema: Prisma.DMMF.Field[];
+    options?: AdminComponentOptions<ModelName>;
+  };
+  
+  export type CustomUIProps = {
+    dashboard?: JSX.Element | (() => JSX.Element);
   };

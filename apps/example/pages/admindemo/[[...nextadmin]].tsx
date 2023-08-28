@@ -3,11 +3,7 @@ import { GetServerSideProps, GetServerSidePropsResult } from "next";
 import { prisma } from "../../prisma";
 import schema from "./../../prisma/json-schema/json-schema.json";
 import "@premieroctet/next-admin/dist/styles.css";
-import {
-  AdminComponentProps,
-  NextAdmin,
-  NextAdminOptions,
-} from "@premieroctet/next-admin";
+import { AdminComponentProps, NextAdmin, NextAdminOptions } from "@premieroctet/next-admin";
 import Dashboard from "../../components/Dashboard";
 
 export default function Admin(props: AdminComponentProps) {
