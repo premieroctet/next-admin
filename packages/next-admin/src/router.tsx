@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
-} from "@prisma/client/runtime/data-proxy";
+} from "@prisma/client/runtime/library";
 import { createRouter } from "next-connect";
 
 import {
