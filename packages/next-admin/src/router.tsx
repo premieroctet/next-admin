@@ -26,6 +26,7 @@ import {
   EditFieldsOptions,
 } from "./types";
 import { preparePrismaListRequest } from "./utils/prisma";
+import { validate } from "./utils/validator";
 
 // Router
 export const nextAdminRouter = async (
@@ -259,6 +260,9 @@ export const nextAdminRouter = async (
         // Update
         let data;
 
+        // Validate
+        validate(formData, options.model?.[resource]?.edit?.fields)
+
         if (resourceId !== undefined) {
           // @ts-expect-error
           data = await prisma[resource].update({
@@ -324,7 +328,8 @@ export const nextAdminRouter = async (
       } catch (error: any) {
         if (
           error.constructor.name === PrismaClientValidationError.name ||
-          error.constructor.name === PrismaClientKnownRequestError.name
+          error.constructor.name === PrismaClientKnownRequestError.name ||
+          error.name === "ValidationError"
         ) {
           let data;
           if (resourceId !== undefined) {
@@ -334,6 +339,14 @@ export const nextAdminRouter = async (
               select: selectedFields,
             });
             data = flatRelationInData(data, resource);
+
+            // TODO This could be improved by merging form values but it's breaking stuff 
+            if (error.name === "ValidationError") {
+              error.errors.map((error: any) => {
+                data[error.property] = formData[error.property]
+              })
+            }
+
             return {
               props: {
                 ...defaultProps,
@@ -342,6 +355,7 @@ export const nextAdminRouter = async (
                 schema,
                 dmmfSchema: dmmfSchema?.fields,
                 error: error.message,
+                validation: error.errors,
               },
             };
           }
@@ -357,6 +371,7 @@ export const nextAdminRouter = async (
             },
           };
         }
+
         throw error;
       }
     })

@@ -123,7 +123,6 @@ export const fillRelationInSchema = async (
             type: "string",
             enum: enumeration,
           };
-          // @ts-expect-error
           delete schema.definitions[modelName].properties[fieldName];
         } else {
           const fieldValue =
@@ -170,6 +169,7 @@ export const flatRelationInData = (data: any, resource: ModelName) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
+
   return Object.keys(data).reduce((acc, key) => {
     const field = model.fields.find((field) => field.name === key);
     const fieldKind = field?.kind;
@@ -208,7 +208,7 @@ export const findRelationInData = async (
     const dmmfPropertyKind = dmmfProperty.kind;
     const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
     const dmmfPropertyRelationToFields = dmmfProperty.relationToFields;
-    
+
     if (dmmfPropertyKind === "object") {
       if (
         dmmfPropertyRelationFromFields!.length > 0 &&
@@ -290,7 +290,7 @@ export const formattedFormData = <M extends ModelName>(
           model?.fields.find((field) => field.name === "id")?.type === "Int"
             ? Number(value)
             : value;
-        if (fieldValue.type === "array") {
+        if (fieldValue?.type === "array") {
           formData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName]!);
           formattedData[dmmfPropertyName] = {
             // @ts-expect-error

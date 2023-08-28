@@ -1,10 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import NextNProgress from 'nextjs-progressbar';
-import { ReactNode } from "react";
-
-import { Prisma } from "@prisma/client";
-import { Field, ListData, ListDataItem, Model, ModelName, Schema } from "../types";
+import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
@@ -12,43 +9,6 @@ import List from "./List";
 import Menu from "./Menu";
 import Message from "./Message";
 import { ConfigProvider } from "../context/ConfigContext";
-
-export type ListComponentFieldsOptions<T extends ModelName> = {
-  [P in Field<T>]?: {
-    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
-  };
-};
-
-export type AdminComponentOptions<T extends ModelName> = {
-  model?: {
-    [P in T]?: {
-      toString?: (item: Model<P>[number]) => string;
-      list?: {
-        fields: ListComponentFieldsOptions<P>;
-      };
-    };
-  };
-};
-
-export type AdminComponentProps = {
-  basePath: string;
-  schema: Schema;
-  data?: ListData<ModelName>;
-  resource: ModelName;
-  message?: {
-    type: "success" | "info";
-    content: string;
-  };
-  error?: string;
-  resources?: ModelName[];
-  total?: number;
-  dmmfSchema: Prisma.DMMF.Field[];
-  options?: AdminComponentOptions<ModelName>;
-};
-
-export type CustomUIProps = {
-  dashboard?: JSX.Element | (() => JSX.Element);
-};
 
 // Components
 export function NextAdmin({
@@ -63,6 +23,7 @@ export function NextAdmin({
   dmmfSchema,
   dashboard,
   options,
+  validation,
 }: AdminComponentProps & CustomUIProps) {
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
@@ -87,6 +48,7 @@ export function NextAdmin({
           schema={modelSchema}
           dmmfSchema={dmmfSchema}
           resource={resource}
+          validation={validation}
         />
       );
     }
