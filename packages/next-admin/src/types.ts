@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ReactNode } from "react";
+import { PropertyValidationError } from "./exceptions/ValidationError";
 
 let prisma: PrismaClient;
 
@@ -10,16 +11,15 @@ if (typeof window === "undefined") {
 
 export type ModelName = Prisma.ModelName;
 
-// type test = keyof (typeof Prisma)['user']
-
-export type Field<P extends Prisma.ModelName> =
-  keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`];
+export type Field<P extends ModelName> =
+  | keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`]
+  | keyof Omit<(typeof Prisma)[`Prisma__${P}Client`]["prototype"], keyof Prisma.PrismaPromise<P>>;
 
 export type UField<M extends ModelName> = Field<M>;
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
-    toString?: (item: Model<P>[number]) => string;
+    toString?: (item: Model<P>) => string;
     list?: {
       fields: ListFieldsOptions<P>;
     };
@@ -39,25 +39,28 @@ export type ListFieldsOptions<T extends ModelName> = {
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     display?: boolean;
+    // TODO Improve typing
+    validate?: (value: any) => true | string;
   };
 };
 
 export type NextAdminOptions = {
+  basePath: string;
   model?: ModelOptions<ModelName>;
 };
 
-export type SchemaProperty<M extends Prisma.ModelName> = {
-  [P in Field<M>]: JSONSchema7;
+export type SchemaProperty<M extends ModelName> = {
+  [P in Field<M>]?: JSONSchema7;
 };
 
-export type SchemaModel<M extends Prisma.ModelName> = Partial<
+export type SchemaModel<M extends ModelName> = Partial<
   Omit<JSONSchema7, "properties">
 > & {
   properties: SchemaProperty<M>;
 };
 
 export type SchemaDefinitions = {
-  [M in Prisma.ModelName]: SchemaModel<M>;
+  [M in ModelName]: SchemaModel<M>;
 };
 
 export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
@@ -105,7 +108,7 @@ export type Collection<M extends ModelName> = Awaited<
   ReturnType<(typeof prisma)[Uncapitalize<M>]["findMany"]>
 >;
 
-export type Model<M extends ModelName> = Collection<M>;
+export type Model<M extends ModelName> = Collection<M>[number];
 
 export type ListData<T extends ModelName> = ListDataItem<T>[];
 
@@ -128,4 +131,42 @@ export type ListDataFieldValue =
   | {
     type: "date";
     value: Date;
+  };
+
+  export type ListComponentFieldsOptions<T extends ModelName> = {
+    [P in Field<T>]?: {
+      formatter?: (item: ListDataItem<ModelName>) => ReactNode;
+    };
+  };
+  
+  export type AdminComponentOptions<T extends ModelName> = {
+    model?: {
+      [P in T]?: {
+        toString?: (item: Model<P>) => string;
+        list?: {
+          fields: ListComponentFieldsOptions<P>;
+        };
+      };
+    };
+  };
+  
+  export type AdminComponentProps = {
+    basePath: string;
+    schema: Schema;
+    data?: ListData<ModelName>;
+    resource: ModelName;
+    message?: {
+      type: "success" | "info";
+      content: string;
+    };
+    error?: string;
+    validation?: PropertyValidationError[];
+    resources?: ModelName[];
+    total?: number;
+    dmmfSchema: Prisma.DMMF.Field[];
+    options?: AdminComponentOptions<ModelName>;
+  };
+  
+  export type CustomUIProps = {
+    dashboard?: JSX.Element | (() => JSX.Element);
   };

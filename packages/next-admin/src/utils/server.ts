@@ -14,7 +14,6 @@ import {
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
-import { ADMIN_BASE_PATH } from "../config";
 export const getBody = util.promisify(bodyParser.urlencoded());
 
 export const models = Prisma.dmmf.datamodel.models;
@@ -124,7 +123,6 @@ export const fillRelationInSchema = async (
             type: "string",
             enum: enumeration,
           };
-          // @ts-expect-error
           delete schema.definitions[modelName].properties[fieldName];
         } else {
           const fieldValue =
@@ -171,6 +169,7 @@ export const flatRelationInData = (data: any, resource: ModelName) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
+
   return Object.keys(data).reduce((acc, key) => {
     const field = model.fields.find((field) => field.name === key);
     const fieldKind = field?.kind;
@@ -209,7 +208,7 @@ export const findRelationInData = async (
     const dmmfPropertyKind = dmmfProperty.kind;
     const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
     const dmmfPropertyRelationToFields = dmmfProperty.relationToFields;
-    
+
     if (dmmfPropertyKind === "object") {
       if (
         dmmfPropertyRelationFromFields!.length > 0 &&
@@ -291,7 +290,7 @@ export const formattedFormData = <M extends ModelName>(
           model?.fields.find((field) => field.name === "id")?.type === "Int"
             ? Number(value)
             : value;
-        if (fieldValue.type === "array") {
+        if (fieldValue?.type === "array") {
           formData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName]!);
           formattedData[dmmfPropertyName] = {
             // @ts-expect-error
@@ -375,7 +374,7 @@ export const getResourceIdFromUrl = (
   url: string,
   resource: ModelName
 ): string | number | undefined => {
-  const matching = url.match(`${ADMIN_BASE_PATH}/${resource}/([0-9a-z-]+)`);
+  const matching = url.match(`/${resource}/([0-9a-z-]+)`);
 
   if (!matching) return undefined;
   if (matching[1] === "new") return undefined;

@@ -1,23 +1,29 @@
-import React from "react";
+import React, { ReactNode } from "react";
 
 import { ListDataFieldValue } from "../types";
-import { ADMIN_BASE_PATH } from "../config";
 import Link from "next/link";
 import clsx from "clsx";
+import { useConfig } from "../context/ConfigContext";
 
 type Props = {
-  cell: ListDataFieldValue;
+  cell: ListDataFieldValue | ReactNode;
 };
+
 export default function Cell({ cell }: Props) {
-  if (cell !== null) {
+  const { basePath } = useConfig()
+
+  const isReactNode = (cell: ListDataFieldValue | ReactNode): cell is ReactNode => {
+    return React.isValidElement(cell)
+  }
+  if (cell && cell !== null) {
     if (React.isValidElement(cell)) {
       return cell;
-    } else if (typeof cell === "object") {
+    } else if (typeof cell === "object" && !isReactNode(cell)) {
       if (cell.type === "link") {
         return (
           <Link
             onClick={(e) => e.stopPropagation()}
-            href={`${ADMIN_BASE_PATH}/${cell.value.url}`}
+            href={`${basePath}/${cell.value.url}`}
             className="hover:underline cursor-pointer text-indigo-700 hover:text-indigo-900 font-semibold"
           >
             {cell.value.label}
@@ -53,10 +59,8 @@ export default function Cell({ cell }: Props) {
         <div
           className={clsx(
             "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium",
-            {
-              "bg-indigo-50 text-indigo-500": cell === true,
-              "bg-neutral-50 text-neutral-600": cell === false,
-            }
+            cell ? "bg-indigo-50 text-indigo-500" :
+              "bg-neutral-50 text-neutral-600"
           )}
         >
           <p>{cell.toString()}</p>

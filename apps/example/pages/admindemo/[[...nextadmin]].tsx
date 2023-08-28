@@ -3,11 +3,7 @@ import { GetServerSideProps, GetServerSidePropsResult } from "next";
 import { prisma } from "../../prisma";
 import schema from "./../../prisma/json-schema/json-schema.json";
 import "@premieroctet/next-admin/dist/styles.css";
-import {
-  AdminComponentProps,
-  NextAdmin,
-  NextAdminOptions,
-} from "@premieroctet/next-admin";
+import { AdminComponentProps, NextAdmin, NextAdminOptions } from "@premieroctet/next-admin";
 import Dashboard from "../../components/Dashboard";
 
 export default function Admin(props: AdminComponentProps) {
@@ -34,6 +30,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   );
 
   const options: NextAdminOptions = {
+    basePath: "/admindemo",
     model: {
       user: {
         toString: (user) => `${user.name} (${user.email})`,
@@ -55,7 +52,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
               search: true,
               display: true,
             },
-            // @ts-expect-error Cannot get types for relationships
             posts: {
               search: true,
               display: true,
@@ -72,11 +68,11 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
             },
             email: {
               display: true,
+              validate: (email) => email.includes("@") || "Invalid email",
             },
             role: {
               display: true,
             },
-            // @ts-expect-error Cannot get types for relationships
             posts: {
               display: true,
             },
@@ -103,16 +99,12 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
               display: true,
             },
             published: {
-              search: true,
               display: true,
             },
             authorId: {
-              search: true,
               display: true,
             },
-            // @ts-expect-error Les types pour les relations ne peuvent pas être déterminés
             categories: {
-              search: true,
               display: true,
             },
           },

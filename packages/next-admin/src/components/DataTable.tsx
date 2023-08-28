@@ -15,8 +15,8 @@ import {
   TableRow,
 } from "./radix/Table";
 import { useRouter } from "next/compat/router";
-import { ADMIN_BASE_PATH } from "../config";
 import { ListData, ListDataItem, ModelName } from "../types";
+import { useConfig } from "../context/ConfigContext";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>, { id: string }>[];
@@ -26,6 +26,7 @@ interface DataTableProps {
 
 export function DataTable({ columns, data, resource }: DataTableProps) {
   const router = useRouter();
+  const { basePath } = useConfig()
   const table = useReactTable({
     data,
     manualSorting: true,
@@ -45,9 +46,9 @@ export function DataTable({ columns, data, resource }: DataTableProps) {
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 );
               })}
@@ -63,7 +64,7 @@ export function DataTable({ columns, data, resource }: DataTableProps) {
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
                   router?.push({
-                    pathname: `${ADMIN_BASE_PATH}/${resource}/${row.original.id}`,
+                    pathname: `${basePath}/${resource}/${row.original.id}`,
                   });
                 }}
               >

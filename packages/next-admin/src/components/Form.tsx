@@ -1,6 +1,7 @@
 import RjsfForm from "@rjsf/core";
 import {
   BaseInputTemplateProps,
+  ErrorSchema,
   FieldTemplateProps,
   SubmitButtonProps,
   getSubmitButtonOptions,
@@ -15,6 +16,7 @@ import SelectWidget from "./inputs/SelectWidget";
 import { ModelName } from "../types";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
+import { PropertyValidationError } from "../exceptions/ValidationError";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -34,18 +36,19 @@ export type FormProps = {
   schema: any;
   dmmfSchema: Prisma.DMMF.Field[];
   resource: ModelName;
+  validation?: PropertyValidationError[]
 };
 
-const fields = {
+const fields: CustomForm['props']['fields'] = {
   ArrayField,
 };
 
-const widgets = {
+const widgets: CustomForm['props']['widgets'] = {
   SelectWidget: SelectWidget,
   CheckboxWidget: CheckboxWidget,
 };
 
-const templates = {
+const templates: CustomForm['props']['templates'] = {
   FieldTemplate: (props: FieldTemplateProps) => {
     const {
       id,
@@ -78,6 +81,13 @@ const templates = {
     onChange,
     options,
     onChangeOverride,
+    uiSchema,
+    readonly,
+    formContext,
+    autofocus,
+    rawErrors,
+    schema,
+    registry,
     ...props
   }: BaseInputTemplateProps) => {
     const onTextChange = ({
@@ -92,13 +102,23 @@ const templates = {
       <input
         onChange={onChangeOverride || onTextChange}
         {...props}
-        className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed"
+        className={clsx("block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed", { "ring-red-600": rawErrors })}
       />
     );
   },
+  ErrorListTemplate: () => {
+    return null; // Global error is already displayed outside of the form
+  },
+  FieldErrorTemplate: ({ errors }) => {
+    return errors ? (
+      <div className="text-sm text-red-600 mt-1">
+        {errors}
+      </div>
+    ) : null;
+  }
 };
 
-const Form = ({ data, schema, dmmfSchema, resource }: FormProps) => {
+const Form = ({ data, schema, dmmfSchema, resource, validation }: FormProps) => {
   const schemas: Schemas = getSchemas(data, schema, dmmfSchema);
   const edit = data?.id !== undefined;
   const submitButton = (props: SubmitButtonProps) => {
@@ -129,6 +149,15 @@ const Form = ({ data, schema, dmmfSchema, resource }: FormProps) => {
     );
   };
 
+  const extraErrors: ErrorSchema | undefined = validation?.reduce((acc, curr) => {
+    // @ts-expect-error
+    acc[curr.property] = {
+      __errors: [curr.message]
+    }
+
+    return acc;
+  }, {} as ErrorSchema);
+
   return (
     <div className="relative">
       <div className="sm:flex sm:items-center">
@@ -144,6 +173,7 @@ const Form = ({ data, schema, dmmfSchema, resource }: FormProps) => {
         {...schemas}
         formData={data}
         validator={validator}
+        extraErrors={extraErrors}
         fields={fields}
         templates={{
           ...templates,

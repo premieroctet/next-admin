@@ -4,11 +4,10 @@ import { useRouter } from "next/compat/router";
 import { ChangeEvent, useTransition } from "react";
 
 import { ITEMS_PER_PAGE } from "../config";
-import { ListData, ListDataItem, ListFieldsOptions, ModelName } from "../types";
+import { AdminComponentOptions, ListData, ListDataItem, ListFieldsOptions, ModelName } from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
-import { AdminComponentOptions } from "./NextAdmin";
 import { Pagination } from "./Pagination";
 import TableHead from "./TableHead";
 import TableRowsIndicator from "./TableRowsIndicator";
