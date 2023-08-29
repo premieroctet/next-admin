@@ -2,7 +2,7 @@
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
   "globalDotEnv": ["**/.env"],
-  "globalEnv": ["NODE_ENV", "BASE_URL"],
+  "globalEnv": ["NODE_ENV", "BASE_URL", "BASE_DOMAIN"],
   "pipeline": {
     "start": {},
     "build": {

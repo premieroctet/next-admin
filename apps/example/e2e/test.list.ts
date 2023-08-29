@@ -1,6 +1,10 @@
 import { test } from '@playwright/test';
-import tableTest from './table.spec';
 import crudTest from './crud.spec';
+import tableTest from './table.spec';
 
-test.describe('Table User', tableTest);
-test.describe('CRUD User', crudTest);
+export const models = ['user', 'Post', 'Category'] as const
+
+models.forEach((model) => {
+    test.describe(`Table ${model}`, () => tableTest(model));
+    test.describe(`CRUD ${model}`, () => crudTest(model));
+});

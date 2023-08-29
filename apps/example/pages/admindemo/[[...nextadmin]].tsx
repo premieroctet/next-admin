@@ -30,7 +30,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   );
 
   const options: NextAdminOptions = {
-    basePath: "/admin",
+    basePath: "/admindemo",
     model: {
       user: {
         toString: (user) => `${user.name} (${user.email})`,
