@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 import { PrismaClient } from '@prisma/client';
-import { TEST_EMAIL, createTestUser, deleteTestUser } from './utils';
+import { TEST_EMAIL, createTestUser, deleteTestUser, prisma } from './utils';
 
-const prisma = new PrismaClient();
+
 
 const tests = () => {
 
