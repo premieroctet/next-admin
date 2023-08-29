@@ -2,4 +2,4 @@
 "@premieroctet/next-admin": minor
 ---
 
-feat: display currently selected menu
+feat: dynamic base path

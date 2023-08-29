@@ -148,6 +148,7 @@ You can disable a property for any field in the `fields` that follow this form:
 | Name    | Description                                                | Default value |
 | ------- | ---------------------------------------------------------- | ------------- |
 | display | a boolean that define whether this field should be editable | true (*)        |
+| validate | a function to validate on the server the form value. It should returns true or the error message | undefined        |
 
 > (*) If `display` is not set anywhere, all fields are displayed; once you set a display property to true, all fields are hidden by default except the ones you've set to `display: true`.
 
@@ -200,7 +201,6 @@ const options: NextAdminOptions = {
             search: true,
             display: true,
           },
-          // @ts-expect-error
           posts: {
             search: true,
             display: true,
@@ -217,11 +217,11 @@ const options: NextAdminOptions = {
           },
           email: {
             display: true,
+            validate: (email) => email.includes("@") || "Invalid email",
           },
           role: {
             display: true,
           },
-          // @ts-expect-error
           posts: {
             display: true,
           },

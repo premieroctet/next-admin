@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { ADMIN_BASE_PATH } from "../config";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { ChangeEvent } from "react";
 import Loader from "../assets/icons/Loader";
 import { ModelName } from "../types";
 import { PlusIcon } from "@heroicons/react/24/solid";
 import { buttonVariants } from "./radix/Button";
+import { useConfig } from "../context/ConfigContext";
 
 type Props = {
   resource: ModelName;
@@ -20,6 +20,8 @@ export default function ListHeader({
   onSearchChange,
   search,
 }: Props) {
+  const { basePath } = useConfig()
+
   return (
     <div className="flex justify-between items-end">
       <div>
@@ -43,7 +45,7 @@ export default function ListHeader({
         </div>
       </div>
       <Link
-        href={`${ADMIN_BASE_PATH}/${resource}/new`}
+        href={`${basePath}/${resource}/new`}
         role="button"
         className={buttonVariants({
           variant: "default",
