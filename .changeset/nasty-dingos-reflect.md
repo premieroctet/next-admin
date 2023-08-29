@@ -1,5 +1,5 @@
 ---
-"@premieroctet/next-admin": patch
+"@premieroctet/next-admin": minor
 ---
 
 Add e2e tests

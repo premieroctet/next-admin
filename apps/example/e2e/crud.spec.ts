@@ -4,12 +4,12 @@ import { TEST_EMAIL, createTestUser, deleteTestUser } from './utils';
 
 const prisma = new PrismaClient();
 
-test.describe('CRUD User', () => {
+const tests = () => {
 
   test('create user', async ({ page }) => {
     const beforeUsers = await prisma.user.count();
     await page.goto(`${process.env.BASE_URL}/admin/user`);
-    await page.click('a[href="/admin/user/new"]');
+    await page.getByRole('button', { name: 'Add' }).click();
     await page.waitForURL(`${process.env.BASE_URL}/admin/user/new`);
     await page.fill('input[id="email"]', TEST_EMAIL);
     await page.click('button:has-text("Submit")');
@@ -17,7 +17,9 @@ test.describe('CRUD User', () => {
 
     const afterUsers = await prisma.user.count();
     const oneMoreUser = afterUsers === beforeUsers + 1;
+    if (oneMoreUser) {
     await deleteTestUser();
+    }
     expect(oneMoreUser).toBeTruthy();
   });
 
@@ -60,5 +62,6 @@ test.describe('CRUD User', () => {
     expect(oneLessUser).toBeTruthy();
   });
 
-});
+}
 
+export default tests;
