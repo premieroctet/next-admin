@@ -1,18 +1,7 @@
 import { test, expect } from '@playwright/test';
-import { PrismaClient } from '@prisma/client';
 import { TEST_EMAIL, createTestUser, deleteTestUser, prisma } from './utils';
 
-
-
 const tests = () => {
-
-  test.beforeEach(async () => {
-    await deleteTestUser();
-  });
-
-  test.afterAll(async () => {
-    await deleteTestUser();
-  });
 
   test('create user', async ({ page }) => {
     const beforeUsers = await prisma.user.count();
@@ -25,6 +14,7 @@ const tests = () => {
     const afterUsers = await prisma.user.count();
     const oneMoreUser = afterUsers === beforeUsers + 1;
     expect(oneMoreUser).toBeTruthy();
+    await deleteTestUser();
   });
 
   test('read user', async ({ page }) => {
@@ -32,6 +22,7 @@ const tests = () => {
     await page.goto(`${process.env.BASE_URL}/admin/user/${userId}`);
     const name = await page.inputValue('input[id="name"]');
     expect(name).toBe("test");
+    await deleteTestUser();
   });
 
   test('update user', async ({ page }) => {
@@ -46,6 +37,7 @@ const tests = () => {
       },
     });
     expect(user?.name).toBe('test2');
+    await deleteTestUser();
   });
 
   test('delete user', async ({ page }) => {
@@ -59,6 +51,9 @@ const tests = () => {
     const afterDeleteUsers = await prisma.user.count();
     const oneLessUser = afterDeleteUsers === beforeUsers - 1;
     expect(oneLessUser).toBeTruthy();
+    if(!oneLessUser) {
+      await deleteTestUser();
+    }
   });
 
 }

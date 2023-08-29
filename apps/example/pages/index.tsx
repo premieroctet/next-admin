@@ -17,7 +17,7 @@ export default function Web() {
           started now!
         </Text>
         <Link
-          href="/admindemo"
+          href="/admin"
           className="block mx-auto px-4 py-2 bg-gray-800 text-white rounded hover:bg-gray-700 transition duration-300 text-center"
         >
           <Text className=" text-inherit">Explore Next Admin</Text>

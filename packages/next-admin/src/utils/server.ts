@@ -315,8 +315,7 @@ export const formattedFormData = <M extends ModelName>(
         } else if (dmmfPropertyType === "Boolean") {
           formattedData[dmmfPropertyName] = formData[dmmfPropertyName] === "on";
         } else if (dmmfPropertyType === "DateTime") {
-          formattedData[dmmfPropertyName] =
-            new Date(formData[dmmfPropertyName]!) ?? null;
+          formattedData[dmmfPropertyName] = formData[dmmfPropertyName] ? new Date(formData[dmmfPropertyName]!) : null;
         } else {
           formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
         }

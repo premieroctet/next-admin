@@ -2,17 +2,8 @@ import { test, expect } from '@playwright/test';
 import { TEST_EMAIL, createTestUser, deleteTestUser } from './utils';
 
 const tests = () => {
-
-    test.beforeEach(async () => {
-        await deleteTestUser();
-    });
-
-    test.afterAll(async () => {
-        await deleteTestUser();
-    });
-
     test('search user', async ({ page }) => {
-        await createTestUser();
+
         await page.goto(`${process.env.BASE_URL}/admin/user`);
         await page.fill('input[name="search"]', TEST_EMAIL);
         await page.waitForTimeout(300);
@@ -22,6 +13,7 @@ const tests = () => {
         const rows = await tbody?.$$('tr');
         const oneRow = rows?.length === 1;
         expect(oneRow).toBeTruthy();
+        await deleteTestUser();
     });
 }
 
