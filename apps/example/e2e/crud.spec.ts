@@ -6,6 +6,14 @@ const prisma = new PrismaClient();
 
 const tests = () => {
 
+  test.beforeEach(async () => {
+    await deleteTestUser();
+  });
+
+  test.afterAll(async () => {
+    await deleteTestUser();
+  });
+
   test('create user', async ({ page }) => {
     const beforeUsers = await prisma.user.count();
     await page.goto(`${process.env.BASE_URL}/admin/user`);
@@ -14,12 +22,8 @@ const tests = () => {
     await page.fill('input[id="email"]', TEST_EMAIL);
     await page.click('button:has-text("Submit")');
     await page.waitForURL(`${process.env.BASE_URL}/admin/user/*`);
-
     const afterUsers = await prisma.user.count();
     const oneMoreUser = afterUsers === beforeUsers + 1;
-    if (oneMoreUser) {
-    await deleteTestUser();
-    }
     expect(oneMoreUser).toBeTruthy();
   });
 
@@ -27,7 +31,6 @@ const tests = () => {
     const userId = await createTestUser();
     await page.goto(`${process.env.BASE_URL}/admin/user/${userId}`);
     const name = await page.inputValue('input[id="name"]');
-    await deleteTestUser();
     expect(name).toBe("test");
   });
 
@@ -42,7 +45,6 @@ const tests = () => {
         id: userId,
       },
     });
-    await deleteTestUser();
     expect(user?.name).toBe('test2');
   });
 
@@ -56,9 +58,6 @@ const tests = () => {
     await page.waitForURL(`${process.env.BASE_URL}/admin/user`);
     const afterDeleteUsers = await prisma.user.count();
     const oneLessUser = afterDeleteUsers === beforeUsers - 1;
-    if (!oneLessUser) {
-      await deleteTestUser();
-    }
     expect(oneLessUser).toBeTruthy();
   });
 
