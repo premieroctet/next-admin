@@ -70,7 +70,7 @@ export const updateItem = async (model: ModelName, page: Page, id: string) => {
     await page.waitForURL(`${process.env.BASE_URL}/${model}/*`)
     await fillForm(model, page, dataTestUpdate);
     await page.click('button:has-text("Submit")');
-    await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
+    await page.waitForURL(`${process.env.BASE_URL}/${model}/*`)
     await readForm(model, page, dataTestUpdate);
 
 }
@@ -123,8 +123,7 @@ const getRows = async (page: Page) => {
 export const search = async (page: Page) => {
     await page.goto(`${process.env.BASE_URL}/user`);
     await page.fill('input[name="search"]', 'user0@nextadmin.io');
-    await page.waitForTimeout(300);
-    await page.waitForResponse(`${process.env.BASE_DOMAIN}/_next/data/**`);
+    await page.waitForTimeout(600);
     const table = await page.$('table');
     const tbody = await table?.$('tbody');
     const rows = await tbody?.$$('tr');
@@ -135,11 +134,13 @@ export const search = async (page: Page) => {
 export const sort = async (page: Page) => {
     await page.goto(`${process.env.BASE_URL}/user`);
     await page.click('th:has-text("email")>button');
+    await page.waitForTimeout(300);
     let rows = await getRows(page);
     let firstRow = await rows?.[0]?.innerText();
     expect(firstRow).toContain('user0@nextadmin.io');
 
     await page.click('th:has-text("email")>button');
+    await page.waitForTimeout(300);
     rows = await getRows(page);
     firstRow = await rows?.[0]?.innerText();
     expect(firstRow).toContain('user9@nextadmin.io');
@@ -155,7 +156,7 @@ export const paginationPerPage = async (page: Page, itemPerPage: number) => {
     const numberOfPages = Math.ceil(numberOfItems / itemPerPage);
     for (let i = 1; i <= numberOfPages; i++) {
         await page.getByRole('button', { name: i.toString() }).click();
-        await page.waitForResponse(`${process.env.BASE_DOMAIN}/_next/data/**`);
+        await page.waitForTimeout(300);
         let rows = await getRows(page);
         if (i === numberOfPages) {
             expect(rows?.length).toBe(numberOfItems % itemPerPage);

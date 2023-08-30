@@ -20,7 +20,7 @@ models.forEach((model) => {
     });
 
     test(`delete ${model}`, async ({ page }) => {
-      await deleteItem(model, page, id);
+      await deleteItem(model, page, id)
     });
   });
 });
