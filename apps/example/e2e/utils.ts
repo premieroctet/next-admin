@@ -1,7 +1,7 @@
 import { Page, expect } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
 import { ModelName } from "@premieroctet/next-admin";
-import { models } from "./test.list";
+import { models } from "./crud.spec";
 
 export const prisma = new PrismaClient();
 
@@ -113,10 +113,16 @@ export const readForm = async (model: ModelName, page: Page, dataTest: DataTest)
     }
 }
 
-export const searchInTable = async (model: ModelName, page: Page) => {
-    const id = await createItem(model, page);
-    await page.goto(`${process.env.BASE_URL}/${model}`);
-    await searchInModel(model, page, dataTest);
+const getRows = async (page: Page) => {
+    const table = await page.$('table');
+    const tbody = await table?.$('tbody');
+    return await tbody?.$$('tr');
+}
+
+
+export const search = async (page: Page) => {
+    await page.goto(`${process.env.BASE_URL}/user`);
+    await page.fill('input[name="search"]', 'user0@nextadmin.io');
     await page.waitForTimeout(300);
     await page.waitForResponse(`${process.env.BASE_DOMAIN}/_next/data/**`);
     const table = await page.$('table');
@@ -124,21 +130,38 @@ export const searchInTable = async (model: ModelName, page: Page) => {
     const rows = await tbody?.$$('tr');
     const oneRow = rows?.length === 1;
     expect(oneRow).toBeTruthy();
-    await deleteItem(model, page, id);
 }
 
-export const searchInModel = async (model: ModelName, page: Page, dataTest: DataTest) => {
-    switch (model) {
-        case 'user':
-            await page.fill('input[name="search"]', dataTest.user.email);
-            break;
-        case 'Post':
-            await page.fill('input[name="search"]', dataTest.Post.title);
-            break;
-        case 'Category':
-            await page.fill('input[name="search"]', dataTest.Category.name);
-            break;
-        default:
-            break;
+export const sort = async (page: Page) => {
+    await page.goto(`${process.env.BASE_URL}/user`);
+    await page.click('th:has-text("email")>button');
+    let rows = await getRows(page);
+    let firstRow = await rows?.[0]?.innerText();
+    expect(firstRow).toContain('user0@nextadmin.io');
+
+    await page.click('th:has-text("email")>button');
+    rows = await getRows(page);
+    firstRow = await rows?.[0]?.innerText();
+    expect(firstRow).toContain('user9@nextadmin.io');
+}
+
+export const pagination = async (page: Page) => {
+    await page.goto(`${process.env.BASE_URL}/user`);
+    await paginationPerPage(page, 10);
+}
+
+export const paginationPerPage = async (page: Page, itemPerPage: number) => {
+    const numberOfItems = 25;
+    const numberOfPages = Math.ceil(numberOfItems / itemPerPage);
+    for (let i = 1; i <= numberOfPages; i++) {
+        await page.getByRole('button', { name: i.toString() }).click();
+        await page.waitForResponse(`${process.env.BASE_DOMAIN}/_next/data/**`);
+        let rows = await getRows(page);
+        if (i === numberOfPages) {
+            expect(rows?.length).toBe(numberOfItems % itemPerPage);
+        } else {
+            expect(rows?.length).toBe(itemPerPage);
+        }
     }
+    await page.getByRole('button', { name: '1' }).click();
 }

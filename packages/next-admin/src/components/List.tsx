@@ -132,6 +132,9 @@ function List({ resource, data, total, options }: ListProps) {
                     <SelectValue placeholder={pageSize} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
+                    <SelectItem className="cursor-pointer" value={"10"}>
+                      10
+                    </SelectItem>
                     <SelectItem className="cursor-pointer" value={"20"}>
                       20
                     </SelectItem>

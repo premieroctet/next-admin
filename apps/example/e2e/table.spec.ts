@@ -1,11 +1,16 @@
 import { test } from '@playwright/test';
-import { ModelName } from '@premieroctet/next-admin';
-import { searchInTable } from './utils';
+import { pagination, search, sort } from './utils';
 
-const tests = (model: ModelName) => {
-    test(`search ${model}`, async ({ page }) => {
-        await searchInTable(model, page);
-    });
-}
+test.describe.serial('table test', () => {
+  test(`search (on user)`, async ({ page }) => {
+    await search(page);
+  });
 
-export default tests;
+  test(`sort (on user)`, async ({ page }) => {
+    await sort(page);
+  });
+
+  test(`pagination (on user)`, async ({ page }) => {
+    await pagination(page);
+  });
+});
