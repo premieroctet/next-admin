@@ -1,5 +1,16 @@
 # @premieroctet/next-admin
 
+## 1.4.0
+
+### Minor Changes
+
+- 1fe2774: feat: display currently selected menu
+- dd0aa0d: feat: loading indicator on client side navigation
+- 96dd99b: Add e2e tests
+- c6459e8: feat: add Prisma 5 compatibility
+- 06c44a7: feat: dynamic base path
+- 088bfc9: feat: data server validation
+
 ## 1.3.8
 
 ### Patch Changes
