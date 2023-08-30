@@ -1,5 +1,8 @@
 name: E2E tests
 on:
+  push:
+    branches:
+      - "main"
   pull_request:
     paths:
       - "packages/next-admin/**"
