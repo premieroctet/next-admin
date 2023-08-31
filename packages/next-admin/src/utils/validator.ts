@@ -1,14 +1,13 @@
-import { Prisma } from "@prisma/client";
-import { EditFieldsOptions } from "../types";
+import { EditFieldsOptions, ModelName } from "../types";
 import {
   PropertyValidationError,
   ValidationError,
 } from "../exceptions/ValidationError";
 
-export function validate<ModelName extends Prisma.ModelName>(
+export const validate = <M extends ModelName>(
   formData: { [key: string]: string },
-  fieldsOptions?: EditFieldsOptions<ModelName>
-) {
+  fieldsOptions?: EditFieldsOptions<M>
+) => {
   if (!fieldsOptions) {
     return;
   }
@@ -18,6 +17,7 @@ export function validate<ModelName extends Prisma.ModelName>(
   for (property in fieldsOptions) {
     if (fieldsOptions[property]?.validate) {
       const validation = fieldsOptions[property]!.validate!(
+        // @ts-ignore
         formData[property as string]
       );
 

@@ -1,21 +1,40 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
 
-let prisma: PrismaClient;
-
-if (typeof window === "undefined") {
-  prisma = new PrismaClient();
-}
+/** Type for Model */
 
 export type ModelName = Prisma.ModelName;
 
-export type Field<P extends ModelName> =
-  | keyof (typeof Prisma)[`${Capitalize<P>}ScalarFieldEnum`]
-  | keyof Prisma.TypeMap["model"][P]["payload"]["objects"];
+export type ScalarField<T extends ModelName> = Prisma.TypeMap["model"][T]["payload"]["scalars"];
+export type ObjectField<T extends ModelName> = Prisma.TypeMap["model"][T]["payload"]["objects"];
 
-export type UField<M extends ModelName> = Field<M>;
+export type Model<T extends ModelName> = ScalarField<T> & {
+  [P in keyof ObjectField<T>]:
+  ObjectField<T>[P] extends { scalars: infer S } ? S
+  : ObjectField<T>[P] extends { scalars: infer S } | null ? S | null
+  : ObjectField<T>[P] extends { scalars: infer S }[] ? S[]
+  : never;
+}
+
+export type Field<P extends ModelName> = keyof Model<P>;
+
+/** Type for Options */
+
+export type ListFieldsOptions<T extends ModelName> = {
+  [P in Field<T>]?: {
+    display?: true;
+    search?: true;
+  };
+};
+
+export type EditFieldsOptions<T extends ModelName> = {
+  [P in Field<T>]?: {
+    display?: boolean;
+    validate?: (value: Model<T>[P]) => true | string;
+  };
+};
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
@@ -29,25 +48,13 @@ export type ModelOptions<T extends ModelName> = {
   };
 };
 
-export type ListFieldsOptions<T extends ModelName> = {
-  [P in Field<T>]?: {
-    display?: true;
-    search?: true;
-  };
-};
-
-export type EditFieldsOptions<T extends ModelName> = {
-  [P in Field<T>]?: {
-    display?: boolean;
-    // TODO Improve typing
-    validate?: (value: any) => true | string;
-  };
-};
-
 export type NextAdminOptions = {
   basePath: string;
   model?: ModelOptions<ModelName>;
 };
+
+
+/** Type for Schema */
 
 export type SchemaProperty<M extends ModelName> = {
   [P in Field<M>]?: JSONSchema7;
@@ -66,6 +73,8 @@ export type SchemaDefinitions = {
 export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
   definitions: SchemaDefinitions;
 };
+
+
 
 export type FormData<M extends ModelName> = {
   [P in Field<M>]?: string;
@@ -104,12 +113,6 @@ export type PrismaListRequest<M extends ModelName> = {
   take?: number;
 };
 
-export type Collection<M extends ModelName> = Awaited<
-  ReturnType<(typeof prisma)[Uncapitalize<M>]["findMany"]>
->;
-
-export type Model<M extends ModelName> = Collection<M>[number];
-
 export type ListData<T extends ModelName> = ListDataItem<T>[];
 
 export type ListDataItem<T extends ModelName> = Model<T> &
@@ -133,40 +136,40 @@ export type ListDataFieldValue =
     value: Date;
   };
 
-  export type ListComponentFieldsOptions<T extends ModelName> = {
-    [P in Field<T>]?: {
-      formatter?: (item: ListDataItem<ModelName>) => ReactNode;
-    };
+export type ListComponentFieldsOptions<T extends ModelName> = {
+  [P in Field<T>]?: {
+    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
   };
-  
-  export type AdminComponentOptions<T extends ModelName> = {
-    model?: {
-      [P in T]?: {
-        toString?: (item: Model<P>) => string;
-        list?: {
-          fields: ListComponentFieldsOptions<P>;
-        };
+};
+
+export type AdminComponentOptions<T extends ModelName> = {
+  model?: {
+    [P in T]?: {
+      toString?: (item: Model<P>) => string;
+      list?: {
+        fields: ListComponentFieldsOptions<P>;
       };
     };
   };
-  
-  export type AdminComponentProps = {
-    basePath: string;
-    schema: Schema;
-    data?: ListData<ModelName>;
-    resource: ModelName;
-    message?: {
-      type: "success" | "info";
-      content: string;
-    };
-    error?: string;
-    validation?: PropertyValidationError[];
-    resources?: ModelName[];
-    total?: number;
-    dmmfSchema: Prisma.DMMF.Field[];
-    options?: AdminComponentOptions<ModelName>;
+};
+
+export type AdminComponentProps = {
+  basePath: string;
+  schema: Schema;
+  data?: ListData<ModelName>;
+  resource: ModelName;
+  message?: {
+    type: "success" | "info";
+    content: string;
   };
-  
-  export type CustomUIProps = {
-    dashboard?: JSX.Element | (() => JSX.Element);
-  };
+  error?: string;
+  validation?: PropertyValidationError[];
+  resources?: ModelName[];
+  total?: number;
+  dmmfSchema: Prisma.DMMF.Field[];
+  options?: AdminComponentOptions<ModelName>;
+};
+
+export type CustomUIProps = {
+  dashboard?: JSX.Element | (() => JSX.Element);
+};

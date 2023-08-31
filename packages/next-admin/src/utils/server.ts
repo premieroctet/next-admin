@@ -9,7 +9,6 @@ import {
   FormData,
   Enumeration,
   ListFieldsOptions,
-  UField,
   EditFieldsOptions,
 } from "../types";
 import { createWherePredicate } from "./prisma";
@@ -353,8 +352,8 @@ export const removeHiddenProperties = <M extends ModelName>(
   if (!editOptions) return schema;
   const properties = schema.definitions[resource].properties;
   Object.keys(properties).forEach((property) => {
-    if (!editOptions[property as UField<M>]?.display) {
-      delete properties[property as UField<M>];
+    if (!editOptions[property as Field<M>]?.display) {
+      delete properties[property as Field<M>];
     }
   });
   return schema;
