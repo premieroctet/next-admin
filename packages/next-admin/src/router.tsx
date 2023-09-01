@@ -17,6 +17,7 @@ import {
   getResourceIdFromUrl,
   removeHiddenProperties,
   getResources,
+  parseFormData,
 } from "./utils/server";
 import {
   NextAdminOptions,
@@ -213,6 +214,9 @@ export const nextAdminRouter = async (
       const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
 
       const dmmfSchema = getPrismaModelForResource(resource);
+
+      const parsedFormData = parseFormData(formData, dmmfSchema?.fields!);
+
       try {
         // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
         if (resourceId === undefined && formData.action === "delete") {
@@ -265,7 +269,7 @@ export const nextAdminRouter = async (
         const fields = options.model?.[resource]?.edit?.fields as EditFieldsOptions<typeof resource>;
 
         // Validate
-        validate(formData, fields)
+        validate(parsedFormData, fields)
 
         if (resourceId !== undefined) {
           // @ts-expect-error

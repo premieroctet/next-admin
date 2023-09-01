@@ -10,15 +10,19 @@ export type ModelName = Prisma.ModelName;
 export type ScalarField<T extends ModelName> = Prisma.TypeMap["model"][T]["payload"]["scalars"];
 export type ObjectField<T extends ModelName> = Prisma.TypeMap["model"][T]["payload"]["objects"];
 
-export type Model<T extends ModelName> = ScalarField<T> & {
-  [P in keyof ObjectField<T>]:
-  ObjectField<T>[P] extends { scalars: infer S } ? S
-  : ObjectField<T>[P] extends { scalars: infer S } | null ? S | null
-  : ObjectField<T>[P] extends { scalars: infer S }[] ? S[]
+export type Model<M extends ModelName, T extends never | number = never> = ScalarField<M> & {
+  [P in keyof ObjectField<M>]:
+  ObjectField<M>[P] extends { scalars: infer S } ? T extends never ? S : T 
+  : ObjectField<M>[P] extends { scalars: infer S } | null ? T extends never ? S | null : T | null
+  : ObjectField<M>[P] extends { scalars: infer S }[] ? T extends never ? S[] : T[]
   : never;
 }
 
+export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>; 
+
 export type Field<P extends ModelName> = keyof Model<P>;
+
+/** Type for Form */
 
 /** Type for Options */
 
@@ -32,7 +36,7 @@ export type ListFieldsOptions<T extends ModelName> = {
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     display?: boolean;
-    validate?: (value: Model<T>[P]) => true | string;
+    validate?: (value: ModelWithoutRelationships<T>[P]) => true | string;
   };
 };
 

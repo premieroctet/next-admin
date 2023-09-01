@@ -1,11 +1,11 @@
-import { EditFieldsOptions, ModelName } from "../types";
+import { EditFieldsOptions, ModelName, ModelWithoutRelationships } from "../types";
 import {
   PropertyValidationError,
   ValidationError,
 } from "../exceptions/ValidationError";
 
 export const validate = <M extends ModelName>(
-  formData: { [key: string]: string },
+  formData: Partial<ModelWithoutRelationships<M>>,
   fieldsOptions?: EditFieldsOptions<M>
 ) => {
   if (!fieldsOptions) {
@@ -18,7 +18,7 @@ export const validate = <M extends ModelName>(
     if (fieldsOptions[property]?.validate) {
       const validation = fieldsOptions[property]!.validate!(
         // @ts-ignore
-        formData[property as string]
+        formData[property]
       );
 
       if (validation !== true) {
