@@ -209,10 +209,6 @@ export const nextAdminRouter = async (
       schema = removeHiddenProperties(schema, edit, resource);
       await getBody(req, res);
 
-
-      console.log("req", req)
-
-
       // @ts-expect-error
       const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
 
@@ -267,9 +263,6 @@ export const nextAdminRouter = async (
         let data;
 
         const fields = options.model?.[resource]?.edit?.fields as EditFieldsOptions<typeof resource>;
-
-        console.log("fields", fields)
-        console.log("formData", formData)
 
         // Validate
         validate(formData, fields)
