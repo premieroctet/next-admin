@@ -39,6 +39,12 @@ const dataTestUpdate: DataTest = {
     },
 }
 
+export const dataTestValidationError: DataTest = {
+    user: {
+        email: 'my-user+e2e',
+    }
+}
+
 export const createItem = async (model: ModelName, page: Page): Promise<string> => {
     await page.goto(`${process.env.BASE_URL}/${model}`);
     await page.getByRole('button', { name: 'Add' }).click();
@@ -72,7 +78,6 @@ export const updateItem = async (model: ModelName, page: Page, id: string) => {
     await page.click('button:has-text("Submit")');
     await page.waitForURL(`${process.env.BASE_URL}/${model}/*`)
     await readForm(model, page, dataTestUpdate);
-
 }
 
 

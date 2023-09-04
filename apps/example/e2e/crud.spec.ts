@@ -1,11 +1,11 @@
-import { test } from '@playwright/test';
-import { createItem, deleteItem, readItem, updateItem } from './utils';
+import { test } from "@playwright/test";
+import { createItem, deleteItem, readItem, updateItem } from "./utils";
 
-export const models = ['user', 'Post', 'Category'] as const
-
+export const models = ["user", "Post", "Category"] as const;
 
 models.forEach((model) => {
   let id: string;
+
   test.describe.serial(`crud ${model}`, () => {
     test(`create ${model}`, async ({ page }) => {
       id = await createItem(model, page);
@@ -20,8 +20,17 @@ models.forEach((model) => {
     });
 
     test(`delete ${model}`, async ({ page }) => {
-      await deleteItem(model, page, id)
+      await deleteItem(model, page, id);
     });
   });
 });
 
+test.describe("user validation", () => {
+  test(`user create error`, async ({ page }) => {
+    await page.goto(`${process.env.BASE_URL}/user/new`);
+    await page.fill('input[id="email"]', "invalidemail");
+    await page.click('button:has-text("Submit")');
+    await page.waitForURL(`${process.env.BASE_URL}/user/*`);
+    await page.getByText("Invalid email");
+  });
+});
