@@ -9,7 +9,7 @@ const config = {
   },
   docsRepositoryBase: "https://github.com/premieroctet/next-admin",
   footer: {
-    text: "MIT 2020 © Premier Octet.",
+    text: `MIT ${new Date().getFullYear()} © Premier Octet.`,
   },
   darkMode: true,
   primaryHue: 290,
