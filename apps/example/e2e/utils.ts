@@ -39,12 +39,6 @@ const dataTestUpdate: DataTest = {
     },
 }
 
-export const dataTestValidationError: DataTest = {
-    user: {
-        email: 'my-user+e2e',
-    }
-}
-
 export const createItem = async (model: ModelName, page: Page): Promise<string> => {
     await page.goto(`${process.env.BASE_URL}/${model}`);
     await page.getByRole('button', { name: 'Add' }).click();

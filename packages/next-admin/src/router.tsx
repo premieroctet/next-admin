@@ -339,7 +339,8 @@ export const nextAdminRouter = async (
           error.constructor.name === PrismaClientKnownRequestError.name ||
           error.name === "ValidationError"
         ) {
-          let data;
+          let data = parsedFormData;
+
           if (resourceId !== undefined) {
             // @ts-expect-error
             data = await prisma[resource].findUnique({
@@ -347,25 +348,14 @@ export const nextAdminRouter = async (
               select: selectedFields,
             });
             data = flatRelationInData(data, resource);
+          }
 
-            // TODO This could be improved by merging form values but it's breaking stuff 
-            if (error.name === "ValidationError") {
-              error.errors.map((error: any) => {
-                data[error.property] = formData[error.property]
-              })
-            }
-
-            return {
-              props: {
-                ...defaultProps,
-                resource,
-                data,
-                schema,
-                dmmfSchema: dmmfSchema?.fields,
-                error: error.message,
-                validation: error.errors,
-              },
-            };
+          // TODO This could be improved by merging form values but it's breaking stuff 
+          if (error.name === "ValidationError") {
+            error.errors.map((error: any) => {
+              // @ts-expect-error
+              data[error.property] = formData[error.property]
+            })
           }
 
           return {
@@ -375,7 +365,8 @@ export const nextAdminRouter = async (
               schema,
               dmmfSchema: dmmfSchema?.fields,
               error: error.message,
-              data: formData,
+              validation: error.errors,
+              data,
             },
           };
         }

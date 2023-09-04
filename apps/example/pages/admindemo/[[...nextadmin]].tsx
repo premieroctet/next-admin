@@ -55,8 +55,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
             posts: {
               search: true,
               display: true,
-              
-              
             },
           },
         },
