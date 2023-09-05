@@ -38,3 +38,14 @@ docker-compose up
 cd apps/example && yarn database
 ```
 
+### E2E
+
+Tests are using Playwright to test directly with a browser.
+
+You can write and debug tests easily with this commande
+
+```
+cd apps/example
+npx playwright install
+npx playwright test --ui
+```

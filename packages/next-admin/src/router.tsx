@@ -17,6 +17,7 @@ import {
   getResourceIdFromUrl,
   removeHiddenProperties,
   getResources,
+  parseFormData,
 } from "./utils/server";
 import {
   NextAdminOptions,
@@ -208,9 +209,14 @@ export const nextAdminRouter = async (
       );
       schema = removeHiddenProperties(schema, edit, resource);
       await getBody(req, res);
+
       // @ts-expect-error
       const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
+
       const dmmfSchema = getPrismaModelForResource(resource);
+
+      const parsedFormData = parseFormData(formData, dmmfSchema?.fields!);
+
       try {
         // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
         if (resourceId === undefined && formData.action === "delete") {
@@ -260,8 +266,10 @@ export const nextAdminRouter = async (
         // Update
         let data;
 
+        const fields = options.model?.[resource]?.edit?.fields as EditFieldsOptions<typeof resource>;
+
         // Validate
-        validate(formData, options.model?.[resource]?.edit?.fields)
+        validate(parsedFormData, fields)
 
         if (resourceId !== undefined) {
           // @ts-expect-error
@@ -331,7 +339,8 @@ export const nextAdminRouter = async (
           error.constructor.name === PrismaClientKnownRequestError.name ||
           error.name === "ValidationError"
         ) {
-          let data;
+          let data = parsedFormData;
+
           if (resourceId !== undefined) {
             // @ts-expect-error
             data = await prisma[resource].findUnique({
@@ -339,25 +348,14 @@ export const nextAdminRouter = async (
               select: selectedFields,
             });
             data = flatRelationInData(data, resource);
+          }
 
-            // TODO This could be improved by merging form values but it's breaking stuff 
-            if (error.name === "ValidationError") {
-              error.errors.map((error: any) => {
-                data[error.property] = formData[error.property]
-              })
-            }
-
-            return {
-              props: {
-                ...defaultProps,
-                resource,
-                data,
-                schema,
-                dmmfSchema: dmmfSchema?.fields,
-                error: error.message,
-                validation: error.errors,
-              },
-            };
+          // TODO This could be improved by merging form values but it's breaking stuff 
+          if (error.name === "ValidationError") {
+            error.errors.map((error: any) => {
+              // @ts-expect-error
+              data[error.property] = formData[error.property]
+            })
           }
 
           return {
@@ -367,7 +365,8 @@ export const nextAdminRouter = async (
               schema,
               dmmfSchema: dmmfSchema?.fields,
               error: error.message,
-              data: formData,
+              validation: error.errors,
+              data,
             },
           };
         }

@@ -72,7 +72,6 @@ export const updateItem = async (model: ModelName, page: Page, id: string) => {
     await page.click('button:has-text("Submit")');
     await page.waitForURL(`${process.env.BASE_URL}/${model}/*`)
     await readForm(model, page, dataTestUpdate);
-
 }
 
 
