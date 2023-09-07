@@ -12,7 +12,7 @@ describe("validator", () => {
 
   it("should validate fields properly", () => {
     expect(() =>
-      validate<"user">(
+      validate<"User">(
         {
           id: "1",
           email: "bob.com",

@@ -36,19 +36,19 @@ export type FormProps = {
   schema: any;
   dmmfSchema: Prisma.DMMF.Field[];
   resource: ModelName;
-  validation?: PropertyValidationError[]
+  validation?: PropertyValidationError[];
 };
 
-const fields: CustomForm['props']['fields'] = {
+const fields: CustomForm["props"]["fields"] = {
   ArrayField,
 };
 
-const widgets: CustomForm['props']['widgets'] = {
+const widgets: CustomForm["props"]["widgets"] = {
   SelectWidget: SelectWidget,
   CheckboxWidget: CheckboxWidget,
 };
 
-const templates: CustomForm['props']['templates'] = {
+const templates: CustomForm["props"]["templates"] = {
   FieldTemplate: (props: FieldTemplateProps) => {
     const {
       id,
@@ -64,7 +64,7 @@ const templates: CustomForm['props']['templates'] = {
     return (
       <div className={clsx(classNames, "py-1")} style={style}>
         <label
-          className="block text-sm font-medium leading-6 text-gray-900"
+          className="block text-sm font-medium leading-6 text-gray-900 capitalize"
           htmlFor={id}
         >
           {label}
@@ -102,7 +102,10 @@ const templates: CustomForm['props']['templates'] = {
       <input
         onChange={onChangeOverride || onTextChange}
         {...props}
-        className={clsx("block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed", { "ring-red-600": rawErrors })}
+        className={clsx(
+          "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed",
+          { "ring-red-600": rawErrors }
+        )}
       />
     );
   },
@@ -111,14 +114,18 @@ const templates: CustomForm['props']['templates'] = {
   },
   FieldErrorTemplate: ({ errors }) => {
     return errors ? (
-      <div className="text-sm text-red-600 mt-1">
-        {errors}
-      </div>
+      <div className="text-sm text-red-600 mt-1">{errors}</div>
     ) : null;
-  }
+  },
 };
 
-const Form = ({ data, schema, dmmfSchema, resource, validation }: FormProps) => {
+const Form = ({
+  data,
+  schema,
+  dmmfSchema,
+  resource,
+  validation,
+}: FormProps) => {
   const schemas: Schemas = getSchemas(data, schema, dmmfSchema);
   const edit = data?.id !== undefined;
   const submitButton = (props: SubmitButtonProps) => {
@@ -149,14 +156,17 @@ const Form = ({ data, schema, dmmfSchema, resource, validation }: FormProps) => 
     );
   };
 
-  const extraErrors: ErrorSchema | undefined = validation?.reduce((acc, curr) => {
-    // @ts-expect-error
-    acc[curr.property] = {
-      __errors: [curr.message]
-    }
+  const extraErrors: ErrorSchema | undefined = validation?.reduce(
+    (acc, curr) => {
+      // @ts-expect-error
+      acc[curr.property] = {
+        __errors: [curr.message],
+      };
 
-    return acc;
-  }, {} as ErrorSchema);
+      return acc;
+    },
+    {} as ErrorSchema
+  );
 
   return (
     <div className="relative">

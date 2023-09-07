@@ -1,7 +1,7 @@
 import { test } from "@playwright/test";
 import { createItem, deleteItem, readItem, updateItem } from "./utils";
 
-export const models = ["user", "Post", "Category"] as const;
+export const models = ["User", "Post", "Category"] as const;
 
 models.forEach((model) => {
   let id: string;
@@ -27,10 +27,10 @@ models.forEach((model) => {
 
 test.describe("user validation", () => {
   test(`user create error`, async ({ page }) => {
-    await page.goto(`${process.env.BASE_URL}/user/new`);
+    await page.goto(`${process.env.BASE_URL}/User/new`);
     await page.fill('input[id="email"]', "invalidemail");
     await page.click('button:has-text("Submit")');
-    await page.waitForURL(`${process.env.BASE_URL}/user/*`);
-    await test.expect(page.getByText('Invalid email')).toBeVisible();
+    await page.waitForURL(`${process.env.BASE_URL}/User/*`);
+    await test.expect(page.getByText("Invalid email")).toBeVisible();
   });
 });
