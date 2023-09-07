@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 1.4.1
+
+### Patch Changes
+
+- d136331: fix: validation crash and improve typing
+
 ## 1.4.0
 
 ### Minor Changes
