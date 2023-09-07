@@ -29,7 +29,11 @@ export default function TableHead({
       }}
       className="inline-flex items-center justify-center text-sm"
     >
-      <span className={clsx("whitespace-nowrap font-bold text-indigo-500")}>
+      <span
+        className={clsx(
+          "whitespace-nowrap font-bold text-indigo-500 capitalize"
+        )}
+      >
         {property}
       </span>
       <span className="sr-only">, activate to sort column descending</span>

@@ -16,7 +16,6 @@
     "test": "turbo run test",
     "test:e2e": "dotenv turbo test:e2e",
     "database": "dotenv turbo run database",
-    
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "publish-package": "turbo run build && changeset publish"
   },

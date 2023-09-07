@@ -3,25 +3,35 @@ import { GetServerSideProps, GetServerSidePropsResult } from "next";
 import { prisma } from "../../prisma";
 import schema from "../../prisma/json-schema/json-schema.json";
 import "@premieroctet/next-admin/dist/styles.css";
-import { AdminComponentProps, NextAdmin, NextAdminOptions } from "@premieroctet/next-admin";
+import {
+  AdminComponentProps,
+  NextAdmin,
+  NextAdminOptions,
+} from "@premieroctet/next-admin";
 import Dashboard from "../../components/Dashboard";
 
 export default function Admin(props: AdminComponentProps) {
-  return <NextAdmin {...props} dashboard={Dashboard} options={{
-    model: {
-      user: {
-        list: {
-          fields: {
-            role: {
-              formatter: (user) => {
-                return <strong>{user.role as string}</strong>;
+  return (
+    <NextAdmin
+      {...props}
+      dashboard={Dashboard}
+      options={{
+        model: {
+          User: {
+            list: {
+              fields: {
+                role: {
+                  formatter: (user) => {
+                    return <strong>{user.role as string}</strong>;
+                  },
+                },
               },
-            }
-          }
-        }
-      }
-    }
-  }} />;
+            },
+          },
+        },
+      }}
+    />
+  );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -30,9 +40,9 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
   );
 
   const options: NextAdminOptions = {
-    basePath: "/admindemo",
+    basePath: "/admin",
     model: {
-      user: {
+      User: {
         toString: (user) => `${user.name} (${user.email})`,
         list: {
           fields: {
