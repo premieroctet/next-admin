@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 1.4.1
+
+### Patch Changes
+
+- 02a7fac: fix: validation crash and improve typing
+- 52d5838: feat: improve ui and demo
+
 ## 1.4.0
 
 ### Minor Changes
