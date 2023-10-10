@@ -10,11 +10,11 @@ export type ModelName = Prisma.ModelName;
 export type ScalarField<T extends ModelName> = Prisma.TypeMap["model"][T]["payload"]["scalars"];
 export type ObjectField<T extends ModelName> = Prisma.TypeMap["model"][T]["payload"]["objects"];
 
-export type Model<M extends ModelName, T extends never | number = never> = ScalarField<M> & {
+export type Model<M extends ModelName, T extends object | number = object> = ScalarField<M> & {
   [P in keyof ObjectField<M>]:
-  ObjectField<M>[P] extends { scalars: infer S } ? T extends never ? S : T 
-  : ObjectField<M>[P] extends { scalars: infer S } | null ? T extends never ? S | null : T | null
-  : ObjectField<M>[P] extends { scalars: infer S }[] ? T extends never ? S[] : T[]
+  ObjectField<M>[P] extends { scalars: infer S } ? (T extends object ? S : T) 
+  : ObjectField<M>[P] extends { scalars: infer S } | null ? T extends object ? S | null : T | null
+  : ObjectField<M>[P] extends { scalars: infer S }[] ? T extends object ? S[] : T[]
   : never;
 }
 
@@ -142,7 +142,7 @@ export type ListDataFieldValue =
 
 export type ListComponentFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
+    formatter?: (item: Model<T>[P]) => ReactNode;
   };
 };
 

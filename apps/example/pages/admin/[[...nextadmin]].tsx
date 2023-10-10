@@ -21,13 +21,24 @@ export default function Admin(props: AdminComponentProps) {
             list: {
               fields: {
                 role: {
-                  formatter: (user) => {
-                    return <strong>{user.role as string}</strong>;
+                  formatter: (role) => {
+                    return <strong>{role.toString()}</strong>;
                   },
                 },
               },
             },
           },
+          Post: {
+            list: {
+              fields: {
+                author: {
+                  formatter: (author) => {
+                    return <strong>{`${author.name} - ${author.email}`}</strong>;
+                  },
+                }
+              }
+            }
+          }
         },
       }}
     />
@@ -111,7 +122,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
             published: {
               display: true,
             },
-            authorId: {
+            author: {
               display: true,
             },
             categories: {

@@ -7,7 +7,7 @@ import {
   Order,
   PrismaListRequest,
   Select,
-  UField,
+  Field,
 } from "../types";
 import { ITEMS_PER_PAGE } from "../config";
 import { capitalize } from "./tools";
@@ -18,21 +18,21 @@ export const createWherePredicate = (
 ) => {
   return search
     ? {
-        OR: fieldsFiltered
-          ?.filter((field) => field.kind === "scalar")
-          .map((field) => {
-            if (field.type === "String") {
-              return {
-                [field.name]: { contains: search, mode: "insensitive" },
-              };
-            }
-            if (field.type === "Int" && !isNaN(Number(search))) {
-              return { [field.name]: Number(search) };
-            }
-            return null;
-          })
-          .filter(Boolean),
-      }
+      OR: fieldsFiltered
+        ?.filter((field) => field.kind === "scalar")
+        .map((field) => {
+          if (field.type === "String") {
+            return {
+              [field.name]: { contains: search, mode: "insensitive" },
+            };
+          }
+          if (field.type === "Int" && !isNaN(Number(search))) {
+            return { [field.name]: Number(search) };
+          }
+          return null;
+        })
+        .filter(Boolean),
+    }
     : {};
 };
 
@@ -48,7 +48,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
   let orderBy: Order<typeof resource> = {};
-  const sortParam = searchParams.get("sortColumn") as UField<typeof resource>;
+  const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
   const orderValue = searchParams.get("sortDirection") as Prisma.SortOrder;
   if (
     orderValue in Prisma.SortOrder &&
@@ -66,7 +66,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
     const listKeys = Object.keys(list) as Array<keyof ListFieldsOptions<M>>;
     select = listKeys.reduce((acc, column) => {
       const field = model?.fields.find(({ name }) => name === column);
-      if (field?.kind === "object") {
+      if (field?.kind === "object" && field?.isList === true) {
         if (!acc._count) acc._count = { select: {} };
         acc._count.select = { ...acc._count.select, [column]: true };
       } else {
