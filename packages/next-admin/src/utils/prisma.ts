@@ -127,17 +127,6 @@ export const getMappedDataList = async (prisma: PrismaClient, resource: ModelNam
 
   data = await findRelationInData(data, dmmfSchema?.fields);
 
-
-  const isIdDisplayed = options?.model?.[resource]?.list?.fields.id?.display;
-
-  data.forEach((item) => {
-    const id = item.id;
-    if (!isIdDisplayed) {
-      delete item.id;
-    }
-    item._accessorKey = id;
-  });
-
   return {
     data,
     total,

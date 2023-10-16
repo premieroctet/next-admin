@@ -4,7 +4,7 @@ import { useRouter } from "next/compat/router";
 import { ChangeEvent, useTransition } from "react";
 
 import { ITEMS_PER_PAGE } from "../config";
-import { AdminComponentOptions, ListData, ListDataItem, ListFieldsOptions, ModelName } from "../types";
+import { ListData, ListDataItem, ListFieldsOptions, ModelName, NextAdminOptions } from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
@@ -23,7 +23,7 @@ export type ListProps = {
   resource: ModelName;
   data: ListData<ModelName>;
   total: number;
-  options?: (Required<AdminComponentOptions<ModelName>>)['model'][ModelName]
+  options?: (Required<NextAdminOptions>)['model'][ModelName]
 };
 
 function List({ resource, data, total, options }: ListProps) {
@@ -103,6 +103,7 @@ function List({ resource, data, total, options }: ListProps) {
             resource={resource}
             data={data}
             columns={columns}
+            options={options}
           />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">

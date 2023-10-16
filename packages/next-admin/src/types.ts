@@ -30,6 +30,7 @@ export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     display?: true;
     search?: true;
+    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
   };
 };
 
@@ -140,23 +141,6 @@ export type ListDataFieldValue =
     value: Date;
   };
 
-export type ListComponentFieldsOptions<T extends ModelName> = {
-  [P in Field<T>]?: {
-    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
-  };
-};
-
-export type AdminComponentOptions<T extends ModelName> = {
-  model?: {
-    [P in T]?: {
-      toString?: (item: Model<P>) => string;
-      list?: {
-        fields: ListComponentFieldsOptions<P>;
-      };
-    };
-  };
-};
-
 export type AdminComponentProps = {
   basePath: string;
   schema: Schema;
@@ -171,7 +155,7 @@ export type AdminComponentProps = {
   resources?: ModelName[];
   total?: number;
   dmmfSchema: Prisma.DMMF.Field[];
-  options?: AdminComponentOptions<ModelName>;
+  options?: NextAdminOptions;
 };
 
 export type CustomUIProps = {

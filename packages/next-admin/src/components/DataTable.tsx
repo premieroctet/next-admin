@@ -15,25 +15,34 @@ import {
   TableRow,
 } from "./radix/Table";
 import { useRouter } from "next/compat/router";
-import { ListData, ListDataItem, ModelName } from "../types";
+import { ListData, ListDataItem, ModelName, Field, NextAdminOptions } from "../types";
 import { useConfig } from "../context/ConfigContext";
 
 interface DataTableProps {
-  columns: ColumnDef<ListDataItem<ModelName>, { id: string }>[];
+  columns: ColumnDef<ListDataItem<ModelName>>[];
   data: ListData<ModelName>;
   resource: ModelName;
+  options: (Required<NextAdminOptions>)['model'][ModelName]
 }
 
-export function DataTable({ columns, data, resource }: DataTableProps) {
+export function DataTable({ columns, data, resource, options }: DataTableProps) {
   const router = useRouter();
   const { basePath } = useConfig()
+  const hasDisplayField = options?.list?.fields && Object.values(options?.list?.fields).some(field => field.display)
+  const columnsVisibility = columns.reduce((acc, column) => {
+    // @ts-expect-error
+    const key = column.accessorKey as Field<typeof resource>;
+    acc[key] = options?.list?.fields[key]?.display ? true : false;
+    return acc;
+  }, {} as Record<Field<typeof resource>, boolean>)
+
   const table = useReactTable({
     data,
     manualSorting: true,
     columns,
     getCoreRowModel: getCoreRowModel(),
     initialState: {
-      columnVisibility: { _accessorKey: false },
+      columnVisibility: !hasDisplayField ? {} : columnsVisibility,
     },
   });
 
@@ -67,7 +76,7 @@ export function DataTable({ columns, data, resource }: DataTableProps) {
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
                   router?.push({
-                    pathname: `${basePath}/${resource}/${row.original._accessorKey}`,
+                    pathname: `${basePath}/${resource}/${row.original.id}`,
                   });
                 }}
               >
