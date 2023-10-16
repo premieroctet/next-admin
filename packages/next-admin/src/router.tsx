@@ -7,7 +7,6 @@ import { createRouter } from "next-connect";
 
 import {
   fillRelationInSchema,
-  findRelationInData,
   flatRelationInData,
   formatSearchFields,
   formattedFormData,
@@ -26,7 +25,7 @@ import {
   Select,
   EditFieldsOptions,
 } from "./types";
-import { preparePrismaListRequest } from "./utils/prisma";
+import { getMappedDataList } from "./utils/prisma";
 import { validate } from "./utils/validator";
 
 // Router
@@ -123,37 +122,7 @@ export const nextAdminRouter = async (
 
       // List
       const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-      const prismaListRequest = preparePrismaListRequest(
-        resource,
-        searchParams,
-        options
-      );
-      let data: any[] = [];
-      let total: number;
-      let error = null;
-
-      try {
-        // @ts-expect-error
-        data = await prisma[resource].findMany(prismaListRequest);
-        // @ts-expect-error
-        total = await prisma[resource].count({
-          where: prismaListRequest.where,
-        });
-      } catch (e: any) {
-        const { skip, take, orderBy } = prismaListRequest;
-        // @ts-expect-error
-        data = await prisma[resource].findMany({
-          skip,
-          take,
-          orderBy,
-        });
-        // @ts-expect-error
-        total = await prisma[resource].count();
-        error = e.message ? e.message : e;
-        console.error(e);
-      }
-      data = await findRelationInData(data, dmmfSchema?.fields);
-
+      const { data, total, error } = await getMappedDataList(prisma, resource, dmmfSchema, options, searchParams);
       return {
         props: {
           ...defaultProps,
@@ -221,16 +190,7 @@ export const nextAdminRouter = async (
         // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
         if (resourceId === undefined && formData.action === "delete") {
           const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-          const prismaListRequest = preparePrismaListRequest(
-            resource,
-            searchParams,
-            options
-          );
-          // @ts-expect-error
-          let data = await prisma[resource].findMany(prismaListRequest);
-          data = await findRelationInData(data, dmmfSchema?.fields);
-          // @ts-expect-error
-          const total = await prisma[resource].count();
+          const { data, total } = await getMappedDataList(prisma, resource, dmmfSchema, options, searchParams);
 
           return {
             props: {

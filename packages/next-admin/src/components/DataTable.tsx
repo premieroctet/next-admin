@@ -32,6 +32,9 @@ export function DataTable({ columns, data, resource }: DataTableProps) {
     manualSorting: true,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    initialState: {
+      columnVisibility: { _accessorKey: false },
+    },
   });
 
   return (
@@ -64,7 +67,7 @@ export function DataTable({ columns, data, resource }: DataTableProps) {
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
                   router?.push({
-                    pathname: `${basePath}/${resource}/${row.original.id}`,
+                    pathname: `${basePath}/${resource}/${row.original._accessorKey}`,
                   });
                 }}
               >

@@ -1,5 +1,5 @@
-import { Prisma } from "@prisma/client";
-import { getPrismaModelForResource } from "./server";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { findRelationInData, getPrismaModelForResource } from "./server";
 import {
   ListFieldsOptions,
   ModelName,
@@ -18,21 +18,21 @@ export const createWherePredicate = (
 ) => {
   return search
     ? {
-        OR: fieldsFiltered
-          ?.filter((field) => field.kind === "scalar")
-          .map((field) => {
-            if (field.type === "String") {
-              return {
-                [field.name]: { contains: search, mode: "insensitive" },
-              };
-            }
-            if (field.type === "Int" && !isNaN(Number(search))) {
-              return { [field.name]: Number(search) };
-            }
-            return null;
-          })
-          .filter(Boolean),
-      }
+      OR: fieldsFiltered
+        ?.filter((field) => field.kind === "scalar")
+        .map((field) => {
+          if (field.type === "String") {
+            return {
+              [field.name]: { contains: search, mode: "insensitive" },
+            };
+          }
+          if (field.type === "Int" && !isNaN(Number(search))) {
+            return { [field.name]: Number(search) };
+          }
+          return null;
+        })
+        .filter(Boolean),
+    }
     : {};
 };
 
@@ -66,6 +66,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
     const listKeys = Object.keys(list) as Array<keyof ListFieldsOptions<M>>;
     select = listKeys.reduce((acc, column) => {
       const field = model?.fields.find(({ name }) => name === column);
+      if (!list[column]?.display) return acc;
       if (field?.kind === "object") {
         if (!acc._count) acc._count = { select: {} };
         acc._count.select = { ...acc._count.select, [column]: true };
@@ -75,6 +76,8 @@ export const preparePrismaListRequest = <M extends ModelName>(
       }
       return acc;
     }, {} as Select<M>);
+
+    if (!select.id) select.id = true;
 
     fieldsFiltered =
       model?.fields.filter(
@@ -89,5 +92,55 @@ export const preparePrismaListRequest = <M extends ModelName>(
     orderBy,
     skip: (page - 1) * itemsPerPage,
     take: itemsPerPage,
+  };
+};
+
+export const getMappedDataList = async (prisma: PrismaClient, resource: ModelName, dmmfSchema: Prisma.DMMF.Model | undefined, options: NextAdminOptions, searchParams: URLSearchParams) => {
+  const prismaListRequest = preparePrismaListRequest(
+    resource,
+    searchParams,
+    options
+  );
+  let data: any[] = [];
+  let total: number;
+  let error = null;
+  try {
+    // @ts-expect-error
+    data = await prisma[resource].findMany(prismaListRequest);
+    // @ts-expect-error
+    total = await prisma[resource].count({
+      where: prismaListRequest.where,
+    });
+  } catch (e: any) {
+    const { skip, take, orderBy } = prismaListRequest;
+    // @ts-expect-error
+    data = await prisma[resource].findMany({
+      skip,
+      take,
+      orderBy,
+    });
+    // @ts-expect-error
+    total = await prisma[resource].count();
+    error = e.message ? e.message : e;
+    console.error(e);
+  }
+
+  data = await findRelationInData(data, dmmfSchema?.fields);
+
+
+  const isIdDisplayed = options?.model?.[resource]?.list?.fields.id?.display;
+
+  data.forEach((item) => {
+    const id = item.id;
+    if (!isIdDisplayed) {
+      delete item.id;
+    }
+    item._accessorKey = id;
+  });
+
+  return {
+    data,
+    total,
+    error,
   };
 };
