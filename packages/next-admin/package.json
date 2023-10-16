@@ -5,7 +5,7 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "js": "tsup --entry src/index.tsx --entry src/router.tsx --format cjs --dts",
+    "js": "tsup --entry src/index.tsx --entry src/router.tsx --entry src/app-router.tsx --format cjs --dts",
     "css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
     "build": "npm run css && npm run js",
     "dev": "concurrently \"npm run css -- --watch\" \"npm run js -- --watch\"",
@@ -36,6 +36,8 @@
     "next": "13.2.4",
     "next-connect": "^1.0.0-next.3",
     "nextjs-progressbar": "^0.0.16",
+    "preact": "^10.18.1",
+    "preact-render-to-string": "^6.2.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-querybuilder": "^6.1.2",
