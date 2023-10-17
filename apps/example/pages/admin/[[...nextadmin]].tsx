@@ -20,8 +20,8 @@ const options: NextAdminOptions = {
         search: ["name", "email"],
         fields: {
           role: {
-            formatter: (user) => {
-              return <strong>{user.role as string}</strong>;
+            formatter: (role) => {
+              return <strong>{role.toString()}</strong>;
             },
           },
         },

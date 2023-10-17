@@ -29,7 +29,7 @@ export type Field<P extends ModelName> = keyof Model<P>;
 
 export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
+    formatter?: (item: Model<T>[P]) => ReactNode;
   };
 };
 
