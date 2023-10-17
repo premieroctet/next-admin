@@ -74,8 +74,7 @@ function List({ resource, data, total, options }: ListProps) {
           },
           cell: ({ row }) => {
             const modelData = row.original;
-            const cellData = options?.list?.fields[property as keyof ListFieldsOptions<ModelName>]?.formatter?.(modelData) ?? modelData[property];
-
+            const cellData = options?.list?.fields?.[property as keyof ListFieldsOptions<typeof resource>]?.formatter?.(modelData) ?? modelData[property];
             return (
               <Cell cell={cellData} />
             );

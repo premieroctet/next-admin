@@ -16,48 +16,21 @@ const options: NextAdminOptions = {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
       list: {
+        display: ["id", "name", "email", "posts", "role"],
+        search: ["name", "email"],
         fields: {
-          name: {
-            search: true,
-            display: true,
-          },
-          email: {
-            search: true,
-            display: true,
-          },
           role: {
-            search: true,
-            display: true,
             formatter: (user) => {
               return <strong>{user.role as string}</strong>;
             },
           },
-          posts: {
-            search: true,
-            display: true,
-          },
         },
       },
       edit: {
+        display: ["id", "name", "email", "posts", "role"],
         fields: {
-          id: {
-            display: true,
-          },
-          name: {
-            display: true,
-          },
           email: {
-            display: true,
             validate: (email) => email.includes("@") || "Invalid email",
-          },
-          role: {
-            display: true,
-          },
-          posts: {
-            display: true,
-          },
-          profile: {
-            display: true,
           },
         },
       },
@@ -65,30 +38,12 @@ const options: NextAdminOptions = {
     Post: {
       toString: (post) => `${post.title}`,
       list: {
-        fields: {
-          id: {
-            search: true,
-            display: true,
-          },
-          title: {
-            search: true,
-            display: true,
-          },
-          content: {
-            search: true,
-            display: true,
-          },
-          published: {
-            display: true,
-          },
-          authorId: {
-            display: true,
-          },
-          categories: {
-            display: true,
-          },
-        },
+        display: ['id', 'title', 'content', 'published', 'authorId', 'categories'],
+        search: ['title', 'content'],
       },
+      edit: {
+        display: ['id', 'title', 'content', 'published', 'authorId', 'categories'],
+      }
     },
     Category: {
       toString: (category) => `${category.name}`,

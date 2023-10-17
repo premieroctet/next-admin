@@ -24,6 +24,7 @@ import {
   Body,
   Select,
   EditFieldsOptions,
+  EditOptions,
 } from "./types";
 import { getMappedDataList } from "./utils/prisma";
 import { validate } from "./utils/validator";
@@ -66,7 +67,7 @@ export const nextAdminRouter = async (
         // @ts-expect-error
         acc[field.name] = true;
         return acc;
-      }, {} as Select<typeof resource>);
+      }, {id: true} as Select<typeof resource>);
 
       schema = await fillRelationInSchema(
         schema,
@@ -75,15 +76,12 @@ export const nextAdminRouter = async (
         requestOptions,
         options
       );
-      const edit = options?.model?.[resource]?.edit
-        ?.fields as EditFieldsOptions<typeof resource>;
-      const editKeys =
-        edit &&
-        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof resource>>);
-      const editSelect = editKeys?.reduce((acc, column) => {
-        if (edit[column]?.display) acc[column] = true;
+      const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
+      const editDisplayedKeys = edit && edit.display
+      const editSelect = editDisplayedKeys?.reduce((acc, column) => {
+        acc[column] = true;
         return acc;
-      }, {} as Select<typeof resource>);
+      }, {id: true} as Select<typeof resource>);
       selectedFields = editSelect ?? selectedFields;
 
       // Edit
@@ -149,7 +147,7 @@ export const nextAdminRouter = async (
         // @ts-expect-error
         acc[field.name] = true;
         return acc;
-      }, {} as Select<typeof resource>);
+      }, {id: true} as Select<typeof resource>);
 
       schema = await fillRelationInSchema(
         schema,
@@ -158,15 +156,12 @@ export const nextAdminRouter = async (
         requestOptions,
         options
       );
-      const edit = options?.model?.[resource]?.edit
-        ?.fields as EditFieldsOptions<typeof resource>;
-      const editKeys =
-        edit &&
-        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof resource>>);
-      const editSelect = editKeys?.reduce((acc, column) => {
-        if (edit[column]?.display) acc[column] = true;
+      const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
+      const editDisplayedKeys = edit && edit.display
+      const editSelect = editDisplayedKeys?.reduce((acc, column) => {
+        acc[column] = true;
         return acc;
-      }, {} as Select<typeof resource>);
+      }, {id: true} as Select<typeof resource>);
       selectedFields = editSelect ?? selectedFields;
 
       schema = await fillRelationInSchema(

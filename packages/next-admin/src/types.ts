@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
+import { type } from "os";
 
 /** Type for Model */
 
@@ -28,28 +29,32 @@ export type Field<P extends ModelName> = keyof Model<P>;
 
 export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    display?: true;
-    search?: true;
     formatter?: (item: ListDataItem<ModelName>) => ReactNode;
   };
 };
 
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    display?: boolean;
     validate?: (value: ModelWithoutRelationships<T>[P]) => true | string;
   };
+};
+
+export type ListOptions<T extends ModelName> = {
+  display?: Field<T>[];
+  search?: Field<T>[];
+  fields?: ListFieldsOptions<T>
+};
+
+export type EditOptions<T extends ModelName> = {
+  display?: Field<T>[];
+  fields?: EditFieldsOptions<T>;
 };
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     toString?: (item: Model<P>) => string;
-    list?: {
-      fields: ListFieldsOptions<P>;
-    };
-    edit?: {
-      fields: EditFieldsOptions<P>;
-    };
+    list?: ListOptions<P>;
+    edit?: EditOptions<P>;
   };
 };
 

@@ -28,11 +28,11 @@ interface DataTableProps {
 export function DataTable({ columns, data, resource, options }: DataTableProps) {
   const router = useRouter();
   const { basePath } = useConfig()
-  const hasDisplayField = options?.list?.fields && Object.values(options?.list?.fields).some(field => field.display)
+  const hasDisplayField = options?.list?.display?.length ? true : false;
   const columnsVisibility = columns.reduce((acc, column) => {
     // @ts-expect-error
     const key = column.accessorKey as Field<typeof resource>;
-    acc[key] = options?.list?.fields[key]?.display ? true : false;
+    acc[key] = options?.list?.display?.includes(key) ? true : false;
     return acc;
   }, {} as Record<Field<typeof resource>, boolean>)
 
