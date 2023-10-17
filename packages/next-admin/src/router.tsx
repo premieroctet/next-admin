@@ -7,7 +7,6 @@ import { createRouter } from "next-connect";
 
 import {
   fillRelationInSchema,
-  findRelationInData,
   flatRelationInData,
   formatSearchFields,
   formattedFormData,
@@ -25,8 +24,9 @@ import {
   Body,
   Select,
   EditFieldsOptions,
+  EditOptions,
 } from "./types";
-import { preparePrismaListRequest } from "./utils/prisma";
+import { getMappedDataList } from "./utils/prisma";
 import { validate } from "./utils/validator";
 
 // Router
@@ -67,7 +67,7 @@ export const nextAdminRouter = async (
         // @ts-expect-error
         acc[field.name] = true;
         return acc;
-      }, {} as Select<typeof resource>);
+      }, {id: true} as Select<typeof resource>);
 
       schema = await fillRelationInSchema(
         schema,
@@ -76,15 +76,12 @@ export const nextAdminRouter = async (
         requestOptions,
         options
       );
-      const edit = options?.model?.[resource]?.edit
-        ?.fields as EditFieldsOptions<typeof resource>;
-      const editKeys =
-        edit &&
-        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof resource>>);
-      const editSelect = editKeys?.reduce((acc, column) => {
-        if (edit[column]?.display) acc[column] = true;
+      const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
+      const editDisplayedKeys = edit && edit.display
+      const editSelect = editDisplayedKeys?.reduce((acc, column) => {
+        acc[column] = true;
         return acc;
-      }, {} as Select<typeof resource>);
+      }, {id: true} as Select<typeof resource>);
       selectedFields = editSelect ?? selectedFields;
 
       // Edit
@@ -123,37 +120,7 @@ export const nextAdminRouter = async (
 
       // List
       const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-      const prismaListRequest = preparePrismaListRequest(
-        resource,
-        searchParams,
-        options
-      );
-      let data: any[] = [];
-      let total: number;
-      let error = null;
-
-      try {
-        // @ts-expect-error
-        data = await prisma[resource].findMany(prismaListRequest);
-        // @ts-expect-error
-        total = await prisma[resource].count({
-          where: prismaListRequest.where,
-        });
-      } catch (e: any) {
-        const { skip, take, orderBy } = prismaListRequest;
-        // @ts-expect-error
-        data = await prisma[resource].findMany({
-          skip,
-          take,
-          orderBy,
-        });
-        // @ts-expect-error
-        total = await prisma[resource].count();
-        error = e.message ? e.message : e;
-        console.error(e);
-      }
-      data = await findRelationInData(data, dmmfSchema?.fields);
-
+      const { data, total, error } = await getMappedDataList(prisma, resource, dmmfSchema, options, searchParams);
       return {
         props: {
           ...defaultProps,
@@ -180,7 +147,7 @@ export const nextAdminRouter = async (
         // @ts-expect-error
         acc[field.name] = true;
         return acc;
-      }, {} as Select<typeof resource>);
+      }, {id: true} as Select<typeof resource>);
 
       schema = await fillRelationInSchema(
         schema,
@@ -189,15 +156,12 @@ export const nextAdminRouter = async (
         requestOptions,
         options
       );
-      const edit = options?.model?.[resource]?.edit
-        ?.fields as EditFieldsOptions<typeof resource>;
-      const editKeys =
-        edit &&
-        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof resource>>);
-      const editSelect = editKeys?.reduce((acc, column) => {
-        if (edit[column]?.display) acc[column] = true;
+      const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
+      const editDisplayedKeys = edit && edit.display
+      const editSelect = editDisplayedKeys?.reduce((acc, column) => {
+        acc[column] = true;
         return acc;
-      }, {} as Select<typeof resource>);
+      }, {id: true} as Select<typeof resource>);
       selectedFields = editSelect ?? selectedFields;
 
       schema = await fillRelationInSchema(
@@ -221,16 +185,7 @@ export const nextAdminRouter = async (
         // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
         if (resourceId === undefined && formData.action === "delete") {
           const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-          const prismaListRequest = preparePrismaListRequest(
-            resource,
-            searchParams,
-            options
-          );
-          // @ts-expect-error
-          let data = await prisma[resource].findMany(prismaListRequest);
-          data = await findRelationInData(data, dmmfSchema?.fields);
-          // @ts-expect-error
-          const total = await prisma[resource].count();
+          const { data, total } = await getMappedDataList(prisma, resource, dmmfSchema, options, searchParams);
 
           return {
             props: {

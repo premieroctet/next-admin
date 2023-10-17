@@ -15,23 +15,35 @@ import {
   TableRow,
 } from "./radix/Table";
 import { useRouter } from "next/compat/router";
-import { ListData, ListDataItem, ModelName } from "../types";
+import { ListData, ListDataItem, ModelName, Field, NextAdminOptions } from "../types";
 import { useConfig } from "../context/ConfigContext";
 
 interface DataTableProps {
-  columns: ColumnDef<ListDataItem<ModelName>, { id: string }>[];
+  columns: ColumnDef<ListDataItem<ModelName>>[];
   data: ListData<ModelName>;
   resource: ModelName;
+  options: (Required<NextAdminOptions>)['model'][ModelName]
 }
 
-export function DataTable({ columns, data, resource }: DataTableProps) {
+export function DataTable({ columns, data, resource, options }: DataTableProps) {
   const router = useRouter();
   const { basePath } = useConfig()
+  const hasDisplayField = options?.list?.display?.length ? true : false;
+  const columnsVisibility = columns.reduce((acc, column) => {
+    // @ts-expect-error
+    const key = column.accessorKey as Field<typeof resource>;
+    acc[key] = options?.list?.display?.includes(key) ? true : false;
+    return acc;
+  }, {} as Record<Field<typeof resource>, boolean>)
+
   const table = useReactTable({
     data,
     manualSorting: true,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    initialState: {
+      columnVisibility: !hasDisplayField ? {} : columnsVisibility,
+    },
   });
 
   return (

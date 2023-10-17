@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
+import { type } from "os";
 
 /** Type for Model */
 
@@ -12,13 +13,13 @@ export type ObjectField<T extends ModelName> = Prisma.TypeMap["model"][T]["paylo
 
 export type Model<M extends ModelName, T extends object | number = object> = ScalarField<M> & {
   [P in keyof ObjectField<M>]:
-  ObjectField<M>[P] extends { scalars: infer S } ? (T extends object ? S : T) 
-  : ObjectField<M>[P] extends { scalars: infer S } | null ? T extends object ? S | null : T | null
-  : ObjectField<M>[P] extends { scalars: infer S }[] ? T extends object ? S[] : T[]
+  ObjectField<M>[P] extends { scalars: infer S } ? T extends never ? S : T
+  : ObjectField<M>[P] extends { scalars: infer S } | null ? T extends never ? S | null : T | null
+  : ObjectField<M>[P] extends { scalars: infer S }[] ? T extends never ? S[] : T[]
   : never;
 }
 
-export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>; 
+export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
 
 export type Field<P extends ModelName> = keyof Model<P>;
 
@@ -28,27 +29,32 @@ export type Field<P extends ModelName> = keyof Model<P>;
 
 export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    display?: true;
-    search?: true;
+    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
   };
 };
 
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    display?: boolean;
     validate?: (value: ModelWithoutRelationships<T>[P]) => true | string;
   };
+};
+
+export type ListOptions<T extends ModelName> = {
+  display?: Field<T>[];
+  search?: Field<T>[];
+  fields?: ListFieldsOptions<T>
+};
+
+export type EditOptions<T extends ModelName> = {
+  display?: Field<T>[];
+  fields?: EditFieldsOptions<T>;
 };
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     toString?: (item: Model<P>) => string;
-    list?: {
-      fields: ListFieldsOptions<P>;
-    };
-    edit?: {
-      fields: EditFieldsOptions<P>;
-    };
+    list?: ListOptions<P>;
+    edit?: EditOptions<P>;
   };
 };
 
@@ -140,23 +146,6 @@ export type ListDataFieldValue =
     value: Date;
   };
 
-export type ListComponentFieldsOptions<T extends ModelName> = {
-  [P in Field<T>]?: {
-    formatter?: (item: Model<T>[P]) => ReactNode;
-  };
-};
-
-export type AdminComponentOptions<T extends ModelName> = {
-  model?: {
-    [P in T]?: {
-      toString?: (item: Model<P>) => string;
-      list?: {
-        fields: ListComponentFieldsOptions<P>;
-      };
-    };
-  };
-};
-
 export type AdminComponentProps = {
   basePath: string;
   schema: Schema;
@@ -171,7 +160,7 @@ export type AdminComponentProps = {
   resources?: ModelName[];
   total?: number;
   dmmfSchema: Prisma.DMMF.Field[];
-  options?: AdminComponentOptions<ModelName>;
+  options?: NextAdminOptions;
 };
 
 export type CustomUIProps = {
