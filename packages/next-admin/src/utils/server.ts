@@ -200,25 +200,24 @@ export const findRelationInData = async (
   dmmfSchema?: Prisma.DMMF.Field[]
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
+    const dmmfPropertyName = dmmfProperty.name
     const dmmfPropertyType = dmmfProperty.type;
     const dmmfPropertyKind = dmmfProperty.kind;
     const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
     const dmmfPropertyRelationToFields = dmmfProperty.relationToFields;
 
-    if (dmmfPropertyKind === "object") {
+    if (dmmfPropertyKind === "object" ) {
       if (
         dmmfPropertyRelationFromFields!.length > 0 &&
         dmmfPropertyRelationToFields!.length > 0
       ) {
-        const relationProperty = dmmfPropertyRelationFromFields![0];
         data.map((item) => {
-          if (item[relationProperty]) {
-            item[relationProperty] = {
+          if (item[dmmfPropertyName]) {
+            item[dmmfPropertyName] = {
               type: "link",
               value: {
-                label: item[relationProperty],
-                url: `${dmmfProperty.type as ModelName}/${item[relationProperty]
-                  }`,
+                label: item[dmmfPropertyName],
+                url: `${dmmfProperty.type as ModelName}/${item[dmmfPropertyName]["id"]}`,
               },
             };
           } else {
@@ -265,8 +264,8 @@ export const parseFormData = <M extends ModelName>(
       const dmmfPropertyType = dmmfProperty.type;
       const dmmfPropertyKind = dmmfProperty.kind;
       if (dmmfPropertyKind === "object") {
-        if(Boolean(formData[dmmfPropertyName])) {
-        parsedData[dmmfPropertyName] =  JSON.parse(formData[dmmfPropertyName] as string) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        if (Boolean(formData[dmmfPropertyName])) {
+          parsedData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName] as string) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         } else {
           parsedData[dmmfPropertyName] = null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         }

@@ -74,9 +74,18 @@ function List({ resource, data, total, options }: ListProps) {
           },
           cell: ({ row }) => {
             const modelData = row.original;
-            const cellData = options?.list?.fields?.[property as keyof ListFieldsOptions<typeof resource>]?.formatter?.(modelData) ?? modelData[property];
+            const cellData = modelData[property as keyof ListFieldsOptions<ModelName>];
+            const dataFormatter = options?.list?.fields?.[property as keyof ListFieldsOptions<ModelName>]?.formatter || ((cell: any) => {
+              if (typeof cell === "object") {
+                return JSON.stringify(cell.id)
+              } else {
+                return cell
+              }
+            })
+
+
             return (
-              <Cell cell={cellData} />
+              <Cell cell={cellData} formatter={dataFormatter} />
             );
           },
         };

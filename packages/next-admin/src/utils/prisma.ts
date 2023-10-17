@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { findRelationInData, getPrismaModelForResource } from "./server";
 import {
-  ListFieldsOptions,
   ModelName,
   NextAdminOptions,
   Order,
@@ -66,7 +65,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
     const listDisplayedKeys = list.display
     select = listDisplayedKeys?.reduce((acc, column) => {
       const field = model?.fields.find(({ name }) => name === column);
-      if (field?.kind === "object") {
+      if (field?.kind === "object" && field?.isList === true) {
         if (!acc._count) acc._count = { select: {} };
         acc._count.select = { ...acc._count.select, [column]: true };
       } else {

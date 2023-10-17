@@ -38,7 +38,7 @@ const options: NextAdminOptions = {
     Post: {
       toString: (post) => `${post.title}`,
       list: {
-        display: ['id', 'title', 'content', 'published', 'authorId', 'categories'],
+        display: ['id', 'title', 'content', 'published', 'author', 'categories'],
         search: ['title', 'content'],
       },
       edit: {
