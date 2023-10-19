@@ -6,6 +6,15 @@ import {
 import { createRouter } from "next-connect";
 
 import {
+  Body,
+  EditFieldsOptions,
+  EditOptions,
+  FormData,
+  NextAdminOptions,
+  Select,
+} from "./types";
+import { getMappedDataList } from "./utils/prisma";
+import {
   fillRelationInSchema,
   flatRelationInData,
   formatSearchFields,
@@ -14,19 +23,10 @@ import {
   getPrismaModelForResource,
   getResourceFromUrl,
   getResourceIdFromUrl,
-  removeHiddenProperties,
   getResources,
   parseFormData,
+  removeHiddenProperties,
 } from "./utils/server";
-import {
-  NextAdminOptions,
-  FormData,
-  Body,
-  Select,
-  EditFieldsOptions,
-  EditOptions,
-} from "./types";
-import { getMappedDataList } from "./utils/prisma";
 import { validate } from "./utils/validator";
 
 // Router
@@ -67,7 +67,7 @@ export const nextAdminRouter = async (
         // @ts-expect-error
         acc[field.name] = true;
         return acc;
-      }, {id: true} as Select<typeof resource>);
+      }, { id: true } as Select<typeof resource>);
 
       schema = await fillRelationInSchema(
         schema,
@@ -81,7 +81,7 @@ export const nextAdminRouter = async (
       const editSelect = editDisplayedKeys?.reduce((acc, column) => {
         acc[column] = true;
         return acc;
-      }, {id: true} as Select<typeof resource>);
+      }, { id: true } as Select<typeof resource>);
       selectedFields = editSelect ?? selectedFields;
 
       // Edit
@@ -120,7 +120,7 @@ export const nextAdminRouter = async (
 
       // List
       const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-      const { data, total, error } = await getMappedDataList(prisma, resource, dmmfSchema, options, searchParams);
+      const { data, total, error } = await getMappedDataList(prisma, resource, options, searchParams);
       return {
         props: {
           ...defaultProps,
@@ -147,7 +147,7 @@ export const nextAdminRouter = async (
         // @ts-expect-error
         acc[field.name] = true;
         return acc;
-      }, {id: true} as Select<typeof resource>);
+      }, { id: true } as Select<typeof resource>);
 
       schema = await fillRelationInSchema(
         schema,
@@ -161,7 +161,7 @@ export const nextAdminRouter = async (
       const editSelect = editDisplayedKeys?.reduce((acc, column) => {
         acc[column] = true;
         return acc;
-      }, {id: true} as Select<typeof resource>);
+      }, { id: true } as Select<typeof resource>);
       selectedFields = editSelect ?? selectedFields;
 
       schema = await fillRelationInSchema(
@@ -185,7 +185,7 @@ export const nextAdminRouter = async (
         // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
         if (resourceId === undefined && formData.action === "delete") {
           const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-          const { data, total } = await getMappedDataList(prisma, resource, dmmfSchema, options, searchParams);
+          const { data, total } = await getMappedDataList(prisma, resource, options, searchParams);
 
           return {
             props: {

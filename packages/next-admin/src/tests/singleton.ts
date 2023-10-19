@@ -1,8 +1,9 @@
 // https://www.prisma.io/docs/guides/testing/unit-testing#singleton
 import { PrismaClient } from "@prisma/client";
-import { mockDeep, mockReset, DeepMockProxy } from "jest-mock-extended";
+import { DeepMockProxy, mockDeep, mockReset } from "jest-mock-extended";
 
 import prisma from "@prisma/client";
+import { NextAdminOptions } from "../types";
 
 jest.mock("@prisma/client", () => ({
   __esModule: true,
@@ -203,6 +204,11 @@ jest.mock("@prisma/client", () => ({
         ],
       },
     },
+    SortOrder: {
+      __typename: "SortOrder",
+      asc: "asc",
+      desc: "desc",
+    },
   },
   default: mockDeep<PrismaClient>(),
 }));
@@ -264,6 +270,41 @@ export const schema = {
         posts: { $ref: "#/definitions/Post" },
         postId: { type: "integer" },
       },
+    },
+  },
+};
+
+export const options: NextAdminOptions = {
+  basePath: "/admin",
+  model: {
+    User: {
+      toString: (user) => `${user.name} (${user.email})`,
+      list: {
+        display: ["id", "name", "email", "posts", "role"],
+        search: ["name", "email"],
+
+      },
+      edit: {
+        display: ["id", "name", "email", "posts", "role"],
+        fields: {
+          email: {
+            validate: (email) => email.includes("@") || "Invalid email",
+          },
+        },
+      },
+    },
+    Post: {
+      toString: (post) => `${post.title}`,
+      list: {
+        display: ['id', 'title', 'content', 'published', 'author', 'categories'],
+        search: ['title', 'content'],
+      },
+      edit: {
+        display: ['id', 'title', 'content', 'published', 'authorId', 'categories'],
+      }
+    },
+    Category: {
+      toString: (category) => `${category.name}`,
     },
   },
 };

@@ -2,7 +2,6 @@ import { Prisma } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
-import { type } from "os";
 
 /** Type for Model */
 
