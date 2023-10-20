@@ -2,7 +2,6 @@ import { Prisma } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
-import { type } from "os";
 
 /** Type for Model */
 
@@ -29,7 +28,7 @@ export type Field<P extends ModelName> = keyof Model<P>;
 
 export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
+    formatter?: (item: Model<T>[P]) => ReactNode;
   };
 };
 

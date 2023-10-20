@@ -1,16 +1,16 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { findRelationInData, getPrismaModelForResource } from "./server";
+import { ITEMS_PER_PAGE } from "../config";
 import {
+  Field,
+  ListOptions,
   ModelName,
   NextAdminOptions,
   Order,
   PrismaListRequest,
   Select,
-  Field,
-  ListOptions,
 } from "../types";
-import { ITEMS_PER_PAGE } from "../config";
-import { capitalize } from "./tools";
+import { findRelationInData, getPrismaModelForResource } from "./server";
+import { capitalize, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
   fieldsFiltered?: Prisma.DMMF.Field[],
@@ -92,7 +92,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
   };
 };
 
-export const getMappedDataList = async (prisma: PrismaClient, resource: ModelName, dmmfSchema: Prisma.DMMF.Model | undefined, options: NextAdminOptions, searchParams: URLSearchParams) => {
+export const getMappedDataList = async (prisma: PrismaClient, resource: ModelName, options: NextAdminOptions, searchParams: URLSearchParams) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,
@@ -101,23 +101,25 @@ export const getMappedDataList = async (prisma: PrismaClient, resource: ModelNam
   let data: any[] = [];
   let total: number;
   let error = null;
+  const dmmfSchema = getPrismaModelForResource(resource);
+
   try {
     // @ts-expect-error
-    data = await prisma[resource].findMany(prismaListRequest);
+    data = await prisma[uncapitalize(resource)].findMany(prismaListRequest);
     // @ts-expect-error
-    total = await prisma[resource].count({
+    total = await prisma[uncapitalize(resource)].count({
       where: prismaListRequest.where,
     });
   } catch (e: any) {
     const { skip, take, orderBy } = prismaListRequest;
     // @ts-expect-error
-    data = await prisma[resource].findMany({
+    data = await prisma[uncapitalize(resource)].findMany({
       skip,
       take,
       orderBy,
     });
     // @ts-expect-error
-    total = await prisma[resource].count();
+    total = await prisma[uncapitalize(resource)].count();
     error = e.message ? e.message : e;
     console.error(e);
   }

@@ -8,8 +8,6 @@ import {
   Schema,
   FormData,
   Enumeration,
-  ListFieldsOptions,
-  EditFieldsOptions,
   ModelWithoutRelationships,
   ScalarField,
   EditOptions,
@@ -206,7 +204,7 @@ export const findRelationInData = async (
     const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
     const dmmfPropertyRelationToFields = dmmfProperty.relationToFields;
 
-    if (dmmfPropertyKind === "object" ) {
+    if (dmmfPropertyKind === "object") {
       if (
         dmmfPropertyRelationFromFields!.length > 0 &&
         dmmfPropertyRelationToFields!.length > 0
