@@ -3,7 +3,7 @@ import debounce from "lodash/debounce";
 import { useRouter } from "next/compat/router";
 import { ChangeEvent, useTransition } from "react";
 import { ITEMS_PER_PAGE } from "../config";
-import { ListData, ListDataItem, ListFieldsOptions, Model, ModelName, NextAdminOptions } from "../types";
+import { ListData, ListDataItem, ListFieldsOptions, ModelName, NextAdminOptions } from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
