@@ -8,10 +8,10 @@ import {
   Schema,
   FormData,
   Enumeration,
-  ListFieldsOptions,
-  EditFieldsOptions,
   ModelWithoutRelationships,
   ScalarField,
+  EditOptions,
+  ListOptions,
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
@@ -76,16 +76,9 @@ export const fillRelationInSchema = async (
         const remoteModel = models.find(
           (model) => model.name === modelNameRelation
         );
-        type ListFieldOptionsModel = ListFieldsOptions<
-          typeof modelNameRelation
-        >;
-        const listFields = options?.model?.[modelNameRelation]?.list
-          ?.fields as ListFieldOptionsModel;
-        const listKeys =
-          listFields &&
-          (Object.keys(listFields) as Array<keyof ListFieldOptionsModel>);
+        const listOptions = options?.model?.[modelNameRelation]?.list as ListOptions<typeof modelNameRelation>;
         const optionsForRelations =
-          listKeys?.filter((key) => listFields[key]?.search) ??
+          listOptions?.search ??
           remoteModel?.fields.map((field) => field.name);
         const relationProperty: Field<typeof modelName> =
           (relationFromFields?.[0] as Field<typeof modelName>) ?? fieldName;
@@ -205,6 +198,7 @@ export const findRelationInData = async (
   dmmfSchema?: Prisma.DMMF.Field[]
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
+    const dmmfPropertyName = dmmfProperty.name
     const dmmfPropertyType = dmmfProperty.type;
     const dmmfPropertyKind = dmmfProperty.kind;
     const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
@@ -215,15 +209,13 @@ export const findRelationInData = async (
         dmmfPropertyRelationFromFields!.length > 0 &&
         dmmfPropertyRelationToFields!.length > 0
       ) {
-        const relationProperty = dmmfPropertyRelationFromFields![0];
         data.map((item) => {
-          if (item[relationProperty]) {
-            item[relationProperty] = {
+          if (item[dmmfPropertyName]) {
+            item[dmmfPropertyName] = {
               type: "link",
               value: {
-                label: item[relationProperty],
-                url: `${dmmfProperty.type as ModelName}/${item[relationProperty]
-                  }`,
+                label: item[dmmfPropertyName],
+                url: `${dmmfProperty.type as ModelName}/${item[dmmfPropertyName]["id"]}`,
               },
             };
           } else {
@@ -270,8 +262,8 @@ export const parseFormData = <M extends ModelName>(
       const dmmfPropertyType = dmmfProperty.type;
       const dmmfPropertyKind = dmmfProperty.kind;
       if (dmmfPropertyKind === "object") {
-        if(Boolean(formData[dmmfPropertyName])) {
-        parsedData[dmmfPropertyName] =  JSON.parse(formData[dmmfPropertyName] as string) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        if (Boolean(formData[dmmfPropertyName])) {
+          parsedData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName] as string) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         } else {
           parsedData[dmmfPropertyName] = null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         }
@@ -380,13 +372,13 @@ export const formatSearchFields = (uri: string) =>
 
 export const removeHiddenProperties = <M extends ModelName>(
   schema: Schema,
-  editOptions: EditFieldsOptions<M>,
+  editOptions: EditOptions<M>,
   resource: M
 ) => {
   if (!editOptions) return schema;
   const properties = schema.definitions[resource].properties;
   Object.keys(properties).forEach((property) => {
-    if (!editOptions[property as Field<M>]?.display) {
+    if (!editOptions.display?.includes(property as Field<M>)) {
       delete properties[property as Field<M>];
     }
   });
