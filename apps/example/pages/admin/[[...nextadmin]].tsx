@@ -39,13 +39,13 @@ const options: NextAdminOptions = {
       list: {
         display: ['id', 'title', 'content', 'published', 'author', 'categories'],
         search: ['title', 'content'],
-        fields: {
-          author: {
-            formatter: (author) => {
-              return <strong>{author.name}</strong>;
-            },
-          },
-        },
+        // fields: {
+        //   author: {
+        //     formatter: (author) => {
+        //       return <strong>{author.name}</strong>;
+        //     },
+        //   },
+        // },
       },
       edit: {
         display: ['id', 'title', 'content', 'published', 'authorId', 'categories'],
