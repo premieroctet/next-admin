@@ -23,6 +23,11 @@ const options: NextAdminOptions = {
               return <strong>{role.toString()}</strong>;
             },
           },
+          birthDate: {
+            formatter: (date) => {
+              return date?.toLocaleString("fr-FR").split(' ')[0];
+            }
+          }
         },
       },
       edit: {

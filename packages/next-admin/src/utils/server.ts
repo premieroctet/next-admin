@@ -203,7 +203,6 @@ export const flatRelationInData = <M extends ModelName>(data: any, resource: M, 
 export const findRelationInData = async (
   data: any[],
   dmmfSchema?: Prisma.DMMF.Field[],
-  editOptions?: EditOptions<ModelName>,
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name
@@ -245,12 +244,9 @@ export const findRelationInData = async (
     if (dmmfPropertyType === "DateTime") {
       data.map((item) => {
         if (item[dmmfProperty.name]) {
-          // @ts-expect-error
-          const editOptionsField = editOptions?.fields?.[dmmfProperty.name as keyof EditOptions<M>["fields"]]?.formatDate;
-          const value = editOptionsField === "date" ? item[dmmfProperty.name].toLocaleString("fr-FR").split(" ")[0] : item[dmmfProperty.name].toLocaleString("fr-FR")
           item[dmmfProperty.name] = {
             type: "date",
-            value: value,
+            value: item[dmmfProperty.name].toLocaleString("fr-FR"),
           };
         } else {
           return item;
