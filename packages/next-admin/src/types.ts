@@ -12,10 +12,9 @@ export type ObjectField<T extends ModelName> = Prisma.TypeMap["model"][T]["paylo
 
 export type Model<M extends ModelName, T extends object | number = object> = ScalarField<M> & {
   [P in keyof ObjectField<M>]:
-  ObjectField<M>[P] extends { scalars: infer S } ? T extends never ? S : T
-  : ObjectField<M>[P] extends { scalars: infer S } | null ? T extends never ? S | null : T | null
-  : ObjectField<M>[P] extends { scalars: infer S }[] ? T extends never ? S[] : T[]
-  : never;
+  | ObjectField<M>[P] extends { scalars: infer S } ? (T extends object ? S : T) : never
+  | ObjectField<M>[P] extends { scalars: infer S }[] ? T extends object ? S[] : T[] : never
+  | ObjectField<M>[P] extends { scalars: infer S } | null ? (T extends object ? S | null : T | null) : never
 }
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;

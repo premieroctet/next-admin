@@ -1,14 +1,13 @@
-import { GetServerSideProps, GetServerSidePropsResult } from "next";
-
-import { prisma } from "../../prisma";
-import schema from "../../prisma/json-schema/json-schema.json";
-import "@premieroctet/next-admin/dist/styles.css";
 import {
   AdminComponentProps,
   NextAdmin,
   NextAdminOptions,
 } from "@premieroctet/next-admin";
+import "@premieroctet/next-admin/dist/styles.css";
+import { GetServerSideProps, GetServerSidePropsResult } from "next";
 import Dashboard from "../../components/Dashboard";
+import { prisma } from "../../prisma";
+import schema from "../../prisma/json-schema/json-schema.json";
 
 const options: NextAdminOptions = {
   basePath: "/admin",
@@ -40,6 +39,13 @@ const options: NextAdminOptions = {
       list: {
         display: ['id', 'title', 'content', 'published', 'author', 'categories'],
         search: ['title', 'content'],
+        fields: {
+          author: {
+            formatter: (author) => {
+              return <strong>{author.name}</strong>;
+            },
+          },
+        },
       },
       edit: {
         display: ['id', 'title', 'content', 'published', 'authorId', 'categories'],

@@ -2,7 +2,6 @@ import { ColumnDef } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
 import { useRouter } from "next/compat/router";
 import { ChangeEvent, useTransition } from "react";
-
 import { ITEMS_PER_PAGE } from "../config";
 import { ListData, ListDataItem, ListFieldsOptions, ModelName, NextAdminOptions } from "../types";
 import Cell from "./Cell";
@@ -77,12 +76,11 @@ function List({ resource, data, total, options }: ListProps) {
             const cellData = modelData[property as keyof ListFieldsOptions<ModelName>];
             const dataFormatter = options?.list?.fields?.[property as keyof ListFieldsOptions<ModelName>]?.formatter || ((cell: any) => {
               if (typeof cell === "object") {
-                return JSON.stringify(cell.id)
+                return cell.id
               } else {
                 return cell
               }
             })
-
 
             return (
               <Cell cell={cellData} formatter={dataFormatter} />
