@@ -2,16 +2,16 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import bodyParser from "body-parser";
 import util from "util";
 import {
-  Field,
-  ModelName,
-  NextAdminOptions,
-  Schema,
-  FormData,
-  Enumeration,
-  ModelWithoutRelationships,
-  ScalarField,
   EditOptions,
+  Enumeration,
+  Field,
+  FormData,
   ListOptions,
+  ModelName,
+  ModelWithoutRelationships,
+  NextAdminOptions,
+  ScalarField,
+  Schema
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
@@ -159,7 +159,7 @@ export const fillRelationInSchema = async (
   return schema;
 };
 
-export const flatRelationInData = (data: any, resource: ModelName) => {
+export const flatRelationInData = <M extends ModelName>(data: any, resource: M, editOptions: EditOptions<M>) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
@@ -176,7 +176,14 @@ export const flatRelationInData = (data: any, resource: ModelName) => {
     } else {
       const fieldTypes = field?.type;
       if (fieldTypes === "DateTime") {
-        acc[key] = data[key] ? data[key].toISOString() : null;
+        // @ts-expect-error
+        const editOptionsField = editOptions?.fields?.[key as keyof EditOptions<M>["fields"]].formatDate;
+        if (editOptionsField && editOptionsField === "date") {
+          acc[key] = data[key] ? data[key].toISOString().split("T")[0] : null;
+        } else {
+          acc[key] = data[key] ? data[key].toISOString() : null;
+        }
+
       } else {
         acc[key] = data[key] ? data[key] : null;
       }
@@ -195,7 +202,8 @@ export const flatRelationInData = (data: any, resource: ModelName) => {
  * */
 export const findRelationInData = async (
   data: any[],
-  dmmfSchema?: Prisma.DMMF.Field[]
+  dmmfSchema?: Prisma.DMMF.Field[],
+  editOptions?: EditOptions<ModelName>,
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name
@@ -237,9 +245,12 @@ export const findRelationInData = async (
     if (dmmfPropertyType === "DateTime") {
       data.map((item) => {
         if (item[dmmfProperty.name]) {
+          // @ts-expect-error
+          const editOptionsField = editOptions?.fields?.[dmmfProperty.name as keyof EditOptions<M>["fields"]]?.formatDate;
+          const value = editOptionsField === "date" ? item[dmmfProperty.name].toLocaleString("fr-FR").split(" ")[0] : item[dmmfProperty.name].toLocaleString("fr-FR")
           item[dmmfProperty.name] = {
             type: "date",
-            value: new Date(item[dmmfProperty.name]).toLocaleString("fr-FR"),
+            value: value,
           };
         } else {
           return item;
@@ -369,6 +380,41 @@ export const formattedFormData = <M extends ModelName>(
  */
 export const formatSearchFields = (uri: string) =>
   Object.fromEntries(new URLSearchParams(uri));
+
+export const transformSchema = <M extends ModelName>(
+  schema: Schema,
+  resource: M,
+  editOptions: EditOptions<M>,
+  dmmfSchema?: Prisma.DMMF.Model
+) => {
+  schema = removeHiddenProperties(schema, editOptions, resource);
+  schema = dmmfSchema ? changeFormatForFile(schema, resource, dmmfSchema.fields, editOptions) : schema;
+  return schema;
+};
+
+export const changeFormatForFile = <M extends ModelName>(schema: Schema, resource: M, dmmfSchema: Prisma.DMMF.Field[], editOptions: EditOptions<M>) => {
+  const modelName = resource;
+  const model = models.find((model) => model.name === modelName);
+  if (!model) return schema;
+  dmmfSchema.forEach((dmmfProperty) => {
+    const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
+    const dmmfPropertyType = dmmfProperty.type;
+    if (dmmfPropertyType === "DateTime") {
+      // @ts-expect-error
+      if (editOptions?.fields?.[dmmfPropertyName]?.formatDate) {
+        const fieldValue =
+          schema.definitions[modelName].properties[
+          dmmfPropertyName as Field<typeof modelName>
+          ];
+        if (fieldValue) {
+          // @ts-expect-error
+          fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.formatDate;
+        }
+      }
+    }
+  });
+  return schema;
+};
 
 export const removeHiddenProperties = <M extends ModelName>(
   schema: Schema,

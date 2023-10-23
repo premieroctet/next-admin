@@ -34,7 +34,7 @@ export type ListFieldsOptions<T extends ModelName> = {
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     validate?: (value: ModelWithoutRelationships<T>[P]) => true | string;
-  };
+  } & (ModelWithoutRelationships<T>[P] extends Date | null ? { formatDate: "date-time" | "date" } : {});
 };
 
 export type ListOptions<T extends ModelName> = {

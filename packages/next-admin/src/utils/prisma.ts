@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { ITEMS_PER_PAGE } from "../config";
 import {
+  EditOptions,
   Field,
   ListOptions,
   ModelName,
@@ -124,7 +125,8 @@ export const getMappedDataList = async (prisma: PrismaClient, resource: ModelNam
     console.error(e);
   }
 
-  data = await findRelationInData(data, dmmfSchema?.fields);
+  const edit = options?.model?.[resource]?.edit as EditOptions<ModelName>;
+  data = await findRelationInData(data, dmmfSchema?.fields, edit);
 
   return {
     data,

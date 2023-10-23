@@ -15,7 +15,7 @@ const options: NextAdminOptions = {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
       list: {
-        display: ["id", "name", "email", "posts", "role"],
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
         fields: {
           role: {
@@ -26,11 +26,14 @@ const options: NextAdminOptions = {
         },
       },
       edit: {
-        display: ["id", "name", "email", "posts", "role"],
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
           },
+          birthDate: {
+            formatDate: "date"
+          }
         },
       },
     },

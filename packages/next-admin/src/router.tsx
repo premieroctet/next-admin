@@ -25,7 +25,7 @@ import {
   getResourceIdFromUrl,
   getResources,
   parseFormData,
-  removeHiddenProperties,
+  transformSchema
 } from "./utils/server";
 import { validate } from "./utils/validator";
 
@@ -94,8 +94,8 @@ export const nextAdminRouter = async (
           where: { id: resourceId },
           select: selectedFields,
         });
-        schema = removeHiddenProperties(schema, edit, resource);
-        data = flatRelationInData(data, resource);
+        schema = transformSchema(schema, resource, edit, dmmfSchema);
+        data = flatRelationInData(data, resource, edit);
         return {
           props: {
             ...defaultProps,
@@ -171,7 +171,7 @@ export const nextAdminRouter = async (
         requestOptions,
         options
       );
-      schema = removeHiddenProperties(schema, edit, resource);
+      schema = transformSchema(schema, resource, edit, model);
       await getBody(req, res);
 
       // @ts-expect-error
@@ -242,7 +242,7 @@ export const nextAdminRouter = async (
             select: selectedFields,
           });
 
-          data = flatRelationInData(data, resource);
+          data = flatRelationInData(data, resource, edit);
           const fromCreate = req.headers.referer
             ?.split("?")[0]
             .endsWith(`${options.basePath}/${resource}/new`);
@@ -281,7 +281,7 @@ export const nextAdminRouter = async (
           select: selectedFields,
         });
 
-        data = flatRelationInData(data, resource);
+        data = flatRelationInData(data, resource, edit);
         return {
           redirect: {
             destination: `${options.basePath}/${resource}/${data.id}`,
@@ -302,7 +302,7 @@ export const nextAdminRouter = async (
               where: { id: resourceId },
               select: selectedFields,
             });
-            data = flatRelationInData(data, resource);
+            data = flatRelationInData(data, resource, edit);
           }
 
           // TODO This could be improved by merging form values but it's breaking stuff 
