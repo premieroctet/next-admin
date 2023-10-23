@@ -25,7 +25,7 @@ const options: NextAdminOptions = {
           },
           birthDate: {
             formatter: (date) => {
-              return date?.toLocaleString("fr-FR").split(' ')[0];
+              return new Date(date as unknown as string)?.toLocaleString("fr-FR").split(" ")[0];
             }
           }
         },
@@ -37,7 +37,12 @@ const options: NextAdminOptions = {
             validate: (email) => email.includes("@") || "Invalid email",
           },
           birthDate: {
-            formatDate: "date"
+            format: "date",
+            handler: {
+              get: (value) => {
+                return value?.toISOString().split("T")[0];
+              },
+            }
           }
         },
       },

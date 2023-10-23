@@ -159,7 +159,7 @@ export const fillRelationInSchema = async (
   return schema;
 };
 
-export const flatRelationInData = <M extends ModelName>(data: any, resource: M, editOptions: EditOptions<M>) => {
+export const transformData = <M extends ModelName>(data: any, resource: M, editOptions: EditOptions<M>) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
@@ -167,25 +167,24 @@ export const flatRelationInData = <M extends ModelName>(data: any, resource: M, 
   return Object.keys(data).reduce((acc, key) => {
     const field = model.fields.find((field) => field.name === key);
     const fieldKind = field?.kind;
-    if (fieldKind === "object") {
-      if (Array.isArray(data[key])) {
-        acc[key] = data[key].map((item: any) => item.id);
-      } else {
-        acc[key] = data[key] ? data[key].id : null;
-      }
+    const get = editOptions?.fields?.[key as Field<M>]?.handler?.get
+    if (get) {
+      acc[key] = get(data[key])
     } else {
-      const fieldTypes = field?.type;
-      if (fieldTypes === "DateTime") {
-        // @ts-expect-error
-        const editOptionsField = editOptions?.fields?.[key as keyof EditOptions<M>["fields"]].formatDate;
-        if (editOptionsField && editOptionsField === "date") {
-          acc[key] = data[key] ? data[key].toISOString().split("T")[0] : null;
+      if (fieldKind === "object") {
+        // Flat relationships to id
+        if (Array.isArray(data[key])) {
+          acc[key] = data[key].map((item: any) => item.id);
         } else {
-          acc[key] = data[key] ? data[key].toISOString() : null;
+          acc[key] = data[key] ? data[key].id : null;
         }
-
       } else {
-        acc[key] = data[key] ? data[key] : null;
+        const fieldTypes = field?.type;
+        if (fieldTypes === "DateTime") {
+          acc[key] = data[key] ? data[key].toISOString() : null;
+        } else {
+          acc[key] = data[key] ? data[key] : null;
+        }
       }
     }
     return acc;
@@ -246,7 +245,7 @@ export const findRelationInData = async (
         if (item[dmmfProperty.name]) {
           item[dmmfProperty.name] = {
             type: "date",
-            value: item[dmmfProperty.name].toLocaleString("fr-FR"),
+            value: item[dmmfProperty.name].toISOString(),
           };
         } else {
           return item;
@@ -384,28 +383,20 @@ export const transformSchema = <M extends ModelName>(
   dmmfSchema?: Prisma.DMMF.Model
 ) => {
   schema = removeHiddenProperties(schema, editOptions, resource);
-  schema = dmmfSchema ? changeFormatForFile(schema, resource, dmmfSchema.fields, editOptions) : schema;
+  schema = dmmfSchema ? changeFormatInSchema(schema, resource, dmmfSchema.fields, editOptions) : schema;
   return schema;
 };
 
-export const changeFormatForFile = <M extends ModelName>(schema: Schema, resource: M, dmmfSchema: Prisma.DMMF.Field[], editOptions: EditOptions<M>) => {
+export const changeFormatInSchema = <M extends ModelName>(schema: Schema, resource: M, dmmfSchema: Prisma.DMMF.Field[], editOptions: EditOptions<M>) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return schema;
   dmmfSchema.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
-    const dmmfPropertyType = dmmfProperty.type;
-    if (dmmfPropertyType === "DateTime") {
-      // @ts-expect-error
-      if (editOptions?.fields?.[dmmfPropertyName]?.formatDate) {
-        const fieldValue =
-          schema.definitions[modelName].properties[
-          dmmfPropertyName as Field<typeof modelName>
-          ];
-        if (fieldValue) {
-          // @ts-expect-error
-          fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.formatDate;
-        }
+    if (editOptions?.fields?.[dmmfPropertyName]?.format) {
+      const fieldValue = schema.definitions[modelName].properties[dmmfPropertyName as Field<typeof modelName>];
+      if (fieldValue) {
+        fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
       }
     }
   });

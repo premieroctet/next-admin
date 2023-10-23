@@ -16,7 +16,6 @@ import {
 import { getMappedDataList } from "./utils/prisma";
 import {
   fillRelationInSchema,
-  flatRelationInData,
   formatSearchFields,
   formattedFormData,
   getBody,
@@ -25,6 +24,7 @@ import {
   getResourceIdFromUrl,
   getResources,
   parseFormData,
+  transformData,
   transformSchema
 } from "./utils/server";
 import { validate } from "./utils/validator";
@@ -95,7 +95,7 @@ export const nextAdminRouter = async (
           select: selectedFields,
         });
         schema = transformSchema(schema, resource, edit, dmmfSchema);
-        data = flatRelationInData(data, resource, edit);
+        data = transformData(data, resource, edit);
         return {
           props: {
             ...defaultProps,
@@ -242,7 +242,7 @@ export const nextAdminRouter = async (
             select: selectedFields,
           });
 
-          data = flatRelationInData(data, resource, edit);
+          data = transformData(data, resource, edit);
           const fromCreate = req.headers.referer
             ?.split("?")[0]
             .endsWith(`${options.basePath}/${resource}/new`);
@@ -281,7 +281,7 @@ export const nextAdminRouter = async (
           select: selectedFields,
         });
 
-        data = flatRelationInData(data, resource, edit);
+        data = transformData(data, resource, edit);
         return {
           redirect: {
             destination: `${options.basePath}/${resource}/${data.id}`,
@@ -302,7 +302,7 @@ export const nextAdminRouter = async (
               where: { id: resourceId },
               select: selectedFields,
             });
-            data = flatRelationInData(data, resource, edit);
+            data = transformData(data, resource, edit);
           }
 
           // TODO This could be improved by merging form values but it's breaking stuff 
