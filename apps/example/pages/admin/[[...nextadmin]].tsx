@@ -3,7 +3,6 @@ import {
   NextAdmin,
   NextAdminOptions,
 } from "@premieroctet/next-admin";
-import "@premieroctet/next-admin/dist/styles.css";
 import { GetServerSideProps, GetServerSidePropsResult } from "next";
 import Dashboard from "../../components/Dashboard";
 import { prisma } from "../../prisma";
@@ -15,7 +14,7 @@ const options: NextAdminOptions = {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
       list: {
-        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        display: ["id", "name", "email", "posts", "role", "birthDate", "birthDate"],
         search: ["name", "email"],
         fields: {
           role: {
@@ -33,7 +32,7 @@ const options: NextAdminOptions = {
         },
       },
       edit: {
-        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        display: ["id", "name", "email", "posts", "role", "birthDate", "birthDate"],
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
