@@ -34,8 +34,19 @@ export type ListFieldsOptions<T extends ModelName> = {
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     validate?: (value: ModelWithoutRelationships<T>[P]) => true | string;
-  };
+    format?: FormatOptions<ModelWithoutRelationships<T>[P]>;
+    handler?: Handler<T, P, Model<T>[P]>;
+  }
 };
+
+export type Handler<M extends ModelName, P extends Field<M>, T extends Model<M>[P]> = {
+  get?: (input: T) => any;
+}
+
+export type FormatOptions<T> =
+  | T extends string ? "textarea" | "password" | "color" | "email" | "uri" | "data-url" | "date" | "date-time" | "time" | "alt-datetime" | "alt-date" : never
+  | T extends Date ? "date" | "date-time" | "time" : never
+  | T extends number ? "updown" | "range" : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import RjsfForm from "@rjsf/core";
 import {
   BaseInputTemplateProps,
@@ -7,16 +8,15 @@ import {
   getSubmitButtonOptions,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
-import { ChangeEvent } from "react";
-import Button from "./radix/Button";
 import clsx from "clsx";
-import { Schemas, getSchemas } from "../utils/jsonSchema";
-import { Prisma } from "@prisma/client";
-import SelectWidget from "./inputs/SelectWidget";
+import { ChangeEvent } from "react";
+import { PropertyValidationError } from "../exceptions/ValidationError";
 import { ModelName } from "../types";
+import { Schemas, getSchemas } from "../utils/jsonSchema";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
-import { PropertyValidationError } from "../exceptions/ValidationError";
+import SelectWidget from "./inputs/SelectWidget";
+import Button from "./radix/Button";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {

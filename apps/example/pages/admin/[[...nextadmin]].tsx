@@ -15,7 +15,7 @@ const options: NextAdminOptions = {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
       list: {
-        display: ["id", "name", "email", "posts", "role"],
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
         fields: {
           role: {
@@ -23,14 +23,28 @@ const options: NextAdminOptions = {
               return <strong>{role.toString()}</strong>;
             },
           },
+          birthDate: {
+            formatter: (date) => {
+              return new Date(date as unknown as string)?.toLocaleString().split(" ")[0];
+            }
+          }
         },
       },
       edit: {
-        display: ["id", "name", "email", "posts", "role"],
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
           },
+          birthDate: {
+            format: "date",
+            handler: {
+              //This getter is used to format the date in the form and match with the format of the input
+              get: (value) => {
+                return value?.toISOString().split("T")[0];
+              },
+            }
+          }
         },
       },
     },

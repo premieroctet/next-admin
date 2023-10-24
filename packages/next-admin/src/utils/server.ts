@@ -2,16 +2,16 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import bodyParser from "body-parser";
 import util from "util";
 import {
-  Field,
-  ModelName,
-  NextAdminOptions,
-  Schema,
-  FormData,
-  Enumeration,
-  ModelWithoutRelationships,
-  ScalarField,
   EditOptions,
+  Enumeration,
+  Field,
+  FormData,
   ListOptions,
+  ModelName,
+  ModelWithoutRelationships,
+  NextAdminOptions,
+  ScalarField,
+  Schema
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
@@ -159,7 +159,7 @@ export const fillRelationInSchema = async (
   return schema;
 };
 
-export const flatRelationInData = (data: any, resource: ModelName) => {
+export const transformData = <M extends ModelName>(data: any, resource: M, editOptions: EditOptions<M>) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
@@ -167,18 +167,24 @@ export const flatRelationInData = (data: any, resource: ModelName) => {
   return Object.keys(data).reduce((acc, key) => {
     const field = model.fields.find((field) => field.name === key);
     const fieldKind = field?.kind;
-    if (fieldKind === "object") {
-      if (Array.isArray(data[key])) {
-        acc[key] = data[key].map((item: any) => item.id);
-      } else {
-        acc[key] = data[key] ? data[key].id : null;
-      }
+    const get = editOptions?.fields?.[key as Field<M>]?.handler?.get
+    if (get) {
+      acc[key] = get(data[key])
     } else {
-      const fieldTypes = field?.type;
-      if (fieldTypes === "DateTime") {
-        acc[key] = data[key] ? data[key].toISOString() : null;
+      if (fieldKind === "object") {
+        // Flat relationships to id
+        if (Array.isArray(data[key])) {
+          acc[key] = data[key].map((item: any) => item.id);
+        } else {
+          acc[key] = data[key] ? data[key].id : null;
+        }
       } else {
-        acc[key] = data[key] ? data[key] : null;
+        const fieldTypes = field?.type;
+        if (fieldTypes === "DateTime") {
+          acc[key] = data[key] ? data[key].toISOString() : null;
+        } else {
+          acc[key] = data[key] ? data[key] : null;
+        }
       }
     }
     return acc;
@@ -195,7 +201,7 @@ export const flatRelationInData = (data: any, resource: ModelName) => {
  * */
 export const findRelationInData = async (
   data: any[],
-  dmmfSchema?: Prisma.DMMF.Field[]
+  dmmfSchema?: Prisma.DMMF.Field[],
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name
@@ -239,7 +245,7 @@ export const findRelationInData = async (
         if (item[dmmfProperty.name]) {
           item[dmmfProperty.name] = {
             type: "date",
-            value: new Date(item[dmmfProperty.name]).toLocaleString("fr-FR"),
+            value: item[dmmfProperty.name].toISOString(),
           };
         } else {
           return item;
@@ -370,10 +376,36 @@ export const formattedFormData = <M extends ModelName>(
 export const formatSearchFields = (uri: string) =>
   Object.fromEntries(new URLSearchParams(uri));
 
+export const transformSchema = <M extends ModelName>(
+  schema: Schema,
+  resource: M,
+  editOptions: EditOptions<M>
+) => {
+  schema = removeHiddenProperties(schema, resource, editOptions);
+  schema = changeFormatInSchema(schema, resource, editOptions);
+  return schema;
+};
+
+export const changeFormatInSchema = <M extends ModelName>(schema: Schema, resource: M, editOptions: EditOptions<M>) => {
+  const modelName = resource;
+  const model = models.find((model) => model.name === modelName);
+  if (!model) return schema;
+  model.fields.forEach((dmmfProperty) => {
+    const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
+    if (editOptions?.fields?.[dmmfPropertyName]?.format) {
+      const fieldValue = schema.definitions[modelName].properties[dmmfPropertyName as Field<typeof modelName>];
+      if (fieldValue) {
+        fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
+      }
+    }
+  });
+  return schema;
+};
+
 export const removeHiddenProperties = <M extends ModelName>(
   schema: Schema,
-  editOptions: EditOptions<M>,
-  resource: M
+  resource: M,
+  editOptions: EditOptions<M>
 ) => {
   if (!editOptions) return schema;
   const properties = schema.definitions[resource].properties;

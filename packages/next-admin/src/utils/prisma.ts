@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { ITEMS_PER_PAGE } from "../config";
 import {
+  EditOptions,
   Field,
   ListOptions,
   ModelName,
@@ -75,7 +76,6 @@ export const preparePrismaListRequest = <M extends ModelName>(
       return acc;
     }, { id: true } as Select<M>);
 
-
     fieldsFiltered =
       model?.fields.filter(
         ({ name }) => list.search?.includes(name as Field<M>)
@@ -123,9 +123,7 @@ export const getMappedDataList = async (prisma: PrismaClient, resource: ModelNam
     error = e.message ? e.message : e;
     console.error(e);
   }
-
   data = await findRelationInData(data, dmmfSchema?.fields);
-
   return {
     data,
     total,
