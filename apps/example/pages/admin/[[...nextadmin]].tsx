@@ -25,7 +25,7 @@ const options: NextAdminOptions = {
           },
           birthDate: {
             formatter: (date) => {
-              return new Date(date as unknown as string)?.toLocaleString("fr-FR").split(" ")[0];
+              return new Date(date as unknown as string)?.toLocaleString().split(" ")[0];
             }
           }
         },
@@ -39,6 +39,7 @@ const options: NextAdminOptions = {
           birthDate: {
             format: "date",
             handler: {
+              //This getter is used to format the date in the form and match with the format of the input
               get: (value) => {
                 return value?.toISOString().split("T")[0];
               },

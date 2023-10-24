@@ -379,19 +379,18 @@ export const formatSearchFields = (uri: string) =>
 export const transformSchema = <M extends ModelName>(
   schema: Schema,
   resource: M,
-  editOptions: EditOptions<M>,
-  dmmfSchema?: Prisma.DMMF.Model
+  editOptions: EditOptions<M>
 ) => {
-  schema = removeHiddenProperties(schema, editOptions, resource);
-  schema = dmmfSchema ? changeFormatInSchema(schema, resource, dmmfSchema.fields, editOptions) : schema;
+  schema = removeHiddenProperties(schema, resource, editOptions);
+  schema = changeFormatInSchema(schema, resource, editOptions);
   return schema;
 };
 
-export const changeFormatInSchema = <M extends ModelName>(schema: Schema, resource: M, dmmfSchema: Prisma.DMMF.Field[], editOptions: EditOptions<M>) => {
+export const changeFormatInSchema = <M extends ModelName>(schema: Schema, resource: M, editOptions: EditOptions<M>) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return schema;
-  dmmfSchema.forEach((dmmfProperty) => {
+  model.fields.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
     if (editOptions?.fields?.[dmmfPropertyName]?.format) {
       const fieldValue = schema.definitions[modelName].properties[dmmfPropertyName as Field<typeof modelName>];
@@ -405,8 +404,8 @@ export const changeFormatInSchema = <M extends ModelName>(schema: Schema, resour
 
 export const removeHiddenProperties = <M extends ModelName>(
   schema: Schema,
-  editOptions: EditOptions<M>,
-  resource: M
+  resource: M,
+  editOptions: EditOptions<M>
 ) => {
   if (!editOptions) return schema;
   const properties = schema.definitions[resource].properties;

@@ -94,7 +94,7 @@ export const nextAdminRouter = async (
           where: { id: resourceId },
           select: selectedFields,
         });
-        schema = transformSchema(schema, resource, edit, dmmfSchema);
+        schema = transformSchema(schema, resource, edit);
         data = transformData(data, resource, edit);
         return {
           props: {
@@ -171,7 +171,7 @@ export const nextAdminRouter = async (
         requestOptions,
         options
       );
-      schema = transformSchema(schema, resource, edit, model);
+      schema = transformSchema(schema, resource, edit);
       await getBody(req, res);
 
       // @ts-expect-error

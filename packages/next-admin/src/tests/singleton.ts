@@ -3,7 +3,7 @@ import { PrismaClient } from "@prisma/client";
 import { DeepMockProxy, mockDeep, mockReset } from "jest-mock-extended";
 
 import prisma from "@prisma/client";
-import { NextAdminOptions } from "../types";
+import { NextAdminOptions, Schema } from "../types";
 
 jest.mock("@prisma/client", () => ({
   __esModule: true,
@@ -101,6 +101,19 @@ jest.mock("@prisma/client", () => ({
                 default: { name: "now", args: [] },
                 isGenerated: false,
                 isUpdatedAt: true,
+              },
+              {
+                name: "birthDate",
+                kind: "scalar",
+                isList: false,
+                isRequired: false,
+                isUnique: false,
+                isId: false,
+                isReadOnly: false,
+                hasDefaultValue: false,
+                type: "DateTime",
+                isGenerated: false,
+                isUpdatedAt: false,
               },
             ],
             primaryKey: null,
@@ -219,7 +232,7 @@ beforeEach(() => {
 
 export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
 
-export const schema = {
+export const schema: Schema = {
   $schema: "http://json-schema.org/draft-07/schema#",
   type: "object",
   definitions: {
@@ -231,7 +244,7 @@ export const schema = {
         role: { type: "string" },
         createdAt: { type: "string", format: "date-time" },
         updatedAt: { type: "string", format: "date-time" },
-        birthDate: { type: "string", format: "date" },
+        birthDate: { type: "string", format: "date-time" },
       },
     },
     Post: {
@@ -262,15 +275,23 @@ export const schema = {
         updatedAt: { type: "string", format: "date-time" },
       },
     },
-    Relation: {
+    post_comment: {
+      type: "object",
       properties: {
         id: { type: "string" },
-        category: { $ref: "#/definitions/Category" },
-        categoryId: { type: "integer" },
-        posts: { $ref: "#/definitions/Post" },
-        postId: { type: "integer" },
+        content: { type: "string" },
+        post: { $ref: "#/definitions/Post" },
+        createdAt: {
+          type: "string",
+          format: "date-time"
+        },
+        updatedAt: {
+          type: "string",
+          format: "date-time"
+        }
       },
-    },
+      required: ["content", "postId"]
+    }
   },
 };
 
@@ -285,11 +306,14 @@ export const options: NextAdminOptions = {
 
       },
       edit: {
-        display: ["id", "name", "email", "posts", "role"],
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
           },
+          birthDate: {
+            format: "date",
+          }
         },
       },
     },
