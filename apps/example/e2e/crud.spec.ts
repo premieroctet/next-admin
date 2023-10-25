@@ -28,9 +28,10 @@ models.forEach((model) => {
 test.describe("user validation", () => {
   test(`user create error`, async ({ page }) => {
     await page.goto(`${process.env.BASE_URL}/User/new`);
-    await page.fill('input[id="email"]', "invalidemail");
+    await page.fill('input[id="email"]', "user@nextadmin.io");
+    await page.fill('input[id="name"]', "us");
     await page.click('button:has-text("Submit")');
     await page.waitForURL(`${process.env.BASE_URL}/User/*`);
-    await test.expect(page.getByText("Invalid email")).toBeVisible();
+    await test.expect(page.getByText("Name must be at least 3 characters long")).toBeVisible();
   });
 });
