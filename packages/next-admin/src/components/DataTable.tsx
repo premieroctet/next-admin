@@ -6,6 +6,9 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { useRouter } from "next/compat/router";
+import { useConfig } from "../context/ConfigContext";
+import { Field, ListData, ListDataItem, ModelName, NextAdminOptions } from "../types";
 import {
   Table,
   TableBody,
@@ -14,29 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from "./radix/Table";
-import { useRouter } from "next/compat/router";
-import {
-  ListData,
-  ListDataItem,
-  ModelName,
-  Field,
-  NextAdminOptions,
-} from "../types";
-import { useConfig } from "../context/ConfigContext";
 
-interface DataTableProps {
-  columns: ColumnDef<ListDataItem<ModelName>>[];
-  data: ListData<ModelName>;
-  resource: ModelName;
-  options: Required<NextAdminOptions>["model"][ModelName];
+interface DataTableProps<M extends ModelName> {
+  columns: ColumnDef<ListDataItem<M>>[];
+  data: ListData<M>;
+  resource: M;
+  options: (Required<NextAdminOptions>)['model'][M]
 }
 
-export function DataTable({
-  columns,
-  data,
-  resource,
-  options,
-}: DataTableProps) {
+export function DataTable<M extends ModelName>({ columns, data, resource, options }: DataTableProps<M>) {
   const router = useRouter();
   const { basePath } = useConfig();
   const hasDisplayField = options?.list?.display?.length ? true : false;

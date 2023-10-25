@@ -54,6 +54,12 @@
             "USER",
             "ADMIN"
           ]
+        },
+        "picture": {
+          "type": [
+            "string",
+            "null"
+          ]
         }
       },
       "required": [

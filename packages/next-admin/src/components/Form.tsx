@@ -9,12 +9,13 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useRef } from "react";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { ModelName } from "../types";
 import { Schemas, getSchemas } from "../utils/jsonSchema";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
+import FileWidget from "./inputs/FileWidget";
 import SelectWidget from "./inputs/SelectWidget";
 import Button from "./radix/Button";
 import DateTimeWidget from "./inputs/DateTimeWidget";
@@ -50,6 +51,7 @@ const widgets: CustomForm["props"]["widgets"] = {
   DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
   CheckboxWidget: CheckboxWidget,
+  FileWidget: FileWidget
 };
 
 const templates: CustomForm["props"]["templates"] = {
@@ -172,6 +174,8 @@ const Form = ({
     {} as ErrorSchema
   );
 
+  const formRef = useRef(null);
+
   return (
     <div className="relative">
       <div className="sm:flex sm:items-center">
@@ -184,6 +188,8 @@ const Form = ({
         method="post"
         idPrefix=""
         idSeparator=""
+        enctype="multipart/form-data"
+        ref={formRef}
         {...schemas}
         formData={data}
         validator={validator}
@@ -194,7 +200,6 @@ const Form = ({
           ButtonTemplates: { SubmitButton: submitButton },
         }}
         widgets={widgets}
-        onSubmit={(e) => console.log("onSubmit", e)}
         onError={(e) => console.log("onError", e)}
       />
     </div>

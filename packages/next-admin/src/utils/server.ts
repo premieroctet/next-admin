@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import bodyParser from "body-parser";
-import util from "util";
+import formidable, { File } from "formidable";
+import { IncomingMessage } from "node:http";
 import {
   EditOptions,
   Enumeration,
@@ -15,7 +15,27 @@ import {
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
-export const getBody = util.promisify(bodyParser.urlencoded());
+
+export const getFormData = (req: IncomingMessage) => {
+  const form = formidable({ allowEmptyFiles: true, minFileSize: 0 });
+  return new Promise((resolve, reject) => {
+    form.parse(req, (err, fields, files) => {
+      if (err) {
+        reject(err);
+      }
+      const joinedFormData = Object.entries({ ...fields, ...files }).reduce(
+        (acc, [key, value]) => {
+          if (Array.isArray(value)) {
+            acc[key] = value[0];
+          }
+          return acc;
+        },
+        {} as Record<string, string | File>
+      );
+      resolve(joinedFormData);
+    });
+  });
+};
 
 export const models = Prisma.dmmf.datamodel.models;
 export const resources = models.map((model) => model.name as ModelName);
@@ -366,6 +386,9 @@ export const formattedFormData = <M extends ModelName>(
           formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
             ? new Date(formData[dmmfPropertyName]!)
             : null;
+        } else if (dmmfPropertyType === "Bytes") {
+          const file = formData[dmmfPropertyName] as unknown as File;
+          formattedData[dmmfPropertyName] = file && file.size > 0 ? null : null;
         } else {
           formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
         }
@@ -422,6 +445,31 @@ export const changeFormatInSchema = <M extends ModelName>(
         ];
       if (fieldValue) {
         fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
+      }
+    } else {
+      const dmmfPropertyType = dmmfProperty.type;
+
+      if (dmmfPropertyType === "Bytes") {
+        const fieldValue =
+          schema.definitions[modelName].properties[
+            dmmfPropertyName as Field<typeof modelName>
+          ];
+        if (fieldValue) {
+          if (fieldValue?.type === "array") {
+            schema.definitions[modelName].properties[dmmfPropertyName] = {
+              type: "array",
+              items: {
+                type: "string",
+                format: "data-url",
+              },
+            };
+          } else {
+            schema.definitions[modelName].properties[dmmfPropertyName] = {
+              type: "string",
+              format: "data-url",
+            };
+          }
+        }
       }
     }
   });

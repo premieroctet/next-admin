@@ -7,18 +7,19 @@ import { createRouter } from "next-connect";
 
 import {
   Body,
-  EditFieldsOptions,
   EditOptions,
-  FormData,
+  ListFieldsOptions,
+  EditFieldsOptions,
+  ModelOptions,
   NextAdminOptions,
-  Select,
+  Select
 } from "./types";
 import { getMappedDataList } from "./utils/prisma";
 import {
   fillRelationInSchema,
   formatSearchFields,
   formattedFormData,
-  getBody,
+  getFormData,
   getPrismaModelForResource,
   getResourceFromUrl,
   getResourceIdFromUrl,

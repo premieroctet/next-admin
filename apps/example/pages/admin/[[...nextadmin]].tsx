@@ -3,6 +3,7 @@ import {
   NextAdmin,
   NextAdminOptions,
 } from "@premieroctet/next-admin";
+import "@premieroctet/next-admin/dist/styles.css";
 import { GetServerSideProps, GetServerSidePropsResult } from "next";
 import Dashboard from "../../components/Dashboard";
 import { prisma } from "../../prisma";

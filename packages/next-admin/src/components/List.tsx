@@ -24,14 +24,14 @@ import {
   SelectValue,
 } from "./radix/Select";
 
-export type ListProps = {
-  resource: ModelName;
-  data: ListData<ModelName>;
+export type ListProps<M extends ModelName> = {
+  resource: M;
+  data: ListData<M>;
   total: number;
-  options?: Required<NextAdminOptions>["model"][ModelName];
+  options?: (Required<NextAdminOptions>)['model'][M]
 };
 
-function List({ resource, data, total, options }: ListProps) {
+function List<M extends ModelName>({ resource, data, total, options }: ListProps<M>) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const pageIndex =
@@ -50,7 +50,7 @@ function List({ resource, data, total, options }: ListProps) {
     });
   }, 300);
 
-  const columns: ColumnDef<ListDataItem<ModelName>>[] =
+  const columns: ColumnDef<ListDataItem<M>>[] =
     data && data?.length > 0
       ? Object.keys(data[0]).map((property) => {
           return {
