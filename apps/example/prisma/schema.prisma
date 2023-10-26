@@ -12,7 +12,7 @@ generator jsonSchema {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("POSTGRES_PRISMA_URL")
+  url       = env("POSTGRES_PRISMA_URL_PATCHED")
   directUrl = env("POSTGRES_URL_NON_POOLING")
 }
 
