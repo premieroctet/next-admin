@@ -59,7 +59,8 @@ export type Handler<
   T extends Model<M>[P],
 > = {
   get?: (input: T) => any;
-};
+  set?: (input: any) => any;
+}
 
 export type FormatOptions<T> = T extends string
   ?

@@ -33,7 +33,15 @@ const options: NextAdminOptions = {
         },
       },
       edit: {
-        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        display: [
+          "id",
+          "name",
+          "email",
+          "posts",
+          "role",
+          "birthDate",
+          "picture",
+        ],
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",

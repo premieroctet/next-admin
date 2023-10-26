@@ -7,19 +7,18 @@ import { createRouter } from "next-connect";
 
 import {
   Body,
-  EditOptions,
-  ListFieldsOptions,
   EditFieldsOptions,
-  ModelOptions,
+  EditOptions,
+  FormData,
   NextAdminOptions,
-  Select
+  Select,
 } from "./types";
 import { getMappedDataList } from "./utils/prisma";
 import {
   fillRelationInSchema,
   formatSearchFields,
   formattedFormData,
-  getFormData,
+  getBody,
   getPrismaModelForResource,
   getResourceFromUrl,
   getResourceIdFromUrl,
@@ -266,7 +265,8 @@ export const nextAdminRouter = async (
                 dmmfSchema?.fields!,
                 schema,
                 resource,
-                false
+                false,
+                edit
               ),
               select: selectedFields,
             });
@@ -305,7 +305,8 @@ export const nextAdminRouter = async (
               dmmfSchema?.fields!,
               schema,
               resource,
-              true
+              true,
+              edit
             ),
             select: selectedFields,
           });

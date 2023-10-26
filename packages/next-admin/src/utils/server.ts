@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import formidable, { File } from "formidable";
+import fs from "fs";
 import { IncomingMessage } from "node:http";
 import {
   EditOptions,
@@ -199,7 +200,6 @@ export const transformData = <M extends ModelName>(
       acc[key] = get(data[key]);
     } else {
       if (fieldKind === "object") {
-        // Flat relationships to id
         if (Array.isArray(data[key])) {
           acc[key] = data[key].map((item: any) => item.id);
         } else {
@@ -209,6 +209,9 @@ export const transformData = <M extends ModelName>(
         const fieldTypes = field?.type;
         if (fieldTypes === "DateTime") {
           acc[key] = data[key] ? data[key].toISOString() : null;
+        } else if (fieldTypes === "Bytes") {
+          const size = Buffer.byteLength(data[key]);
+          acc[key] = data[key] ? size : null;
         } else {
           acc[key] = data[key] ? data[key] : null;
         }
@@ -316,6 +319,9 @@ export const parseFormData = <M extends ModelName>(
         parsedData[dmmfPropertyName] = formData[
           dmmfPropertyName
         ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+      } else if (dmmfPropertyType === "Bytes") {
+        //@ts-expect-error
+        parsedData[dmmfPropertyName] = null;
       } else {
         parsedData[dmmfPropertyName] = formData[
           dmmfPropertyName
@@ -338,7 +344,8 @@ export const formattedFormData = <M extends ModelName>(
   dmmfSchema: Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
-  creating: boolean
+  creating: boolean,
+  editModelOptions: EditOptions<M>
 ) => {
   const formattedData: any = {};
   const modelName = resource;
@@ -347,50 +354,58 @@ export const formattedFormData = <M extends ModelName>(
       const dmmfPropertyName = dmmfProperty.name as Field<M>;
       const dmmfPropertyType = dmmfProperty.type;
       const dmmfPropertyKind = dmmfProperty.kind;
-      if (dmmfPropertyKind === "object") {
-        const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
-        const fieldValue =
-          schema.definitions[modelName].properties[
-            dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
-          ];
-        const model = models.find((model) => model.name === dmmfPropertyType);
-        const formatId = (value?: string) =>
-          model?.fields.find((field) => field.name === "id")?.type === "Int"
-            ? Number(value)
-            : value;
-        if (fieldValue?.type === "array") {
-          formData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName]!);
-          formattedData[dmmfPropertyName] = {
-            // @ts-expect-error
-            [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
-              (item: any) => ({ id: formatId(item) })
-            ),
-          };
-        } else {
-          const connect = Boolean(formData[dmmfPropertyName]);
-          if (!creating)
-            formattedData[dmmfPropertyName] = connect
-              ? { connect: { id: formatId(formData[dmmfPropertyName]) } }
-              : { disconnect: true };
-        }
+
+      const set =
+        editModelOptions?.fields?.[dmmfPropertyName as Field<M>]?.handler?.set;
+
+      if (set) {
+        formattedData[dmmfPropertyName] = set(formData[dmmfPropertyName]);
       } else {
-        if (dmmfPropertyType === "Int") {
-          formattedData[dmmfPropertyName] = !isNaN(
-            Number(formData[dmmfPropertyName])
-          )
-            ? Number(formData[dmmfPropertyName])
-            : undefined;
-        } else if (dmmfPropertyType === "Boolean") {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName] === "on";
-        } else if (dmmfPropertyType === "DateTime") {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
-            ? new Date(formData[dmmfPropertyName]!)
-            : null;
-        } else if (dmmfPropertyType === "Bytes") {
-          const file = formData[dmmfPropertyName] as unknown as File;
-          formattedData[dmmfPropertyName] = file && file.size > 0 ? null : null;
+        if (dmmfPropertyKind === "object") {
+          const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
+          const fieldValue =
+            schema.definitions[modelName].properties[
+              dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
+            ];
+          const model = models.find((model) => model.name === dmmfPropertyType);
+          const formatId = (value?: string) =>
+            model?.fields.find((field) => field.name === "id")?.type === "Int"
+              ? Number(value)
+              : value;
+          if (fieldValue?.type === "array") {
+            formData[dmmfPropertyName] = JSON.parse(
+              formData[dmmfPropertyName]!
+            );
+            formattedData[dmmfPropertyName] = {
+              // @ts-expect-error
+              [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
+                (item: any) => ({ id: formatId(item) })
+              ),
+            };
+          } else {
+            const connect = Boolean(formData[dmmfPropertyName]);
+            if (!creating)
+              formattedData[dmmfPropertyName] = connect
+                ? { connect: { id: formatId(formData[dmmfPropertyName]) } }
+                : { disconnect: true };
+          }
         } else {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
+          if (dmmfPropertyType === "Int") {
+            formattedData[dmmfPropertyName] = !isNaN(
+              Number(formData[dmmfPropertyName])
+            )
+              ? Number(formData[dmmfPropertyName])
+              : undefined;
+          } else if (dmmfPropertyType === "Boolean") {
+            formattedData[dmmfPropertyName] =
+              formData[dmmfPropertyName] === "on";
+          } else if (dmmfPropertyType === "DateTime") {
+            formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
+              ? new Date(formData[dmmfPropertyName]!)
+              : null;
+          } else {
+            formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
+          }
         }
       }
     }
