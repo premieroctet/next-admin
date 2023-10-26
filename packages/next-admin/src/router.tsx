@@ -19,6 +19,7 @@ import {
   formatSearchFields,
   formattedFormData,
   getBody,
+  getFormData,
   getPrismaModelForResource,
   getResourceFromUrl,
   getResourceIdFromUrl,
@@ -194,10 +195,8 @@ export const nextAdminRouter = async (
           options
         );
         schema = transformSchema(schema, resource, edit);
-        await getBody(req, res);
 
-        // @ts-expect-error
-        const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
+        const { action, ...formData } = await getFormData(req)
 
         const dmmfSchema = getPrismaModelForResource(resource);
 

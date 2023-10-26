@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import formidable, { File } from "formidable";
-import fs from "fs";
+import formidable from "formidable";
 import { IncomingMessage } from "node:http";
+import { Writable } from "stream";
 import {
   EditOptions,
   Enumeration,
@@ -18,9 +18,38 @@ import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
 
 export const getFormData = (req: IncomingMessage) => {
-  const form = formidable({ allowEmptyFiles: true, minFileSize: 0 });
-  return new Promise((resolve, reject) => {
-    form.parse(req, (err, fields, files) => {
+  const form = formidable({
+    allowEmptyFiles: true,
+    minFileSize: 0,
+    fileWriteStreamHandler: () => {
+      return new Writable({
+        write(_chunk, _encoding, callback) {
+          callback();
+        },
+      });
+    },
+  });
+  return new Promise<Record<string, string | Buffer>>((resolve, reject) => {
+    const files = {} as Record<string, Buffer[]>;
+
+    form.on("fileBegin", (name, file) => {
+      // @ts-expect-error
+      file.createFileWriteStream = () => {
+        const chunks = [] as Buffer[];
+        return new Writable({
+          write(chunk, _encoding, callback) {
+            chunks.push(chunk);
+            callback();
+          },
+          final(callback) {
+            files[name] = [Buffer.concat(chunks)];
+            callback();
+          },
+        });
+      };
+    });
+
+    form.parse(req, (err, fields) => {
       if (err) {
         reject(err);
       }
@@ -31,7 +60,7 @@ export const getFormData = (req: IncomingMessage) => {
           }
           return acc;
         },
-        {} as Record<string, string | File>
+        {} as Record<string, string | Buffer>
       );
       resolve(joinedFormData);
     });
@@ -403,6 +432,9 @@ export const formattedFormData = <M extends ModelName>(
             formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
               ? new Date(formData[dmmfPropertyName]!)
               : null;
+          } else if (dmmfPropertyType === "Bytes") {
+            const buffer = formData[dmmfPropertyName] as unknown as Buffer;
+            formattedData[dmmfPropertyName] = buffer || null;
           } else {
             formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
           }

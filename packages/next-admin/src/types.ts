@@ -1,5 +1,7 @@
 import { Prisma } from "@prisma/client";
+import { File } from "formidable";
 import { JSONSchema7 } from "json-schema";
+import { Writable } from "node:stream";
 import { ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
 
@@ -60,6 +62,7 @@ export type Handler<
 > = {
   get?: (input: T) => any;
   set?: (input: any) => any;
+  file?: (input: File) => Writable;
 }
 
 export type FormatOptions<T> = T extends string
