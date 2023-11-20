@@ -82,8 +82,8 @@ export const fillRelationInSchema = async (
           listOptions?.search ?? remoteModel?.fields.map((field) => field.name);
         const relationProperty: Field<typeof modelName> =
           (relationFromFields?.[0] as Field<typeof modelName>) ?? fieldName;
-        const fieldsFiltered = remoteModel?.fields.filter(
-          (field) => (optionsForRelations as string[])?.includes(field.name)
+        const fieldsFiltered = remoteModel?.fields.filter((field) =>
+          (optionsForRelations as string[])?.includes(field.name)
         );
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
@@ -293,11 +293,14 @@ export const parseFormData = <M extends ModelName>(
         parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] ===
           "on") as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else if (dmmfPropertyType === "DateTime") {
-        parsedData[dmmfPropertyName] = (
-          formData[dmmfPropertyName]
-            ? new Date(formData[dmmfPropertyName]!)
-            : null
-        ) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        // parsedData[dmmfPropertyName] = (
+        //   formData[dmmfPropertyName]
+        //     ? new Date(formData[dmmfPropertyName]!)
+        //     : null
+        // ) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = formData[
+          dmmfPropertyName
+        ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else {
         parsedData[dmmfPropertyName] = formData[
           dmmfPropertyName
