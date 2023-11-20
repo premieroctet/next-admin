@@ -11,7 +11,7 @@ import {
   ModelWithoutRelationships,
   NextAdminOptions,
   ScalarField,
-  Schema
+  Schema,
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
@@ -63,7 +63,7 @@ export const fillRelationInSchema = async (
       if (fieldKind === "enum") {
         const fieldValue =
           schema.definitions[modelName].properties[
-          field.name as Field<typeof modelName>
+            field.name as Field<typeof modelName>
           ];
         if (fieldValue) {
           fieldValue.enum = fieldValue.enum?.map((item) =>
@@ -76,14 +76,14 @@ export const fillRelationInSchema = async (
         const remoteModel = models.find(
           (model) => model.name === modelNameRelation
         );
-        const listOptions = options?.model?.[modelNameRelation]?.list as ListOptions<typeof modelNameRelation>;
+        const listOptions = options?.model?.[modelNameRelation]
+          ?.list as ListOptions<typeof modelNameRelation>;
         const optionsForRelations =
-          listOptions?.search ??
-          remoteModel?.fields.map((field) => field.name);
+          listOptions?.search ?? remoteModel?.fields.map((field) => field.name);
         const relationProperty: Field<typeof modelName> =
           (relationFromFields?.[0] as Field<typeof modelName>) ?? fieldName;
-        const fieldsFiltered = remoteModel?.fields.filter((field) =>
-          (optionsForRelations as string[])?.includes(field.name)
+        const fieldsFiltered = remoteModel?.fields.filter(
+          (field) => (optionsForRelations as string[])?.includes(field.name)
         );
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
@@ -121,7 +121,7 @@ export const fillRelationInSchema = async (
         } else {
           const fieldValue =
             schema.definitions[modelName].properties[
-            field.name as Field<typeof modelName>
+              field.name as Field<typeof modelName>
             ];
           if (fieldValue) {
             let enumeration: Enumeration[] = [];
@@ -159,7 +159,14 @@ export const fillRelationInSchema = async (
   return schema;
 };
 
-export const transformData = <M extends ModelName>(data: any, resource: M, editOptions: EditOptions<M>) => {
+/**
+ * This is used to transform the data from server to client
+ */
+export const transformData = <M extends ModelName>(
+  data: any,
+  resource: M,
+  editOptions: EditOptions<M>
+) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
@@ -167,9 +174,9 @@ export const transformData = <M extends ModelName>(data: any, resource: M, editO
   return Object.keys(data).reduce((acc, key) => {
     const field = model.fields.find((field) => field.name === key);
     const fieldKind = field?.kind;
-    const get = editOptions?.fields?.[key as Field<M>]?.handler?.get
+    const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
     if (get) {
-      acc[key] = get(data[key])
+      acc[key] = get(data[key]);
     } else {
       if (fieldKind === "object") {
         // Flat relationships to id
@@ -201,10 +208,10 @@ export const transformData = <M extends ModelName>(data: any, resource: M, editO
  * */
 export const findRelationInData = async (
   data: any[],
-  dmmfSchema?: Prisma.DMMF.Field[],
+  dmmfSchema?: Prisma.DMMF.Field[]
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
-    const dmmfPropertyName = dmmfProperty.name
+    const dmmfPropertyName = dmmfProperty.name;
     const dmmfPropertyType = dmmfProperty.type;
     const dmmfPropertyKind = dmmfProperty.kind;
     const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
@@ -221,7 +228,9 @@ export const findRelationInData = async (
               type: "link",
               value: {
                 label: item[dmmfPropertyName],
-                url: `${dmmfProperty.type as ModelName}/${item[dmmfPropertyName]["id"]}`,
+                url: `${dmmfProperty.type as ModelName}/${
+                  item[dmmfPropertyName]["id"]
+                }`,
               },
             };
           } else {
@@ -256,7 +265,6 @@ export const findRelationInData = async (
   return data;
 };
 
-
 export const parseFormData = <M extends ModelName>(
   formData: FormData<M>,
   dmmfSchema: Prisma.DMMF.Field[]
@@ -269,25 +277,36 @@ export const parseFormData = <M extends ModelName>(
       const dmmfPropertyKind = dmmfProperty.kind;
       if (dmmfPropertyKind === "object") {
         if (Boolean(formData[dmmfPropertyName])) {
-          parsedData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName] as string) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+          parsedData[dmmfPropertyName] = JSON.parse(
+            formData[dmmfPropertyName] as string
+          ) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         } else {
-          parsedData[dmmfPropertyName] = null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+          parsedData[dmmfPropertyName] =
+            null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         }
       } else if (dmmfPropertyType === "Int") {
         const value = Number(formData[dmmfPropertyName]) as number;
-        parsedData[dmmfPropertyName] = isNaN(value) ? undefined : value as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = isNaN(value)
+          ? undefined
+          : (value as ModelWithoutRelationships<M>[typeof dmmfPropertyName]);
       } else if (dmmfPropertyType === "Boolean") {
-        parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] === "on") as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] ===
+          "on") as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else if (dmmfPropertyType === "DateTime") {
-        parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] ? new Date(formData[dmmfPropertyName]!) : null) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = (
+          formData[dmmfPropertyName]
+            ? new Date(formData[dmmfPropertyName]!)
+            : null
+        ) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else {
-        parsedData[dmmfPropertyName] = formData[dmmfPropertyName] as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = formData[
+          dmmfPropertyName
+        ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       }
     }
-  }
-  );
+  });
   return parsedData;
-}
+};
 
 /**
  * Convert the form data to the format expected by Prisma
@@ -314,7 +333,7 @@ export const formattedFormData = <M extends ModelName>(
         const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
         const fieldValue =
           schema.definitions[modelName].properties[
-          dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
+            dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
           ];
         const model = models.find((model) => model.name === dmmfPropertyType);
         const formatId = (value?: string) =>
@@ -346,7 +365,9 @@ export const formattedFormData = <M extends ModelName>(
         } else if (dmmfPropertyType === "Boolean") {
           formattedData[dmmfPropertyName] = formData[dmmfPropertyName] === "on";
         } else if (dmmfPropertyType === "DateTime") {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName] ? new Date(formData[dmmfPropertyName]!) : null;
+          formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
+            ? new Date(formData[dmmfPropertyName]!)
+            : null;
         } else {
           formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
         }
@@ -386,14 +407,21 @@ export const transformSchema = <M extends ModelName>(
   return schema;
 };
 
-export const changeFormatInSchema = <M extends ModelName>(schema: Schema, resource: M, editOptions: EditOptions<M>) => {
+export const changeFormatInSchema = <M extends ModelName>(
+  schema: Schema,
+  resource: M,
+  editOptions: EditOptions<M>
+) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return schema;
   model.fields.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
     if (editOptions?.fields?.[dmmfPropertyName]?.format) {
-      const fieldValue = schema.definitions[modelName].properties[dmmfPropertyName as Field<typeof modelName>];
+      const fieldValue =
+        schema.definitions[modelName].properties[
+          dmmfPropertyName as Field<typeof modelName>
+        ];
       if (fieldValue) {
         fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
       }

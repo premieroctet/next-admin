@@ -19,21 +19,21 @@ export const createWherePredicate = (
 ) => {
   return search
     ? {
-      OR: fieldsFiltered
-        ?.filter((field) => field.kind === "scalar")
-        .map((field) => {
-          if (field.type === "String") {
-            return {
-              [field.name]: { contains: search, mode: "insensitive" },
-            };
-          }
-          if (field.type === "Int" && !isNaN(Number(search))) {
-            return { [field.name]: Number(search) };
-          }
-          return null;
-        })
-        .filter(Boolean),
-    }
+        OR: fieldsFiltered
+          ?.filter((field) => field.kind === "scalar")
+          .map((field) => {
+            if (field.type === "String") {
+              return {
+                [field.name]: { contains: search, mode: "insensitive" },
+              };
+            }
+            if (field.type === "Int" && !isNaN(Number(search))) {
+              return { [field.name]: Number(search) };
+            }
+            return null;
+          })
+          .filter(Boolean),
+      }
     : {};
 };
 
@@ -63,18 +63,21 @@ export const preparePrismaListRequest = <M extends ModelName>(
   let fieldsFiltered = model?.fields;
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
-    const listDisplayedKeys = list.display
-    select = listDisplayedKeys?.reduce((acc, column) => {
-      const field = model?.fields.find(({ name }) => name === column);
-      if (field?.kind === "object" && field?.isList === true) {
-        if (!acc._count) acc._count = { select: {} };
-        acc._count.select = { ...acc._count.select, [column]: true };
-      } else {
-        // @ts-expect-error
-        acc[column] = true;
-      }
-      return acc;
-    }, { id: true } as Select<M>);
+    const listDisplayedKeys = list.display;
+    select = listDisplayedKeys?.reduce(
+      (acc, column) => {
+        const field = model?.fields.find(({ name }) => name === column);
+        if (field?.kind === "object" && field?.isList === true) {
+          if (!acc._count) acc._count = { select: {} };
+          acc._count.select = { ...acc._count.select, [column]: true };
+        } else {
+          // @ts-expect-error
+          acc[column] = true;
+        }
+        return acc;
+      },
+      { id: true } as Select<M>
+    );
 
     fieldsFiltered =
       model?.fields.filter(
@@ -92,7 +95,12 @@ export const preparePrismaListRequest = <M extends ModelName>(
   };
 };
 
-export const getMappedDataList = async (prisma: PrismaClient, resource: ModelName, options: NextAdminOptions, searchParams: URLSearchParams) => {
+export const getMappedDataList = async (
+  prisma: PrismaClient,
+  resource: ModelName,
+  options: NextAdminOptions,
+  searchParams: URLSearchParams
+) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,

@@ -1,4 +1,8 @@
-import { EditFieldsOptions, ModelName, ModelWithoutRelationships } from "../types";
+import {
+  EditFieldsOptions,
+  ModelName,
+  ModelWithoutRelationships,
+} from "../types";
 import {
   PropertyValidationError,
   ValidationError,
@@ -33,4 +37,4 @@ export const validate = <M extends ModelName>(
   if (errors.length > 0) {
     throw new ValidationError("Validation error", errors);
   }
-}
+};

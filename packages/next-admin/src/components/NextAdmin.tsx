@@ -1,6 +1,6 @@
 import Head from "next/head";
 import Link from "next/link";
-import NextNProgress from 'nextjs-progressbar';
+import NextNProgress from "nextjs-progressbar";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import Dashboard from "./Dashboard";

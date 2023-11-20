@@ -6,16 +6,18 @@ import clsx from "clsx";
 import { useConfig } from "../context/ConfigContext";
 
 type Props = {
-  cell: ListDataFieldValue | ReactNode
-  formatter: (cell: any) => ReactNode
+  cell: ListDataFieldValue | ReactNode;
+  formatter: (cell: any) => ReactNode;
 };
 
 export default function Cell({ cell, formatter }: Props) {
-  const { basePath } = useConfig()
+  const { basePath } = useConfig();
 
-  const isReactNode = (cell: ListDataFieldValue | ReactNode): cell is ReactNode => {
-    return React.isValidElement(cell)
-  }
+  const isReactNode = (
+    cell: ListDataFieldValue | ReactNode
+  ): cell is ReactNode => {
+    return React.isValidElement(cell);
+  };
   if (cell && cell !== null) {
     if (React.isValidElement(cell)) {
       return cell;
@@ -60,8 +62,9 @@ export default function Cell({ cell, formatter }: Props) {
         <div
           className={clsx(
             "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium",
-            cell ? "bg-indigo-50 text-indigo-500" :
-              "bg-neutral-50 text-neutral-600"
+            cell
+              ? "bg-indigo-50 text-indigo-500"
+              : "bg-neutral-50 text-neutral-600"
           )}
         >
           <p>{formatter(cell.toString())}</p>
