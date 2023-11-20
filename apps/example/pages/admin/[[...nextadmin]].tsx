@@ -25,9 +25,11 @@ const options: NextAdminOptions = {
           },
           birthDate: {
             formatter: (date) => {
-              return new Date(date as unknown as string)?.toLocaleString().split(" ")[0];
-            }
-          }
+              return new Date(date as unknown as string)
+                ?.toLocaleString()
+                .split(" ")[0];
+            },
+          },
         },
       },
       edit: {
@@ -38,21 +40,22 @@ const options: NextAdminOptions = {
           },
           birthDate: {
             format: "date",
-            handler: {
-              //This getter is used to format the date in the form and match with the format of the input
-              get: (value) => {
-                return value?.toISOString().split("T")[0];
-              },
-            }
-          }
+          },
         },
       },
     },
     Post: {
       toString: (post) => `${post.title}`,
       list: {
-        display: ['id', 'title', 'content', 'published', 'author', 'categories'],
-        search: ['title', 'content'],
+        display: [
+          "id",
+          "title",
+          "content",
+          "published",
+          "author",
+          "categories",
+        ],
+        search: ["title", "content"],
         fields: {
           author: {
             formatter: (author) => {
@@ -62,30 +65,31 @@ const options: NextAdminOptions = {
         },
       },
       edit: {
-        display: ['id', 'title', 'content', 'published', 'authorId', 'categories'],
-      }
+        display: [
+          "id",
+          "title",
+          "content",
+          "published",
+          "authorId",
+          "categories",
+        ],
+      },
     },
     Category: {
       toString: (category) => `${category.name}`,
       list: {
-        display: ['name', 'posts'],
-        search: ['name'],
+        display: ["name", "posts"],
+        search: ["name"],
       },
       edit: {
-        display: ['name', 'posts'],
-      }
+        display: ["name", "posts"],
+      },
     },
   },
 };
 
 export default function Admin(props: AdminComponentProps) {
-  return (
-    <NextAdmin
-      {...props}
-      dashboard={Dashboard}
-      options={options}
-    />
-  );
+  return <NextAdmin {...props} dashboard={Dashboard} options={options} />;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {

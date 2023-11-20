@@ -3,8 +3,6 @@ import { options, prismaMock } from "./singleton";
 
 describe("getMappedDataList", () => {
   it("should return the data list, total and error", async () => {
-
-
     const postData = [
       {
         id: 1,
@@ -19,14 +17,19 @@ describe("getMappedDataList", () => {
         content: "Content 2",
         published: true,
         authorId: 1,
-      }
-    ]
+      },
+    ];
 
-    prismaMock.post.findMany.mockResolvedValueOnce(postData)
+    prismaMock.post.findMany.mockResolvedValueOnce(postData);
 
     prismaMock.post.count.mockResolvedValueOnce(2);
 
-    const result = await getMappedDataList(prismaMock, "Post", options, new URLSearchParams());
+    const result = await getMappedDataList(
+      prismaMock,
+      "Post",
+      options,
+      new URLSearchParams()
+    );
     expect(result).toEqual({
       data: postData,
       total: postData.length,

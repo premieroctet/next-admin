@@ -1,4 +1,8 @@
-import { changeFormatInSchema, fillRelationInSchema, removeHiddenProperties } from "../utils/server";
+import {
+  changeFormatInSchema,
+  fillRelationInSchema,
+  removeHiddenProperties,
+} from "../utils/server";
 import { options, prismaMock, schema } from "./singleton";
 
 describe("fillRelationInSchema", () => {
@@ -31,17 +35,19 @@ describe("fillRelationInSchema", () => {
   });
 });
 
-describe('transformSchema', () => {
+describe("transformSchema", () => {
   const userEditOptions = options.model?.User?.edit!;
 
-  it('should return the schema with the new format', async () => {
+  it("should return the schema with the new format", async () => {
     const result = changeFormatInSchema(schema, "User", userEditOptions);
-    expect(result.definitions.User.properties.birthDate?.format).toEqual('date');
+    expect(result.definitions.User.properties.birthDate?.format).toEqual(
+      "date"
+    );
   });
 
-  it('should return the schema without the hidden properties', async () => {
+  it("should return the schema without the hidden properties", async () => {
     const result = removeHiddenProperties(schema, "User", userEditOptions);
-    expect(result.definitions.User.properties).not.toHaveProperty('createdAt');
-    expect(result.definitions.User.properties).not.toHaveProperty('updatedAt');
+    expect(result.definitions.User.properties).not.toHaveProperty("createdAt");
+    expect(result.definitions.User.properties).not.toHaveProperty("updatedAt");
   });
-})
+});

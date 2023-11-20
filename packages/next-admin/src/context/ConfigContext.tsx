@@ -1,29 +1,30 @@
-import React, { useContext } from 'react';
+import React, { useContext } from "react";
 
 export type ConfigContextType = {
-    basePath: string;
+  basePath: string;
 };
 
-
-const ConfigContext = React.createContext<ConfigContextType>({} as ConfigContextType);
+const ConfigContext = React.createContext<ConfigContextType>(
+  {} as ConfigContextType
+);
 
 type ProviderProps = {
-    basePath: string;
-    children: React.ReactNode;
-}
+  basePath: string;
+  children: React.ReactNode;
+};
 
 export const ConfigProvider = ({ children, basePath }: ProviderProps) => {
-    return (
-        <ConfigContext.Provider
-            value={{
-                basePath,
-            }}
-        >
-            {children}
-        </ConfigContext.Provider>
-    );
+  return (
+    <ConfigContext.Provider
+      value={{
+        basePath,
+      }}
+    >
+      {children}
+    </ConfigContext.Provider>
+  );
 };
 
 export const useConfig = () => {
-    return useContext(ConfigContext);
+  return useContext(ConfigContext);
 };

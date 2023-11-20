@@ -20,7 +20,7 @@ export default function ListHeader({
   onSearchChange,
   search,
 }: Props) {
-  const { basePath } = useConfig()
+  const { basePath } = useConfig();
 
   return (
     <div className="flex justify-between items-end">

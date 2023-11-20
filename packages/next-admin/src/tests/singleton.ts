@@ -283,15 +283,15 @@ export const schema: Schema = {
         post: { $ref: "#/definitions/Post" },
         createdAt: {
           type: "string",
-          format: "date-time"
+          format: "date-time",
         },
         updatedAt: {
           type: "string",
-          format: "date-time"
-        }
+          format: "date-time",
+        },
       },
-      required: ["content", "postId"]
-    }
+      required: ["content", "postId"],
+    },
   },
 };
 
@@ -303,7 +303,6 @@ export const options: NextAdminOptions = {
       list: {
         display: ["id", "name", "email", "posts", "role"],
         search: ["name", "email"],
-
       },
       edit: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
@@ -313,19 +312,33 @@ export const options: NextAdminOptions = {
           },
           birthDate: {
             format: "date",
-          }
+          },
         },
       },
     },
     Post: {
       toString: (post) => `${post.title}`,
       list: {
-        display: ['id', 'title', 'content', 'published', 'author', 'categories'],
-        search: ['title', 'content'],
+        display: [
+          "id",
+          "title",
+          "content",
+          "published",
+          "author",
+          "categories",
+        ],
+        search: ["title", "content"],
       },
       edit: {
-        display: ['id', 'title', 'content', 'published', 'authorId', 'categories'],
-      }
+        display: [
+          "id",
+          "title",
+          "content",
+          "published",
+          "authorId",
+          "categories",
+        ],
+      },
     },
     Category: {
       toString: (category) => `${category.name}`,

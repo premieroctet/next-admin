@@ -17,6 +17,8 @@ import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import SelectWidget from "./inputs/SelectWidget";
 import Button from "./radix/Button";
+import DateTimeWidget from "./inputs/DateTimeWidget";
+import DateWidget from "./inputs/DateWidget";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -44,6 +46,8 @@ const fields: CustomForm["props"]["fields"] = {
 };
 
 const widgets: CustomForm["props"]["widgets"] = {
+  DateWidget: DateWidget,
+  DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
   CheckboxWidget: CheckboxWidget,
 };

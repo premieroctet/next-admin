@@ -15,7 +15,7 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   useCloseOnOutsideClick(containerRef, () => setOpen(false));
 
-  function onWindowClick() { }
+  function onWindowClick() {}
 
   useEffect(() => {
     window.addEventListener("click", onWindowClick);
@@ -48,7 +48,7 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
           value={
             value
               ? enumOptions?.find((option: any) => option.value === value)
-                ?.label
+                  ?.label
               : ""
           }
           onMouseDown={() => setOpen(!open)}
