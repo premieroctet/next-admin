@@ -204,7 +204,7 @@ export const nextAdminRouter = async (
 
         try {
           // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
-          if (resourceId === undefined && formData.action === "delete") {
+          if (resourceId === undefined && action === "delete") {
             const searchParams = new URLSearchParams(req.url!.split("?")[1]);
             const { data, total } = await getMappedDataList(
               prisma,
@@ -228,7 +228,7 @@ export const nextAdminRouter = async (
           }
 
           // Delete
-          if (resourceId !== undefined && formData.action === "delete") {
+          if (resourceId !== undefined && action === "delete") {
             // @ts-expect-error
             await prisma[resource].delete({
               where: {

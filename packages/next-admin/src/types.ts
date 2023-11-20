@@ -63,7 +63,7 @@ export type Handler<
   get?: (input: T) => any;
   set?: (input: any) => any;
   file?: (input: File) => Writable;
-}
+};
 
 export type FormatOptions<T> = T extends string
   ?

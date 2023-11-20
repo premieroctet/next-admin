@@ -51,7 +51,7 @@ const widgets: CustomForm["props"]["widgets"] = {
   DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
   CheckboxWidget: CheckboxWidget,
-  FileWidget: FileWidget
+  FileWidget: FileWidget,
 };
 
 const templates: CustomForm["props"]["templates"] = {

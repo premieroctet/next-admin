@@ -28,10 +28,15 @@ export type ListProps<M extends ModelName> = {
   resource: M;
   data: ListData<M>;
   total: number;
-  options?: (Required<NextAdminOptions>)['model'][M]
+  options?: Required<NextAdminOptions>["model"][M];
 };
 
-function List<M extends ModelName>({ resource, data, total, options }: ListProps<M>) {
+function List<M extends ModelName>({
+  resource,
+  data,
+  total,
+  options,
+}: ListProps<M>) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const pageIndex =

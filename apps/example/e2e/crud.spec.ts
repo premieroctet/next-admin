@@ -32,6 +32,8 @@ test.describe("user validation", () => {
     await page.fill('input[id="name"]', "us");
     await page.click('button:has-text("Submit")');
     await page.waitForURL(`${process.env.BASE_URL}/User/*`);
-    await test.expect(page.getByText("Name must be at least 3 characters long")).toBeVisible();
+    await test
+      .expect(page.getByText("Name must be at least 3 characters long"))
+      .toBeVisible();
   });
 });
