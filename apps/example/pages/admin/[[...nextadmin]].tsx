@@ -39,7 +39,7 @@ const options: NextAdminOptions = {
             validate: (email) => email.includes("@") || "Invalid email",
           },
           birthDate: {
-            format: "date-time",
+            format: "date",
           },
         },
       },
