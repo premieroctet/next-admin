@@ -23,7 +23,7 @@ export default function DateTimeWidget<
   const BaseInputTemplate = getTemplate<'BaseInputTemplate', T, S, F>('BaseInputTemplate', registry, options);
 
   const hiddenValue = useMemo(() => {
-    return value ? new Date(value).toISOString() : new Date().toISOString()
+    return value ? new Date(value).toISOString() : ""
   }, [value])
 
   return (
