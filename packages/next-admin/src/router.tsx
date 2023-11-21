@@ -41,7 +41,8 @@ export const nextAdminRouter = async (
       // Error handling middleware
       .use(async (req, res, next) => {
         try {
-          return await next();
+          const response = await next();
+          return response;
         } catch (e: any) {
           if (process.env.NODE_ENV === "development") {
             throw e;
@@ -51,6 +52,9 @@ export const nextAdminRouter = async (
             props: { ...defaultProps, error: e.message },
           };
         }
+      })
+      .get(options.basePath, async (req, res) => {
+        return { props: defaultProps };
       })
       .get(`${options.basePath}/:resource`, async (req, res) => {
         // @ts-expect-error
