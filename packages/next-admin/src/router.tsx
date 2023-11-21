@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
@@ -6,10 +6,8 @@ import {
 import { createRouter } from "next-connect";
 
 import {
-  Body,
   EditFieldsOptions,
   EditOptions,
-  FormData,
   NextAdminOptions,
   Select,
 } from "./types";
@@ -18,7 +16,7 @@ import {
   fillRelationInSchema,
   formatSearchFields,
   formattedFormData,
-  getBody,
+  getFormDataValues,
   getPrismaModelForResource,
   getResourceFromUrl,
   getResourceIdFromUrl,
@@ -54,15 +52,77 @@ export const nextAdminRouter = async (
           };
         }
       })
-      .get(async (req, res) => {
-        const resource = getResourceFromUrl(req.url!, resources);
-        const requestOptions = formatSearchFields(req.url!);
+      .get(`${options.basePath}/:resource`, async (req, res) => {
+        // @ts-expect-error
+        const resource = req.params.resource as Prisma.ModelName;
+        const model = getPrismaModelForResource(resource);
 
-        // Dashboard
-        if (!resource) {
+        if (!model) {
           return { props: defaultProps };
         }
+
+        const requestOptions = formatSearchFields(req.url!);
+
+        schema = await fillRelationInSchema(
+          schema,
+          prisma,
+          resource,
+          requestOptions,
+          options
+        );
+
+        const dmmfSchema = getPrismaModelForResource(resource);
+
+        const searchParams = new URLSearchParams(req.url!.split("?")[1]);
+        const { data, total, error } = await getMappedDataList(
+          prisma,
+          resource,
+          options,
+          searchParams
+        );
+
+        return {
+          props: {
+            ...defaultProps,
+            resource,
+            data,
+            total,
+            error,
+            schema,
+            dmmfSchema,
+          },
+        };
+      })
+      .get(`${options.basePath}/:resource/new`, async (req, res) => {
+        // @ts-expect-error
+        const resource = req.params.resource as Prisma.ModelName;
         const model = getPrismaModelForResource(resource);
+
+        if (!model) {
+          return { props: defaultProps };
+        }
+
+        const dmmfSchema = getPrismaModelForResource(resource);
+
+        return {
+          props: {
+            ...defaultProps,
+            resource,
+            schema,
+            dmmfSchema: dmmfSchema?.fields,
+          },
+        };
+      })
+      .get(`${options.basePath}/:resource/:id`, async (req, res) => {
+        // @ts-expect-error
+        const resource = req.params.resource as Prisma.ModelName;
+        const model = getPrismaModelForResource(resource);
+
+        if (!model) {
+          return { props: defaultProps };
+        }
+
+        const requestOptions = formatSearchFields(req.url!);
 
         let selectedFields = model?.fields.reduce(
           (acc, field) => {
@@ -115,37 +175,6 @@ export const nextAdminRouter = async (
             },
           };
         }
-        // New
-        if (req.url!.includes("/new")) {
-          return {
-            props: {
-              ...defaultProps,
-              resource,
-              schema,
-              dmmfSchema: dmmfSchema?.fields,
-            },
-          };
-        }
-
-        // List
-        const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-        const { data, total, error } = await getMappedDataList(
-          prisma,
-          resource,
-          options,
-          searchParams
-        );
-        return {
-          props: {
-            ...defaultProps,
-            resource,
-            data,
-            total,
-            error,
-            schema,
-            dmmfSchema,
-          },
-        };
       })
       .post(async (req, res) => {
         const resource = getResourceFromUrl(req.url!, resources);
@@ -194,10 +223,7 @@ export const nextAdminRouter = async (
           options
         );
         schema = transformSchema(schema, resource, edit);
-        await getBody(req, res);
-
-        // @ts-expect-error
-        const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
+        const { action, id, ...formData } = await getFormDataValues(req);
 
         const dmmfSchema = getPrismaModelForResource(resource);
 
@@ -205,7 +231,7 @@ export const nextAdminRouter = async (
 
         try {
           // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
-          if (resourceId === undefined && formData.action === "delete") {
+          if (resourceId === undefined && action === "delete") {
             const searchParams = new URLSearchParams(req.url!.split("?")[1]);
             const { data, total } = await getMappedDataList(
               prisma,
@@ -229,7 +255,7 @@ export const nextAdminRouter = async (
           }
 
           // Delete
-          if (resourceId !== undefined && formData.action === "delete") {
+          if (resourceId !== undefined && action === "delete") {
             // @ts-expect-error
             await prisma[resource].delete({
               where: {
@@ -260,12 +286,13 @@ export const nextAdminRouter = async (
               where: {
                 id: resourceId,
               },
-              data: formattedFormData(
+              data: await formattedFormData(
                 formData,
                 dmmfSchema?.fields!,
                 schema,
                 resource,
-                false
+                false,
+                fields
               ),
               select: selectedFields,
             });
@@ -299,12 +326,13 @@ export const nextAdminRouter = async (
           // Create
           // @ts-expect-error
           data = await prisma[resource].create({
-            data: formattedFormData(
+            data: await formattedFormData(
               formData,
               dmmfSchema?.fields!,
               schema,
               resource,
-              true
+              true,
+              fields
             ),
             select: selectedFields,
           });

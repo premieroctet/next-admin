@@ -33,13 +33,33 @@ const options: NextAdminOptions = {
         },
       },
       edit: {
-        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        display: [
+          "id",
+          "name",
+          "email",
+          "posts",
+          "role",
+          "birthDate",
+          "avatar",
+        ],
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
           },
           birthDate: {
             format: "date",
+          },
+          avatar: {
+            format: "data-url",
+            handler: {
+              /*
+               * Include your own upload handler here,
+               * for example you can upload the file to an S3 bucket.
+               * Make sure to return a string.
+              upload: async (file: Buffer) => {
+              },
+               */
+            },
           },
         },
       },

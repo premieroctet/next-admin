@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import bodyParser from "body-parser";
 import util from "util";
 import {
+  EditFieldsOptions,
   EditOptions,
   Enumeration,
   Field,
@@ -15,6 +16,10 @@ import {
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
+import { IncomingMessage } from "http";
+import formidable from "formidable";
+import { Writable } from "stream";
+
 export const getBody = util.promisify(bodyParser.urlencoded());
 
 export const models = Prisma.dmmf.datamodel.models;
@@ -313,65 +318,96 @@ export const parseFormData = <M extends ModelName>(
  * @param dmmfSchema
  *
  */
-export const formattedFormData = <M extends ModelName>(
+export const formattedFormData = async <M extends ModelName>(
   formData: FormData<M>,
   dmmfSchema: Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
-  creating: boolean
+  creating: boolean,
+  editOptions: EditFieldsOptions<M>
 ) => {
   const formattedData: any = {};
   const modelName = resource;
-  dmmfSchema.forEach((dmmfProperty) => {
-    if (dmmfProperty.name in formData) {
-      const dmmfPropertyName = dmmfProperty.name as Field<M>;
-      const dmmfPropertyType = dmmfProperty.type;
-      const dmmfPropertyKind = dmmfProperty.kind;
-      if (dmmfPropertyKind === "object") {
-        const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
-        const fieldValue =
-          schema.definitions[modelName].properties[
-            dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
-          ];
-        const model = models.find((model) => model.name === dmmfPropertyType);
-        const formatId = (value?: string) =>
-          model?.fields.find((field) => field.name === "id")?.type === "Int"
-            ? Number(value)
-            : value;
-        if (fieldValue?.type === "array") {
-          formData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName]!);
-          formattedData[dmmfPropertyName] = {
-            // @ts-expect-error
-            [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
-              (item: any) => ({ id: formatId(item) })
-            ),
-          };
+  await Promise.allSettled(
+    dmmfSchema.map(async (dmmfProperty) => {
+      if (dmmfProperty.name in formData) {
+        const dmmfPropertyName = dmmfProperty.name as Field<M>;
+        const dmmfPropertyType = dmmfProperty.type;
+        const dmmfPropertyKind = dmmfProperty.kind;
+        if (dmmfPropertyKind === "object") {
+          const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
+          const fieldValue =
+            schema.definitions[modelName].properties[
+              dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
+            ];
+          const model = models.find((model) => model.name === dmmfPropertyType);
+          const formatId = (value?: string) =>
+            model?.fields.find((field) => field.name === "id")?.type === "Int"
+              ? Number(value)
+              : value;
+          if (fieldValue?.type === "array") {
+            formData[dmmfPropertyName] = JSON.parse(
+              formData[dmmfPropertyName]!
+            );
+            formattedData[dmmfPropertyName] = {
+              // @ts-expect-error
+              [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
+                (item: any) => ({ id: formatId(item) })
+              ),
+            };
+          } else {
+            const connect = Boolean(formData[dmmfPropertyName]);
+            if (!creating)
+              formattedData[dmmfPropertyName] = connect
+                ? { connect: { id: formatId(formData[dmmfPropertyName]) } }
+                : { disconnect: true };
+          }
         } else {
-          const connect = Boolean(formData[dmmfPropertyName]);
-          if (!creating)
-            formattedData[dmmfPropertyName] = connect
-              ? { connect: { id: formatId(formData[dmmfPropertyName]) } }
-              : { disconnect: true };
-        }
-      } else {
-        if (dmmfPropertyType === "Int") {
-          formattedData[dmmfPropertyName] = !isNaN(
-            Number(formData[dmmfPropertyName])
-          )
-            ? Number(formData[dmmfPropertyName])
-            : undefined;
-        } else if (dmmfPropertyType === "Boolean") {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName] === "on";
-        } else if (dmmfPropertyType === "DateTime") {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
-            ? new Date(formData[dmmfPropertyName]!)
-            : null;
-        } else {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
+          if (dmmfPropertyType === "Int") {
+            formattedData[dmmfPropertyName] = !isNaN(
+              Number(formData[dmmfPropertyName])
+            )
+              ? Number(formData[dmmfPropertyName])
+              : undefined;
+          } else if (dmmfPropertyType === "Boolean") {
+            formattedData[dmmfPropertyName] =
+              formData[dmmfPropertyName] === "on";
+          } else if (dmmfPropertyType === "DateTime") {
+            formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
+              ? new Date(formData[dmmfPropertyName]!)
+              : null;
+          } else if (
+            dmmfPropertyType === "String" &&
+            editOptions[dmmfPropertyName]?.format === "data-url" &&
+            formData[dmmfPropertyName] instanceof Buffer
+          ) {
+            const uploadHandler =
+              editOptions[dmmfPropertyName]?.handler?.upload;
+
+            if (!uploadHandler) {
+              console.warn(
+                "You need to provide an upload handler for data-url format"
+              );
+            } else {
+              const uploadResult = await uploadHandler(
+                formData[dmmfPropertyName] as unknown as Buffer
+              );
+              if (typeof uploadResult !== "string") {
+                console.warn(
+                  "Upload handler must return a string, fallback to no-op for field " +
+                    dmmfPropertyName.toString()
+                );
+              } else {
+                formattedData[dmmfPropertyName] = uploadResult;
+              }
+            }
+          } else {
+            formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
+          }
         }
       }
-    }
-  });
+    })
+  );
   return formattedData;
 };
 
@@ -470,4 +506,60 @@ export const getResourceIdFromUrl = (
   }
 
   return matching ? matching[1] : undefined;
+};
+
+export const getFormDataValues = async (req: IncomingMessage) => {
+  const form = formidable({
+    allowEmptyFiles: true,
+    minFileSize: 0,
+    fileWriteStreamHandler: () => {
+      return new Writable({
+        write(_chunk, _encoding, callback) {
+          callback();
+        },
+      });
+    },
+  });
+  return new Promise<Record<string, string | Buffer | null>>(
+    (resolve, reject) => {
+      const files = {} as Record<string, Buffer[] | [null]>;
+
+      form.on("fileBegin", (name, file) => {
+        // @ts-expect-error
+        file.createFileWriteStream = () => {
+          const chunks = [] as Buffer[];
+          return new Writable({
+            write(chunk, _encoding, callback) {
+              chunks.push(chunk);
+              callback();
+            },
+            final(callback) {
+              if (!file.originalFilename) {
+                files[name] = [null];
+              } else {
+                files[name] = [Buffer.concat(chunks)];
+              }
+              callback();
+            },
+          });
+        };
+      });
+
+      form.parse(req, (err, fields) => {
+        if (err) {
+          reject(err);
+        }
+        const joinedFormData = Object.entries({ ...fields, ...files }).reduce(
+          (acc, [key, value]) => {
+            if (Array.isArray(value)) {
+              acc[key] = value[0];
+            }
+            return acc;
+          },
+          {} as Record<string, string | Buffer | null>
+        );
+        resolve(joinedFormData);
+      });
+    }
+  );
 };
