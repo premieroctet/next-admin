@@ -227,7 +227,11 @@ export const nextAdminRouter = async (
           options
         );
         schema = transformSchema(schema, resource, edit);
-        const { action, id, ...formData } = await getFormDataValues(req);
+        const {
+          __admin_action: action,
+          id,
+          ...formData
+        } = await getFormDataValues(req);
 
         const dmmfSchema = getPrismaModelForResource(resource);
 

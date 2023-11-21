@@ -324,7 +324,7 @@ export const formattedFormData = async <M extends ModelName>(
   schema: Schema,
   resource: M,
   creating: boolean,
-  editOptions: EditFieldsOptions<M>
+  editOptions?: EditFieldsOptions<M>
 ) => {
   const formattedData: any = {};
   const modelName = resource;
@@ -378,7 +378,7 @@ export const formattedFormData = async <M extends ModelName>(
               : null;
           } else if (
             dmmfPropertyType === "String" &&
-            editOptions[dmmfPropertyName]?.format === "data-url" &&
+            editOptions?.[dmmfPropertyName]?.format === "data-url" &&
             formData[dmmfPropertyName] instanceof Buffer
           ) {
             const uploadHandler =
@@ -408,6 +408,7 @@ export const formattedFormData = async <M extends ModelName>(
       }
     })
   );
+
   return formattedData;
 };
 

@@ -151,7 +151,7 @@ const Form = ({
         {edit && (
           <Button
             type="submit"
-            name="action"
+            name="__admin_action"
             value="delete"
             className="bg-red-700"
           >
