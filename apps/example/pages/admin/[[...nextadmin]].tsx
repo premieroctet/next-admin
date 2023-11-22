@@ -50,15 +50,16 @@ const options: NextAdminOptions = {
             format: "date",
           },
           avatar: {
-            format: "data-url",
+            format: "file",
             handler: {
               /*
                * Include your own upload handler here,
                * for example you can upload the file to an S3 bucket.
                * Make sure to return a string.
-              upload: async (file: Buffer) => {
-              },
                */
+              upload: async (file: Buffer) => {
+                return "https://google.com";
+              },
             },
           },
         },

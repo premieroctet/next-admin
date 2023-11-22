@@ -378,11 +378,13 @@ export const formattedFormData = async <M extends ModelName>(
               : null;
           } else if (
             dmmfPropertyType === "String" &&
-            editOptions?.[dmmfPropertyName]?.format === "data-url" &&
+            ["data-url", "file"].includes(
+              editOptions?.[dmmfPropertyName]?.format ?? ""
+            ) &&
             formData[dmmfPropertyName] instanceof Buffer
           ) {
             const uploadHandler =
-              editOptions[dmmfPropertyName]?.handler?.upload;
+              editOptions?.[dmmfPropertyName]?.handler?.upload;
 
             if (!uploadHandler) {
               console.warn(
@@ -458,7 +460,11 @@ export const changeFormatInSchema = <M extends ModelName>(
           dmmfPropertyName as Field<typeof modelName>
         ];
       if (fieldValue) {
-        fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
+        if (editOptions?.fields?.[dmmfPropertyName]?.format === "file") {
+          fieldValue.format = "data-url";
+        } else {
+          fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
+        }
       }
     }
   });
