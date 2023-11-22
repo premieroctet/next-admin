@@ -1,4 +1,8 @@
-import { EditFieldsOptions, ModelName, ModelWithoutRelationships } from "../types";
+import {
+  EditFieldsOptions,
+  ModelName,
+  ModelWithoutRelationships,
+} from "../types";
 import {
   PropertyValidationError,
   ValidationError,
@@ -15,7 +19,7 @@ export const validate = <M extends ModelName>(
   const errors: PropertyValidationError[] = [];
   let property: keyof typeof fieldsOptions;
   for (property in fieldsOptions) {
-    if (fieldsOptions[property]?.validate) {
+    if (fieldsOptions[property]?.validate && formData[property]) {
       const validation = fieldsOptions[property]!.validate!(
         // @ts-ignore
         formData[property]
@@ -33,4 +37,4 @@ export const validate = <M extends ModelName>(
   if (errors.length > 0) {
     throw new ValidationError("Validation error", errors);
   }
-}
+};

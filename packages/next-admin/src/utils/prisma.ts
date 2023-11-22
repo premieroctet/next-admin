@@ -1,16 +1,17 @@
-import { Prisma } from "@prisma/client";
-import { getPrismaModelForResource } from "./server";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { ITEMS_PER_PAGE } from "../config";
 import {
-  ListFieldsOptions,
+  EditOptions,
+  Field,
+  ListOptions,
   ModelName,
   NextAdminOptions,
   Order,
   PrismaListRequest,
   Select,
-  UField,
 } from "../types";
-import { ITEMS_PER_PAGE } from "../config";
-import { capitalize } from "./tools";
+import { findRelationInData, getPrismaModelForResource } from "./server";
+import { capitalize, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
   fieldsFiltered?: Prisma.DMMF.Field[],
@@ -48,7 +49,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
   let orderBy: Order<typeof resource> = {};
-  const sortParam = searchParams.get("sortColumn") as UField<typeof resource>;
+  const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
   const orderValue = searchParams.get("sortDirection") as Prisma.SortOrder;
   if (
     orderValue in Prisma.SortOrder &&
@@ -60,25 +61,27 @@ export const preparePrismaListRequest = <M extends ModelName>(
   let select: Select<M> | undefined;
   let where = {};
   let fieldsFiltered = model?.fields;
-  const list = options?.model?.[resource]?.list
-    ?.fields as ListFieldsOptions<M>;
+  const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
-    const listKeys = Object.keys(list) as Array<keyof ListFieldsOptions<M>>;
-    select = listKeys.reduce((acc, column) => {
-      const field = model?.fields.find(({ name }) => name === column);
-      if (field?.kind === "object") {
-        if (!acc._count) acc._count = { select: {} };
-        acc._count.select = { ...acc._count.select, [column]: true };
-      } else {
-        // @ts-expect-error
-        acc[column] = true;
-      }
-      return acc;
-    }, {} as Select<M>);
+    const listDisplayedKeys = list.display;
+    select = listDisplayedKeys?.reduce(
+      (acc, column) => {
+        const field = model?.fields.find(({ name }) => name === column);
+        if (field?.kind === "object" && field?.isList === true) {
+          if (!acc._count) acc._count = { select: {} };
+          acc._count.select = { ...acc._count.select, [column]: true };
+        } else {
+          // @ts-expect-error
+          acc[column] = true;
+        }
+        return acc;
+      },
+      { id: true } as Select<M>
+    );
 
     fieldsFiltered =
       model?.fields.filter(
-        ({ name }) => list[name as keyof ListFieldsOptions<M>]?.search
+        ({ name }) => list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
   }
   where = createWherePredicate(fieldsFiltered, search);
@@ -89,5 +92,49 @@ export const preparePrismaListRequest = <M extends ModelName>(
     orderBy,
     skip: (page - 1) * itemsPerPage,
     take: itemsPerPage,
+  };
+};
+
+export const getMappedDataList = async (
+  prisma: PrismaClient,
+  resource: ModelName,
+  options: NextAdminOptions,
+  searchParams: URLSearchParams
+) => {
+  const prismaListRequest = preparePrismaListRequest(
+    resource,
+    searchParams,
+    options
+  );
+  let data: any[] = [];
+  let total: number;
+  let error = null;
+  const dmmfSchema = getPrismaModelForResource(resource);
+
+  try {
+    // @ts-expect-error
+    data = await prisma[uncapitalize(resource)].findMany(prismaListRequest);
+    // @ts-expect-error
+    total = await prisma[uncapitalize(resource)].count({
+      where: prismaListRequest.where,
+    });
+  } catch (e: any) {
+    const { skip, take, orderBy } = prismaListRequest;
+    // @ts-expect-error
+    data = await prisma[uncapitalize(resource)].findMany({
+      skip,
+      take,
+      orderBy,
+    });
+    // @ts-expect-error
+    total = await prisma[uncapitalize(resource)].count();
+    error = e.message ? e.message : e;
+    console.error(e);
+  }
+  data = await findRelationInData(data, dmmfSchema?.fields);
+  return {
+    data,
+    total,
+    error,
   };
 };

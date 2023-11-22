@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import RjsfForm from "@rjsf/core";
 import {
   BaseInputTemplateProps,
@@ -7,16 +8,18 @@ import {
   getSubmitButtonOptions,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
-import { ChangeEvent } from "react";
-import Button from "./radix/Button";
 import clsx from "clsx";
-import { Schemas, getSchemas } from "../utils/jsonSchema";
-import { Prisma } from "@prisma/client";
-import SelectWidget from "./inputs/SelectWidget";
+import { ChangeEvent } from "react";
+import { PropertyValidationError } from "../exceptions/ValidationError";
 import { ModelName } from "../types";
+import { Schemas, getSchemas } from "../utils/jsonSchema";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
-import { PropertyValidationError } from "../exceptions/ValidationError";
+import SelectWidget from "./inputs/SelectWidget";
+import Button from "./radix/Button";
+import DateTimeWidget from "./inputs/DateTimeWidget";
+import DateWidget from "./inputs/DateWidget";
+import FileWidget from "./inputs/FileWidget";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -44,8 +47,11 @@ const fields: CustomForm["props"]["fields"] = {
 };
 
 const widgets: CustomForm["props"]["widgets"] = {
+  DateWidget: DateWidget,
+  DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
   CheckboxWidget: CheckboxWidget,
+  FileWidget: FileWidget,
 };
 
 const templates: CustomForm["props"]["templates"] = {
@@ -145,9 +151,9 @@ const Form = ({
         {edit && (
           <Button
             type="submit"
-            name="action"
+            name="__admin_action"
             value="delete"
-            className="bg-red-700"
+            variant="destructive"
           >
             Delete
           </Button>
@@ -180,6 +186,7 @@ const Form = ({
         method="post"
         idPrefix=""
         idSeparator=""
+        enctype="multipart/form-data"
         {...schemas}
         formData={data}
         validator={validator}

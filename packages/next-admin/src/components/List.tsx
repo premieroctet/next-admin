@@ -2,9 +2,14 @@ import { ColumnDef } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
 import { useRouter } from "next/compat/router";
 import { ChangeEvent, useTransition } from "react";
-
 import { ITEMS_PER_PAGE } from "../config";
-import { AdminComponentOptions, ListData, ListDataItem, ListFieldsOptions, ModelName } from "../types";
+import {
+  ListData,
+  ListDataItem,
+  ListFieldsOptions,
+  ModelName,
+  NextAdminOptions,
+} from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
@@ -23,7 +28,7 @@ export type ListProps = {
   resource: ModelName;
   data: ListData<ModelName>;
   total: number;
-  options?: (Required<AdminComponentOptions<ModelName>>)['model'][ModelName]
+  options?: Required<NextAdminOptions>["model"][ModelName];
 };
 
 function List({ resource, data, total, options }: ListProps) {
@@ -48,40 +53,50 @@ function List({ resource, data, total, options }: ListProps) {
   const columns: ColumnDef<ListDataItem<ModelName>>[] =
     data && data?.length > 0
       ? Object.keys(data[0]).map((property) => {
-        return {
-          accessorKey: property,
-          header: () => {
-            return (
-              <TableHead
-                sortDirection={sortDirection}
-                sortColumn={sortColumn}
-                property={property}
-                onClick={() => {
-                  router?.push({
-                    pathname: location.pathname,
-                    query: {
-                      ...router?.query,
-                      sortColumn: property,
-                      sortDirection:
-                        router?.query.sortDirection === "asc"
-                          ? "desc"
-                          : "asc",
-                    },
-                  });
-                }}
-              />
-            );
-          },
-          cell: ({ row }) => {
-            const modelData = row.original;
-            const cellData = options?.list?.fields[property as keyof ListFieldsOptions<ModelName>]?.formatter?.(modelData) ?? modelData[property];
+          return {
+            accessorKey: property,
+            header: () => {
+              return (
+                <TableHead
+                  sortDirection={sortDirection}
+                  sortColumn={sortColumn}
+                  property={property}
+                  onClick={() => {
+                    router?.push({
+                      pathname: location.pathname,
+                      query: {
+                        ...router?.query,
+                        sortColumn: property,
+                        sortDirection:
+                          router?.query.sortDirection === "asc"
+                            ? "desc"
+                            : "asc",
+                      },
+                    });
+                  }}
+                />
+              );
+            },
+            cell: ({ row }) => {
+              const modelData = row.original;
+              const cellData =
+                modelData[property as keyof ListFieldsOptions<ModelName>];
+              const dataFormatter =
+                options?.list?.fields?.[
+                  property as keyof ListFieldsOptions<ModelName>
+                ]?.formatter ||
+                ((cell: any) => {
+                  if (typeof cell === "object") {
+                    return cell.id;
+                  } else {
+                    return cell;
+                  }
+                });
 
-            return (
-              <Cell cell={cellData} />
-            );
-          },
-        };
-      })
+              return <Cell cell={cellData} formatter={dataFormatter} />;
+            },
+          };
+        })
       : [];
 
   return (
@@ -103,10 +118,11 @@ function List({ resource, data, total, options }: ListProps) {
             resource={resource}
             data={data}
             columns={columns}
+            options={options}
           />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">
-              <div >
+              <div>
                 <TableRowsIndicator
                   pageIndex={pageIndex}
                   totalRows={total}

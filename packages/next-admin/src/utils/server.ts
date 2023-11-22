@@ -2,19 +2,24 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import bodyParser from "body-parser";
 import util from "util";
 import {
-  Field,
-  ModelName,
-  NextAdminOptions,
-  Schema,
-  FormData,
-  Enumeration,
-  ListFieldsOptions,
   EditFieldsOptions,
+  EditOptions,
+  Enumeration,
+  Field,
+  FormData,
+  ListOptions,
+  ModelName,
   ModelWithoutRelationships,
+  NextAdminOptions,
   ScalarField,
+  Schema,
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
+import { IncomingMessage } from "http";
+import formidable from "formidable";
+import { Writable } from "stream";
+
 export const getBody = util.promisify(bodyParser.urlencoded());
 
 export const models = Prisma.dmmf.datamodel.models;
@@ -63,7 +68,7 @@ export const fillRelationInSchema = async (
       if (fieldKind === "enum") {
         const fieldValue =
           schema.definitions[modelName].properties[
-          field.name as Field<typeof modelName>
+            field.name as Field<typeof modelName>
           ];
         if (fieldValue) {
           fieldValue.enum = fieldValue.enum?.map((item) =>
@@ -76,17 +81,10 @@ export const fillRelationInSchema = async (
         const remoteModel = models.find(
           (model) => model.name === modelNameRelation
         );
-        type ListFieldOptionsModel = ListFieldsOptions<
-          typeof modelNameRelation
-        >;
-        const listFields = options?.model?.[modelNameRelation]?.list
-          ?.fields as ListFieldOptionsModel;
-        const listKeys =
-          listFields &&
-          (Object.keys(listFields) as Array<keyof ListFieldOptionsModel>);
+        const listOptions = options?.model?.[modelNameRelation]
+          ?.list as ListOptions<typeof modelNameRelation>;
         const optionsForRelations =
-          listKeys?.filter((key) => listFields[key]?.search) ??
-          remoteModel?.fields.map((field) => field.name);
+          listOptions?.search ?? remoteModel?.fields.map((field) => field.name);
         const relationProperty: Field<typeof modelName> =
           (relationFromFields?.[0] as Field<typeof modelName>) ?? fieldName;
         const fieldsFiltered = remoteModel?.fields.filter((field) =>
@@ -128,7 +126,7 @@ export const fillRelationInSchema = async (
         } else {
           const fieldValue =
             schema.definitions[modelName].properties[
-            field.name as Field<typeof modelName>
+              field.name as Field<typeof modelName>
             ];
           if (fieldValue) {
             let enumeration: Enumeration[] = [];
@@ -166,7 +164,14 @@ export const fillRelationInSchema = async (
   return schema;
 };
 
-export const flatRelationInData = (data: any, resource: ModelName) => {
+/**
+ * This is used to transform the data from server to client
+ */
+export const transformData = <M extends ModelName>(
+  data: any,
+  resource: M,
+  editOptions: EditOptions<M>
+) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
@@ -174,18 +179,24 @@ export const flatRelationInData = (data: any, resource: ModelName) => {
   return Object.keys(data).reduce((acc, key) => {
     const field = model.fields.find((field) => field.name === key);
     const fieldKind = field?.kind;
-    if (fieldKind === "object") {
-      if (Array.isArray(data[key])) {
-        acc[key] = data[key].map((item: any) => item.id);
-      } else {
-        acc[key] = data[key] ? data[key].id : null;
-      }
+    const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
+    if (get) {
+      acc[key] = get(data[key]);
     } else {
-      const fieldTypes = field?.type;
-      if (fieldTypes === "DateTime") {
-        acc[key] = data[key] ? data[key].toISOString() : null;
+      if (fieldKind === "object") {
+        // Flat relationships to id
+        if (Array.isArray(data[key])) {
+          acc[key] = data[key].map((item: any) => item.id);
+        } else {
+          acc[key] = data[key] ? data[key].id : null;
+        }
       } else {
-        acc[key] = data[key] ? data[key] : null;
+        const fieldTypes = field?.type;
+        if (fieldTypes === "DateTime") {
+          acc[key] = data[key] ? data[key].toISOString() : null;
+        } else {
+          acc[key] = data[key] ? data[key] : null;
+        }
       }
     }
     return acc;
@@ -205,6 +216,7 @@ export const findRelationInData = async (
   dmmfSchema?: Prisma.DMMF.Field[]
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
+    const dmmfPropertyName = dmmfProperty.name;
     const dmmfPropertyType = dmmfProperty.type;
     const dmmfPropertyKind = dmmfProperty.kind;
     const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
@@ -215,15 +227,15 @@ export const findRelationInData = async (
         dmmfPropertyRelationFromFields!.length > 0 &&
         dmmfPropertyRelationToFields!.length > 0
       ) {
-        const relationProperty = dmmfPropertyRelationFromFields![0];
         data.map((item) => {
-          if (item[relationProperty]) {
-            item[relationProperty] = {
+          if (item[dmmfPropertyName]) {
+            item[dmmfPropertyName] = {
               type: "link",
               value: {
-                label: item[relationProperty],
-                url: `${dmmfProperty.type as ModelName}/${item[relationProperty]
-                  }`,
+                label: item[dmmfPropertyName],
+                url: `${dmmfProperty.type as ModelName}/${
+                  item[dmmfPropertyName]["id"]
+                }`,
               },
             };
           } else {
@@ -247,7 +259,7 @@ export const findRelationInData = async (
         if (item[dmmfProperty.name]) {
           item[dmmfProperty.name] = {
             type: "date",
-            value: new Date(item[dmmfProperty.name]).toLocaleString("fr-FR"),
+            value: item[dmmfProperty.name].toISOString(),
           };
         } else {
           return item;
@@ -257,7 +269,6 @@ export const findRelationInData = async (
   });
   return data;
 };
-
 
 export const parseFormData = <M extends ModelName>(
   formData: FormData<M>,
@@ -270,26 +281,35 @@ export const parseFormData = <M extends ModelName>(
       const dmmfPropertyType = dmmfProperty.type;
       const dmmfPropertyKind = dmmfProperty.kind;
       if (dmmfPropertyKind === "object") {
-        if(Boolean(formData[dmmfPropertyName])) {
-        parsedData[dmmfPropertyName] =  JSON.parse(formData[dmmfPropertyName] as string) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        if (Boolean(formData[dmmfPropertyName])) {
+          parsedData[dmmfPropertyName] = JSON.parse(
+            formData[dmmfPropertyName] as string
+          ) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         } else {
-          parsedData[dmmfPropertyName] = null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+          parsedData[dmmfPropertyName] =
+            null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         }
       } else if (dmmfPropertyType === "Int") {
         const value = Number(formData[dmmfPropertyName]) as number;
-        parsedData[dmmfPropertyName] = isNaN(value) ? undefined : value as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = isNaN(value)
+          ? undefined
+          : (value as ModelWithoutRelationships<M>[typeof dmmfPropertyName]);
       } else if (dmmfPropertyType === "Boolean") {
-        parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] === "on") as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] ===
+          "on") as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else if (dmmfPropertyType === "DateTime") {
-        parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] ? new Date(formData[dmmfPropertyName]!) : null) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = formData[
+          dmmfPropertyName
+        ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else {
-        parsedData[dmmfPropertyName] = formData[dmmfPropertyName] as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[dmmfPropertyName] = formData[
+          dmmfPropertyName
+        ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       }
     }
-  }
-  );
+  });
   return parsedData;
-}
+};
 
 /**
  * Convert the form data to the format expected by Prisma
@@ -298,63 +318,99 @@ export const parseFormData = <M extends ModelName>(
  * @param dmmfSchema
  *
  */
-export const formattedFormData = <M extends ModelName>(
+export const formattedFormData = async <M extends ModelName>(
   formData: FormData<M>,
   dmmfSchema: Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
-  creating: boolean
+  creating: boolean,
+  editOptions?: EditFieldsOptions<M>
 ) => {
   const formattedData: any = {};
   const modelName = resource;
-  dmmfSchema.forEach((dmmfProperty) => {
-    if (dmmfProperty.name in formData) {
-      const dmmfPropertyName = dmmfProperty.name as Field<M>;
-      const dmmfPropertyType = dmmfProperty.type;
-      const dmmfPropertyKind = dmmfProperty.kind;
-      if (dmmfPropertyKind === "object") {
-        const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
-        const fieldValue =
-          schema.definitions[modelName].properties[
-          dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
-          ];
-        const model = models.find((model) => model.name === dmmfPropertyType);
-        const formatId = (value?: string) =>
-          model?.fields.find((field) => field.name === "id")?.type === "Int"
-            ? Number(value)
-            : value;
-        if (fieldValue?.type === "array") {
-          formData[dmmfPropertyName] = JSON.parse(formData[dmmfPropertyName]!);
-          formattedData[dmmfPropertyName] = {
-            // @ts-expect-error
-            [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
-              (item: any) => ({ id: formatId(item) })
-            ),
-          };
+  await Promise.allSettled(
+    dmmfSchema.map(async (dmmfProperty) => {
+      if (dmmfProperty.name in formData) {
+        const dmmfPropertyName = dmmfProperty.name as Field<M>;
+        const dmmfPropertyType = dmmfProperty.type;
+        const dmmfPropertyKind = dmmfProperty.kind;
+        if (dmmfPropertyKind === "object") {
+          const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
+          const fieldValue =
+            schema.definitions[modelName].properties[
+              dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
+            ];
+          const model = models.find((model) => model.name === dmmfPropertyType);
+          const formatId = (value?: string) =>
+            model?.fields.find((field) => field.name === "id")?.type === "Int"
+              ? Number(value)
+              : value;
+          if (fieldValue?.type === "array") {
+            formData[dmmfPropertyName] = JSON.parse(
+              formData[dmmfPropertyName]!
+            );
+            formattedData[dmmfPropertyName] = {
+              // @ts-expect-error
+              [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
+                (item: any) => ({ id: formatId(item) })
+              ),
+            };
+          } else {
+            const connect = Boolean(formData[dmmfPropertyName]);
+            if (!creating)
+              formattedData[dmmfPropertyName] = connect
+                ? { connect: { id: formatId(formData[dmmfPropertyName]) } }
+                : { disconnect: true };
+          }
         } else {
-          const connect = Boolean(formData[dmmfPropertyName]);
-          if (!creating)
-            formattedData[dmmfPropertyName] = connect
-              ? { connect: { id: formatId(formData[dmmfPropertyName]) } }
-              : { disconnect: true };
-        }
-      } else {
-        if (dmmfPropertyType === "Int") {
-          formattedData[dmmfPropertyName] = !isNaN(
-            Number(formData[dmmfPropertyName])
-          )
-            ? Number(formData[dmmfPropertyName])
-            : undefined;
-        } else if (dmmfPropertyType === "Boolean") {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName] === "on";
-        } else if (dmmfPropertyType === "DateTime") {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName] ? new Date(formData[dmmfPropertyName]!) : null;
-        } else {
-          formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
+          if (dmmfPropertyType === "Int") {
+            formattedData[dmmfPropertyName] = !isNaN(
+              Number(formData[dmmfPropertyName])
+            )
+              ? Number(formData[dmmfPropertyName])
+              : undefined;
+          } else if (dmmfPropertyType === "Boolean") {
+            formattedData[dmmfPropertyName] =
+              formData[dmmfPropertyName] === "on";
+          } else if (dmmfPropertyType === "DateTime") {
+            formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
+              ? new Date(formData[dmmfPropertyName]!)
+              : null;
+          } else if (
+            dmmfPropertyType === "String" &&
+            ["data-url", "file"].includes(
+              editOptions?.[dmmfPropertyName]?.format ?? ""
+            ) &&
+            formData[dmmfPropertyName] instanceof Buffer
+          ) {
+            const uploadHandler =
+              editOptions?.[dmmfPropertyName]?.handler?.upload;
+
+            if (!uploadHandler) {
+              console.warn(
+                "You need to provide an upload handler for data-url format"
+              );
+            } else {
+              const uploadResult = await uploadHandler(
+                formData[dmmfPropertyName] as unknown as Buffer
+              );
+              if (typeof uploadResult !== "string") {
+                console.warn(
+                  "Upload handler must return a string, fallback to no-op for field " +
+                    dmmfPropertyName.toString()
+                );
+              } else {
+                formattedData[dmmfPropertyName] = uploadResult;
+              }
+            }
+          } else {
+            formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
+          }
         }
       }
-    }
-  });
+    })
+  );
+
   return formattedData;
 };
 
@@ -378,15 +434,52 @@ export const formattedFormData = <M extends ModelName>(
 export const formatSearchFields = (uri: string) =>
   Object.fromEntries(new URLSearchParams(uri));
 
+export const transformSchema = <M extends ModelName>(
+  schema: Schema,
+  resource: M,
+  editOptions: EditOptions<M>
+) => {
+  schema = removeHiddenProperties(schema, resource, editOptions);
+  schema = changeFormatInSchema(schema, resource, editOptions);
+  return schema;
+};
+
+export const changeFormatInSchema = <M extends ModelName>(
+  schema: Schema,
+  resource: M,
+  editOptions: EditOptions<M>
+) => {
+  const modelName = resource;
+  const model = models.find((model) => model.name === modelName);
+  if (!model) return schema;
+  model.fields.forEach((dmmfProperty) => {
+    const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
+    if (editOptions?.fields?.[dmmfPropertyName]?.format) {
+      const fieldValue =
+        schema.definitions[modelName].properties[
+          dmmfPropertyName as Field<typeof modelName>
+        ];
+      if (fieldValue) {
+        if (editOptions?.fields?.[dmmfPropertyName]?.format === "file") {
+          fieldValue.format = "data-url";
+        } else {
+          fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
+        }
+      }
+    }
+  });
+  return schema;
+};
+
 export const removeHiddenProperties = <M extends ModelName>(
   schema: Schema,
-  editOptions: EditFieldsOptions<M>,
-  resource: M
+  resource: M,
+  editOptions: EditOptions<M>
 ) => {
   if (!editOptions) return schema;
   const properties = schema.definitions[resource].properties;
   Object.keys(properties).forEach((property) => {
-    if (!editOptions[property as Field<M>]?.display) {
+    if (!editOptions.display?.includes(property as Field<M>)) {
       delete properties[property as Field<M>];
     }
   });
@@ -420,4 +513,60 @@ export const getResourceIdFromUrl = (
   }
 
   return matching ? matching[1] : undefined;
+};
+
+export const getFormDataValues = async (req: IncomingMessage) => {
+  const form = formidable({
+    allowEmptyFiles: true,
+    minFileSize: 0,
+    fileWriteStreamHandler: () => {
+      return new Writable({
+        write(_chunk, _encoding, callback) {
+          callback();
+        },
+      });
+    },
+  });
+  return new Promise<Record<string, string | Buffer | null>>(
+    (resolve, reject) => {
+      const files = {} as Record<string, Buffer[] | [null]>;
+
+      form.on("fileBegin", (name, file) => {
+        // @ts-expect-error
+        file.createFileWriteStream = () => {
+          const chunks = [] as Buffer[];
+          return new Writable({
+            write(chunk, _encoding, callback) {
+              chunks.push(chunk);
+              callback();
+            },
+            final(callback) {
+              if (!file.originalFilename) {
+                files[name] = [null];
+              } else {
+                files[name] = [Buffer.concat(chunks)];
+              }
+              callback();
+            },
+          });
+        };
+      });
+
+      form.parse(req, (err, fields) => {
+        if (err) {
+          reject(err);
+        }
+        const joinedFormData = Object.entries({ ...fields, ...files }).reduce(
+          (acc, [key, value]) => {
+            if (Array.isArray(value)) {
+              acc[key] = value[0];
+            }
+            return acc;
+          },
+          {} as Record<string, string | Buffer | null>
+        );
+        resolve(joinedFormData);
+      });
+    }
+  );
 };

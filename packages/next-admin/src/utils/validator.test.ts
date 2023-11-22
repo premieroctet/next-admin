@@ -14,7 +14,7 @@ describe("validator", () => {
     expect(() =>
       validate<"User">(
         {
-          id: "1",
+          id: 1,
           email: "bob.com",
         },
         {

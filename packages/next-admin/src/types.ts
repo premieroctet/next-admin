@@ -7,18 +7,31 @@ import { PropertyValidationError } from "./exceptions/ValidationError";
 
 export type ModelName = Prisma.ModelName;
 
-export type ScalarField<T extends ModelName> = Prisma.TypeMap["model"][T]["payload"]["scalars"];
-export type ObjectField<T extends ModelName> = Prisma.TypeMap["model"][T]["payload"]["objects"];
+export type ScalarField<T extends ModelName> =
+  Prisma.TypeMap["model"][T]["payload"]["scalars"];
+export type ObjectField<T extends ModelName> =
+  Prisma.TypeMap["model"][T]["payload"]["objects"];
 
-export type Model<M extends ModelName, T extends never | number = never> = ScalarField<M> & {
-  [P in keyof ObjectField<M>]:
-  ObjectField<M>[P] extends { scalars: infer S } ? T extends never ? S : T 
-  : ObjectField<M>[P] extends { scalars: infer S } | null ? T extends never ? S | null : T | null
-  : ObjectField<M>[P] extends { scalars: infer S }[] ? T extends never ? S[] : T[]
-  : never;
-}
+export type Model<
+  M extends ModelName,
+  T extends object | number = object
+> = ScalarField<M> & {
+  [P in keyof ObjectField<M>]: ObjectField<M>[P] extends { scalars: infer S }
+    ? T extends object
+      ? S
+      : T
+    : never | ObjectField<M>[P] extends { scalars: infer S }[]
+    ? T extends object
+      ? S[]
+      : T[]
+    : never | ObjectField<M>[P] extends { scalars: infer S } | null
+    ? T extends object
+      ? S | null
+      : T | null
+    : never;
+};
 
-export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>; 
+export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
 
 export type Field<P extends ModelName> = keyof Model<P>;
 
@@ -28,27 +41,63 @@ export type Field<P extends ModelName> = keyof Model<P>;
 
 export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    display?: true;
-    search?: true;
+    formatter?: (item: Model<T>[P]) => ReactNode;
   };
 };
 
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    display?: boolean;
     validate?: (value: ModelWithoutRelationships<T>[P]) => true | string;
+    format?: FormatOptions<ModelWithoutRelationships<T>[P]>;
+    handler?: Handler<T, P, Model<T>[P]>;
   };
+};
+
+export type Handler<
+  M extends ModelName,
+  P extends Field<M>,
+  T extends Model<M>[P]
+> = {
+  get?: (input: T) => any;
+  upload?: (file: Buffer) => Promise<string>;
+};
+
+export type FormatOptions<T> = T extends string
+  ?
+      | "textarea"
+      | "password"
+      | "color"
+      | "email"
+      | "uri"
+      | "data-url"
+      | "date"
+      | "date-time"
+      | "time"
+      | "alt-datetime"
+      | "alt-date"
+      | "file"
+  : never | T extends Date
+  ? "date" | "date-time" | "time"
+  : never | T extends number
+  ? "updown" | "range"
+  : never;
+
+export type ListOptions<T extends ModelName> = {
+  display?: Field<T>[];
+  search?: Field<T>[];
+  fields?: ListFieldsOptions<T>;
+};
+
+export type EditOptions<T extends ModelName> = {
+  display?: Field<T>[];
+  fields?: EditFieldsOptions<T>;
 };
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     toString?: (item: Model<P>) => string;
-    list?: {
-      fields: ListFieldsOptions<P>;
-    };
-    edit?: {
-      fields: EditFieldsOptions<P>;
-    };
+    list?: ListOptions<P>;
+    edit?: EditOptions<P>;
   };
 };
 
@@ -56,7 +105,6 @@ export type NextAdminOptions = {
   basePath: string;
   model?: ModelOptions<ModelName>;
 };
-
 
 /** Type for Schema */
 
@@ -77,8 +125,6 @@ export type SchemaDefinitions = {
 export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
   definitions: SchemaDefinitions;
 };
-
-
 
 export type FormData<M extends ModelName> = {
   [P in Field<M>]?: string;
@@ -129,33 +175,16 @@ export type ListDataFieldValue =
   | boolean
   | { type: "count"; value: number }
   | {
-    type: "link";
-    value: {
-      label: string;
-      url: string;
-    };
-  }
-  | {
-    type: "date";
-    value: Date;
-  };
-
-export type ListComponentFieldsOptions<T extends ModelName> = {
-  [P in Field<T>]?: {
-    formatter?: (item: ListDataItem<ModelName>) => ReactNode;
-  };
-};
-
-export type AdminComponentOptions<T extends ModelName> = {
-  model?: {
-    [P in T]?: {
-      toString?: (item: Model<P>) => string;
-      list?: {
-        fields: ListComponentFieldsOptions<P>;
+      type: "link";
+      value: {
+        label: string;
+        url: string;
       };
+    }
+  | {
+      type: "date";
+      value: Date;
     };
-  };
-};
 
 export type AdminComponentProps = {
   basePath: string;
@@ -171,7 +200,7 @@ export type AdminComponentProps = {
   resources?: ModelName[];
   total?: number;
   dmmfSchema: Prisma.DMMF.Field[];
-  options?: AdminComponentOptions<ModelName>;
+  options?: NextAdminOptions;
 };
 
 export type CustomUIProps = {
