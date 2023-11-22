@@ -125,7 +125,7 @@ const FileWidget = (props: WidgetProps) => {
               <div className="flex items-center space-x-2">
                 <CloudArrowUpIcon className="h-5 w-5 text-gray-400" />
                 <span className="ml-2 text-sm font-medium text-gray-700">
-                  Upload
+                  Choose a file
                 </span>
               </div>
               <input
