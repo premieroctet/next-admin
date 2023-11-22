@@ -1,5 +1,27 @@
 # @premieroctet/next-admin
 
+## 2.0.0
+
+### Major Changes
+
+- dbb5a3e: - Always fetch `id` property from items
+
+  - Hide `id`column in list if it doesn't have `display: true` options
+  - Mutualize `NextAdminOptions` to reduce useless duplication of code
+
+  ⚠️ **Breaking Changes**
+
+  To reduce the complexity and duplication of next-admin options, this PR contains major changes to the structure of the options.
+
+  - Changed structure for `display` and `search` properties: fields are now entered as an array
+
+### Patch Changes
+
+- dbb5a3e: Add formatting system to relationship column
+- dbb5a3e: Add ability to choose format type for Date property between date-time and date in edit options
+  Introduce handler object to handle custom logic for a property in edit mode
+  Add ability to use input variant in edit mode
+
 ## 1.4.1
 
 ### Patch Changes
