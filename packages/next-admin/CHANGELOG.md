@@ -8,6 +8,7 @@
 
   - Hide `id`column in list if it doesn't have `display: true` options
   - Mutualize `NextAdminOptions` to reduce useless duplication of code
+  - Add file upload input
 
   ⚠️ **Breaking Changes**
 
@@ -21,6 +22,8 @@
 - dbb5a3e: Add ability to choose format type for Date property between date-time and date in edit options
   Introduce handler object to handle custom logic for a property in edit mode
   Add ability to use input variant in edit mode
+  Fix datetime-local input to store correct datetime
+  
 
 ## 1.4.1
 
