@@ -153,7 +153,7 @@ const Form = ({
             type="submit"
             name="__admin_action"
             value="delete"
-            className="bg-red-700"
+            variant="destructive"
           >
             Delete
           </Button>

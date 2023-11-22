@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
@@ -39,10 +39,9 @@ export const nextAdminRouter = async (
   return (
     createRouter()
       // Error handling middleware
-      .use(options.basePath, async (req, res, next) => {
+      .use(async (req, res, next) => {
         try {
-          const response = await next();
-          return response;
+          return await next();
         } catch (e: any) {
           if (process.env.NODE_ENV === "development") {
             throw e;
@@ -53,74 +52,15 @@ export const nextAdminRouter = async (
           };
         }
       })
-      .get(options.basePath, async (req, res) => {
-        return { props: defaultProps };
-      })
-      .get(`${options.basePath}/:resource`, async (req, res) => {
-        // @ts-expect-error
-        const resource = req.params.resource as Prisma.ModelName;
-        const model = getPrismaModelForResource(resource);
-
-        if (!model) {
-          return { props: defaultProps };
-        }
-
+      .get(async (req, res) => {
+        const resource = getResourceFromUrl(req.url!, resources);
         const requestOptions = formatSearchFields(req.url!);
 
-        schema = await fillRelationInSchema(
-          schema,
-          prisma,
-          resource,
-          requestOptions,
-          options
-        );
-
-        const dmmfSchema = getPrismaModelForResource(resource);
-
-        const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-        const { data, total, error } = await getMappedDataList(
-          prisma,
-          resource,
-          options,
-          searchParams
-        );
-
-        return {
-          props: {
-            ...defaultProps,
-            resource,
-            data,
-            total,
-            error,
-            schema,
-            dmmfSchema,
-          },
-        };
-      })
-      .get(`${options.basePath}/:resource/:id`, async (req, res) => {
-        // @ts-expect-error
-        const resource = req.params.resource as Prisma.ModelName;
-        const model = getPrismaModelForResource(resource);
-
-        if (!model) {
+        // Dashboard
+        if (!resource) {
           return { props: defaultProps };
         }
-
-        // @ts-expect-error
-        if (req.params.id === "new") {
-          const dmmfSchema = getPrismaModelForResource(resource);
-
-          return {
-            props: {
-              ...defaultProps,
-              resource,
-              schema,
-              dmmfSchema: dmmfSchema?.fields,
-            },
-          };
-        }
-
-        const requestOptions = formatSearchFields(req.url!);
+        const model = getPrismaModelForResource(resource);
 
         let selectedFields = model?.fields.reduce(
           (acc, field) => {
@@ -173,6 +113,37 @@ export const nextAdminRouter = async (
             },
           };
         }
+        // New
+        if (req.url!.includes("/new")) {
+          return {
+            props: {
+              ...defaultProps,
+              resource,
+              schema,
+              dmmfSchema: dmmfSchema?.fields,
+            },
+          };
+        }
+
+        // List
+        const searchParams = new URLSearchParams(req.url!.split("?")[1]);
+        const { data, total, error } = await getMappedDataList(
+          prisma,
+          resource,
+          options,
+          searchParams
+        );
+        return {
+          props: {
+            ...defaultProps,
+            resource,
+            data,
+            total,
+            error,
+            schema,
+            dmmfSchema,
+          },
+        };
       })
       .post(async (req, res) => {
         const resource = getResourceFromUrl(req.url!, resources);

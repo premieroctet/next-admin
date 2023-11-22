@@ -58,7 +58,7 @@ const options: NextAdminOptions = {
                * Make sure to return a string.
                */
               upload: async (file: Buffer) => {
-                return "https://google.com";
+                return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
               },
             },
           },
