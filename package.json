@@ -12,6 +12,7 @@
     "build": "turbo run build",
     "build:example": "turbo run build --filter=example",
     "dev": "turbo run dev",
+    "dev:docs": "turbo run dev --filter=docs",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "test:e2e": "dotenv turbo test:e2e",
