@@ -19,6 +19,7 @@ import SelectWidget from "./inputs/SelectWidget";
 import Button from "./radix/Button";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
+import FileWidget from "./inputs/FileWidget";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -50,6 +51,7 @@ const widgets: CustomForm["props"]["widgets"] = {
   DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
   CheckboxWidget: CheckboxWidget,
+  FileWidget: FileWidget,
 };
 
 const templates: CustomForm["props"]["templates"] = {
@@ -149,9 +151,9 @@ const Form = ({
         {edit && (
           <Button
             type="submit"
-            name="action"
+            name="__admin_action"
             value="delete"
-            className="bg-red-700"
+            variant="destructive"
           >
             Delete
           </Button>
@@ -184,6 +186,7 @@ const Form = ({
         method="post"
         idPrefix=""
         idSeparator=""
+        enctype="multipart/form-data"
         {...schemas}
         formData={data}
         validator={validator}

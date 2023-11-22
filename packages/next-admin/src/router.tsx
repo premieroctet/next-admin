@@ -6,10 +6,8 @@ import {
 import { createRouter } from "next-connect";
 
 import {
-  Body,
   EditFieldsOptions,
   EditOptions,
-  FormData,
   NextAdminOptions,
   Select,
 } from "./types";
@@ -18,7 +16,7 @@ import {
   fillRelationInSchema,
   formatSearchFields,
   formattedFormData,
-  getBody,
+  getFormDataValues,
   getPrismaModelForResource,
   getResourceFromUrl,
   getResourceIdFromUrl,
@@ -194,10 +192,11 @@ export const nextAdminRouter = async (
           options
         );
         schema = transformSchema(schema, resource, edit);
-        await getBody(req, res);
-
-        // @ts-expect-error
-        const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
+        const {
+          __admin_action: action,
+          id,
+          ...formData
+        } = await getFormDataValues(req);
 
         const dmmfSchema = getPrismaModelForResource(resource);
 
@@ -205,7 +204,7 @@ export const nextAdminRouter = async (
 
         try {
           // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
-          if (resourceId === undefined && formData.action === "delete") {
+          if (resourceId === undefined && action === "delete") {
             const searchParams = new URLSearchParams(req.url!.split("?")[1]);
             const { data, total } = await getMappedDataList(
               prisma,
@@ -229,7 +228,7 @@ export const nextAdminRouter = async (
           }
 
           // Delete
-          if (resourceId !== undefined && formData.action === "delete") {
+          if (resourceId !== undefined && action === "delete") {
             // @ts-expect-error
             await prisma[resource].delete({
               where: {
@@ -260,12 +259,13 @@ export const nextAdminRouter = async (
               where: {
                 id: resourceId,
               },
-              data: formattedFormData(
+              data: await formattedFormData(
                 formData,
                 dmmfSchema?.fields!,
                 schema,
                 resource,
-                false
+                false,
+                fields
               ),
               select: selectedFields,
             });
@@ -299,12 +299,13 @@ export const nextAdminRouter = async (
           // Create
           // @ts-expect-error
           data = await prisma[resource].create({
-            data: formattedFormData(
+            data: await formattedFormData(
               formData,
               dmmfSchema?.fields!,
               schema,
               resource,
-              true
+              true,
+              fields
             ),
             select: selectedFields,
           });
