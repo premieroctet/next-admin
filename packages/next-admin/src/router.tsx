@@ -39,7 +39,7 @@ export const nextAdminRouter = async (
   return (
     createRouter()
       // Error handling middleware
-      .use(async (req, res, next) => {
+      .use(options.basePath, async (req, res, next) => {
         try {
           const response = await next();
           return response;
@@ -97,7 +97,7 @@ export const nextAdminRouter = async (
           },
         };
       })
-      .get(`${options.basePath}/:resource/new`, async (req, res) => {
+      .get(`${options.basePath}/:resource/:id`, async (req, res) => {
         // @ts-expect-error
         const resource = req.params.resource as Prisma.ModelName;
         const model = getPrismaModelForResource(resource);
@@ -106,24 +106,18 @@ export const nextAdminRouter = async (
           return { props: defaultProps };
         }
 
-        const dmmfSchema = getPrismaModelForResource(resource);
-
-        return {
-          props: {
-            ...defaultProps,
-            resource,
-            schema,
-            dmmfSchema: dmmfSchema?.fields,
-          },
-        };
-      })
-      .get(`${options.basePath}/:resource/:id`, async (req, res) => {
         // @ts-expect-error
-        const resource = req.params.resource as Prisma.ModelName;
-        const model = getPrismaModelForResource(resource);
+        if (req.params.id === "new") {
+          const dmmfSchema = getPrismaModelForResource(resource);
 
-        if (!model) {
-          return { props: defaultProps };
+          return {
+            props: {
+              ...defaultProps,
+              resource,
+              schema,
+              dmmfSchema: dmmfSchema?.fields,
+            },
+          };
         }
 
         const requestOptions = formatSearchFields(req.url!);
