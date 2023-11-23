@@ -6,8 +6,7 @@
     "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
-    "vercel": "vercel"
+    "lint": "next lint"
   },
   "dependencies": {
     "@premieroctet/next-admin": "*",
