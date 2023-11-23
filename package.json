@@ -18,7 +18,8 @@
     "test:e2e": "dotenv turbo test:e2e",
     "database": "dotenv turbo run database",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-package": "turbo run build && changeset publish"
+    "publish-package": "turbo run build && changeset publish",
+    "vercel": "turbo run vercel"
   },
   "devDependencies": {
     "dotenv-cli": "7.2.1",

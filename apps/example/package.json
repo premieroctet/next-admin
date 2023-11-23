@@ -11,7 +11,8 @@
     "postinstall": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "vercel": "vercel"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
