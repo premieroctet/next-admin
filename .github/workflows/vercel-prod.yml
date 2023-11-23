@@ -30,7 +30,7 @@ jobs:
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
       - name: Build Project Artifacts (Docs)
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }} --cwd apps/docs
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
       - name: Deploy Project Artifacts to Vercel (Docs)
@@ -39,14 +39,14 @@ jobs:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
 
       - name: Pull Vercel Environment Information (Example)
-        run: vercel -- --filter=example -- pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --cwd apps/docs
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }} --cwd apps/docs
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
       - name: Build Project Artifacts (Example)
-        run: vercel -- --filter=example -- build --prod --token=${{ secrets.VERCEL_TOKEN }} --cwd apps/docs
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
       - name: Deploy Project Artifacts to Vercel (Example)
-        run: vercel -- --filter=example -- deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --cwd apps/docs
+        run: vercel deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }} --cwd apps/docs
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}

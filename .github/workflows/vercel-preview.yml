@@ -27,7 +27,7 @@ jobs:
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
       - name: Build Project Artifacts (Docs)
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }} --cwd apps/docs
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
       - name: Deploy Project Artifacts to Vercel (Docs)
@@ -40,7 +40,7 @@ jobs:
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
       - name: Build Project Artifacts (Example)
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }} --cwd apps/example
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
       - name: Deploy Project Artifacts to Vercel (Example)
