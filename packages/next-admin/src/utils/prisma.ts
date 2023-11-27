@@ -11,7 +11,7 @@ import {
   Select,
 } from "../types";
 import { findRelationInData, getPrismaModelForResource } from "./server";
-import { capitalize, uncapitalize } from "./tools";
+import { capitalize, isScalar, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
   fieldsFiltered?: Prisma.DMMF.Field[],
@@ -99,7 +99,8 @@ export const getMappedDataList = async (
   prisma: PrismaClient,
   resource: ModelName,
   options: NextAdminOptions,
-  searchParams: URLSearchParams
+  searchParams: URLSearchParams,
+  mode: "list" | "form" = "list"
 ) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
@@ -132,6 +133,54 @@ export const getMappedDataList = async (
     console.error(e);
   }
   data = await findRelationInData(data, dmmfSchema?.fields);
+
+  const listFields = options.model?.[resource]?.list?.fields ?? {};
+
+  data.forEach((item, index) => {
+    Object.keys(item).forEach((key) => {
+      let itemValue;
+
+      if (typeof item[key] === "object" && item[key] !== null) {
+        switch (item[key].type) {
+          case "link":
+            itemValue = item[key].value.label;
+            break;
+          case "count":
+            itemValue = item[key].value;
+            break;
+          case "date":
+            itemValue = item[key].value.toString();
+            break;
+          default:
+            itemValue = item[key].id;
+            break;
+        }
+
+        item[key].__nextadmin_formatted = itemValue;
+      } else if (isScalar(item[key]) && item[key] !== null) {
+        item[key] = {
+          type: "scalar",
+          value: item[key],
+          __nextadmin_formatted: item[key].toString(),
+        };
+        itemValue = item[key].value;
+      }
+
+      if (
+        key in listFields &&
+        listFields[key as keyof typeof listFields]?.formatter &&
+        !!itemValue
+      ) {
+        item[key].__nextadmin_formatted = listFields[
+          key as keyof typeof listFields
+          // @ts-expect-error
+        ]?.formatter?.(itemValue ?? item[key]);
+      } else {
+        data[index][key] = item[key];
+      }
+    });
+  });
+
   return {
     data,
     total,

@@ -91,7 +91,7 @@ export const nextAdminRouter = async (
         );
         selectedFields = editSelect ?? selectedFields;
 
-        // Edit
+        //#region Edit
         const resourceId = getResourceIdFromUrl(req.url!, resource);
 
         const dmmfSchema = getPrismaModelForResource(resource);
@@ -113,7 +113,9 @@ export const nextAdminRouter = async (
             },
           };
         }
-        // New
+        //#endregion
+        
+        //#region New
         if (req.url!.includes("/new")) {
           return {
             props: {
@@ -124,8 +126,9 @@ export const nextAdminRouter = async (
             },
           };
         }
+        //#endregion
 
-        // List
+        //#region List
         const searchParams = new URLSearchParams(req.url!.split("?")[1]);
         const { data, total, error } = await getMappedDataList(
           prisma,
@@ -144,6 +147,7 @@ export const nextAdminRouter = async (
             dmmfSchema,
           },
         };
+        //#endregion
       })
       .post(async (req, res) => {
         const resource = getResourceFromUrl(req.url!, resources);

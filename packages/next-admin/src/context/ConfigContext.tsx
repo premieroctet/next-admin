@@ -1,7 +1,9 @@
+"use client";
 import React, { useContext } from "react";
 
 export type ConfigContextType = {
   basePath: string;
+  isAppDir: boolean;
 };
 
 const ConfigContext = React.createContext<ConfigContextType>(
@@ -11,13 +13,19 @@ const ConfigContext = React.createContext<ConfigContextType>(
 type ProviderProps = {
   basePath: string;
   children: React.ReactNode;
+  isAppDir?: boolean;
 };
 
-export const ConfigProvider = ({ children, basePath }: ProviderProps) => {
+export const ConfigProvider = ({
+  children,
+  basePath,
+  isAppDir = false,
+}: ProviderProps) => {
   return (
     <ConfigContext.Provider
       value={{
         basePath,
+        isAppDir,
       }}
     >
       {children}

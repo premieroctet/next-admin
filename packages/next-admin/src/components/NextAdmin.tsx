@@ -22,8 +22,8 @@ export function NextAdmin({
   total,
   dmmfSchema,
   dashboard,
-  options,
   validation,
+  isAppDir,
 }: AdminComponentProps & CustomUIProps) {
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
@@ -31,13 +31,7 @@ export function NextAdmin({
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
       return (
-        <List
-          key={resource}
-          resource={resource}
-          data={data}
-          total={total}
-          options={options?.model && options?.model[resource]}
-        />
+        <List key={resource} resource={resource} data={data} total={total} />
       );
     }
 
@@ -46,8 +40,8 @@ export function NextAdmin({
         <Form
           data={data}
           schema={modelSchema}
-          dmmfSchema={dmmfSchema}
-          resource={resource}
+          dmmfSchema={dmmfSchema!}
+          resource={resource!}
           validation={validation}
         />
       );
@@ -60,15 +54,15 @@ export function NextAdmin({
   };
 
   return (
-    <ConfigProvider basePath={basePath}>
-      <NextNProgress color="#6366f1" />
+    <ConfigProvider basePath={basePath} isAppDir={isAppDir}>
+      {typeof window !== "undefined" && <NextNProgress color="#6366f1" />}
       <Head>
         <title>Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="w-full">
-        <Menu resources={resources} resource={resource} />
+        <Menu resources={resources} resource={resource!} />
 
         <main className="py-10 lg:pl-72">
           <div className="px-4 sm:px-12 lg:px-20 space-y-4">

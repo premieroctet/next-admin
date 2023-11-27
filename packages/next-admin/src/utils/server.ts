@@ -20,14 +20,10 @@ import { IncomingMessage } from "http";
 import formidable from "formidable";
 import { Writable } from "stream";
 
-export const getBody = util.promisify(bodyParser.urlencoded());
-
 export const models = Prisma.dmmf.datamodel.models;
 export const resources = models.map((model) => model.name as ModelName);
 
-export const getPrismaModelForResource = (
-  resource: ModelName
-): Prisma.DMMF.Model | undefined =>
+export const getPrismaModelForResource = (resource: ModelName) =>
   models.find((datamodel) => datamodel.name === resource);
 
 export const getResources = (
@@ -87,8 +83,8 @@ export const fillRelationInSchema = async (
           listOptions?.search ?? remoteModel?.fields.map((field) => field.name);
         const relationProperty: Field<typeof modelName> =
           (relationFromFields?.[0] as Field<typeof modelName>) ?? fieldName;
-        const fieldsFiltered = remoteModel?.fields.filter((field) =>
-          (optionsForRelations as string[])?.includes(field.name)
+        const fieldsFiltered = remoteModel?.fields.filter(
+          (field) => (optionsForRelations as string[])?.includes(field.name)
         );
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
@@ -492,6 +488,13 @@ export const getResourceFromUrl = (
   resources: Prisma.ModelName[]
 ): ModelName | undefined => {
   return resources.find((r) => url.includes(`/${r}`));
+};
+
+export const getResourceFromParams = (
+  params: string[],
+  resources: Prisma.ModelName[]
+) => {
+  return resources.find((r) => params.includes(r));
 };
 
 // TODO Add test

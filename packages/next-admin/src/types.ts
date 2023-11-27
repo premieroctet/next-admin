@@ -14,21 +14,21 @@ export type ObjectField<T extends ModelName> =
 
 export type Model<
   M extends ModelName,
-  T extends object | number = object
+  T extends object | number = object,
 > = ScalarField<M> & {
   [P in keyof ObjectField<M>]: ObjectField<M>[P] extends { scalars: infer S }
     ? T extends object
       ? S
       : T
     : never | ObjectField<M>[P] extends { scalars: infer S }[]
-    ? T extends object
-      ? S[]
-      : T[]
-    : never | ObjectField<M>[P] extends { scalars: infer S } | null
-    ? T extends object
-      ? S | null
-      : T | null
-    : never;
+      ? T extends object
+        ? S[]
+        : T[]
+      : never | ObjectField<M>[P] extends { scalars: infer S } | null
+        ? T extends object
+          ? S | null
+          : T | null
+        : never;
 };
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
@@ -56,7 +56,7 @@ export type EditFieldsOptions<T extends ModelName> = {
 export type Handler<
   M extends ModelName,
   P extends Field<M>,
-  T extends Model<M>[P]
+  T extends Model<M>[P],
 > = {
   get?: (input: T) => any;
   upload?: (file: Buffer) => Promise<string>;
@@ -77,10 +77,10 @@ export type FormatOptions<T> = T extends string
       | "alt-date"
       | "file"
   : never | T extends Date
-  ? "date" | "date-time" | "time"
-  : never | T extends number
-  ? "updown" | "range"
-  : never;
+    ? "date" | "date-time" | "time"
+    : never | T extends number
+      ? "updown" | "range"
+      : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
@@ -168,29 +168,35 @@ export type ListData<T extends ModelName> = ListDataItem<T>[];
 export type ListDataItem<T extends ModelName> = Model<T> &
   Record<string, ListDataFieldValue>;
 
-export type ListDataFieldValue =
-  // | { type: "scalar"; value: string | number | boolean } -- not supported yet
-  | number
-  | string
-  | boolean
-  | { type: "count"; value: number }
-  | {
-      type: "link";
-      value: {
-        label: string;
-        url: string;
-      };
-    }
-  | {
-      type: "date";
-      value: Date;
-    };
+export type ListDataFieldValueWithFormat = {
+  __nextadmin_formatted: React.ReactNode;
+};
+
+export type ListDataFieldValue = ListDataFieldValueWithFormat &
+  (
+    | { type: "scalar"; value: string | number | boolean }
+    | { type: "count"; value: number }
+    | {
+        type: "link";
+        value: {
+          label: string;
+          url: string;
+        };
+      }
+    | {
+        type: "date";
+        value: Date;
+      }
+  );
 
 export type AdminComponentProps = {
   basePath: string;
-  schema: Schema;
+  schema?: Schema;
   data?: ListData<ModelName>;
-  resource: ModelName;
+  resource?: ModelName;
+  /**
+   * Page router only
+   */
   message?: {
     type: "success" | "info";
     content: string;
@@ -199,8 +205,8 @@ export type AdminComponentProps = {
   validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
-  dmmfSchema: Prisma.DMMF.Field[];
-  options?: NextAdminOptions;
+  dmmfSchema?: Prisma.DMMF.Field[];
+  isAppDir?: boolean;
 };
 
 export type CustomUIProps = {
