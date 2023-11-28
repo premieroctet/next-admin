@@ -100,7 +100,7 @@ export const getMappedDataList = async (
   resource: ModelName,
   options: NextAdminOptions,
   searchParams: URLSearchParams,
-  mode: "list" | "form" = "list"
+  appDir = false
 ) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
@@ -167,6 +167,7 @@ export const getMappedDataList = async (
       }
 
       if (
+        appDir &&
         key in listFields &&
         listFields[key as keyof typeof listFields]?.formatter &&
         !!itemValue

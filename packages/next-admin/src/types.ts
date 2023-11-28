@@ -208,6 +208,10 @@ export type AdminComponentProps = {
   dmmfSchema?: Prisma.DMMF.Field[];
   isAppDir?: boolean;
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
+  /**
+   * Mandatory for page router
+   */
+  options?: NextAdminOptions;
 };
 
 export type CustomUIProps = {

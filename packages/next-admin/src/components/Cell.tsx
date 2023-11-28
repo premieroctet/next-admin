@@ -1,18 +1,19 @@
 import React, { ReactNode } from "react";
 
-import { ListDataFieldValue, ListDataItem, ModelName } from "../types";
+import { ListDataFieldValue } from "../types";
 import Link from "next/link";
 import clsx from "clsx";
 import { useConfig } from "../context/ConfigContext";
 
 type Props = {
   cell: ListDataFieldValue;
+  formatter?: (cell: any) => ReactNode;
 };
 
-export default function Cell({ cell }: Props) {
+export default function Cell({ cell, formatter }: Props) {
   const { basePath } = useConfig();
 
-  const cellValue = cell?.__nextadmin_formatted;
+  let cellValue = cell?.__nextadmin_formatted;
 
   const isReactNode = (
     cell: ListDataFieldValue["__nextadmin_formatted"]
@@ -24,6 +25,10 @@ export default function Cell({ cell }: Props) {
     if (React.isValidElement(cellValue)) {
       return cellValue;
     } else if (typeof cell === "object" && !isReactNode(cellValue)) {
+      if (formatter) {
+        cellValue = formatter(cellValue);
+      }
+
       if (cell.type === "link") {
         return (
           <Link

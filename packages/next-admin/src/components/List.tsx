@@ -25,16 +25,19 @@ import {
   SelectValue,
 } from "./radix/Select";
 import { useRouterInternal } from "../hooks/useRouterInternal";
+import { useConfig } from "../context/ConfigContext";
 
 export type ListProps = {
   resource: ModelName;
   data: ListData<ModelName>;
   total: number;
+  options?: Required<NextAdminOptions>["model"][ModelName];
 };
 
-function List({ resource, data, total }: ListProps) {
+function List({ resource, data, total, options }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
+  const { isAppDir } = useConfig();
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
   const sortColumn = query.sortColumn as string;
@@ -80,7 +83,24 @@ function List({ resource, data, total }: ListProps) {
                 property as keyof ListFieldsOptions<ModelName>
               ] as unknown as ListDataFieldValue;
 
-              return <Cell cell={cellData} />;
+              const dataFormatter =
+                options?.list?.fields?.[
+                  property as keyof ListFieldsOptions<ModelName>
+                ]?.formatter ||
+                ((cell: any) => {
+                  if (typeof cell === "object") {
+                    return cell.id;
+                  } else {
+                    return cell;
+                  }
+                });
+
+              return (
+                <Cell
+                  cell={cellData}
+                  formatter={!isAppDir ? dataFormatter : undefined}
+                />
+              );
             },
           };
         })

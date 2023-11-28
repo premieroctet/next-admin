@@ -19,7 +19,6 @@ import {
 } from "./utils/server";
 import { getMappedDataList } from "./utils/prisma";
 import qs from "querystring";
-import { submitForm } from "./actions/form";
 import { createBoundServerAction } from "./utils/actions";
 
 export type GetPropsFromParamsParams = {
@@ -84,7 +83,8 @@ export async function getPropsFromParams({
         prisma,
         resource,
         options,
-        new URLSearchParams(qs.stringify(searchParams))
+        new URLSearchParams(qs.stringify(searchParams)),
+        true
       );
 
       return {

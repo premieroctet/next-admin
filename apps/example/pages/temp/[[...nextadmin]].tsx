@@ -1,17 +1,18 @@
-import {
-  AdminComponentProps,
-  NextAdmin,
-  NextAdminOptions,
-} from "@premieroctet/next-admin";
+import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
 import "@premieroctet/next-admin/dist/styles.css";
 import { GetServerSideProps, GetServerSidePropsResult } from "next";
 import Dashboard from "../../components/Dashboard";
+import { options } from "../../options";
 import { prisma } from "../../prisma";
 import schema from "../../prisma/json-schema/json-schema.json";
-import { options } from "../../options";
+
+const pageOptions = {
+  ...options,
+  basePath: "/temp/admin",
+};
 
 export default function Admin(props: AdminComponentProps) {
-  return <NextAdmin {...props} dashboard={Dashboard} options={options} />;
+  return <NextAdmin {...props} dashboard={Dashboard} options={pageOptions} />;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
@@ -19,7 +20,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
     "@premieroctet/next-admin/dist/router"
   );
 
-  const adminRouter = await nextAdminRouter(prisma, schema, options);
+  const adminRouter = await nextAdminRouter(prisma, schema, pageOptions);
   return adminRouter.run(req, res) as Promise<
     GetServerSidePropsResult<{ [key: string]: any }>
   >;

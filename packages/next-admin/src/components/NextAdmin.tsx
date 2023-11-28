@@ -25,14 +25,27 @@ export function NextAdmin({
   validation,
   isAppDir,
   action,
+  options,
 }: AdminComponentProps & CustomUIProps) {
+  if (!isAppDir && !options) {
+    throw new Error(
+      "You must provide the options prop when using next-admin with page router"
+    );
+  }
+
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
       return (
-        <List key={resource} resource={resource} data={data} total={total} />
+        <List
+          key={resource}
+          resource={resource}
+          data={data}
+          total={total}
+          options={options?.model && options?.model[resource]}
+        />
       );
     }
 
@@ -57,7 +70,7 @@ export function NextAdmin({
 
   return (
     <ConfigProvider basePath={basePath} isAppDir={isAppDir}>
-      {typeof window !== "undefined" && <NextNProgress color="#6366f1" />}
+      {!isAppDir && <NextNProgress color="#6366f1" />}
       <Head>
         <title>Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
