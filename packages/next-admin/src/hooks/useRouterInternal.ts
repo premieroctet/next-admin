@@ -21,11 +21,34 @@ export const useRouterInternal = () => {
 
   const push = ({ pathname, query }: PushParams) => {
     if (isAppDir) {
-      (router as AppRouter).push(`${pathname}?${qs.stringify(query)}`);
+      (router as AppRouter).push(
+        pathname + (query ? "?" + qs.stringify(query) : "")
+      );
     } else {
       (router as NextRouter).push({ pathname, query });
     }
   };
 
-  return { router: { push }, query: Object.fromEntries(query) };
+  const replace = ({ pathname, query }: PushParams) => {
+    if (isAppDir) {
+      (router as AppRouter).replace(
+        pathname + (query ? "?" + qs.stringify(query) : "")
+      );
+    } else {
+      (router as NextRouter).replace({ pathname, query });
+    }
+  };
+
+  const refresh = () => {
+    if (isAppDir) {
+      (router as AppRouter).refresh();
+    } else {
+      (router as NextRouter).replace((router as NextRouter).asPath);
+    }
+  };
+
+  return {
+    router: { push, replace, refresh },
+    query: Object.fromEntries(query),
+  };
 };

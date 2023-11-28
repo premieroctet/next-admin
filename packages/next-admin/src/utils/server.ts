@@ -6,7 +6,7 @@ import {
   EditOptions,
   Enumeration,
   Field,
-  FormData,
+  AdminFormData,
   ListOptions,
   ModelName,
   ModelWithoutRelationships,
@@ -267,7 +267,7 @@ export const findRelationInData = async (
 };
 
 export const parseFormData = <M extends ModelName>(
-  formData: FormData<M>,
+  formData: AdminFormData<M>,
   dmmfSchema: Prisma.DMMF.Field[]
 ): Partial<ModelWithoutRelationships<M>> => {
   const parsedData: Partial<ModelWithoutRelationships<M>> = {};
@@ -315,7 +315,7 @@ export const parseFormData = <M extends ModelName>(
  *
  */
 export const formattedFormData = async <M extends ModelName>(
-  formData: FormData<M>,
+  formData: AdminFormData<M>,
   dmmfSchema: Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
@@ -518,6 +518,22 @@ export const getResourceIdFromUrl = (
   return matching ? matching[1] : undefined;
 };
 
+export const getResourceIdFromParam = (param: string, resource: ModelName) => {
+  if (param === "new") {
+    return undefined;
+  }
+
+  const model = models.find((model) => model.name === resource);
+
+  const idType = model?.fields.find((field) => field.name === "id")?.type;
+
+  if (idType === "Int") {
+    return Number(param);
+  }
+
+  return param;
+};
+
 export const getFormDataValues = async (req: IncomingMessage) => {
   const form = formidable({
     allowEmptyFiles: true,
@@ -572,4 +588,36 @@ export const getFormDataValues = async (req: IncomingMessage) => {
       });
     }
   );
+};
+
+export const getFormValuesFromFormData = async (formData: FormData) => {
+  const tmpFormValues = {} as Record<string, string | File | null>;
+  formData.forEach((val, key) => {
+    if (key.startsWith("$ACTION")) {
+      return;
+    }
+
+    tmpFormValues[key] = val;
+  });
+
+  const formValues = {} as Record<string, string | Buffer | null>;
+
+  await Promise.allSettled(
+    Object.entries(tmpFormValues).map(async ([key, value]) => {
+      console.log({ key, value });
+      if (typeof value === "object") {
+        const file = value as unknown as File;
+        if (file.size === 0) {
+          formValues[key] = null;
+          return;
+        }
+        const buffer = await file.arrayBuffer();
+        formValues[key] = Buffer.from(buffer);
+      } else {
+        formValues[key] = value as string;
+      }
+    })
+  );
+
+  return formValues;
 };

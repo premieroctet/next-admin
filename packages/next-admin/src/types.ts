@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
@@ -126,7 +126,7 @@ export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
   definitions: SchemaDefinitions;
 };
 
-export type FormData<M extends ModelName> = {
+export type AdminFormData<M extends ModelName> = {
   [P in Field<M>]?: string;
 };
 
@@ -207,8 +207,28 @@ export type AdminComponentProps = {
   total?: number;
   dmmfSchema?: Prisma.DMMF.Field[];
   isAppDir?: boolean;
+  action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
 };
 
 export type CustomUIProps = {
   dashboard?: JSX.Element | (() => JSX.Element);
+};
+
+export type ActionFullParams = ActionParams & {
+  prisma: PrismaClient;
+  options: NextAdminOptions;
+};
+
+export type ActionParams = {
+  params?: string[];
+  schema: any;
+};
+
+export type SubmitFormResult = {
+  deleted?: boolean;
+  created?: boolean;
+  updated?: boolean;
+  error?: string;
+  createdId?: number;
+  validation?: any;
 };

@@ -76,7 +76,8 @@ export function DataTable({ columns, data, resource }: DataTableProps) {
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
                   router.push({
-                    pathname: `${basePath}/${resource}/${row.original.id}`,
+                    // @ts-expect-error
+                    pathname: `${basePath}/${resource}/${row.original.id.value}`,
                   });
                 }}
               >

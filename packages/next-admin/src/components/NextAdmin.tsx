@@ -24,6 +24,7 @@ export function NextAdmin({
   dashboard,
   validation,
   isAppDir,
+  action,
 }: AdminComponentProps & CustomUIProps) {
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
@@ -43,6 +44,7 @@ export function NextAdmin({
           dmmfSchema={dmmfSchema!}
           resource={resource!}
           validation={validation}
+          action={action}
         />
       );
     }

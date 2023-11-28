@@ -1,6 +1,11 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": ["./src/appRouter.ts", "./src/index.tsx", "./src/router.tsx"],
+  "include": [
+    "./src/appRouter.ts",
+    "./src/index.tsx",
+    "./src/router.tsx",
+    "./src/actions/index.ts"
+  ],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "lib": ["dom"],
