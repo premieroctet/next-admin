@@ -30,7 +30,7 @@ test.describe("user validation", () => {
     await page.goto(`${process.env.BASE_URL}/User/new`);
     await page.fill('input[id="email"]', "invalidemail");
     await page.click('button:has-text("Submit")');
-    await page.waitForURL(`${process.env.BASE_URL}/User/*`);
+    await page.waitForURL(`${process.env.BASE_URL}/User/new`);
     await test.expect(page.getByText("Invalid email")).toBeVisible();
   });
 });

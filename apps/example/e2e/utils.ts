@@ -48,9 +48,9 @@ export const createItem = async (
   await page.waitForURL(`${process.env.BASE_URL}/${model}/new`);
   await fillForm(model, page, dataTest);
   await page.click('button:has-text("Submit")');
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
-  const url = page.url();
-  const id = url.split("/").pop();
+  await page.waitForURL((url) => !url.pathname.endsWith("/new"));
+  const url = new URL(page.url());
+  const id = url.pathname.split("/").pop();
   expect(Number(id)).not.toBeNaN();
   return id!;
 };
@@ -59,7 +59,7 @@ export const deleteItem = async (model: ModelName, page: Page, id: string) => {
   page.on("dialog", async (dialog) => dialog.accept());
   await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
   await page.click('button:has-text("Delete")');
-  await page.waitForURL(`${process.env.BASE_URL}/${model}`);
+  await page.waitForURL((url) => url.pathname.endsWith(`/${model}`));
 };
 
 export const readItem = async (model: ModelName, page: Page, id: string) => {

@@ -604,7 +604,6 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
 
   await Promise.allSettled(
     Object.entries(tmpFormValues).map(async ([key, value]) => {
-      console.log({ key, value });
       if (typeof value === "object") {
         const file = value as unknown as File;
         if (file.size === 0) {
