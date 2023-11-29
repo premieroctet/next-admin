@@ -41,7 +41,7 @@ export type Field<P extends ModelName> = keyof Model<P>;
 
 export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    formatter?: (item: Model<T>[P]) => ReactNode;
+    formatter?: (item: Model<T>[P], context?: NextAdminContext) => ReactNode;
   };
 };
 
@@ -235,4 +235,8 @@ export type SubmitFormResult = {
   error?: string;
   createdId?: number;
   validation?: any;
+};
+
+export type NextAdminContext = {
+  locale?: string;
 };

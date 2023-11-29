@@ -5,6 +5,7 @@ import {
   Field,
   ListOptions,
   ModelName,
+  NextAdminContext,
   NextAdminOptions,
   Order,
   PrismaListRequest,
@@ -100,6 +101,7 @@ export const getMappedDataList = async (
   resource: ModelName,
   options: NextAdminOptions,
   searchParams: URLSearchParams,
+  context: NextAdminContext,
   appDir = false
 ) => {
   const prismaListRequest = preparePrismaListRequest(
@@ -175,7 +177,7 @@ export const getMappedDataList = async (
         item[key].__nextadmin_formatted = listFields[
           key as keyof typeof listFields
           // @ts-expect-error
-        ]?.formatter?.(itemValue ?? item[key]);
+        ]?.formatter?.(itemValue ?? item[key], context);
       } else {
         data[index][key] = item[key];
       }

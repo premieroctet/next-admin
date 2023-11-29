@@ -32,6 +32,7 @@ export type GetPropsFromParamsParams = {
     formData: FormData
   ) => Promise<SubmitFormResult | undefined>;
   isAppDir?: boolean;
+  locale?: string;
 };
 
 export async function getPropsFromParams({
@@ -42,6 +43,7 @@ export async function getPropsFromParams({
   prisma,
   action,
   isAppDir = false,
+  locale,
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -92,6 +94,7 @@ export async function getPropsFromParams({
         resource,
         options,
         new URLSearchParams(qs.stringify(searchParams)),
+        { locale },
         isAppDir
       );
 
