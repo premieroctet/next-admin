@@ -6,7 +6,8 @@
 
 - 16aba39: # New feature
 
-  App router is now supported. You can find an exemple of its usage in the example app.
+  - App router is now supported. You can find an exemple of its usage in the example app.
+  - New context object, currently passed only to the `formatter` function
 
 ## 2.0.0
 
