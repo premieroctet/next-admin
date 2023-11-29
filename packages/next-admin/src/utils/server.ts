@@ -482,7 +482,6 @@ export const removeHiddenProperties = <M extends ModelName>(
   return schema;
 };
 
-// TODO Add test
 export const getResourceFromUrl = (
   url: string,
   resources: Prisma.ModelName[]
@@ -497,7 +496,30 @@ export const getResourceFromParams = (
   return resources.find((r) => params.includes(r));
 };
 
-// TODO Add test
+/**
+ * Convert the following urls to an array of params:
+ *
+ * - /admin/User -> ["User"]
+ * - /admin/User/1 -> ["User", "1"]
+ * - /_next/data/admin/User.json -> ["User"]
+ * - /_next/data/admin/User/1.json -> ["User", "1"]
+ * - /_next/data/development/admin/User.json -> ["User"]
+ * - /_next/data/development/admin/User/1.json -> ["User", "1"]
+ */
+export const getParamsFromUrl = (url: string, basePath: string) => {
+  let urlWithoutParams = url.split("?")[0];
+
+  if (!urlWithoutParams.startsWith("/_next")) {
+    return url.replace(basePath, "").split("?")[0].split("/").filter(Boolean);
+  }
+
+  urlWithoutParams = urlWithoutParams
+    .slice(urlWithoutParams.indexOf(basePath) + basePath.length)
+    .replace(".json", "");
+
+  return urlWithoutParams.split("/").filter(Boolean);
+};
+
 export const getResourceIdFromUrl = (
   url: string,
   resource: ModelName
