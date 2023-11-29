@@ -1,0 +1,57 @@
+name: Vercel deploy
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      extra_args:
+        required: false
+        type: string
+
+jobs:
+  Deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Install Dependencies
+        run: yarn install
+
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information (Docs)
+        run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
+      - name: Build Project Artifacts (Docs)
+        run: vercel build ${{ inputs.extra_args }} --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
+      - name: Deploy Project Artifacts to Vercel (Docs)
+        run: vercel deploy ${{ inputs.extra_args }} --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
+
+      - name: Intermediate cleanup
+        run: rm -rf .vercel
+
+      - name: Pull Vercel Environment Information (Example)
+        run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
+      - name: Build Project Artifacts (Example)
+        run: vercel build ${{ inputs.extra_args }} --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
+      - name: Deploy Project Artifacts to Vercel (Example)
+        run: vercel deploy ${{ inputs.extra_args }} --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}

@@ -10,46 +10,8 @@ on:
 jobs:
   Deploy-Production:
     if: startsWith(github.head_ref, 'changeset-release/') && github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install Dependencies
-        run: yarn install
-
-      - name: Install Vercel CLI
-        run: npm install --global vercel@latest
-
-      - name: Pull Vercel Environment Information (Docs)
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
-      - name: Build Project Artifacts (Docs)
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
-      - name: Deploy Project Artifacts to Vercel (Docs)
-        run: vercel deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
-
-      - name: Intermediate cleanup
-        run: rm -rf .vercel
-
-      - name: Pull Vercel Environment Information (Example)
-        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
-      - name: Build Project Artifacts (Example)
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
-      - name: Deploy Project Artifacts to Vercel (Example)
-        run: vercel deploy --prod --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
-        env:
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
+    uses: ./.github/workflows/vercel-deploy.yml
+    secrets: inherit
+    with:
+      environment: production
+      extra_args: --prod
