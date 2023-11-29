@@ -13,7 +13,8 @@ function filterProperties(properties: any): Record<string, any> {
     ([property, attributes]) => {
       if (
         !Object.keys(attributes).includes("$ref") &&
-        !Object.keys(attributes.items || {}).includes("$ref")
+        !Object.keys(attributes.items || {}).includes("$ref") &&
+        !Object.keys(attributes.anyOf?.[0] ?? {}).includes("$ref")
       ) {
         // @ts-expect-error
         filteredProperties[property] = attributes;

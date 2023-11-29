@@ -110,10 +110,12 @@ export async function getPropsFromParams({
       );
 
       const dmmfSchema = getPrismaModelForResource(resource);
+      const edit = options?.model?.[resource]?.edit as EditOptions<
+        typeof resource
+      >;
+      schema = transformSchema(schema, resource, edit);
+
       if (resourceId !== undefined) {
-        const edit = options?.model?.[resource]?.edit as EditOptions<
-          typeof resource
-        >;
         const editDisplayedKeys = edit && edit.display;
         const editSelect = editDisplayedKeys?.reduce(
           (acc, column) => {
@@ -128,7 +130,6 @@ export async function getPropsFromParams({
           where: { id: resourceId },
           select: selectedFields,
         });
-        schema = transformSchema(schema, resource, edit);
         data = transformData(data, resource, edit);
         return {
           ...defaultProps,

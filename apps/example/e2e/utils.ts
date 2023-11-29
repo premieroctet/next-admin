@@ -86,6 +86,11 @@ export const fillForm = async (
     case "User":
       await page.fill('input[id="email"]', dataTest.User.email);
       await page.fill('input[id="name"]', dataTest.User.name);
+      await page.setInputFiles('input[type="file"]', {
+        name: "test.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.from("test"),
+      });
       break;
     case "Post":
       await page.fill('input[id="title"]', dataTest.Post.title);
@@ -113,6 +118,11 @@ export const readForm = async (
       expect(await page.inputValue('input[id="name"]')).toBe(
         dataTest.User.name
       );
+      expect(
+        page.locator(
+          'a[href="https://www.gravatar.com/avatar/00000000000000000000000000000000"]'
+        )
+      ).toBeDefined();
       break;
     case "Post":
       expect(await page.inputValue('input[id="title"]')).toBe(

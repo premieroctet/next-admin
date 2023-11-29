@@ -94,6 +94,7 @@ export const nextAdminRouter = async (
         //#region Edit
         const resourceId = getResourceIdFromUrl(req.url!, resource);
 
+        schema = transformSchema(schema, resource, edit);
         const dmmfSchema = getPrismaModelForResource(resource);
         if (resourceId !== undefined) {
           // @ts-expect-error
@@ -101,7 +102,6 @@ export const nextAdminRouter = async (
             where: { id: resourceId },
             select: selectedFields,
           });
-          schema = transformSchema(schema, resource, edit);
           data = transformData(data, resource, edit);
           return {
             props: {
@@ -114,7 +114,7 @@ export const nextAdminRouter = async (
           };
         }
         //#endregion
-        
+
         //#region New
         if (req.url!.includes("/new")) {
           return {
