@@ -170,10 +170,6 @@ const Form = ({
     );
   };
 
-  useEffect(() => {
-    setValidation(validationProp);
-  }, [validationProp]);
-
   const extraErrors: ErrorSchema | undefined = validation?.reduce(
     (acc, curr) => {
       // @ts-expect-error

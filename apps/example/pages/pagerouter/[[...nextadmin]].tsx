@@ -8,7 +8,7 @@ import schema from "../../prisma/json-schema/json-schema.json";
 
 const pageOptions = {
   ...options,
-  basePath: "/legacy/admin",
+  basePath: "/pagerouter/admin",
 };
 
 export default function Admin(props: AdminComponentProps) {

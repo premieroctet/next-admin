@@ -35,7 +35,7 @@ jobs:
       - name: Run tests
         run: |
           yarn turbo test:e2e 
-          BASE_URL=http://localhost:3000/legacy/admin yarn test:e2e
+          BASE_URL=http://localhost:3000/pagerouter/admin yarn test:e2e
       - uses: actions/upload-artifact@v3
         if: always()
         with:
