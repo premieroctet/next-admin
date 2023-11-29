@@ -1,6 +1,5 @@
 name: Vercel Production Deployment
-env:
-  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+
 on:
   pull_request:
     types:
