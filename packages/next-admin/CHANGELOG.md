@@ -1,5 +1,14 @@
 # @premieroctet/next-admin
 
+## 3.0.0
+
+### Major Changes
+
+- 16aba39: # New feature
+
+  - App router is now supported. You can find an exemple of its usage in the example app.
+  - New context object, currently passed only to the `formatter` function
+
 ## 2.0.0
 
 ### Major Changes
@@ -23,7 +32,6 @@
   Introduce handler object to handle custom logic for a property in edit mode
   Add ability to use input variant in edit mode
   Fix datetime-local input to store correct datetime
-  
 
 ## 1.4.1
 

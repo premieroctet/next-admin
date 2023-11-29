@@ -232,9 +232,9 @@ The `fields` property is available in both `list` and `edit` properties.
 
 For the `list` property, it can take the following:
 
-| Name      | Description                                                                      |
-| --------- | -------------------------------------------------------------------------------- |
-| formatter | a function that takes the field value as a parameter, and that return a JSX node |
+| Name      | Description                                                                                                                                                                |
+| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| formatter | a function that takes the field value as a parameter, and that return a JSX node. It also accepts a second argument which is the [`NextAdmin` context](#nextadmin-context) |
 
 For the `edit` property, it can take the following:
 
@@ -319,3 +319,9 @@ const options: NextAdminOptions = {
 
 const adminRouter = await nextAdminRouter(prisma, schema, options);
 ```
+
+## NextAdmin Context
+
+The `NextAdmin` context is an object containing the following properties:
+
+- `locale`: the locale used by the calling page. (refers to the `accept-language` header).
