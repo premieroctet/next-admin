@@ -22,9 +22,17 @@ export function NextAdmin({
   total,
   dmmfSchema,
   dashboard,
-  options,
   validation,
+  isAppDir,
+  action,
+  options,
 }: AdminComponentProps & CustomUIProps) {
+  if (!isAppDir && !options) {
+    throw new Error(
+      "You must provide the options prop when using next-admin with page router"
+    );
+  }
+
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
@@ -46,9 +54,10 @@ export function NextAdmin({
         <Form
           data={data}
           schema={modelSchema}
-          dmmfSchema={dmmfSchema}
-          resource={resource}
+          dmmfSchema={dmmfSchema!}
+          resource={resource!}
           validation={validation}
+          action={action}
         />
       );
     }
@@ -60,15 +69,15 @@ export function NextAdmin({
   };
 
   return (
-    <ConfigProvider basePath={basePath}>
-      <NextNProgress color="#6366f1" />
+    <ConfigProvider basePath={basePath} isAppDir={isAppDir}>
+      {!isAppDir && <NextNProgress color="#6366f1" />}
       <Head>
         <title>Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="w-full">
-        <Menu resources={resources} resource={resource} />
+        <Menu resources={resources} resource={resource!} />
 
         <main className="py-10 lg:pl-72">
           <div className="px-4 sm:px-12 lg:px-20 space-y-4">

@@ -11,3 +11,11 @@ export const uncapitalize = <T extends string>(str: T): Uncapitalize<T> => {
 export const isNativeFunction = (fn: Function) => {
   return /\{\s*\[native code\]\s*\}/.test(fn.toString());
 };
+
+export const isScalar = (value: string | boolean | number) => {
+  return (
+    typeof value === "string" ||
+    typeof value === "boolean" ||
+    typeof value === "number"
+  );
+};

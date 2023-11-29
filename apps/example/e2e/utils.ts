@@ -48,10 +48,11 @@ export const createItem = async (
   await page.waitForURL(`${process.env.BASE_URL}/${model}/new`);
   await fillForm(model, page, dataTest);
   await page.click('button:has-text("Submit")');
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
-  const url = page.url();
-  const id = url.split("/").pop();
+  await page.waitForURL((url) => !url.pathname.endsWith("/new"));
+  const url = new URL(page.url());
+  const id = url.pathname.split("/").pop();
   expect(Number(id)).not.toBeNaN();
+  expect(page.getByText("Created successfully")).toBeDefined();
   return id!;
 };
 
@@ -59,7 +60,7 @@ export const deleteItem = async (model: ModelName, page: Page, id: string) => {
   page.on("dialog", async (dialog) => dialog.accept());
   await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
   await page.click('button:has-text("Delete")');
-  await page.waitForURL(`${process.env.BASE_URL}/${model}`);
+  await page.waitForURL((url) => url.pathname.endsWith(`/${model}`));
 };
 
 export const readItem = async (model: ModelName, page: Page, id: string) => {
@@ -75,6 +76,7 @@ export const updateItem = async (model: ModelName, page: Page, id: string) => {
   await page.click('button:has-text("Submit")');
   await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
   await readForm(model, page, dataTestUpdate);
+  expect(page.getByText("Updated successfully")).toBeDefined();
 };
 
 export const fillForm = async (
@@ -86,6 +88,11 @@ export const fillForm = async (
     case "User":
       await page.fill('input[id="email"]', dataTest.User.email);
       await page.fill('input[id="name"]', dataTest.User.name);
+      await page.setInputFiles('input[type="file"]', {
+        name: "test.txt",
+        mimeType: "text/plain",
+        buffer: Buffer.from("test"),
+      });
       break;
     case "Post":
       await page.fill('input[id="title"]', dataTest.Post.title);
@@ -113,6 +120,11 @@ export const readForm = async (
       expect(await page.inputValue('input[id="name"]')).toBe(
         dataTest.User.name
       );
+      expect(
+        page.locator(
+          'a[href="https://www.gravatar.com/avatar/00000000000000000000000000000000"]'
+        )
+      ).toBeDefined();
       break;
     case "Post":
       expect(await page.inputValue('input[id="title"]')).toBe(

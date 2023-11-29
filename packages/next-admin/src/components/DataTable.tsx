@@ -1,4 +1,3 @@
-"use client";
 import {
   ColumnDef,
   flexRender,
@@ -14,37 +13,24 @@ import {
   TableHeader,
   TableRow,
 } from "./radix/Table";
-import { useRouter } from "next/compat/router";
-import {
-  ListData,
-  ListDataItem,
-  ModelName,
-  Field,
-  NextAdminOptions,
-} from "../types";
+import { ListData, ListDataItem, ModelName, Field } from "../types";
 import { useConfig } from "../context/ConfigContext";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
   data: ListData<ModelName>;
   resource: ModelName;
-  options: Required<NextAdminOptions>["model"][ModelName];
 }
 
-export function DataTable({
-  columns,
-  data,
-  resource,
-  options,
-}: DataTableProps) {
-  const router = useRouter();
+export function DataTable({ columns, data, resource }: DataTableProps) {
+  const { router } = useRouterInternal();
   const { basePath } = useConfig();
-  const hasDisplayField = options?.list?.display?.length ? true : false;
   const columnsVisibility = columns.reduce(
     (acc, column) => {
       // @ts-expect-error
       const key = column.accessorKey as Field<typeof resource>;
-      acc[key] = options?.list?.display?.includes(key) ? true : false;
+      acc[key] = Object.keys(data[0]).includes(key);
       return acc;
     },
     {} as Record<Field<typeof resource>, boolean>
@@ -56,7 +42,7 @@ export function DataTable({
     columns,
     getCoreRowModel: getCoreRowModel(),
     initialState: {
-      columnVisibility: !hasDisplayField ? {} : columnsVisibility,
+      columnVisibility: columnsVisibility,
     },
   });
 
@@ -89,8 +75,9 @@ export function DataTable({
                 data-state={row.getIsSelected() && "selected"}
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
-                  router?.push({
-                    pathname: `${basePath}/${resource}/${row.original.id}`,
+                  router.push({
+                    // @ts-expect-error
+                    pathname: `${basePath}/${resource}/${row.original.id.value}`,
                   });
                 }}
               >

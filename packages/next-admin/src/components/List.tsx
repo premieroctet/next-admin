@@ -1,10 +1,11 @@
+"use client";
 import { ColumnDef } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
-import { useRouter } from "next/compat/router";
-import { ChangeEvent, useTransition } from "react";
+import { ChangeEvent, useContext, useTransition } from "react";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   ListData,
+  ListDataFieldValue,
   ListDataItem,
   ListFieldsOptions,
   ModelName,
@@ -23,6 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
+import { useRouterInternal } from "../hooks/useRouterInternal";
+import { useConfig } from "../context/ConfigContext";
 
 export type ListProps = {
   resource: ModelName;
@@ -32,20 +35,19 @@ export type ListProps = {
 };
 
 function List({ resource, data, total, options }: ListProps) {
-  const router = useRouter();
+  const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
-  const pageIndex =
-    typeof router?.query.page === "string" ? Number(router.query.page) - 1 : 0;
-  const pageSize =
-    Number(router?.query.itemsPerPage) || (ITEMS_PER_PAGE as number);
-  const sortColumn = router?.query.sortColumn as string;
-  const sortDirection = router?.query.sortDirection as "asc" | "desc";
+  const { isAppDir } = useConfig();
+  const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
+  const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
+  const sortColumn = query.sortColumn as string;
+  const sortDirection = query.sortDirection as "asc" | "desc";
 
   const onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
     startTransition(() => {
       router?.push({
         pathname: location.pathname,
-        query: { ...router?.query, search: e.target.value },
+        query: { ...query, search: e.target.value },
       });
     });
   }, 300);
@@ -65,12 +67,10 @@ function List({ resource, data, total, options }: ListProps) {
                     router?.push({
                       pathname: location.pathname,
                       query: {
-                        ...router?.query,
+                        ...query,
                         sortColumn: property,
                         sortDirection:
-                          router?.query.sortDirection === "asc"
-                            ? "desc"
-                            : "asc",
+                          query.sortDirection === "asc" ? "desc" : "asc",
                       },
                     });
                   }}
@@ -79,8 +79,10 @@ function List({ resource, data, total, options }: ListProps) {
             },
             cell: ({ row }) => {
               const modelData = row.original;
-              const cellData =
-                modelData[property as keyof ListFieldsOptions<ModelName>];
+              const cellData = modelData[
+                property as keyof ListFieldsOptions<ModelName>
+              ] as unknown as ListDataFieldValue;
+
               const dataFormatter =
                 options?.list?.fields?.[
                   property as keyof ListFieldsOptions<ModelName>
@@ -93,7 +95,12 @@ function List({ resource, data, total, options }: ListProps) {
                   }
                 });
 
-              return <Cell cell={cellData} formatter={dataFormatter} />;
+              return (
+                <Cell
+                  cell={cellData}
+                  formatter={!isAppDir ? dataFormatter : undefined}
+                />
+              );
             },
           };
         })
@@ -109,17 +116,12 @@ function List({ resource, data, total, options }: ListProps) {
       <div className="mt-4 flow-root">
         <ListHeader
           resource={resource}
-          search={(router?.query.search as string) || ""}
+          search={(query.search as string) || ""}
           onSearchChange={onSearchChange}
           isPending={isPending}
         />
         <div className="max-w-full mt-2 py-2 align-middle">
-          <DataTable
-            resource={resource}
-            data={data}
-            columns={columns}
-            options={options}
-          />
+          <DataTable resource={resource} data={data} columns={columns} />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">
               <div>
@@ -137,7 +139,7 @@ function List({ resource, data, total, options }: ListProps) {
                     router?.push({
                       pathname: location.pathname,
                       query: {
-                        ...router?.query,
+                        ...query,
                         page: 1,
                         itemsPerPage: value,
                       },
@@ -170,7 +172,7 @@ function List({ resource, data, total, options }: ListProps) {
                     router?.push({
                       pathname: location.pathname,
                       query: {
-                        ...router?.query,
+                        ...query,
                         page: pageIndex + 1,
                       },
                     });

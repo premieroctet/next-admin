@@ -5,7 +5,7 @@
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
-    "js": "tsup --entry src/index.tsx --entry src/router.tsx --format cjs --dts",
+    "js": "tsc",
     "css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
     "build": "npm run css && npm run js",
     "dev": "concurrently \"npm run css -- --watch\" \"npm run js -- --watch\"",

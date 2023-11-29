@@ -1,3 +1,4 @@
+"use client";
 import { Prisma } from "@prisma/client";
 import RjsfForm from "@rjsf/core";
 import {
@@ -9,9 +10,9 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import { PropertyValidationError } from "../exceptions/ValidationError";
-import { ModelName } from "../types";
+import { ModelName, SubmitFormResult } from "../types";
 import { Schemas, getSchemas } from "../utils/jsonSchema";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
@@ -20,6 +21,8 @@ import Button from "./radix/Button";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
+import { useConfig } from "../context/ConfigContext";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -40,6 +43,7 @@ export type FormProps = {
   dmmfSchema: Prisma.DMMF.Field[];
   resource: ModelName;
   validation?: PropertyValidationError[];
+  action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
 };
 
 const fields: CustomForm["props"]["fields"] = {
@@ -130,9 +134,13 @@ const Form = ({
   schema,
   dmmfSchema,
   resource,
-  validation,
+  validation: validationProp,
+  action,
 }: FormProps) => {
+  const [validation, setValidation] = useState(validationProp);
   const schemas: Schemas = getSchemas(data, schema, dmmfSchema);
+  const { basePath } = useConfig();
+  const { router } = useRouterInternal();
   const edit = data?.id !== undefined;
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
@@ -174,6 +182,58 @@ const Form = ({
     {} as ErrorSchema
   );
 
+  const onSubmit = async (formData: FormData) => {
+    if (action) {
+      const result = await action(formData);
+
+      if (result?.validation) {
+        setValidation(result.validation);
+      }
+
+      if (result?.deleted) {
+        return router.replace({
+          pathname: `${basePath}/${resource}`,
+          query: {
+            message: JSON.stringify({
+              type: "success",
+              content: "Deleted successfully",
+            }),
+          },
+        });
+      }
+
+      if (result?.created) {
+        return router.replace({
+          pathname: `${basePath}/${resource}/${result.createdId}`,
+          query: {
+            message: JSON.stringify({
+              type: "success",
+              content: "Created successfully",
+            }),
+          },
+        });
+      }
+
+      if (result?.updated) {
+        location.search = `?message=${encodeURIComponent(
+          JSON.stringify({
+            type: "success",
+            content: "Updated successfully",
+          })
+        )}`;
+      }
+
+      if (result?.error) {
+        return router.replace({
+          pathname: location.pathname,
+          query: {
+            error: result.error,
+          },
+        });
+      }
+    }
+  };
+
   return (
     <div className="relative">
       <div className="sm:flex sm:items-center">
@@ -182,11 +242,12 @@ const Form = ({
         </h1>
       </div>
       <CustomForm
-        action=""
+        // @ts-expect-error
+        action={action ? onSubmit : ""}
         method="post"
         idPrefix=""
         idSeparator=""
-        enctype="multipart/form-data"
+        enctype={!action ? "multipart/form-data" : undefined}
         {...schemas}
         formData={data}
         validator={validator}

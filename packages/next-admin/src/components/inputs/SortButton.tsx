@@ -1,30 +1,28 @@
+import React, { useTransition } from "react";
 import {
   ArrowSmallDownIcon,
   ArrowSmallUpIcon,
 } from "@heroicons/react/24/outline";
-import { useRouter } from "next/compat/router";
-import { useTransition } from "react";
+import { useRouterInternal } from "../../hooks/useRouterInternal";
 
 const SortButton = ({ field }: { field: string }) => {
-  const router = useRouter();
-  const searchParams = new URLSearchParams(router?.asPath);
+  const { router, query } = useRouterInternal();
+  const searchParams = query;
   const sort =
-    searchParams.get("sortColumn") === field
-      ? searchParams.get("sortDirection")
-      : null;
+    searchParams.sortColumn === field ? searchParams.sortDirection : null;
   const [_isPending, startTransition] = useTransition();
 
   const handleClick = () => {
     startTransition(() => {
-      Object.keys(router?.query as object).forEach((key) => {
+      Object.keys(query as object).forEach((key) => {
         if (key.startsWith("sort")) {
-          delete router?.query[key];
+          delete query[key];
         }
       });
       router?.push({
         pathname: location.pathname,
         query: {
-          ...router?.query,
+          ...query,
           sortColumn: field,
           sortDirection: sort === "asc" ? "desc" : "asc",
         },

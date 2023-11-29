@@ -6,7 +6,7 @@ import {
   EditOptions,
   Enumeration,
   Field,
-  FormData,
+  AdminFormData,
   ListOptions,
   ModelName,
   ModelWithoutRelationships,
@@ -20,14 +20,10 @@ import { IncomingMessage } from "http";
 import formidable from "formidable";
 import { Writable } from "stream";
 
-export const getBody = util.promisify(bodyParser.urlencoded());
-
 export const models = Prisma.dmmf.datamodel.models;
 export const resources = models.map((model) => model.name as ModelName);
 
-export const getPrismaModelForResource = (
-  resource: ModelName
-): Prisma.DMMF.Model | undefined =>
+export const getPrismaModelForResource = (resource: ModelName) =>
   models.find((datamodel) => datamodel.name === resource);
 
 export const getResources = (
@@ -87,8 +83,8 @@ export const fillRelationInSchema = async (
           listOptions?.search ?? remoteModel?.fields.map((field) => field.name);
         const relationProperty: Field<typeof modelName> =
           (relationFromFields?.[0] as Field<typeof modelName>) ?? fieldName;
-        const fieldsFiltered = remoteModel?.fields.filter((field) =>
-          (optionsForRelations as string[])?.includes(field.name)
+        const fieldsFiltered = remoteModel?.fields.filter(
+          (field) => (optionsForRelations as string[])?.includes(field.name)
         );
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
@@ -271,7 +267,7 @@ export const findRelationInData = async (
 };
 
 export const parseFormData = <M extends ModelName>(
-  formData: FormData<M>,
+  formData: AdminFormData<M>,
   dmmfSchema: Prisma.DMMF.Field[]
 ): Partial<ModelWithoutRelationships<M>> => {
   const parsedData: Partial<ModelWithoutRelationships<M>> = {};
@@ -319,7 +315,7 @@ export const parseFormData = <M extends ModelName>(
  *
  */
 export const formattedFormData = async <M extends ModelName>(
-  formData: FormData<M>,
+  formData: AdminFormData<M>,
   dmmfSchema: Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
@@ -486,7 +482,6 @@ export const removeHiddenProperties = <M extends ModelName>(
   return schema;
 };
 
-// TODO Add test
 export const getResourceFromUrl = (
   url: string,
   resources: Prisma.ModelName[]
@@ -494,7 +489,37 @@ export const getResourceFromUrl = (
   return resources.find((r) => url.includes(`/${r}`));
 };
 
-// TODO Add test
+export const getResourceFromParams = (
+  params: string[],
+  resources: Prisma.ModelName[]
+) => {
+  return resources.find((r) => params.includes(r));
+};
+
+/**
+ * Convert the following urls to an array of params:
+ *
+ * - /admin/User -> ["User"]
+ * - /admin/User/1 -> ["User", "1"]
+ * - /_next/data/admin/User.json -> ["User"]
+ * - /_next/data/admin/User/1.json -> ["User", "1"]
+ * - /_next/data/development/admin/User.json -> ["User"]
+ * - /_next/data/development/admin/User/1.json -> ["User", "1"]
+ */
+export const getParamsFromUrl = (url: string, basePath: string) => {
+  let urlWithoutParams = url.split("?")[0];
+
+  if (!urlWithoutParams.startsWith("/_next")) {
+    return url.replace(basePath, "").split("?")[0].split("/").filter(Boolean);
+  }
+
+  urlWithoutParams = urlWithoutParams
+    .slice(urlWithoutParams.indexOf(basePath) + basePath.length)
+    .replace(".json", "");
+
+  return urlWithoutParams.split("/").filter(Boolean);
+};
+
 export const getResourceIdFromUrl = (
   url: string,
   resource: ModelName
@@ -513,6 +538,22 @@ export const getResourceIdFromUrl = (
   }
 
   return matching ? matching[1] : undefined;
+};
+
+export const getResourceIdFromParam = (param: string, resource: ModelName) => {
+  if (param === "new") {
+    return undefined;
+  }
+
+  const model = models.find((model) => model.name === resource);
+
+  const idType = model?.fields.find((field) => field.name === "id")?.type;
+
+  if (idType === "Int") {
+    return Number(param);
+  }
+
+  return param;
 };
 
 export const getFormDataValues = async (req: IncomingMessage) => {
@@ -569,4 +610,35 @@ export const getFormDataValues = async (req: IncomingMessage) => {
       });
     }
   );
+};
+
+export const getFormValuesFromFormData = async (formData: FormData) => {
+  const tmpFormValues = {} as Record<string, string | File | null>;
+  formData.forEach((val, key) => {
+    if (key.startsWith("$ACTION")) {
+      return;
+    }
+
+    tmpFormValues[key] = val;
+  });
+
+  const formValues = {} as Record<string, string | Buffer | null>;
+
+  await Promise.allSettled(
+    Object.entries(tmpFormValues).map(async ([key, value]) => {
+      if (typeof value === "object") {
+        const file = value as unknown as File;
+        if (file.size === 0) {
+          formValues[key] = null;
+          return;
+        }
+        const buffer = await file.arrayBuffer();
+        formValues[key] = Buffer.from(buffer);
+      } else {
+        formValues[key] = value as string;
+      }
+    })
+  );
+
+  return formValues;
 };
