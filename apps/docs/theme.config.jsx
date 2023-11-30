@@ -12,7 +12,8 @@ const config = {
     text: `MIT ${new Date().getFullYear()} © Premier Octet.`,
   },
   darkMode: true,
-  primaryHue: 290,
+  primaryHue: 209,
+  primarySaturation: 100,
   head: (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
