@@ -44,6 +44,7 @@ export type FormProps = {
   resource: ModelName;
   validation?: PropertyValidationError[];
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
+  title: string;
 };
 
 const fields: CustomForm["props"]["fields"] = {
@@ -136,6 +137,7 @@ const Form = ({
   resource,
   validation: validationProp,
   action,
+  title,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
   const schemas: Schemas = getSchemas(data, schema, dmmfSchema);
@@ -238,7 +240,7 @@ const Form = ({
     <div className="relative">
       <div className="sm:flex sm:items-center">
         <h1 className="text-base font-semibold leading-6 text-gray-900">
-          {resource}
+          {title}
         </h1>
       </div>
       <CustomForm

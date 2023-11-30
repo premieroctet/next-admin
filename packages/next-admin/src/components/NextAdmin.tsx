@@ -26,6 +26,7 @@ export function NextAdmin({
   isAppDir,
   action,
   options,
+  resourcesTitles,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -36,6 +37,8 @@ export function NextAdmin({
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
+  const resourceTitle = resourcesTitles?.[resource!] ?? resource;
+
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
       return (
@@ -45,6 +48,7 @@ export function NextAdmin({
           data={data}
           total={total}
           options={options?.model && options?.model[resource]}
+          title={resourceTitle!}
         />
       );
     }
@@ -58,6 +62,7 @@ export function NextAdmin({
           resource={resource!}
           validation={validation}
           action={action}
+          title={resourceTitle!}
         />
       );
     }
@@ -77,7 +82,11 @@ export function NextAdmin({
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <div className="w-full">
-        <Menu resources={resources} resource={resource!} />
+        <Menu
+          resources={resources}
+          resource={resource!}
+          resourcesTitles={resourcesTitles}
+        />
 
         <main className="py-10 lg:pl-72">
           <div className="px-4 sm:px-12 lg:px-20 space-y-4">

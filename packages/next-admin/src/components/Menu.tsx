@@ -11,14 +11,17 @@ import { useConfig } from "../context/ConfigContext";
 export type MenuProps = {
   resource: ModelName;
   resources?: ModelName[];
+  resourcesTitles?: Record<ModelName, string | undefined>;
 };
 
 export default function Menu({
   resources,
   resource: currentResource,
+  resourcesTitles,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
+
   const navigation: Array<{
     name: string;
     href: string;
@@ -26,7 +29,7 @@ export default function Menu({
     icon?: React.ElementType;
   }> =
     resources?.map((resource) => ({
-      name: resource,
+      name: resourcesTitles?.[resource] || resource,
       href: `${basePath}/${resource.toLowerCase()}`,
       current: resource === currentResource,
     })) || [];
