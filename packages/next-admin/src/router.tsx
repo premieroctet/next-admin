@@ -132,7 +132,7 @@ export const nextAdminRouter = async (
 
             return {
               redirect: {
-                destination: `${options.basePath}/${resource}`,
+                destination: `${options.basePath}/${resource.toLowerCase()}`,
                 permanent: false,
               },
             };
@@ -188,7 +188,7 @@ export const nextAdminRouter = async (
 
           return {
             redirect: {
-              destination: `${options.basePath}/${resource}/${
+              destination: `${options.basePath}/${resource.toLowerCase()}/${
                 createdData.id
               }?message=${JSON.stringify({
                 type: "success",

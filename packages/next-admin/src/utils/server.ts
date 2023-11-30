@@ -1,6 +1,4 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import bodyParser from "body-parser";
-import util from "util";
 import {
   EditFieldsOptions,
   EditOptions,
@@ -493,7 +491,10 @@ export const getResourceFromParams = (
   params: string[],
   resources: Prisma.ModelName[]
 ) => {
-  return resources.find((r) => params.includes(r));
+  return resources.find((r) => {
+    const slugifiedResource = r.toLowerCase();
+    return params.some(param => param.toLowerCase() === slugifiedResource)
+  });
 };
 
 /**

@@ -1,4 +1,4 @@
-name: E2E tests
+name: E2E & Unit tests
 on:
   push:
     branches:
@@ -34,6 +34,7 @@ jobs:
         run: yarn start:example &
       - name: Run tests
         run: |
+          yarn test
           yarn turbo test:e2e 
           BASE_URL=http://localhost:3000/pagerouter/admin yarn test:e2e
       - uses: actions/upload-artifact@v3

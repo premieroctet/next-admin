@@ -27,7 +27,7 @@ export default function Menu({
   }> =
     resources?.map((resource) => ({
       name: resource,
-      href: `${basePath}/${resource}`,
+      href: `${basePath}/${resource.toLowerCase()}`,
       current: resource === currentResource,
     })) || [];
 
