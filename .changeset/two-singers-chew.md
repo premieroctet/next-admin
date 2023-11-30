@@ -1,5 +1,4 @@
 ---
-"docs": patch
 "@premieroctet/next-admin": patch
 ---
 
