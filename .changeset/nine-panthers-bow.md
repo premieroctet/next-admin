@@ -2,4 +2,6 @@
 "@premieroctet/next-admin": minor
 ---
 
-feat: override model name in UI
+# New feature
+
+✨ Override model name in UI
