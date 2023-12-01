@@ -11,11 +11,12 @@ import {
 import {
   formattedFormData,
   getFormValuesFromFormData,
-  getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
   parseFormData,
+  getPrismaModelForResource,
+  getModelIdProperty,
 } from "../utils/server";
 import { validate } from "../utils/validator";
 
@@ -34,6 +35,8 @@ export const submitForm = async (
     return;
   }
 
+  const resourceIdField = getModelIdProperty(resource);
+
   const resourceId = getResourceIdFromParam(params[1], resource);
 
   const { __admin_action: action, ...formValues } =
@@ -48,7 +51,7 @@ export const submitForm = async (
         // @ts-expect-error
         await prisma[resource].delete({
           where: {
-            id: resourceId,
+            [resourceIdField]: resourceId,
           },
         });
       }
@@ -69,7 +72,7 @@ export const submitForm = async (
       // @ts-expect-error
       data = await prisma[resource].update({
         where: {
-          id: resourceId,
+          [resourceIdField]: resourceId,
         },
         data: await formattedFormData(
           formValues,
@@ -97,7 +100,7 @@ export const submitForm = async (
       ),
     });
 
-    return { created: true, createdId: data.id };
+    return { created: true, createdId: data[resourceIdField] };
   } catch (error: any) {
     if (
       error.constructor.name === PrismaClientValidationError.name ||

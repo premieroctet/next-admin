@@ -29,7 +29,7 @@ describe("getMappedDataList", () => {
       "Post",
       options,
       new URLSearchParams(),
-      {},
+      {}
     );
     expect(result).toEqual({
       data: postData,

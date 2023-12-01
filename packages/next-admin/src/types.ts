@@ -14,21 +14,21 @@ export type ObjectField<T extends ModelName> =
 
 export type Model<
   M extends ModelName,
-  T extends object | number = object,
+  T extends object | number = object
 > = ScalarField<M> & {
   [P in keyof ObjectField<M>]: ObjectField<M>[P] extends { scalars: infer S }
     ? T extends object
       ? S
       : T
     : never | ObjectField<M>[P] extends { scalars: infer S }[]
-      ? T extends object
-        ? S[]
-        : T[]
-      : never | ObjectField<M>[P] extends { scalars: infer S } | null
-        ? T extends object
-          ? S | null
-          : T | null
-        : never;
+    ? T extends object
+      ? S[]
+      : T[]
+    : never | ObjectField<M>[P] extends { scalars: infer S } | null
+    ? T extends object
+      ? S | null
+      : T | null
+    : never;
 };
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
@@ -56,7 +56,7 @@ export type EditFieldsOptions<T extends ModelName> = {
 export type Handler<
   M extends ModelName,
   P extends Field<M>,
-  T extends Model<M>[P],
+  T extends Model<M>[P]
 > = {
   get?: (input: T) => any;
   upload?: (file: Buffer) => Promise<string>;
@@ -77,10 +77,10 @@ export type FormatOptions<T> = T extends string
       | "alt-date"
       | "file"
   : never | T extends Date
-    ? "date" | "date-time" | "time"
-    : never | T extends number
-      ? "updown" | "range"
-      : never;
+  ? "date" | "date-time" | "time"
+  : never | T extends number
+  ? "updown" | "range"
+  : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
@@ -214,6 +214,7 @@ export type AdminComponentProps = {
    */
   options?: NextAdminOptions;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
+  resourcesIdProperty: Record<ModelName, string>;
 };
 
 export type CustomUIProps = {

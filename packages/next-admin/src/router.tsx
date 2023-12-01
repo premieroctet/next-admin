@@ -4,33 +4,22 @@ import {
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { createRouter } from "next-connect";
-import qs from "querystring";
 
+import { EditFieldsOptions, NextAdminOptions } from "./types";
+import { getPropsFromParams } from "./utils/props";
 import {
-  EditFieldsOptions,
-  EditOptions,
-  NextAdminOptions,
-  Select,
-} from "./types";
-import { getMappedDataList } from "./utils/prisma";
-import {
-  fillRelationInSchema,
   formatSearchFields,
   formattedFormData,
   getFormDataValues,
   getParamsFromUrl,
-  getPrismaModelForResource,
   getResourceFromParams,
-  getResourceFromUrl,
   getResourceIdFromParam,
-  getResourceIdFromUrl,
   getResources,
   parseFormData,
-  transformData,
-  transformSchema,
+  getPrismaModelForResource,
+  getModelIdProperty,
 } from "./utils/server";
 import { validate } from "./utils/validator";
-import { getPropsFromParams } from "./utils/props";
 
 // Router
 export const nextAdminRouter = async (
@@ -106,6 +95,8 @@ export const nextAdminRouter = async (
 
         const parsedFormData = parseFormData(formData, dmmfSchema?.fields!);
 
+        const modelIdProperty = getModelIdProperty(resource);
+
         try {
           // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
           if (!resourceId && action === "delete") {
@@ -126,7 +117,7 @@ export const nextAdminRouter = async (
             // @ts-expect-error
             await prisma[resource].delete({
               where: {
-                id: resourceId,
+                [modelIdProperty]: resourceId,
               },
             });
 
@@ -148,7 +139,7 @@ export const nextAdminRouter = async (
             // @ts-expect-error
             await prisma[resource].update({
               where: {
-                id: resourceId,
+                [modelIdProperty]: resourceId,
               },
               data: await formattedFormData(
                 formData,
@@ -189,7 +180,7 @@ export const nextAdminRouter = async (
           return {
             redirect: {
               destination: `${options.basePath}/${resource.toLowerCase()}/${
-                createdData.id
+                createdData[modelIdProperty]
               }?message=${JSON.stringify({
                 type: "success",
                 content: "Created successfully",

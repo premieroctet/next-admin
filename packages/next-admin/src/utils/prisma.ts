@@ -11,7 +11,11 @@ import {
   PrismaListRequest,
   Select,
 } from "../types";
-import { findRelationInData, getPrismaModelForResource } from "./server";
+import {
+  findRelationInData,
+  getModelIdProperty,
+  getPrismaModelForResource,
+} from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
@@ -77,7 +81,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
         }
         return acc;
       },
-      { id: true } as Select<M>
+      { [getModelIdProperty(resource)]: true } as Select<M>
     );
 
     fieldsFiltered =
@@ -143,6 +147,9 @@ export const getMappedDataList = async (
       let itemValue;
 
       if (typeof item[key] === "object" && item[key] !== null) {
+        const model = capitalize(key) as ModelName;
+        const idProperty = getModelIdProperty(model);
+
         switch (item[key].type) {
           case "link":
             itemValue = item[key].value.label;
@@ -154,7 +161,7 @@ export const getMappedDataList = async (
             itemValue = item[key].value.toString();
             break;
           default:
-            itemValue = item[key].id;
+            itemValue = item[key][idProperty];
             break;
         }
 

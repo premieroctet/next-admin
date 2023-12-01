@@ -32,10 +32,18 @@ export type ListProps = {
   data: ListData<ModelName>;
   total: number;
   options?: Required<NextAdminOptions>["model"][ModelName];
+  resourcesIdProperty: Record<ModelName, string>;
   title: string;
 };
 
-function List({ resource, data, total, options, title }: ListProps) {
+function List({
+  resource,
+  data,
+  total,
+  options,
+  resourcesIdProperty,
+  title,
+}: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
   const { isAppDir } = useConfig();
@@ -90,7 +98,7 @@ function List({ resource, data, total, options, title }: ListProps) {
                 ]?.formatter ||
                 ((cell: any) => {
                   if (typeof cell === "object") {
-                    return cell.id;
+                    return cell[resourcesIdProperty[property as ModelName]];
                   } else {
                     return cell;
                   }
@@ -122,7 +130,12 @@ function List({ resource, data, total, options, title }: ListProps) {
           isPending={isPending}
         />
         <div className="max-w-full mt-2 py-2 align-middle">
-          <DataTable resource={resource} data={data} columns={columns} />
+          <DataTable
+            resource={resource}
+            data={data}
+            columns={columns}
+            resourcesIdProperty={resourcesIdProperty}
+          />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">
               <div>

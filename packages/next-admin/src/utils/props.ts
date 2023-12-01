@@ -4,18 +4,20 @@ import {
   ActionParams,
   AdminComponentProps,
   EditOptions,
+  ModelName,
   NextAdminOptions,
   Select,
   SubmitFormResult,
 } from "../types";
 import {
   fillRelationInSchema,
-  getPrismaModelForResource,
+  getModelIdProperty,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
   transformData,
   transformSchema,
+  getPrismaModelForResource,
 } from "./server";
 import { getMappedDataList } from "./prisma";
 import qs from "querystring";
@@ -71,15 +73,16 @@ export async function getPropsFromParams({
       : undefined,
     message,
     error: searchParams?.error as string,
-    resourcesTitles: resources.reduce(
-      (acc, resource) => {
-        acc[resource as Prisma.ModelName] =
-          options.model?.[resource as keyof typeof options.model]?.title ??
-          resource;
-        return acc;
-      },
-      {} as { [key in Prisma.ModelName]: string }
-    ),
+    resourcesTitles: resources.reduce((acc, resource) => {
+      acc[resource as Prisma.ModelName] =
+        options.model?.[resource as keyof typeof options.model]?.title ??
+        resource;
+      return acc;
+    }, {} as { [key in Prisma.ModelName]: string }),
+    resourcesIdProperty: resources.reduce((acc, resource) => {
+      acc[resource] = getModelIdProperty(resource);
+      return acc;
+    }, {} as Record<ModelName, string>),
   };
 
   if (!params) return defaultProps;
@@ -120,13 +123,14 @@ export async function getPropsFromParams({
       const resourceId = getResourceIdFromParam(params[1], resource);
       const model = getPrismaModelForResource(resource);
 
+      const idProperty = getModelIdProperty(resource);
+
       let selectedFields = model?.fields.reduce(
         (acc, field) => {
-          // @ts-expect-error
           acc[field.name] = true;
           return acc;
         },
-        { id: true } as Select<typeof resource>
+        { [idProperty]: true }
       );
 
       const dmmfSchema = getPrismaModelForResource(resource);
@@ -142,12 +146,12 @@ export async function getPropsFromParams({
             acc[column] = true;
             return acc;
           },
-          { id: true } as Select<typeof resource>
+          { [idProperty]: true }
         );
         selectedFields = editSelect ?? selectedFields;
         // @ts-expect-error
         let data = await prisma[resource].findUniqueOrThrow({
-          where: { id: resourceId },
+          where: { [idProperty]: resourceId },
           select: selectedFields,
         });
         data = transformData(data, resource, edit);

@@ -24,6 +24,14 @@ export const resources = models.map((model) => model.name as ModelName);
 export const getPrismaModelForResource = (resource: ModelName) =>
   models.find((datamodel) => datamodel.name === resource);
 
+export const getModelIdProperty = (model: ModelName) => {
+  const prismaModel = models.find((m) => m.name === model);
+
+  const idField = prismaModel?.fields.find((f) => f.isId);
+
+  return idField?.name ?? "id";
+};
+
 export const getResources = (
   options?: NextAdminOptions
 ): Prisma.ModelName[] => {
@@ -87,10 +95,13 @@ export const fillRelationInSchema = async (
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
         const nonChekedToString = options?.model?.[modelNameRelation]?.toString;
+        const modelRelationIdField = getModelIdProperty(
+          modelNameRelation
+        );
         const toStringForRelations =
           nonChekedToString && !isNativeFunction(nonChekedToString)
             ? nonChekedToString
-            : (item: any) => item[relationToFields?.[0]] ?? item.id;
+            : (item: any) => item[relationToFields?.[0]] ?? item[modelRelationIdField];
         if (
           relationFromFields &&
           relationFromFields.length > 0 &&
@@ -133,7 +144,7 @@ export const fillRelationInSchema = async (
                 data.forEach((item) => {
                   enumeration.push({
                     label: toStringForRelations(item),
-                    value: item.id,
+                    value: item[modelRelationIdField],
                   });
                 })
               );
@@ -178,11 +189,17 @@ export const transformData = <M extends ModelName>(
       acc[key] = get(data[key]);
     } else {
       if (fieldKind === "object") {
+        const modelRelation = field!.type as ModelName;
+        
+        const modelRelationIdField = getModelIdProperty(
+          modelRelation
+        );
+
         // Flat relationships to id
         if (Array.isArray(data[key])) {
-          acc[key] = data[key].map((item: any) => item.id);
+          acc[key] = data[key].map((item: any) => item[modelRelationIdField]);
         } else {
-          acc[key] = data[key] ? data[key].id : null;
+          acc[key] = data[key] ? data[key][modelRelationIdField] : null;
         }
       } else {
         const fieldTypes = field?.type;
@@ -548,7 +565,7 @@ export const getResourceIdFromParam = (param: string, resource: ModelName) => {
 
   const model = models.find((model) => model.name === resource);
 
-  const idType = model?.fields.find((field) => field.name === "id")?.type;
+  const idType = model?.fields.find((field) => field.name === getModelIdProperty(resource))?.type;
 
   if (idType === "Int") {
     return Number(param);
