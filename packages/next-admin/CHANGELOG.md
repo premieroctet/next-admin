@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.0.1
+
+### Patch Changes
+
+- 84ea409: chore: update docs
+
 ## 3.0.0
 
 ### Major Changes
@@ -166,4 +172,3 @@
 ### Major Changes
 
 - 6af8145: Fist release of @premieroctet/next-admin package (unstable)
-
