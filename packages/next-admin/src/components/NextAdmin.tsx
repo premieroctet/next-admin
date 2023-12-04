@@ -30,6 +30,9 @@ export function NextAdmin({
   resourcesTitles,
   resourcesIdProperty,
   customInputs: customInputsProp,
+  pageComponent: PageComponent,
+  customPages,
+  currentPath,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -43,6 +46,15 @@ export function NextAdmin({
   const resourceTitle = resourcesTitles?.[resource!] ?? resource;
 
   const renderMainComponent = () => {
+    if (!isAppDir && options?.pages?.[currentPath!]) {
+      const Page = options.pages[currentPath!].component;
+      return <Page />;
+    }
+
+    if (PageComponent) {
+      return <PageComponent />;
+    }
+
     if (Array.isArray(data) && resource && typeof total != "undefined") {
       return (
         <List
@@ -52,7 +64,7 @@ export function NextAdmin({
           total={total}
           options={options?.model && options?.model[resource]}
           title={resourceTitle!}
-          resourcesIdProperty={resourcesIdProperty}
+          resourcesIdProperty={resourcesIdProperty!}
         />
       );
     }
@@ -93,8 +105,9 @@ export function NextAdmin({
       <div className="w-full">
         <Menu
           resources={resources}
-          resource={resource!}
+          resource={resource}
           resourcesTitles={resourcesTitles}
+          customPages={customPages}
         />
 
         <main className="py-10 lg:pl-72">

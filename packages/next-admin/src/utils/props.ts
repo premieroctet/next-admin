@@ -50,7 +50,18 @@ export async function getPropsFromParams({
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
+  | Pick<
+      AdminComponentProps,
+      | "pageComponent"
+      | "basePath"
+      | "isAppDir"
+      | "message"
+      | "resources"
+      | "error"
+    >
 > {
+  const pathFromParams = "/" + params?.join("/");
+
   const resources = getResources(options);
 
   let message = undefined;
@@ -60,6 +71,47 @@ export async function getPropsFromParams({
       ? JSON.parse(searchParams.message as string)
       : null;
   } catch {}
+
+  const resourcesTitles = resources.reduce((acc, resource) => {
+    acc[resource as Prisma.ModelName] =
+      options.model?.[resource as keyof typeof options.model]?.title ??
+      resource;
+    return acc;
+  }, {} as { [key in Prisma.ModelName]: string });
+  const resourcesIdProperty = resources.reduce((acc, resource) => {
+    acc[resource] = getModelIdProperty(resource);
+    return acc;
+  }, {} as Record<ModelName, string>);
+
+  const customPages = Object.keys(options.pages ?? {})
+    .filter((path) => {
+      /**
+       * Return only the pages that we want to show in the menu
+       * By default, we show them
+       */
+      return (
+        options.pages![path as keyof typeof options.pages].showInMenu ?? true
+      );
+    })
+    .map((path) => ({
+      title: options.pages![path as keyof typeof options.pages].title,
+      path: path,
+    }));
+
+  if (isAppDir && options.pages?.[pathFromParams]) {
+    return {
+      pageComponent: options.pages[pathFromParams].component,
+      basePath: options.basePath,
+      isAppDir,
+      resources,
+      message,
+      error: searchParams?.error as string,
+      customPages,
+      currentPath: pathFromParams,
+      resourcesTitles,
+      resourcesIdProperty,
+    };
+  }
 
   if (isAppDir && !action) {
     throw new Error("action is required when using App router");
@@ -74,16 +126,10 @@ export async function getPropsFromParams({
       : undefined,
     message,
     error: searchParams?.error as string,
-    resourcesTitles: resources.reduce((acc, resource) => {
-      acc[resource as Prisma.ModelName] =
-        options.model?.[resource as keyof typeof options.model]?.title ??
-        resource;
-      return acc;
-    }, {} as { [key in Prisma.ModelName]: string }),
-    resourcesIdProperty: resources.reduce((acc, resource) => {
-      acc[resource] = getModelIdProperty(resource);
-      return acc;
-    }, {} as Record<ModelName, string>),
+    customPages,
+    currentPath: pathFromParams,
+    resourcesTitles,
+    resourcesIdProperty,
   };
 
   if (!params) return defaultProps;

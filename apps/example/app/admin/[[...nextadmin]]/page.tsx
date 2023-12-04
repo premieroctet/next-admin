@@ -1,11 +1,9 @@
 import { NextAdmin } from "@premieroctet/next-admin";
 import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
-import "@premieroctet/next-admin/dist/styles.css";
 import Dashboard from "../../../components/Dashboard";
 import { options } from "../../../options";
 import { prisma } from "../../../prisma";
 import schema from "../../../prisma/json-schema/json-schema.json";
-import "../../../styles.css";
 import { submitFormAction } from "../../../actions/nextadmin";
 
 export default async function AdminPage({

@@ -248,6 +248,15 @@ For the `edit` property, it can take the following:
 | handler.get    | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
 | handler.upload | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
 
+### `pages`
+
+`pages` is an object that maps a path to a component. It is an object where the key is the path (without the base path) and the value is an object with the following properties:
+
+| Name        | Description                                       |
+| ----------- | ------------------------------------------------- |
+| `title`     | the title of the page displayed on the sidebar    |
+| `component` | the component to render when the path is matched. |
+
 Here is an example of using `NextAdminOptions` for the following schema :
 
 ```prisma
