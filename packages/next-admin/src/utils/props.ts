@@ -22,6 +22,7 @@ import {
 import { getMappedDataList } from "./prisma";
 import qs from "querystring";
 import { createBoundServerAction } from "./actions";
+import { getCustomInputs } from "./options";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -139,6 +140,10 @@ export async function getPropsFromParams({
       >;
       schema = transformSchema(schema, resource, edit);
 
+      const customInputs = isAppDir
+        ? getCustomInputs(resource, options)
+        : undefined;
+
       if (resourceId !== undefined) {
         const editDisplayedKeys = edit && edit.display;
         const editSelect = editDisplayedKeys?.reduce(
@@ -161,6 +166,7 @@ export async function getPropsFromParams({
           data,
           schema,
           dmmfSchema: dmmfSchema?.fields,
+          customInputs,
         };
       }
 
@@ -170,6 +176,7 @@ export async function getPropsFromParams({
           resource,
           schema,
           dmmfSchema: dmmfSchema?.fields,
+          customInputs,
         };
       }
     }

@@ -1,4 +1,4 @@
-import { Tabs } from "nextra/components";
+import { Tabs, Callout } from "nextra/components";
 
 # API
 
@@ -243,9 +243,16 @@ For the `edit` property, it can take the following:
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | validate       | a function that takes the field value as a parameter, and that returns a boolean                                                                                             |
 | format         | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                       |
+| input          | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                          |
 | handler        | an object that can take the following properties                                                                                                                             |
 | handler.get    | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
 | handler.upload | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
+
+<Callout type="info" emoji="ℹ️">
+
+Custom input will only work with `format: "string"`.
+
+</Callout>
 
 Here is an example of using `NextAdminOptions` for the following schema :
 
@@ -320,6 +327,18 @@ const options: NextAdminOptions = {
 
 const adminRouter = await nextAdminRouter(prisma, schema, options);
 ```
+
+## CustomInputProps
+
+This is the type of the props that are passed to the custom input component:
+
+| Name      | Description                                                                                                                 |
+| --------- | --------------------------------------------------------------------------------------------------------------------------- |
+| name      | the field name                                                                                                              |
+| value     | the field value                                                                                                             |
+| onChange  | a function taking a [ChangeEvent](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) as a parameter |
+| readonly  | boolean indicating if the field is editable or not                                                                          |
+| rawErrors | array of strings containing the field errors                                                                                |
 
 ## NextAdmin Context
 

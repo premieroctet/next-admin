@@ -127,6 +127,9 @@ export const readForm = async (
           'a[href="https://www.gravatar.com/avatar/00000000000000000000000000000000"]'
         )
       ).toBeDefined();
+      expect(
+        page.locator('label[for="createdAt"] + p[id="createdAt"]')
+      ).toBeDefined();
       break;
     case "Post":
       expect(await page.inputValue('input[id="title"]')).toBe(

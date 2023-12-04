@@ -1,4 +1,6 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
+import React from "react";
+import InputDisplay from "./components/InputDisplay";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
@@ -33,6 +35,7 @@ export const options: NextAdminOptions = {
           "role",
           "birthDate",
           "avatar",
+          "createdAt",
         ],
         fields: {
           email: {
@@ -53,6 +56,11 @@ export const options: NextAdminOptions = {
                 return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
               },
             },
+          },
+          createdAt: {
+            // @ts-expect-error
+            format: "string",
+            input: <InputDisplay />,
           },
         },
       },

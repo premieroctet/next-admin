@@ -1,6 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
-import { ReactNode } from "react";
+import { ChangeEvent, ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
 
 /** Type for Model */
@@ -50,6 +50,7 @@ export type EditFieldsOptions<T extends ModelName> = {
     validate?: (value: ModelWithoutRelationships<T>[P]) => true | string;
     format?: FormatOptions<ModelWithoutRelationships<T>[P]>;
     handler?: Handler<T, P, Model<T>[P]>;
+    input?: React.ReactElement;
   };
 };
 
@@ -215,6 +216,7 @@ export type AdminComponentProps = {
   options?: NextAdminOptions;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
   resourcesIdProperty: Record<ModelName, string>;
+  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
 };
 
 export type CustomUIProps = {
@@ -243,3 +245,11 @@ export type SubmitFormResult = {
 export type NextAdminContext = {
   locale?: string;
 };
+
+export type CustomInputProps = Partial<{
+  name: string;
+  value: string;
+  onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
+  readonly: boolean;
+  rawErrors: string[];
+}>;

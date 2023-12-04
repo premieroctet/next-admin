@@ -389,9 +389,6 @@ export const formattedFormData = async <M extends ModelName>(
               : null;
           } else if (
             dmmfPropertyType === "String" &&
-            ["data-url", "file"].includes(
-              editOptions?.[dmmfPropertyName]?.format ?? ""
-            ) &&
             formData[dmmfPropertyName] instanceof Buffer
           ) {
             const uploadHandler =
