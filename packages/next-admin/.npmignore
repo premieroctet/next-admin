@@ -1,2 +1,7 @@
 node_modules
 .turbo
+src
+jest.config.js
+tsconfig.json
+tailwind.config.js
+postcss.config.js
