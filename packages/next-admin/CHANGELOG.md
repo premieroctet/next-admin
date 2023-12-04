@@ -167,6 +167,3 @@
 
 - 6af8145: Fist release of @premieroctet/next-admin package (unstable)
 
-```
-
-```
