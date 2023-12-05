@@ -26,7 +26,7 @@ describe("fillRelationInSchema", () => {
         updatedAt: new Date(),
         birthDate: new Date(),
         role: "ADMIN",
-        avatar: null
+        avatar: null,
       },
     ]);
     const result = await fillRelationInSchema(schema, prismaMock, "Post", {});

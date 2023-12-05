@@ -140,10 +140,9 @@ const Form = ({
   title,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
-  const schemas: Schemas = getSchemas(data, schema, dmmfSchema);
+  const { edit, ...schemas } = getSchemas(data, schema, dmmfSchema);
   const { basePath } = useConfig();
   const { router } = useRouterInternal();
-  const edit = data?.id !== undefined;
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
     const {

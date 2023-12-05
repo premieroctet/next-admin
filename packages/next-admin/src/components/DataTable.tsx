@@ -21,20 +21,25 @@ interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
   data: ListData<ModelName>;
   resource: ModelName;
+  resourcesIdProperty: Record<ModelName, string>;
 }
 
-export function DataTable({ columns, data, resource }: DataTableProps) {
+export function DataTable({
+  columns,
+  data,
+  resource,
+  resourcesIdProperty,
+}: DataTableProps) {
   const { router } = useRouterInternal();
   const { basePath } = useConfig();
-  const columnsVisibility = columns.reduce(
-    (acc, column) => {
-      // @ts-expect-error
-      const key = column.accessorKey as Field<typeof resource>;
-      acc[key] = Object.keys(data[0]).includes(key);
-      return acc;
-    },
-    {} as Record<Field<typeof resource>, boolean>
-  );
+  const columnsVisibility = columns.reduce((acc, column) => {
+    // @ts-expect-error
+    const key = column.accessorKey as Field<typeof resource>;
+    acc[key] = Object.keys(data[0]).includes(key);
+    return acc;
+  }, {} as Record<Field<typeof resource>, boolean>);
+
+  const modelIdProperty = resourcesIdProperty[resource];
 
   const table = useReactTable({
     data,
@@ -77,8 +82,7 @@ export function DataTable({ columns, data, resource }: DataTableProps) {
                 onClick={() => {
                   router.push({
                     pathname: `${basePath}/${resource.toLowerCase()}/${
-                      // @ts-expect-error
-                      row.original.id.value
+                      row.original[modelIdProperty].value
                     }`,
                   });
                 }}

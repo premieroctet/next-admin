@@ -27,6 +27,7 @@ export function NextAdmin({
   action,
   options,
   resourcesTitles,
+  resourcesIdProperty,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -49,6 +50,7 @@ export function NextAdmin({
           total={total}
           options={options?.model && options?.model[resource]}
           title={resourceTitle!}
+          resourcesIdProperty={resourcesIdProperty}
         />
       );
     }
