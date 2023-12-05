@@ -49,7 +49,7 @@
     "@types/jest": "^29.5.1",
     "@types/json-schema": "^7.0.11",
     "@types/lodash.range": "^3.2.7",
-    "@types/react": "^18.0.22",
+    "@types/react": "^18.2.0",
     "autoprefixer": "^10.4.14",
     "concurrently": "^8.0.1",
     "eslint": "^7.32.0",

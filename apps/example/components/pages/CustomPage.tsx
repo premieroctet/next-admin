@@ -12,7 +12,6 @@ const CustomPage = async () => {
       <p className="text-md">Total Users: {totalUsers}</p>
       <p className="text-md">Total Posts: {totalPosts}</p>
       <p className="text-md">Total Categories: {totalCategories}</p>
-      {/* @ts-expect-error */}
       <form action={createRandomPost} className="mt-2">
         <button
           type="submit"
