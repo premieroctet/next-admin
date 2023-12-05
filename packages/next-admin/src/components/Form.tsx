@@ -10,7 +10,7 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { ModelName, SubmitFormResult } from "../types";
 import { Schemas, getSchemas } from "../utils/jsonSchema";
@@ -192,7 +192,7 @@ const Form = ({
 
       if (result?.deleted) {
         return router.replace({
-          pathname: `${basePath}/${resource}`,
+          pathname: `${basePath}/${resource.toLowerCase()}`,
           query: {
             message: JSON.stringify({
               type: "success",
@@ -204,7 +204,7 @@ const Form = ({
 
       if (result?.created) {
         return router.replace({
-          pathname: `${basePath}/${resource}/${result.createdId}`,
+          pathname: `${basePath}/${resource.toLowerCase()}/${result.createdId}`,
           query: {
             message: JSON.stringify({
               type: "success",

@@ -30,6 +30,10 @@ describe("Server utils", () => {
       expect(getResourceFromParams(["User", "1"], ["User"])).toEqual("User");
     });
 
+    it("should return a resource with /admin/user/1", () => {
+      expect(getResourceFromParams(["user", "1"], ["User"])).toEqual("User");
+    });
+
     it("should not return a resource with /admin/Post", () => {
       expect(getResourceFromParams(["Post"], ["User"])).toEqual(undefined);
     });

@@ -60,7 +60,9 @@ export const deleteItem = async (model: ModelName, page: Page, id: string) => {
   page.on("dialog", async (dialog) => dialog.accept());
   await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
   await page.click('button:has-text("Delete")');
-  await page.waitForURL((url) => url.pathname.endsWith(`/${model}`));
+  await page.waitForURL((url) =>
+    url.pathname.endsWith(`/${model.toLowerCase()}`)
+  );
 };
 
 export const readItem = async (model: ModelName, page: Page, id: string) => {
