@@ -1,6 +1,7 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import React from "react";
 import InputDisplay from "./components/InputDisplay";
+import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
@@ -35,14 +36,15 @@ export const options: NextAdminOptions = {
           "role",
           "birthDate",
           "avatar",
-          "createdAt",
         ],
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
           },
           birthDate: {
-            format: "date",
+            // @ts-expect-error
+            format: "string",
+            input: <DatePicker />,
           },
           avatar: {
             format: "file",
@@ -56,11 +58,6 @@ export const options: NextAdminOptions = {
                 return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
               },
             },
-          },
-          createdAt: {
-            // @ts-expect-error
-            format: "string",
-            input: <InputDisplay />,
           },
         },
       },

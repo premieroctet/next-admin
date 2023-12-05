@@ -1,6 +1,7 @@
 // https://www.prisma.io/docs/guides/testing/unit-testing#singleton
 import { PrismaClient } from "@prisma/client";
 import { DeepMockProxy, mockDeep, mockReset } from "jest-mock-extended";
+import React from "react";
 
 import prisma from "@prisma/client";
 import { NextAdminOptions, Schema } from "../types";
@@ -102,6 +103,7 @@ export const options: NextAdminOptions = {
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
+            input: <input type="email" />,
           },
           birthDate: {
             format: "date",

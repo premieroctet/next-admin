@@ -26,6 +26,7 @@
     "next": "^14.0.3",
     "next-superjson-plugin": "^0.5.6",
     "react": "^18.2.0",
+    "react-datetime-picker": "^5.5.3",
     "react-dom": "^18.2.0",
     "superjson": "^1.12.2"
   },
