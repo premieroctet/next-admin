@@ -106,10 +106,7 @@ export type ModelOptions<T extends ModelName> = {
 export type NextAdminOptions = {
   basePath: string;
   model?: ModelOptions<ModelName>;
-  pages?: Record<
-    string,
-    { title: string; component: React.ComponentType; showInMenu?: boolean }
-  >;
+  pages?: Record<string, { title: string }>;
 };
 
 /** Type for Schema */
@@ -225,9 +222,20 @@ export type AdminComponentProps = {
    * App router only
    */
   pageComponent?: React.ComponentType;
-  customPages?: Array<{ title: string; path: string; showInMenu?: boolean }>;
-  currentPath?: string;
+  customPages?: Array<{ title: string; path: string }>;
 };
+
+export type MainLayoutProps = Pick<
+  AdminComponentProps,
+  | "resource"
+  | "resources"
+  | "resourcesTitles"
+  | "customPages"
+  | "basePath"
+  | "message"
+  | "error"
+  | "isAppDir"
+>;
 
 export type CustomUIProps = {
   dashboard?: JSX.Element | (() => JSX.Element);

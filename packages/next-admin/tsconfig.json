@@ -4,7 +4,8 @@
     "./src/appRouter.ts",
     "./src/index.tsx",
     "./src/router.tsx",
-    "./src/actions/index.ts"
+    "./src/actions/index.ts",
+    "./src/mainLayout.tsx"
   ],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {

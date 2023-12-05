@@ -1,10 +1,10 @@
 import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
 import "@premieroctet/next-admin/dist/styles.css";
 import { GetServerSideProps, GetServerSidePropsResult } from "next";
-import Dashboard from "../../components/Dashboard";
-import { options } from "../../options";
-import { prisma } from "../../prisma";
-import schema from "../../prisma/json-schema/json-schema.json";
+import Dashboard from "../../../components/Dashboard";
+import { options } from "../../../options";
+import { prisma } from "../../../prisma";
+import schema from "../../../prisma/json-schema/json-schema.json";
 
 const pageOptions = {
   ...options,

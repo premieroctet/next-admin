@@ -4,9 +4,9 @@ import {
   ActionParams,
   AdminComponentProps,
   EditOptions,
+  MainLayoutProps,
   ModelName,
   NextAdminOptions,
-  Select,
   SubmitFormResult,
 } from "../types";
 import {
@@ -60,58 +60,23 @@ export async function getPropsFromParams({
       | "error"
     >
 > {
-  const pathFromParams = "/" + params?.join("/");
+  const {
+    resource,
+    resources,
+    resourcesTitles,
+    basePath,
+    customPages,
+    error,
+    message,
+  } = getMainLayoutProps({ options, params, searchParams, isAppDir });
 
-  const resources = getResources(options);
-
-  let message = undefined;
-
-  try {
-    message = searchParams?.message
-      ? JSON.parse(searchParams.message as string)
-      : null;
-  } catch {}
-
-  const resourcesTitles = resources.reduce((acc, resource) => {
-    acc[resource as Prisma.ModelName] =
-      options.model?.[resource as keyof typeof options.model]?.title ??
-      resource;
-    return acc;
-  }, {} as { [key in Prisma.ModelName]: string });
-  const resourcesIdProperty = resources.reduce((acc, resource) => {
-    acc[resource] = getModelIdProperty(resource);
-    return acc;
-  }, {} as Record<ModelName, string>);
-
-  const customPages = Object.keys(options.pages ?? {})
-    .filter((path) => {
-      /**
-       * Return only the pages that we want to show in the menu
-       * By default, we show them
-       */
-      return (
-        options.pages![path as keyof typeof options.pages].showInMenu ?? true
-      );
-    })
-    .map((path) => ({
-      title: options.pages![path as keyof typeof options.pages].title,
-      path: path,
-    }));
-
-  if (isAppDir && options.pages?.[pathFromParams]) {
-    return {
-      pageComponent: options.pages[pathFromParams].component,
-      basePath: options.basePath,
-      isAppDir,
-      resources,
-      message,
-      error: searchParams?.error as string,
-      customPages,
-      currentPath: pathFromParams,
-      resourcesTitles,
-      resourcesIdProperty,
-    };
-  }
+  const resourcesIdProperty = resources!.reduce(
+    (acc, resource) => {
+      acc[resource] = getModelIdProperty(resource);
+      return acc;
+    },
+    {} as Record<ModelName, string>
+  );
 
   if (isAppDir && !action) {
     throw new Error("action is required when using App router");
@@ -119,22 +84,19 @@ export async function getPropsFromParams({
 
   const defaultProps: AdminComponentProps = {
     resources,
-    basePath: options.basePath,
+    basePath,
     isAppDir,
     action: action
       ? createBoundServerAction({ schema, params }, action)
       : undefined,
     message,
-    error: searchParams?.error as string,
+    error,
     customPages,
-    currentPath: pathFromParams,
     resourcesTitles,
     resourcesIdProperty,
   };
 
   if (!params) return defaultProps;
-
-  const resource = getResourceFromParams(params, resources);
 
   if (!resource) return defaultProps;
 
@@ -230,3 +192,54 @@ export async function getPropsFromParams({
       return defaultProps;
   }
 }
+
+type GetMainLayoutPropsParams = {
+  options: NextAdminOptions;
+  params?: string[];
+  searchParams?: { [key: string]: string | string[] | undefined };
+  isAppDir?: boolean;
+};
+
+export const getMainLayoutProps = ({
+  options,
+  params,
+  searchParams,
+  isAppDir = false,
+}: GetMainLayoutPropsParams): MainLayoutProps => {
+  const resources = getResources(options);
+  const resource = getResourceFromParams(params ?? [], resources);
+
+  const customPages = Object.keys(options.pages ?? {}).map((path) => ({
+    title: options.pages![path as keyof typeof options.pages].title,
+    path: path,
+  }));
+
+  let message = undefined;
+
+  try {
+    message = searchParams?.message
+      ? JSON.parse(searchParams.message as string)
+      : null;
+  } catch {}
+
+  const resourcesTitles = resources.reduce(
+    (acc, resource) => {
+      acc[resource as Prisma.ModelName] =
+        options.model?.[resource as keyof typeof options.model]?.title ??
+        resource;
+      return acc;
+    },
+    {} as { [key in Prisma.ModelName]: string }
+  );
+
+  return {
+    resources,
+    resource,
+    basePath: options.basePath,
+    customPages,
+    error: searchParams?.error as string,
+    message,
+    resourcesTitles,
+    isAppDir,
+  };
+};

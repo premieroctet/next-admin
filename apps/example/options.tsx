@@ -1,7 +1,6 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import React from "react";
 import DatePicker from "./components/DatePicker";
-import CustomPage from "./components/pages/CustomPage";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
@@ -107,7 +106,6 @@ export const options: NextAdminOptions = {
   pages: {
     "/custom": {
       title: "Custom page",
-      component: CustomPage,
     },
   },
 };
