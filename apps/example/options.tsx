@@ -42,8 +42,6 @@ export const options: NextAdminOptions = {
             validate: (email) => email.includes("@") || "Invalid email",
           },
           birthDate: {
-            // @ts-expect-error
-            format: "string",
             input: <DatePicker />,
           },
           avatar: {

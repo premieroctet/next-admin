@@ -14,7 +14,7 @@ const DatePicker = ({ value, name, onChange }: Props) => {
       onChange={(date) =>
         onChange?.({
           // @ts-expect-error
-          target: { value: date?.toJSON() ?? new Date().toJSON() },
+          target: { value: date?.toISOString() ?? new Date().toISOString() },
         })
       }
       name={name}

@@ -95,13 +95,12 @@ export const fillRelationInSchema = async (
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
         const nonChekedToString = options?.model?.[modelNameRelation]?.toString;
-        const modelRelationIdField = getModelIdProperty(
-          modelNameRelation
-        );
+        const modelRelationIdField = getModelIdProperty(modelNameRelation);
         const toStringForRelations =
           nonChekedToString && !isNativeFunction(nonChekedToString)
             ? nonChekedToString
-            : (item: any) => item[relationToFields?.[0]] ?? item[modelRelationIdField];
+            : (item: any) =>
+                item[relationToFields?.[0]] ?? item[modelRelationIdField];
         if (
           relationFromFields &&
           relationFromFields.length > 0 &&
@@ -190,10 +189,8 @@ export const transformData = <M extends ModelName>(
     } else {
       if (fieldKind === "object") {
         const modelRelation = field!.type as ModelName;
-        
-        const modelRelationIdField = getModelIdProperty(
-          modelRelation
-        );
+
+        const modelRelationIdField = getModelIdProperty(modelRelation);
 
         // Flat relationships to id
         if (Array.isArray(data[key])) {
@@ -462,11 +459,16 @@ export const changeFormatInSchema = <M extends ModelName>(
   if (!model) return schema;
   model.fields.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
+    const fieldValue =
+      schema.definitions[modelName].properties[
+        dmmfPropertyName as Field<typeof modelName>
+      ];
+
+    if (editOptions?.fields?.[dmmfPropertyName]?.input && fieldValue) {
+      fieldValue.format = "string";
+    }
+
     if (editOptions?.fields?.[dmmfPropertyName]?.format) {
-      const fieldValue =
-        schema.definitions[modelName].properties[
-          dmmfPropertyName as Field<typeof modelName>
-        ];
       if (fieldValue) {
         if (editOptions?.fields?.[dmmfPropertyName]?.format === "file") {
           fieldValue.format = "data-url";
@@ -507,7 +509,7 @@ export const getResourceFromParams = (
 ) => {
   return resources.find((r) => {
     const slugifiedResource = r.toLowerCase();
-    return params.some(param => param.toLowerCase() === slugifiedResource)
+    return params.some((param) => param.toLowerCase() === slugifiedResource);
   });
 };
 
@@ -562,7 +564,9 @@ export const getResourceIdFromParam = (param: string, resource: ModelName) => {
 
   const model = models.find((model) => model.name === resource);
 
-  const idType = model?.fields.find((field) => field.name === getModelIdProperty(resource))?.type;
+  const idType = model?.fields.find(
+    (field) => field.name === getModelIdProperty(resource)
+  )?.type;
 
   if (idType === "Int") {
     return Number(param);
