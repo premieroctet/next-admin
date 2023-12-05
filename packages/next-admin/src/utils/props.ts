@@ -1,5 +1,5 @@
 "use server";
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import {
   ActionParams,
   AdminComponentProps,
@@ -62,7 +62,7 @@ export async function getPropsFromParams({
     throw new Error("action is required when using App router");
   }
 
-  const defaultProps = {
+  const defaultProps: AdminComponentProps = {
     resources,
     basePath: options.basePath,
     isAppDir,
@@ -71,6 +71,15 @@ export async function getPropsFromParams({
       : undefined,
     message,
     error: searchParams?.error as string,
+    resourcesTitles: resources.reduce(
+      (acc, resource) => {
+        acc[resource as Prisma.ModelName] =
+          options.model?.[resource as keyof typeof options.model]?.title ??
+          resource;
+        return acc;
+      },
+      {} as { [key in Prisma.ModelName]: string }
+    ),
   };
 
   if (!params) return defaultProps;

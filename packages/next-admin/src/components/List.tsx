@@ -32,9 +32,10 @@ export type ListProps = {
   data: ListData<ModelName>;
   total: number;
   options?: Required<NextAdminOptions>["model"][ModelName];
+  title: string;
 };
 
-function List({ resource, data, total, options }: ListProps) {
+function List({ resource, data, total, options, title }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
   const { isAppDir } = useConfig();
@@ -110,7 +111,7 @@ function List({ resource, data, total, options }: ListProps) {
     <>
       <div className="mt-4">
         <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
-          {resource}
+          {title}
         </h1>
       </div>
       <div className="mt-4 flow-root">

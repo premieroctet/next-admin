@@ -98,6 +98,7 @@ export type ModelOptions<T extends ModelName> = {
     toString?: (item: Model<P>) => string;
     list?: ListOptions<P>;
     edit?: EditOptions<P>;
+    title?: string;
   };
 };
 
@@ -212,6 +213,7 @@ export type AdminComponentProps = {
    * Mandatory for page router
    */
   options?: NextAdminOptions;
+  resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
 };
 
 export type CustomUIProps = {
