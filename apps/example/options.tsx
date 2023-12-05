@@ -5,7 +5,7 @@ export const options: NextAdminOptions = {
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
-      title: "Users",
+      title: "Users 👥",
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
@@ -59,7 +59,7 @@ export const options: NextAdminOptions = {
     },
     Post: {
       toString: (post) => `${post.title}`,
-      title: "Posts",
+      title: "Posts 📝",
       list: {
         display: [
           "id",
@@ -90,7 +90,7 @@ export const options: NextAdminOptions = {
       },
     },
     Category: {
-      title: "Categories",
+      title: "Categories 📚",
       toString: (category) => `${category.name}`,
       list: {
         display: ["name", "posts"],
