@@ -376,6 +376,9 @@ export const formattedFormData = async <M extends ModelName>(
           } else if (dmmfPropertyType === "Boolean") {
             formattedData[dmmfPropertyName] =
               formData[dmmfPropertyName] === "on";
+          } else if (dmmfPropertyType === "DateTime") {
+            formattedData[dmmfPropertyName] =
+              formData[dmmfPropertyName] || null;
           } else if (
             dmmfPropertyType === "String" &&
             ["data-url", "file"].includes(
