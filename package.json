@@ -38,5 +38,9 @@
     "type": "git",
     "url": "https://github.com/premieroctet/next-admin.git"
   },
-  "homepage": "https://next-admin.js.org"
+  "homepage": "https://next-admin.js.org",
+  "resolutions": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  }
 }
