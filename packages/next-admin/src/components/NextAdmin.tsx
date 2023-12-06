@@ -9,6 +9,7 @@ import List from "./List";
 import Menu from "./Menu";
 import Message from "./Message";
 import { ConfigProvider } from "../context/ConfigContext";
+import { getCustomInputs } from "../utils/options";
 
 // Components
 export function NextAdmin({
@@ -28,6 +29,7 @@ export function NextAdmin({
   options,
   resourcesTitles,
   resourcesIdProperty,
+  customInputs: customInputsProp,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -56,6 +58,10 @@ export function NextAdmin({
     }
 
     if ((data && !Array.isArray(data)) || (modelSchema && !data)) {
+      const customInputs = isAppDir
+        ? customInputsProp
+        : getCustomInputs(resource!, options!);
+
       return (
         <Form
           data={data}
@@ -65,6 +71,7 @@ export function NextAdmin({
           validation={validation}
           action={action}
           title={resourceTitle!}
+          customInputs={customInputs}
         />
       );
     }

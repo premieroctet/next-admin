@@ -95,13 +95,12 @@ export const fillRelationInSchema = async (
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
         const nonChekedToString = options?.model?.[modelNameRelation]?.toString;
-        const modelRelationIdField = getModelIdProperty(
-          modelNameRelation
-        );
+        const modelRelationIdField = getModelIdProperty(modelNameRelation);
         const toStringForRelations =
           nonChekedToString && !isNativeFunction(nonChekedToString)
             ? nonChekedToString
-            : (item: any) => item[relationToFields?.[0]] ?? item[modelRelationIdField];
+            : (item: any) =>
+                item[relationToFields?.[0]] ?? item[modelRelationIdField];
         if (
           relationFromFields &&
           relationFromFields.length > 0 &&
@@ -190,10 +189,8 @@ export const transformData = <M extends ModelName>(
     } else {
       if (fieldKind === "object") {
         const modelRelation = field!.type as ModelName;
-        
-        const modelRelationIdField = getModelIdProperty(
-          modelRelation
-        );
+
+        const modelRelationIdField = getModelIdProperty(modelRelation);
 
         // Flat relationships to id
         if (Array.isArray(data[key])) {
@@ -308,10 +305,6 @@ export const parseFormData = <M extends ModelName>(
       } else if (dmmfPropertyType === "Boolean") {
         parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] ===
           "on") as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
-      } else if (dmmfPropertyType === "DateTime") {
-        parsedData[dmmfPropertyName] = formData[
-          dmmfPropertyName
-        ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else {
         parsedData[dmmfPropertyName] = formData[
           dmmfPropertyName
@@ -384,9 +377,8 @@ export const formattedFormData = async <M extends ModelName>(
             formattedData[dmmfPropertyName] =
               formData[dmmfPropertyName] === "on";
           } else if (dmmfPropertyType === "DateTime") {
-            formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
-              ? new Date(formData[dmmfPropertyName]!)
-              : null;
+            formattedData[dmmfPropertyName] =
+              formData[dmmfPropertyName] || null;
           } else if (
             dmmfPropertyType === "String" &&
             ["data-url", "file"].includes(
@@ -465,11 +457,14 @@ export const changeFormatInSchema = <M extends ModelName>(
   if (!model) return schema;
   model.fields.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
-    if (editOptions?.fields?.[dmmfPropertyName]?.format) {
-      const fieldValue =
-        schema.definitions[modelName].properties[
-          dmmfPropertyName as Field<typeof modelName>
-        ];
+    const fieldValue =
+      schema.definitions[modelName].properties[
+        dmmfPropertyName as Field<typeof modelName>
+      ];
+
+    if (fieldValue && editOptions?.fields?.[dmmfPropertyName]?.input) {
+      fieldValue.format = "string";
+    } else if (editOptions?.fields?.[dmmfPropertyName]?.format) {
       if (fieldValue) {
         if (editOptions?.fields?.[dmmfPropertyName]?.format === "file") {
           fieldValue.format = "data-url";
@@ -510,7 +505,7 @@ export const getResourceFromParams = (
 ) => {
   return resources.find((r) => {
     const slugifiedResource = r.toLowerCase();
-    return params.some(param => param.toLowerCase() === slugifiedResource)
+    return params.some((param) => param.toLowerCase() === slugifiedResource);
   });
 };
 
@@ -565,7 +560,9 @@ export const getResourceIdFromParam = (param: string, resource: ModelName) => {
 
   const model = models.find((model) => model.name === resource);
 
-  const idType = model?.fields.find((field) => field.name === getModelIdProperty(resource))?.type;
+  const idType = model?.fields.find(
+    (field) => field.name === getModelIdProperty(resource)
+  )?.type;
 
   if (idType === "Int") {
     return Number(param);

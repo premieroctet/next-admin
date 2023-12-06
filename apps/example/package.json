@@ -26,6 +26,7 @@
     "next": "^14.0.3",
     "next-superjson-plugin": "^0.5.6",
     "react": "^18.2.0",
+    "react-datepicker": "^4.24.0",
     "react-dom": "^18.2.0",
     "superjson": "^1.12.2"
   },
@@ -34,6 +35,7 @@
     "@playwright/test": "^1.37.0",
     "@types/node": "^17.0.12",
     "@types/react": "^18.0.22",
+    "@types/react-datepicker": "^4.19.3",
     "@types/react-dom": "^18.0.7",
     "autoprefixer": "^10.4.14",
     "eslint": "7.32.0",

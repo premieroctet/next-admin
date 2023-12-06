@@ -1,4 +1,7 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
+import React from "react";
+import InputDisplay from "./components/InputDisplay";
+import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
@@ -39,7 +42,7 @@ export const options: NextAdminOptions = {
             validate: (email) => email.includes("@") || "Invalid email",
           },
           birthDate: {
-            format: "date",
+            input: <DatePicker />,
           },
           avatar: {
             format: "file",
