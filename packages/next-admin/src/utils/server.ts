@@ -305,10 +305,6 @@ export const parseFormData = <M extends ModelName>(
       } else if (dmmfPropertyType === "Boolean") {
         parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] ===
           "on") as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
-      } else if (dmmfPropertyType === "DateTime") {
-        parsedData[dmmfPropertyName] = formData[
-          dmmfPropertyName
-        ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else {
         parsedData[dmmfPropertyName] = formData[
           dmmfPropertyName
