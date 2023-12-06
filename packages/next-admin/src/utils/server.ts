@@ -382,6 +382,9 @@ export const formattedFormData = async <M extends ModelName>(
               formData[dmmfPropertyName] === "on";
           } else if (
             dmmfPropertyType === "String" &&
+            ["data-url", "file"].includes(
+              editOptions?.[dmmfPropertyName]?.format ?? ""
+            ) &&
             formData[dmmfPropertyName] instanceof Buffer
           ) {
             const uploadHandler =
@@ -460,11 +463,9 @@ export const changeFormatInSchema = <M extends ModelName>(
         dmmfPropertyName as Field<typeof modelName>
       ];
 
-    if (editOptions?.fields?.[dmmfPropertyName]?.input && fieldValue) {
+    if (fieldValue && editOptions?.fields?.[dmmfPropertyName]?.input) {
       fieldValue.format = "string";
-    }
-
-    if (editOptions?.fields?.[dmmfPropertyName]?.format) {
+    } else if (editOptions?.fields?.[dmmfPropertyName]?.format) {
       if (fieldValue) {
         if (editOptions?.fields?.[dmmfPropertyName]?.format === "file") {
           fieldValue.format = "data-url";
