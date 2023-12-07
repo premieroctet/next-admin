@@ -64,7 +64,10 @@ export const preparePrismaListRequest = <M extends ModelName>(
   if (orderValue in Prisma.SortOrder) {
     if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
       orderBy[sortParam] = orderValue;
-    } else if (modelFieldSortParam?.kind === "object") {
+    } else if (
+      modelFieldSortParam?.kind === "object" &&
+      modelFieldSortParam.isList
+    ) {
       orderBy[modelFieldSortParam.name as Field<M>] = {
         _count: orderValue,
       };
