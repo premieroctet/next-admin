@@ -6,7 +6,7 @@ test.describe("Custom pages", () => {
 
     await page.click(`a[href$="/custom"]`);
 
-    await expect(page.getByText("This is a custom page")).toBeVisible();
+    await expect(page.getByText("Custom page")).toBeVisible();
 
     await page.getByText("Create random post").click();
 
