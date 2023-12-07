@@ -15,7 +15,7 @@ const CustomPage = async () => {
     <MainLayout {...mainLayoutProps}>
       <div>
         <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
-          This is a custom page
+          Custom page
         </h1>
         <div className="mt-2">
           <h2 className="text-base font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-2">
