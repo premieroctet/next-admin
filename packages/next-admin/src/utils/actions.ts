@@ -5,12 +5,12 @@ import { ActionParams } from "../types";
  * We need the params and schema options to be there when the action is called.
  * Other params (prisma, options) will be added by the app's action implementation.
  */
-export const createBoundServerAction = (
-  { params, schema }: ActionParams,
-  action: (params: ActionParams, formData: FormData) => Promise<any>
+export const createBoundServerAction = <
+  Args extends any[],
+  Params = ActionParams,
+>(
+  actionParams: Params,
+  action: (params: Params, ...args: Args) => Promise<any>
 ) => {
-  return action.bind(null, {
-    params,
-    schema,
-  });
+  return action.bind(null, actionParams);
 };

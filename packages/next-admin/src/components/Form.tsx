@@ -12,7 +12,7 @@ import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import { ChangeEvent, cloneElement, useMemo, useState } from "react";
 import { PropertyValidationError } from "../exceptions/ValidationError";
-import { Field, ModelName, SubmitFormResult } from "../types";
+import { Field, ModelAction, ModelName, SubmitFormResult } from "../types";
 import { Schemas, getSchemas } from "../utils/jsonSchema";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
@@ -23,6 +23,7 @@ import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
+import ActionsDropdown from "./ActionsDropdown";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -46,6 +47,7 @@ export type FormProps = {
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   title: string;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  actions?: ModelAction[];
 };
 
 const fields: CustomForm["props"]["fields"] = {
@@ -69,9 +71,10 @@ const Form = ({
   action,
   title,
   customInputs,
+  actions,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
-  const { edit, ...schemas } = getSchemas(data, schema, dmmfSchema);
+  const { edit, id, ...schemas } = getSchemas(data, schema, dmmfSchema);
   const { basePath } = useConfig();
   const { router } = useRouterInternal();
   const submitButton = (props: SubmitButtonProps) => {
@@ -86,17 +89,27 @@ const Form = ({
     }
 
     return (
-      <div className="flex space-x-2 mt-4">
-        <Button {...buttonProps}>{submitText}</Button>
-        {edit && (
-          <Button
-            type="submit"
-            name="__admin_action"
-            value="delete"
-            variant="destructive"
-          >
-            Delete
-          </Button>
+      <div className="flex space-x-2 mt-4 justify-between">
+        <div className="flex space-x-2">
+          <Button {...buttonProps}>{submitText}</Button>
+          {edit && (
+            <Button
+              type="submit"
+              name="__admin_action"
+              value="delete"
+              variant="destructive"
+            >
+              Delete
+            </Button>
+          )}
+        </div>
+        {!!actions && actions.length > 0 && !!id && (
+          <ActionsDropdown
+            actions={actions}
+            resource={resource}
+            selectedIds={[id] as string[] | number[]}
+            selectedCount={1}
+          />
         )}
       </div>
     );

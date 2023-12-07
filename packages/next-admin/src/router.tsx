@@ -18,8 +18,10 @@ import {
   parseFormData,
   getPrismaModelForResource,
   getModelIdProperty,
+  getBody,
 } from "./utils/server";
 import { validate } from "./utils/validator";
+import { uncapitalize } from "./utils/tools";
 
 // Router
 export const nextAdminRouter = async (
@@ -48,6 +50,7 @@ export const nextAdminRouter = async (
       })
       .get(async (req) => {
         const params = getParamsFromUrl(req.url!, options.basePath);
+
         const requestOptions = formatSearchFields(req.url!);
         const locale = req.headers["accept-language"]?.split(",")[0];
 
@@ -215,6 +218,48 @@ export const nextAdminRouter = async (
 
           throw error;
         }
+      })
+      .delete(async (req, res) => {
+        const params = getParamsFromUrl(req.url!, options.basePath);
+        const resource = getResourceFromParams(params, resources);
+
+        if (!resource) {
+          return { notFound: true };
+        }
+
+        const body = await getBody(req);
+        const bodyJson = JSON.parse(body) as string[] | number[];
+
+        console.log({ bodyJson });
+
+        const modelIdProperty = getModelIdProperty(resource);
+
+        // @ts-expect-error
+        await prisma[uncapitalize(resource)].deleteMany({
+          where: {
+            [modelIdProperty]: {
+              in: bodyJson,
+            },
+          },
+        });
+
+        return {
+          props: {
+            ...(await getPropsFromParams({
+              searchParams: formatSearchFields(req.url!),
+              options,
+              prisma,
+              schema,
+              params,
+              isAppDir: false,
+            })),
+            resource,
+            message: {
+              type: "success",
+              content: "Deleted successfully",
+            },
+          },
+        };
       })
   );
 };
