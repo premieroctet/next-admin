@@ -16,5 +16,15 @@ export const createRandomPost = async () => {
     },
   });
 
-  redirect(`/admin/post/${post.id}`);
+  const params = new URLSearchParams();
+
+  params.set(
+    "message",
+    JSON.stringify({
+      type: "success",
+      message: "Random post created",
+    })
+  );
+
+  redirect(`/admin/post/${post.id}?${params.toString()}`);
 };

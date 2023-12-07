@@ -435,7 +435,7 @@ export const formattedFormData = async <M extends ModelName>(
  *
  */
 export const formatSearchFields = (uri: string) =>
-  Object.fromEntries(new URLSearchParams(uri));
+  Object.fromEntries(new URLSearchParams(uri.split("?")[1]));
 
 export const transformSchema = <M extends ModelName>(
   schema: Schema,
