@@ -1,7 +1,7 @@
 import { Page, expect } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
 import { ModelName } from "@premieroctet/next-admin";
-import { models } from "./crud.spec";
+import { models } from "./001-crud.spec";
 
 export const prisma = new PrismaClient();
 

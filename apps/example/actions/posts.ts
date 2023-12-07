@@ -22,7 +22,7 @@ export const createRandomPost = async () => {
     "message",
     JSON.stringify({
       type: "success",
-      message: "Random post created",
+      content: "Random post created",
     })
   );
 
