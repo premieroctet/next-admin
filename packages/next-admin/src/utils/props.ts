@@ -174,6 +174,7 @@ export async function getPropsFromParams({
           { [idProperty]: true }
         );
         selectedFields = editSelect ?? selectedFields;
+        // @ts-expect-error
         let data = await prisma[resource].findUniqueOrThrow({
           where: { [idProperty]: resourceId },
           select: selectedFields,
