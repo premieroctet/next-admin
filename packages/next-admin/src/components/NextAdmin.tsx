@@ -1,15 +1,13 @@
 import Head from "next/head";
-import Link from "next/link";
 import NextNProgress from "nextjs-progressbar";
+import React from "react";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
-import Menu from "./Menu";
-import Message from "./Message";
-import { ConfigProvider } from "../context/ConfigContext";
 import { getCustomInputs } from "../utils/options";
+import { MainLayout } from "./MainLayout";
 
 // Components
 export function NextAdmin({
@@ -30,6 +28,7 @@ export function NextAdmin({
   resourcesTitles,
   resourcesIdProperty,
   customInputs: customInputsProp,
+  customPages,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -52,7 +51,7 @@ export function NextAdmin({
           total={total}
           options={options?.model && options?.model[resource]}
           title={resourceTitle!}
-          resourcesIdProperty={resourcesIdProperty}
+          resourcesIdProperty={resourcesIdProperty!}
         />
       );
     }
@@ -83,38 +82,25 @@ export function NextAdmin({
   };
 
   return (
-    <ConfigProvider basePath={basePath} isAppDir={isAppDir}>
+    <>
       {!isAppDir && <NextNProgress color="#6366f1" />}
       <Head>
         <title>Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <div className="w-full">
-        <Menu
-          resources={resources}
-          resource={resource!}
-          resourcesTitles={resourcesTitles}
-        />
-
-        <main className="py-10 lg:pl-72">
-          <div className="px-4 sm:px-12 lg:px-20 space-y-4">
-            <h1>
-              <Link
-                className="text-neutral-500 hover:text-neutral-700 hover:underline cursor-pointer"
-                href={basePath}
-              >
-                Admin
-              </Link>
-            </h1>
-            {message && (
-              <Message message={message.content} type={message.type} />
-            )}
-            {error && <Message message={error} type="error" />}
-            {renderMainComponent()}
-          </div>
-        </main>
-      </div>
-    </ConfigProvider>
+      <MainLayout
+        resource={resource}
+        resources={resources}
+        resourcesTitles={resourcesTitles}
+        customPages={customPages}
+        basePath={basePath}
+        message={message}
+        error={error}
+        isAppDir={isAppDir}
+      >
+        {renderMainComponent()}
+      </MainLayout>
+    </>
   );
 }

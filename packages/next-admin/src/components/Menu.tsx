@@ -5,23 +5,26 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 
-import { ModelName } from "../types";
+import { AdminComponentProps, ModelName } from "../types";
 import { useConfig } from "../context/ConfigContext";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 
 export type MenuProps = {
-  resource: ModelName;
+  resource?: ModelName;
   resources?: ModelName[];
   resourcesTitles?: Record<ModelName, string | undefined>;
+  customPages?: AdminComponentProps["customPages"];
 };
 
 export default function Menu({
   resources,
   resource: currentResource,
   resourcesTitles,
+  customPages,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
-
+  const { pathname } = useRouterInternal();
   const navigation: Array<{
     name: string;
     href: string;
@@ -33,6 +36,44 @@ export default function Menu({
       href: `${basePath}/${resource.toLowerCase()}`,
       current: resource === currentResource,
     })) || [];
+
+  const customPagesNavigation = customPages?.map((page) => ({
+    name: page.title,
+    href: `${basePath}${page.path}`,
+    current: pathname === `${basePath}${page.path}`,
+  }));
+
+  const renderNavigationItem = (item: {
+    name: string;
+    href: string;
+    current: boolean;
+    icon?: React.ElementType;
+  }) => {
+    return (
+      <Link
+        href={item.href}
+        className={clsx(
+          item.current
+            ? "bg-gray-50 text-indigo-600"
+            : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+          "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+        )}
+      >
+        {item.icon && (
+          <item.icon
+            className={clsx(
+              item.current
+                ? "text-indigo-600"
+                : "text-gray-400 group-hover:text-indigo-600",
+              "h-6 w-6 shrink-0"
+            )}
+            aria-hidden="true"
+          />
+        )}
+        {item.name}
+      </Link>
+    );
+  };
 
   return (
     <>
@@ -101,28 +142,12 @@ export default function Menu({
                         <ul role="list" className="-mx-2 space-y-1">
                           {navigation.map((item) => (
                             <li key={item.name}>
-                              <Link
-                                href={item.href}
-                                className={clsx(
-                                  item.current
-                                    ? "bg-gray-50 text-indigo-600"
-                                    : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                                  "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                                )}
-                              >
-                                {item.icon && (
-                                  <item.icon
-                                    className={clsx(
-                                      item.current
-                                        ? "text-indigo-600"
-                                        : "text-gray-400 group-hover:text-indigo-600",
-                                      "h-6 w-6 shrink-0"
-                                    )}
-                                    aria-hidden="true"
-                                  />
-                                )}
-                                {item.name}
-                              </Link>
+                              {renderNavigationItem(item)}
+                            </li>
+                          ))}
+                          {customPagesNavigation?.map((item) => (
+                            <li key={item.name}>
+                              {renderNavigationItem(item)}
                             </li>
                           ))}
                         </ul>
@@ -150,30 +175,10 @@ export default function Menu({
               <li>
                 <ul role="list" className="-mx-2 space-y-1">
                   {navigation.map((item) => (
-                    <li key={item.name}>
-                      <Link
-                        href={item.href}
-                        className={clsx(
-                          item.current
-                            ? "bg-gray-50 text-indigo-600"
-                            : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
-                          "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
-                        )}
-                      >
-                        {item.icon && (
-                          <item.icon
-                            className={clsx(
-                              item.current
-                                ? "text-indigo-600"
-                                : "text-gray-400 group-hover:text-indigo-600",
-                              "h-6 w-6 shrink-0"
-                            )}
-                            aria-hidden="true"
-                          />
-                        )}
-                        {item.name}
-                      </Link>
-                    </li>
+                    <li key={item.name}>{renderNavigationItem(item)}</li>
+                  ))}
+                  {customPagesNavigation?.map((item) => (
+                    <li key={item.name}>{renderNavigationItem(item)}</li>
                   ))}
                 </ul>
               </li>

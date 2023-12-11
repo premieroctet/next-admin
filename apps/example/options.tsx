@@ -1,6 +1,5 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import React from "react";
-import InputDisplay from "./components/InputDisplay";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
@@ -8,7 +7,7 @@ export const options: NextAdminOptions = {
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
-      title: "Users 👥",
+      title: "👥 Users",
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
@@ -62,7 +61,7 @@ export const options: NextAdminOptions = {
     },
     Post: {
       toString: (post) => `${post.title}`,
-      title: "Posts 📝",
+      title: "📝 Posts",
       list: {
         display: [
           "id",
@@ -93,7 +92,7 @@ export const options: NextAdminOptions = {
       },
     },
     Category: {
-      title: "Categories 📚",
+      title: "📚 Categories",
       toString: (category) => `${category.name}`,
       list: {
         display: ["name", "posts"],
@@ -102,6 +101,11 @@ export const options: NextAdminOptions = {
       edit: {
         display: ["name", "posts"],
       },
+    },
+  },
+  pages: {
+    "/custom": {
+      title: "Custom page",
     },
   },
 };

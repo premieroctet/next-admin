@@ -1,6 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import { NextRouter, useRouter as usePageRouter } from "next/router";
-import { useRouter as useAppRouter, useSearchParams } from "next/navigation";
+import {
+  useRouter as useAppRouter,
+  usePathname,
+  useSearchParams,
+} from "next/navigation";
 import qs from "querystring";
 import { useConfig } from "../context/ConfigContext";
 
@@ -50,5 +54,8 @@ export const useRouterInternal = () => {
   return {
     router: { push, replace, refresh },
     query: Object.fromEntries(query),
+    pathname: isAppDir
+      ? usePathname()
+      : (router as NextRouter).asPath.split("?")[0],
   };
 };

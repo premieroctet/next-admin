@@ -248,6 +248,14 @@ For the `edit` property, it can take the following:
 | handler.get    | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
 | handler.upload | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
 
+### `pages`
+
+`pages` is an object that allows you to add your own sub pages as a sidebar menu entry. It is an object where the key is the path (without the base path) and the value is an object with the following properties:
+
+| Name    | Description                                    |
+| ------- | ---------------------------------------------- |
+| `title` | the title of the page displayed on the sidebar |
+
 Here is an example of using `NextAdminOptions` for the following schema :
 
 ```prisma

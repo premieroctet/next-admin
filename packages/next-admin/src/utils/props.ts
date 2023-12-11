@@ -4,9 +4,9 @@ import {
   ActionParams,
   AdminComponentProps,
   EditOptions,
+  MainLayoutProps,
   ModelName,
   NextAdminOptions,
-  Select,
   SubmitFormResult,
 } from "../types";
 import {
@@ -50,16 +50,33 @@ export async function getPropsFromParams({
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
+  | Pick<
+      AdminComponentProps,
+      | "pageComponent"
+      | "basePath"
+      | "isAppDir"
+      | "message"
+      | "resources"
+      | "error"
+    >
 > {
-  const resources = getResources(options);
+  const {
+    resource,
+    resources,
+    resourcesTitles,
+    basePath,
+    customPages,
+    error,
+    message,
+  } = getMainLayoutProps({ options, params, searchParams, isAppDir });
 
-  let message = undefined;
-
-  try {
-    message = searchParams?.message
-      ? JSON.parse(searchParams.message as string)
-      : null;
-  } catch {}
+  const resourcesIdProperty = resources!.reduce(
+    (acc, resource) => {
+      acc[resource] = getModelIdProperty(resource);
+      return acc;
+    },
+    {} as Record<ModelName, string>
+  );
 
   if (isAppDir && !action) {
     throw new Error("action is required when using App router");
@@ -67,28 +84,19 @@ export async function getPropsFromParams({
 
   const defaultProps: AdminComponentProps = {
     resources,
-    basePath: options.basePath,
+    basePath,
     isAppDir,
     action: action
       ? createBoundServerAction({ schema, params }, action)
       : undefined,
     message,
-    error: searchParams?.error as string,
-    resourcesTitles: resources.reduce((acc, resource) => {
-      acc[resource as Prisma.ModelName] =
-        options.model?.[resource as keyof typeof options.model]?.title ??
-        resource;
-      return acc;
-    }, {} as { [key in Prisma.ModelName]: string }),
-    resourcesIdProperty: resources.reduce((acc, resource) => {
-      acc[resource] = getModelIdProperty(resource);
-      return acc;
-    }, {} as Record<ModelName, string>),
+    error,
+    customPages,
+    resourcesTitles,
+    resourcesIdProperty,
   };
 
   if (!params) return defaultProps;
-
-  const resource = getResourceFromParams(params, resources);
 
   if (!resource) return defaultProps;
 
@@ -184,3 +192,54 @@ export async function getPropsFromParams({
       return defaultProps;
   }
 }
+
+type GetMainLayoutPropsParams = {
+  options: NextAdminOptions;
+  params?: string[];
+  searchParams?: { [key: string]: string | string[] | undefined };
+  isAppDir?: boolean;
+};
+
+export const getMainLayoutProps = ({
+  options,
+  params,
+  searchParams,
+  isAppDir = false,
+}: GetMainLayoutPropsParams): MainLayoutProps => {
+  const resources = getResources(options);
+  const resource = getResourceFromParams(params ?? [], resources);
+
+  const customPages = Object.keys(options.pages ?? {}).map((path) => ({
+    title: options.pages![path as keyof typeof options.pages].title,
+    path: path,
+  }));
+
+  let message = undefined;
+
+  try {
+    message = searchParams?.message
+      ? JSON.parse(searchParams.message as string)
+      : null;
+  } catch {}
+
+  const resourcesTitles = resources.reduce(
+    (acc, resource) => {
+      acc[resource as Prisma.ModelName] =
+        options.model?.[resource as keyof typeof options.model]?.title ??
+        resource;
+      return acc;
+    },
+    {} as { [key in Prisma.ModelName]: string }
+  );
+
+  return {
+    resources,
+    resource,
+    basePath: options.basePath,
+    customPages,
+    error: searchParams?.error as string,
+    message,
+    resourcesTitles,
+    isAppDir,
+  };
+};
