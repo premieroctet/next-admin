@@ -57,13 +57,15 @@ export function DataTable({
     id: "__nextadmin-select-row",
     header: ({ table }) => {
       return (
-        <Checkbox
-          {...{
-            checked: table.getIsAllRowsSelected(),
-            indeterminate: table.getIsSomeRowsSelected(),
-            onChange: table.getToggleAllRowsSelectedHandler(),
-          }}
-        />
+        <div className="px-1">
+          <Checkbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler(),
+            }}
+          />
+        </div>
       );
     },
     cell: ({ row }) => {

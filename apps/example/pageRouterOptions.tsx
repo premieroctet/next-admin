@@ -120,4 +120,9 @@ export const options: NextAdminOptions = {
       },
     },
   },
+  pages: {
+    "/custom": {
+      title: "Custom page",
+    },
+  },
 };
