@@ -230,10 +230,6 @@ export type AdminComponentProps = {
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   resourcesIdProperty?: Record<ModelName, string>;
-  /**
-   * App router only
-   */
-  pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string }>;
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;

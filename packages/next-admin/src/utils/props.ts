@@ -57,12 +57,7 @@ export async function getPropsFromParams({
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
       AdminComponentProps,
-      | "pageComponent"
-      | "basePath"
-      | "isAppDir"
-      | "message"
-      | "resources"
-      | "error"
+      "basePath" | "isAppDir" | "message" | "resources" | "error"
     >
 > {
   const {
