@@ -60,6 +60,16 @@
             "string",
             "null"
           ]
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         }
       },
       "required": [

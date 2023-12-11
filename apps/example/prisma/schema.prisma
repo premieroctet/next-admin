@@ -33,6 +33,7 @@ model User {
   updatedAt DateTime  @default(now()) @updatedAt
   role      Role      @default(USER)
   avatar    String?
+  metadata  Json?
 }
 
 model Post {

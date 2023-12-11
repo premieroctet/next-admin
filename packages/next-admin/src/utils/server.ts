@@ -202,6 +202,8 @@ export const transformData = <M extends ModelName>(
         const fieldTypes = field?.type;
         if (fieldTypes === "DateTime") {
           acc[key] = data[key] ? data[key].toISOString() : null;
+        } else if (fieldTypes === "Json") {
+          acc[key] = data[key] ? JSON.stringify(data[key]) : null;
         } else {
           acc[key] = data[key] ? data[key] : null;
         }
@@ -379,6 +381,14 @@ export const formattedFormData = async <M extends ModelName>(
           } else if (dmmfPropertyType === "DateTime") {
             formattedData[dmmfPropertyName] =
               formData[dmmfPropertyName] || null;
+          } else if (dmmfPropertyType === "Json") {
+            try {
+              formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
+                ? JSON.parse(formData[dmmfPropertyName]!)
+                : null;
+            } catch {
+              // no-op
+            }
           } else if (
             dmmfPropertyType === "String" &&
             ["data-url", "file"].includes(
@@ -461,6 +471,10 @@ export const changeFormatInSchema = <M extends ModelName>(
       schema.definitions[modelName].properties[
         dmmfPropertyName as Field<typeof modelName>
       ];
+
+    if (fieldValue && dmmfProperty.type === "Json") {
+      fieldValue.type = "string";
+    }
 
     if (fieldValue && editOptions?.fields?.[dmmfPropertyName]?.input) {
       fieldValue.format = "string";
