@@ -4,6 +4,7 @@ import {
   deleteResourceItems,
   submitForm,
 } from "@premieroctet/next-admin/dist/actions";
+import { exportModelAsCsv } from "@premieroctet/next-admin/dist/csv";
 import { prisma } from "../prisma";
 import { options } from "../options";
 
@@ -27,4 +28,10 @@ export const deleteItem = async (
   ids: string[] | number[]
 ) => {
   return deleteResourceItems(prisma, model, ids);
+};
+
+export const exportCsvAction = async (model: ModelName) => {
+  const csvContent = await exportModelAsCsv(prisma, model, options);
+
+  return csvContent;
 };

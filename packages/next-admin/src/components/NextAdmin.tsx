@@ -31,6 +31,7 @@ export function NextAdmin({
   customPages,
   actions: actionsProp,
   deleteAction,
+  onCsvExport,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -59,6 +60,7 @@ export function NextAdmin({
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
           deleteAction={deleteAction}
+          onCsvExport={onCsvExport}
         />
       );
     }
