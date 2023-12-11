@@ -61,7 +61,9 @@ export function NextAdmin({
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
           deleteAction={deleteAction}
-          onCsvExport={onCsvExport}
+          onCsvExport={
+            isAppDir ? onCsvExport : options?.onCsvExport?.bind(null, resource)
+          }
         />
       );
     }

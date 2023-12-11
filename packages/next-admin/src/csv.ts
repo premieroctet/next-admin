@@ -5,17 +5,14 @@ import { uncapitalize } from "./utils/tools";
 
 export const exportModelAsCsv = async (
   prisma: PrismaClient,
-  model: ModelName,
-  options: NextAdminOptions
+  model: ModelName
 ) => {
-  const listOptions = options.model?.[model]?.list;
   const modelDmmf = getPrismaModelForResource(model);
 
   // @ts-expect-error
   const rows = await prisma[uncapitalize(model)].findMany();
 
-  let csvContent =
-    listOptions?.display?.join(",") ?? Object.keys(rows[0]).join(",");
+  let csvContent = Object.keys(rows[0]).join(",");
   csvContent += "\n";
 
   rows.forEach((row: any) => {
@@ -38,7 +35,7 @@ export const exportModelAsCsv = async (
                 case "Int":
                   return value;
                 case "Json":
-                  return JSON.stringify(value);
+                  return `"${JSON.stringify(value).replace(/"/g, '""')}"`;
                 default: {
                   const val = value!.toString();
                   if (val.includes(",") || val.includes('"')) {

@@ -156,9 +156,10 @@ export async function getPropsFromParams({
         error: error ?? (searchParams?.error as string),
         schema,
         actions: isAppDir ? actions : undefined,
-        onCsvExport: options.onCsvExport
-          ? options.onCsvExport.bind(null, resource)
-          : undefined,
+        onCsvExport:
+          options.onCsvExport && isAppDir
+            ? options.onCsvExport.bind(null, resource)
+            : undefined,
       };
     }
     case Page.EDIT: {
