@@ -5,7 +5,8 @@
     "./src/index.tsx",
     "./src/router.tsx",
     "./src/actions/index.ts",
-    "./src/mainLayout.tsx"
+    "./src/mainLayout.tsx",
+    "./src/csv.ts"
   ],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {

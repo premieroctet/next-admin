@@ -8,7 +8,8 @@ import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { ModelAction, ModelName } from "../types";
 import ActionsDropdown from "./ActionsDropdown";
-import { buttonVariants } from "./radix/Button";
+import Button, { buttonVariants } from "./radix/Button";
+import { useDownloadCsv } from "../hooks/useDownloadCsv";
 
 type Props = {
   resource: ModelName;
@@ -19,6 +20,7 @@ type Props = {
   selectedRows: RowSelectionState;
   getSelectedRowsIds: () => string[] | number[];
   onDelete: () => Promise<void>;
+  onCsvExport?: () => Promise<string>;
 };
 
 export default function ListHeader({
@@ -30,9 +32,11 @@ export default function ListHeader({
   selectedRows,
   getSelectedRowsIds,
   onDelete,
+  onCsvExport,
 }: Props) {
   const { basePath } = useConfig();
   const { t } = useI18n();
+  const { download, isLoading } = useDownloadCsv({ onExport: onCsvExport });
 
   const selectedRowsCount = Object.keys(selectedRows).length;
 
@@ -82,6 +86,16 @@ export default function ListHeader({
             selectedIds={getSelectedRowsIds()}
             selectedCount={selectedRowsCount}
           />
+        )}
+        {!!onCsvExport && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => download()}
+            disabled={isLoading}
+          >
+            Export as CSV
+          </Button>
         )}
         <Link
           href={`${basePath}/${resource}/new`}

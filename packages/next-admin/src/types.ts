@@ -168,6 +168,7 @@ export type NextAdminOptions = {
   basePath: string;
   model?: ModelOptions<ModelName>;
   pages?: Record<string, { title: string }>;
+  onCsvExport?: (model: ModelName) => Promise<string>;
 };
 
 /** Type for Schema */
@@ -291,6 +292,7 @@ export type AdminComponentProps = {
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
   translations?: Translations;
+  onCsvExport?: () => Promise<string>;
 };
 
 export type MainLayoutProps = Pick<
