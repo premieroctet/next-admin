@@ -3,11 +3,11 @@ import React from "react";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
-  basePath: "/admin",
+  basePath: "/pagerouter/admin",
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
-      title: "👥 Users",
+      title: "Users 👥",
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
@@ -61,10 +61,15 @@ export const options: NextAdminOptions = {
       actions: [
         {
           title: "Send email",
-          action: async (...args) => {
-            "use server";
-            const { submitEmail } = await import("./actions/nextadmin");
-            await submitEmail(...args);
+          action: async (model, ids) => {
+            const response = await fetch("/api/email", {
+              method: "POST",
+              body: JSON.stringify(ids),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to send email");
+            }
           },
           successMessage: "Email sent successfully",
           errorMessage: "Error while sending email",
@@ -73,7 +78,7 @@ export const options: NextAdminOptions = {
     },
     Post: {
       toString: (post) => `${post.title}`,
-      title: "📝 Posts",
+      title: "Posts 📝",
       list: {
         display: [
           "id",
@@ -104,7 +109,7 @@ export const options: NextAdminOptions = {
       },
     },
     Category: {
-      title: "📚 Categories",
+      title: "Categories 📚",
       toString: (category) => `${category.name}`,
       list: {
         display: ["name", "posts"],

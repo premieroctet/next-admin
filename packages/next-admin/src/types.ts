@@ -14,21 +14,21 @@ export type ObjectField<T extends ModelName> =
 
 export type Model<
   M extends ModelName,
-  T extends object | number = object,
+  T extends object | number = object
 > = ScalarField<M> & {
   [P in keyof ObjectField<M>]: ObjectField<M>[P] extends { scalars: infer S }
     ? T extends object
       ? S
       : T
     : never | ObjectField<M>[P] extends { scalars: infer S }[]
-      ? T extends object
-        ? S[]
-        : T[]
-      : never | ObjectField<M>[P] extends { scalars: infer S } | null
-        ? T extends object
-          ? S | null
-          : T | null
-        : never;
+    ? T extends object
+      ? S[]
+      : T[]
+    : never | ObjectField<M>[P] extends { scalars: infer S } | null
+    ? T extends object
+      ? S | null
+      : T | null
+    : never;
 };
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
@@ -57,7 +57,7 @@ export type EditFieldsOptions<T extends ModelName> = {
 export type Handler<
   M extends ModelName,
   P extends Field<M>,
-  T extends Model<M>[P],
+  T extends Model<M>[P]
 > = {
   get?: (input: T) => any;
   upload?: (file: Buffer) => Promise<string>;
@@ -78,10 +78,10 @@ export type FormatOptions<T> = T extends string
       | "alt-date"
       | "file"
   : never | T extends Date
-    ? "date" | "date-time" | "time"
-    : never | T extends number
-      ? "updown" | "range"
-      : never;
+  ? "date" | "date-time" | "time"
+  : never | T extends number
+  ? "updown" | "range"
+  : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
@@ -94,12 +94,23 @@ export type EditOptions<T extends ModelName> = {
   fields?: EditFieldsOptions<T>;
 };
 
+export type ActionStyle = "default" | "destructive";
+
+export type ModelAction = {
+  title: string;
+  action: (resource: ModelName, ids: string[] | number[]) => Promise<void>;
+  style?: ActionStyle;
+  successMessage?: string;
+  errorMessage?: string;
+};
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     toString?: (item: Model<P>) => string;
     list?: ListOptions<P>;
     edit?: EditOptions<P>;
     title?: string;
+    actions?: ModelAction[];
   };
 };
 
@@ -223,6 +234,8 @@ export type AdminComponentProps = {
    */
   pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string }>;
+  actions?: ModelAction[];
+  deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
 };
 
 export type MainLayoutProps = Pick<

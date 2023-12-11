@@ -1,5 +1,7 @@
 import {
   ColumnDef,
+  OnChangeFn,
+  RowSelectionState,
   flexRender,
   getCoreRowModel,
   useReactTable,
@@ -16,12 +18,17 @@ import {
 import { ListData, ListDataItem, ModelName, Field } from "../types";
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
+import { Checkbox } from "./common/Checkbox";
+import Button from "./radix/Button";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
   data: ListData<ModelName>;
   resource: ModelName;
   resourcesIdProperty: Record<ModelName, string>;
+  rowSelection: RowSelectionState;
+  setRowSelection: OnChangeFn<RowSelectionState>;
+  onDelete?: (id: string | number) => void;
 }
 
 export function DataTable({
@@ -29,26 +36,91 @@ export function DataTable({
   data,
   resource,
   resourcesIdProperty,
+  rowSelection,
+  setRowSelection,
+  onDelete,
 }: DataTableProps) {
   const { router } = useRouterInternal();
   const { basePath } = useConfig();
-  const columnsVisibility = columns.reduce((acc, column) => {
-    // @ts-expect-error
-    const key = column.accessorKey as Field<typeof resource>;
-    acc[key] = Object.keys(data[0]).includes(key);
-    return acc;
-  }, {} as Record<Field<typeof resource>, boolean>);
+  const columnsVisibility = columns.reduce(
+    (acc, column) => {
+      // @ts-expect-error
+      const key = column.accessorKey as Field<typeof resource>;
+      acc[key] = Object.keys(data[0]).includes(key);
+      return acc;
+    },
+    {} as Record<Field<typeof resource>, boolean>
+  );
 
   const modelIdProperty = resourcesIdProperty[resource];
+  const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
+    id: "__nextadmin-select-row",
+    header: ({ table }) => {
+      return (
+        <div className="px-1">
+          <Checkbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler(),
+            }}
+          />
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div className="px-1">
+          <Checkbox
+            {...{
+              checked: row.getIsSelected(),
+              indeterminate: row.getIsSomeSelected(),
+              onChange: row.getToggleSelectedHandler(),
+              disabled: !row.getCanSelect(),
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      );
+    },
+  };
+
+  const actionsColumn: ColumnDef<ListDataItem<ModelName>> = {
+    id: "__nextadmin-actions",
+    header: () => {
+      return null;
+    },
+    cell: ({ row }) => {
+      const idProperty = resourcesIdProperty[resource];
+
+      return (
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={(evt) => {
+            evt.stopPropagation();
+            onDelete?.(row.original[idProperty].value as string | number);
+          }}
+        >
+          Delete
+        </Button>
+      );
+    },
+  };
 
   const table = useReactTable({
     data,
     manualSorting: true,
-    columns,
+    columns: [checkboxColumn, ...columns, actionsColumn],
     getCoreRowModel: getCoreRowModel(),
     initialState: {
       columnVisibility: columnsVisibility,
     },
+    state: {
+      rowSelection,
+    },
+    enableRowSelection: true,
+    onRowSelectionChange: setRowSelection,
   });
 
   return (

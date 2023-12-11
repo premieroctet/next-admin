@@ -85,8 +85,8 @@ export const preparePrismaListRequest = <M extends ModelName>(
     );
 
     fieldsFiltered =
-      model?.fields.filter(
-        ({ name }) => list.search?.includes(name as Field<M>)
+      model?.fields.filter(({ name }) =>
+        list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
   }
   where = createWherePredicate(fieldsFiltered, search);
@@ -115,7 +115,7 @@ export const getMappedDataList = async (
   );
   let data: any[] = [];
   let total: number;
-  let error = null;
+  let error: string | null = null;
   const dmmfSchema = getPrismaModelForResource(resource);
 
   try {
