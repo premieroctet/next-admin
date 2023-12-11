@@ -31,7 +31,7 @@ export const deleteItem = async (
 };
 
 export const exportCsvAction = async (model: ModelName) => {
-  const csvContent = await exportModelAsCsv(prisma, model, options);
+  const csvContent = await exportModelAsCsv(prisma, model);
 
   return csvContent;
 };
