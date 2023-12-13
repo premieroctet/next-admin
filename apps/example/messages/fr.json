@@ -41,11 +41,20 @@
           "label": "Choisir un fichier",
           "delete": "Supprimer"
         }
+      },
+      "user": {
+        "email": {
+          "error": "Email invalide"
+        }
       }
     },
     "actions": {
       "user": {
-        "email": "Envoyer un email"
+        "email": {
+          "title": "Envoyer un email",
+          "success": "Email envoyé avec succès",
+          "error": "Erreur lors de l'envoi de l'email"
+        }
       },
       "label": "Action",
       "delete": {

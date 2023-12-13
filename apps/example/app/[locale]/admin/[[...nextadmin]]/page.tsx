@@ -50,7 +50,10 @@ export default async function AdminPage({
         "list.header.add.label": t("list.header.add.label"),
         "list.header.search.placeholder": t("list.header.search.placeholder"),
         "list.row.actions.delete.label": t("list.row.actions.delete.label"),
-        "actions.user.email": t("actions.user.email"),
+        "actions.user.email.title": t("actions.user.email.title"),
+        "actions.user.email.success": t("actions.user.email.success"),
+        "actions.user.email.error": t("actions.user.email.error"),
+        "form.user.email.error": t("form.user.email.error"),
       }}
     />
   );

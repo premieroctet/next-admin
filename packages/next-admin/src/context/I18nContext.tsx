@@ -7,7 +7,7 @@ type Props = {
 };
 
 const I18nContext = createContext<{
-  t: (key: string) => string;
+  t: (key: string, options?: { [key: string]: any }) => string;
 }>({
   t: () => "",
 });
@@ -16,8 +16,14 @@ export const I18nProvider = ({
   translations,
   children,
 }: PropsWithChildren<Props>) => {
-  const t = (key: string) => {
-    const translation = translations[key];
+  const t = (key: string, options?: { [key: string]: any }) => {
+    let translation = translations[key];
+
+    if (options && translation) {
+      Object.entries(options).forEach(([key, value]) => {
+        translation = translation!.replace(`{{${key}}}`, value);
+      });
+    }
 
     return translation ?? key;
   };

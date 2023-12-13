@@ -10,7 +10,7 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import { ChangeEvent, cloneElement, useMemo, useState } from "react";
+import React, { ChangeEvent, cloneElement, useMemo, useState } from "react";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { Field, ModelAction, ModelName, SubmitFormResult } from "../types";
 import { Schemas, getSchemas } from "../utils/jsonSchema";
@@ -246,7 +246,15 @@ const Form = ({
       },
       FieldErrorTemplate: ({ errors }) => {
         return errors ? (
-          <div className="text-sm text-red-600 mt-1">{errors}</div>
+          <div className="text-sm text-red-600 mt-1">
+            {errors.map((error, idx) => {
+              if (typeof error === "string") {
+                return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
+              }
+
+              return <React.Fragment key={idx}>{error}</React.Fragment>;
+            })}
+          </div>
         ) : null;
       },
     }),
