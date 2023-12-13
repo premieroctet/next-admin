@@ -236,6 +236,7 @@ export type AdminComponentProps = {
   customPages?: Array<{ title: string; path: string }>;
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
+  translations?: Translations;
 };
 
 export type MainLayoutProps = Pick<
@@ -248,6 +249,7 @@ export type MainLayoutProps = Pick<
   | "message"
   | "error"
   | "isAppDir"
+  | "translations"
 >;
 
 export type CustomUIProps = {
@@ -284,3 +286,24 @@ export type CustomInputProps = Partial<{
   readonly: boolean;
   rawErrors: string[];
 }>;
+
+export type TranslationKeys =
+  | "list.header.add.label"
+  | "list.header.search.placeholder"
+  | "list.footer.indicator.showing"
+  | "list.footer.indicator.to"
+  | "list.footer.indicator.of"
+  | "list.row.actions.delete.label"
+  | "list.empty.label"
+  | "form.button.save.label"
+  | "form.button.delete.label"
+  | "form.widgets.file_upload.label"
+  | "form.widgets.file_upload.delete"
+  | "actions.label"
+  | "actions.delete.label";
+
+export type Translations = {
+  [key in TranslationKeys]?: string;
+} & {
+  [key: string]: string;
+};

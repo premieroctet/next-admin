@@ -36,7 +36,7 @@ export const options: NextAdminOptions = {
           "role",
           "birthDate",
           "avatar",
-          "metadata"
+          "metadata",
         ],
         fields: {
           email: {
@@ -63,20 +63,20 @@ export const options: NextAdminOptions = {
             validate: (value) => {
               try {
                 if (!value) {
-                  return true
+                  return true;
                 }
-                JSON.parse(value as string)
-                return true
+                JSON.parse(value as string);
+                return true;
               } catch {
-                return "Invalid JSON"
+                return "Invalid JSON";
               }
-            }
-          }
+            },
+          },
         },
       },
       actions: [
         {
-          title: "Send email",
+          title: "actions.user.email",
           action: async (...args) => {
             "use server";
             const { submitEmail } = await import("./actions/nextadmin");

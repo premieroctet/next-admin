@@ -1,0 +1,56 @@
+{
+  "admin": {
+    "list": {
+      "header": {
+        "add": {
+          "label": "Ajouter"
+        },
+        "search": {
+          "placeholder": "Recherche"
+        }
+      },
+      "footer": {
+        "indicator": {
+          "showing": "Affichage de",
+          "to": "à",
+          "of": "sur"
+        }
+      },
+      "row": {
+        "actions": {
+          "delete": {
+            "label": "Supprimer"
+          }
+        }
+      },
+      "empty": {
+        "label": "Aucun(e) {resource} trouvée"
+      }
+    },
+    "form": {
+      "button": {
+        "delete": {
+          "label": "Supprimer"
+        },
+        "save": {
+          "label": "Enregistrer"
+        }
+      },
+      "widgets": {
+        "file_upload": {
+          "label": "Choisir un fichier",
+          "delete": "Supprimer"
+        }
+      }
+    },
+    "actions": {
+      "user": {
+        "email": "Envoyer un email"
+      },
+      "label": "Action",
+      "delete": {
+        "label": "Supprimer"
+      }
+    }
+  }
+}

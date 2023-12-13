@@ -1,0 +1,9 @@
+{
+  "admin": {
+    "actions": {
+      "user": {
+        "email": "Send email"
+      }
+    }
+  }
+}

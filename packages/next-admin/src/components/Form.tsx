@@ -24,6 +24,7 @@ import FileWidget from "./inputs/FileWidget";
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import ActionsDropdown from "./ActionsDropdown";
+import { useI18n } from "../context/I18nContext";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -77,13 +78,10 @@ const Form = ({
   const { edit, id, ...schemas } = getSchemas(data, schema, dmmfSchema);
   const { basePath } = useConfig();
   const { router } = useRouterInternal();
+  const { t } = useI18n();
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
-    const {
-      norender,
-      submitText,
-      props: buttonProps,
-    } = getSubmitButtonOptions(uiSchema);
+    const { norender, props: buttonProps } = getSubmitButtonOptions(uiSchema);
     if (norender) {
       return null;
     }
@@ -91,7 +89,7 @@ const Form = ({
     return (
       <div className="flex space-x-2 mt-4 justify-between">
         <div className="flex space-x-2">
-          <Button {...buttonProps}>{submitText}</Button>
+          <Button {...buttonProps}>{t("form.button.save.label")}</Button>
           {edit && (
             <Button
               type="submit"
@@ -99,11 +97,10 @@ const Form = ({
               value="delete"
               variant="destructive"
             >
-              Delete
+              {t("form.button.delete.label")}
             </Button>
           )}
         </div>
-        
       </div>
     );
   };
