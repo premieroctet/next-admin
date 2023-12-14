@@ -45,6 +45,7 @@
     "util": "^0.12.5"
   },
   "devDependencies": {
+    "@testing-library/react": "^14.1.2",
     "@types/body-parser": "^1.19.2",
     "@types/jest": "^29.5.1",
     "@types/json-schema": "^7.0.11",
@@ -56,6 +57,7 @@
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
     "jest": "^29.5.0",
+    "jest-environment-jsdom": "^29.7.0",
     "jest-mock-extended": "^3.0.4",
     "lodash.debounce": "^4.0.8",
     "postcss": "^8.4.21",
