@@ -20,6 +20,7 @@ import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Checkbox } from "./common/Checkbox";
 import Button from "./radix/Button";
+import clsx from "clsx";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
@@ -42,15 +43,12 @@ export function DataTable({
 }: DataTableProps) {
   const { router } = useRouterInternal();
   const { basePath } = useConfig();
-  const columnsVisibility = columns.reduce(
-    (acc, column) => {
-      // @ts-expect-error
-      const key = column.accessorKey as Field<typeof resource>;
-      acc[key] = Object.keys(data[0]).includes(key);
-      return acc;
-    },
-    {} as Record<Field<typeof resource>, boolean>
-  );
+  const columnsVisibility = columns.reduce((acc, column) => {
+    // @ts-expect-error
+    const key = column.accessorKey as Field<typeof resource>;
+    acc[key] = Object.keys(data[0]).includes(key);
+    return acc;
+  }, {} as Record<Field<typeof resource>, boolean>);
 
   const modelIdProperty = resourcesIdProperty[resource];
   const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
@@ -150,7 +148,9 @@ export function DataTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="cursor-pointer hover:bg-indigo-50"
+                className={clsx("cursor-pointer hover:bg-indigo-50", {
+                  "bg-indigo-50": row.getIsSelected(),
+                })}
                 onClick={() => {
                   router.push({
                     pathname: `${basePath}/${resource.toLowerCase()}/${

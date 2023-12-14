@@ -43,7 +43,7 @@ const CustomPage = ({
           <form action="" method="post" className="mt-2">
             <button
               type="submit"
-              className="bg-indigo-500 p-2 text-white hover:bg-indigo-700 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
+              className="bg-primary-800 p-2 text-white hover:bg-indigo-700 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ring-offset-background"
             >
               Create random post
             </button>

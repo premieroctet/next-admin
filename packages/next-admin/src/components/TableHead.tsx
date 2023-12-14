@@ -31,7 +31,7 @@ export default function TableHead({
     >
       <span
         className={clsx(
-          "whitespace-nowrap font-bold text-indigo-500 capitalize"
+          "whitespace-nowrap font-medium text-indigo-500 capitalize"
         )}
       >
         {property}

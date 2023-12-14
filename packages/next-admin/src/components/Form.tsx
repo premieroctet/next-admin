@@ -24,6 +24,7 @@ import FileWidget from "./inputs/FileWidget";
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import ActionsDropdown from "./ActionsDropdown";
+import Input from "./radix/Input";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -103,7 +104,6 @@ const Form = ({
             </Button>
           )}
         </div>
-        
       </div>
     );
   };
@@ -234,13 +234,11 @@ const Form = ({
 
         return (
           // @ts-expect-error
-          <input
+          <Input
             onChange={onChangeOverride || onTextChange}
             {...props}
-            className={clsx(
-              "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed",
-              { "ring-red-600": rawErrors }
-            )}
+            variant={rawErrors ? "error" : "default"}
+            className="w-full"
           />
         );
       },

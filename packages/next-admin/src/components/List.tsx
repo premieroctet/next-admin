@@ -148,13 +148,8 @@ function List({
   };
 
   return (
-    <>
-      <div className="mt-4">
-        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
-          {title}
-        </h1>
-      </div>
-      <div className="mt-4 flow-root">
+    <div className="flex flex-col rounded-lg border border-gray-200 shadow-lg px-6 py-4 gap-4">
+      <div className="flow-root">
         <ListHeader
           resource={resource}
           search={(query.search as string) || ""}
@@ -164,6 +159,7 @@ function List({
           actions={actions}
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
+          title={title}
         />
         <div className="max-w-full mt-2 py-2 align-middle">
           <DataTable
@@ -236,7 +232,7 @@ function List({
           ) : null}
         </div>
       </div>
-    </>
+    </div>
   );
 }
 

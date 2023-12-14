@@ -1,4 +1,5 @@
 import { CheckCircleIcon, XCircleIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
 
 type MessageProps = {
   message: string;
@@ -8,9 +9,11 @@ type MessageProps = {
 const Message = ({ message, type }: MessageProps) => {
   return (
     <div
-      className={`rounded-md p-4 ${
-        type === "success" ? "bg-green-50" : "bg-red-50"
-      }`}
+      className={clsx("rounded-md p-4", {
+        "bg-green-100 border-green-300": type === "success",
+        "bg-red-100 border-red-300": type === "error",
+        "bg-blue-100 border-blue-300": type === "info",
+      })}
     >
       <div className="flex">
         <div className="flex-shrink-0">
@@ -20,14 +23,16 @@ const Message = ({ message, type }: MessageProps) => {
               aria-hidden="true"
             />
           ) : (
-            <XCircleIcon className="h-5 w-5 text-red-400" aria-hidden="true" />
+            <XCircleIcon className="h-5 w-5 text-red-700" aria-hidden="true" />
           )}
         </div>
         <div className="ml-3">
           <p
-            className={`text-sm font-medium ${
-              type === "success" ? "text-green-800" : "text-red-800"
-            }`}
+            className={clsx("text-sm font-medium", {
+              "text-green-800": type === "success",
+              "text-red-800": type === "error",
+              "text-blue-800": type === "info",
+            })}
           >
             {message}
           </p>
