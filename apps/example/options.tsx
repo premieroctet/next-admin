@@ -2,6 +2,7 @@ import { NextAdminOptions } from "@premieroctet/next-admin";
 import React from "react";
 import DatePicker from "./components/DatePicker";
 import JsonEditor from "./components/JsonEditor";
+import { exportCsvAction } from "./actions/nextadmin";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
@@ -36,7 +37,7 @@ export const options: NextAdminOptions = {
           "role",
           "birthDate",
           "avatar",
-          "metadata"
+          "metadata",
         ],
         fields: {
           email: {
@@ -63,15 +64,15 @@ export const options: NextAdminOptions = {
             validate: (value) => {
               try {
                 if (!value) {
-                  return true
+                  return true;
                 }
-                JSON.parse(value as string)
-                return true
+                JSON.parse(value as string);
+                return true;
               } catch {
-                return "Invalid JSON"
+                return "Invalid JSON";
               }
-            }
-          }
+            },
+          },
         },
       },
       actions: [
@@ -135,5 +136,9 @@ export const options: NextAdminOptions = {
     "/custom": {
       title: "Custom page",
     },
+  },
+  onCsvExport: async (model) => {
+    "use server";
+    return exportCsvAction(model);
   },
 };

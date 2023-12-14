@@ -57,12 +57,7 @@ export async function getPropsFromParams({
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
       AdminComponentProps,
-      | "pageComponent"
-      | "basePath"
-      | "isAppDir"
-      | "message"
-      | "resources"
-      | "error"
+      "basePath" | "isAppDir" | "message" | "resources" | "error"
     >
 > {
   const {
@@ -138,6 +133,10 @@ export async function getPropsFromParams({
         error: error ?? (searchParams?.error as string),
         schema,
         actions: isAppDir ? actions : undefined,
+        onCsvExport:
+          options.onCsvExport && isAppDir
+            ? options.onCsvExport.bind(null, resource)
+            : undefined,
       };
     }
     case 2: {

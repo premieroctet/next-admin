@@ -1,6 +1,5 @@
 import Head from "next/head";
 import NextNProgress from "nextjs-progressbar";
-import React from "react";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import Dashboard from "./Dashboard";
@@ -31,6 +30,7 @@ export function NextAdmin({
   customPages,
   actions: actionsProp,
   deleteAction,
+  onCsvExport,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -59,6 +59,7 @@ export function NextAdmin({
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
           deleteAction={deleteAction}
+          onCsvExport={isAppDir ? onCsvExport : undefined}
         />
       );
     }

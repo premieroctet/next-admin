@@ -44,6 +44,7 @@ export type ListProps = {
   title: string;
   actions?: ModelAction[];
   deleteAction?: ModelAction["action"];
+  onCsvExport?: () => Promise<string>;
 };
 
 function List({
@@ -55,6 +56,7 @@ function List({
   resourcesIdProperty,
   title,
   deleteAction,
+  onCsvExport,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
@@ -164,6 +166,7 @@ function List({
           actions={actions}
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
+          onCsvExport={onCsvExport}
         />
         <div className="max-w-full mt-2 py-2 align-middle">
           <DataTable

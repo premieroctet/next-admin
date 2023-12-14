@@ -125,4 +125,13 @@ export const options: NextAdminOptions = {
       title: "Custom page",
     },
   },
+  onCsvExport: async (model) => {
+    const response = await fetch(`/api/${model}/export_csv`)
+
+    if (!response.ok) {
+      throw new Error("Failed to export CSV");
+    }
+
+    return response.text();
+  }
 };

@@ -1,9 +1,10 @@
-import { PrismaClient } from "@prisma/client";
+import { $Enums, PrismaClient } from "@prisma/client";
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import { createRouter } from "next-connect";
+import { Writable } from "stream";
 
 import { EditFieldsOptions, NextAdminOptions } from "./types";
 import { getPropsFromParams } from "./utils/props";
@@ -22,6 +23,7 @@ import {
 } from "./utils/server";
 import { validate } from "./utils/validator";
 import { uncapitalize } from "./utils/tools";
+import { exportModelAsCsv } from "./csv";
 
 // Router
 export const nextAdminRouter = async (
@@ -48,7 +50,7 @@ export const nextAdminRouter = async (
           };
         }
       })
-      .get(async (req) => {
+      .get(async (req, res) => {
         const params = getParamsFromUrl(req.url!, options.basePath);
 
         const requestOptions = formatSearchFields(req.url!);
@@ -63,6 +65,26 @@ export const nextAdminRouter = async (
           isAppDir: false,
           locale,
         });
+
+        /**
+         * Export CSV as a streamed file
+         */
+        if (
+          "data" in props &&
+          "resource" in props &&
+          Array.isArray(props.data) &&
+          requestOptions.export === "csv"
+        ) {
+          res.setHeader(
+            "Content-Disposition",
+            "attachment; filename=export.csv"
+          );
+          res.setHeader("Content-Type", "text/csv; charset=utf-8");
+
+          await exportModelAsCsv(prisma, props.resource!, res);
+
+          res.end();
+        }
 
         return { props };
       })
