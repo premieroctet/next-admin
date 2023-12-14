@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useConfig } from "../context/ConfigContext";
+import { useRouterInternal } from "./useRouterInternal";
 
 type UseDownloadCsvParams = {
   onExport?: () => Promise<string>;
@@ -6,23 +8,40 @@ type UseDownloadCsvParams = {
 
 export const useDownloadCsv = ({ onExport }: UseDownloadCsvParams) => {
   const [isLoading, setIsLoading] = useState(false);
+  const { isAppDir } = useConfig();
+  const { pathname } = useRouterInternal();
 
   const download = async () => {
-    if (!onExport) {
+    if (isAppDir && !onExport) {
       return;
     }
 
     setIsLoading(true);
+    let blob = null;
+    /**
+     * Currently we only fetch the file from the server
+     * if we are not using App Router.
+     * On Page Router, the file is received as a Stream, which is
+     * currently not supported with server actions. Such behavior will
+     * be implemented in App Router as soon as its available.
+     */
     try {
-      const csvContent = await onExport();
+      if (isAppDir) {
+        const content = await onExport!();
+        blob = new Blob([content], { type: "text/csv" });
+      } else {
+        const response = await fetch(pathname + "?export=csv");
+        blob = await response.blob();
+      }
 
-      const element = document.createElement("a");
-      const file = new Blob([csvContent], { type: "text/csv" });
-      element.href = URL.createObjectURL(file);
-      element.download = "export.csv";
-      document.body.appendChild(element);
-      element.click();
-      document.body.removeChild(element);
+      if (blob) {
+        const element = document.createElement("a");
+        element.href = URL.createObjectURL(blob);
+        element.download = "export.csv";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
+      }
     } catch (e) {
       console.error("Export error", e);
     } finally {

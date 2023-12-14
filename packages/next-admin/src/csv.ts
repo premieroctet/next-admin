@@ -1,11 +1,13 @@
 import { PrismaClient } from "@prisma/client";
-import { ModelName, NextAdminOptions } from "./types";
+import { Writable } from "stream";
+import { ModelName } from "./types";
 import { getPrismaModelForResource } from "./utils/server";
 import { uncapitalize } from "./utils/tools";
 
 export const exportModelAsCsv = async (
   prisma: PrismaClient,
-  model: ModelName
+  model: ModelName,
+  stream?: Writable
 ) => {
   const modelDmmf = getPrismaModelForResource(model);
 
@@ -14,9 +16,10 @@ export const exportModelAsCsv = async (
 
   let csvContent = Object.keys(rows[0]).join(",");
   csvContent += "\n";
+  stream?.write(csvContent);
 
   rows.forEach((row: any) => {
-    csvContent +=
+    const newLine =
       Object.entries(row)
         .map(([key, value]) => {
           const fieldDmmf = modelDmmf?.fields.find(
@@ -51,6 +54,8 @@ export const exportModelAsCsv = async (
           return "";
         })
         .join(",") + "\n";
+    stream?.write(newLine);
+    csvContent += newLine;
   });
 
   return csvContent;
