@@ -15,10 +15,9 @@ type Props = {
   isPending: boolean;
   onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
   search: string;
-  actions?: ModelAction[];
+  actions: ModelAction[];
   selectedRows: RowSelectionState;
   getSelectedRowsIds: () => string[] | number[];
-  onDelete: () => Promise<void>;
   title: string;
 };
 
@@ -27,34 +26,19 @@ export default function ListHeader({
   isPending,
   onSearchChange,
   search,
-  actions: actionsProp,
+  actions,
   selectedRows,
   getSelectedRowsIds,
-  onDelete,
   title,
 }: Props) {
   const { basePath } = useConfig();
 
   const selectedRowsCount = Object.keys(selectedRows).length;
 
-  const actions = useMemo<ModelAction[]>(() => {
-    const defaultActions: ModelAction[] = [
-      {
-        title: "Delete",
-        style: "destructive",
-        action: async () => {
-          await onDelete();
-        },
-      },
-    ];
-
-    return [...(actionsProp || []), ...defaultActions];
-  }, [actionsProp, selectedRowsCount, onDelete]);
-
   return (
     <div className="flex flex-col gap-2">
       <div className="flex justify-between items-center mt-4">
-        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
+        <h1 className="!text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
           {title}
         </h1>
         <div className="flex items-center gap-x-4">
@@ -87,7 +71,7 @@ export default function ListHeader({
                 <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
               ) : (
                 <MagnifyingGlassIcon
-                  className="h-6 w-6 text-gray-400"
+                  className="h-5 w-5 text-gray-400"
                   aria-hidden="true"
                 />
               )}
@@ -100,6 +84,7 @@ export default function ListHeader({
               variant="default"
               placeholder={`Search`}
               withIcon
+              className="!py-1.5"
             />
           </div>
         </div>

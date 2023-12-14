@@ -5,6 +5,7 @@ import clsx from "clsx";
 import Loader from "../../assets/icons/Loader";
 import { Enumeration } from "../../types";
 import { useRouterInternal } from "../../hooks/useRouterInternal";
+import Input from "../radix/Input";
 
 export type SelectorProps = {
   open: boolean;
@@ -37,13 +38,13 @@ export const Selector = ({ open, options, name, onChange }: SelectorProps) => {
       <div className="flex flex-col relative">
         <div className="block sticky top-0 items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
           <div className="relative flex items-center">
-            <input
+            <Input
               id={`${name}-search`}
               type="text"
-              className="block w-full px-3 py-2 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
               placeholder="Search..."
               onChange={onSearchChange}
               defaultValue={query[`${name}search`]}
+              className="w-full"
             />
             {isPending && (
               <div className="absolute inset-y-0 right-0 flex items-center pr-3">

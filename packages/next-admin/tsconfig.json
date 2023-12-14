@@ -6,7 +6,8 @@
     "./src/router.tsx",
     "./src/actions/index.ts",
     "./src/mainLayout.tsx",
-    "./src/plugin.ts"
+    "./src/plugin.ts",
+    "./src/components.ts"
   ],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {

@@ -3,8 +3,10 @@ import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
 import {
   ChangeEvent,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
   useTransition,
 } from "react";
@@ -51,7 +53,7 @@ function List({
   data,
   total,
   options,
-  actions,
+  actions: actionsProp,
   resourcesIdProperty,
   title,
   deleteAction,
@@ -133,7 +135,7 @@ function List({
     setRowSelection({});
   }, [data]);
 
-  const getSelectedRowsIds = () => {
+  const getSelectedRowsIds = useCallback(() => {
     const indices = Object.keys(rowSelection);
 
     const selectedRows = data.filter((_, index) => {
@@ -145,7 +147,21 @@ function List({
     return selectedRows.map((row) => row[idField].value as string | number) as
       | string[]
       | number[];
-  };
+  }, [data, resource, resourcesIdProperty, rowSelection]);
+
+  const actions = useMemo<ModelAction[]>(() => {
+    const defaultActions: ModelAction[] = [
+      {
+        title: "Delete",
+        style: "destructive",
+        action: async () => {
+          await deleteItems(getSelectedRowsIds());
+        },
+      },
+    ];
+
+    return [...(actionsProp || []), ...defaultActions];
+  }, [actionsProp, getSelectedRowsIds, deleteItems]);
 
   return (
     <div className="flex flex-col rounded-lg border border-gray-200 shadow-lg px-6 py-4 gap-4">
@@ -158,7 +174,6 @@ function List({
           selectedRows={rowSelection}
           actions={actions}
           getSelectedRowsIds={getSelectedRowsIds}
-          onDelete={() => deleteItems(getSelectedRowsIds())}
           title={title}
         />
         <div className="max-w-full mt-2 py-2 align-middle">
@@ -169,7 +184,7 @@ function List({
             resourcesIdProperty={resourcesIdProperty}
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
-            onDelete={async (id) => deleteItems([id] as string[] | number[])}
+            actions={actions}
           />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">

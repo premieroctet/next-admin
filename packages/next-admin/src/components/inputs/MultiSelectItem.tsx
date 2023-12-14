@@ -2,10 +2,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 
 const MultiSelectItem = ({ label, onRemoveClick }: any) => {
   return (
-    <div
-      className="flex items-center justify-center px-2 py text-sm text-gray-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900 rounded-md border border-gray-300
-        "
-    >
+    <div className="flex items-center justify-center pl-1.5 pr py text-sm text-gray-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900 rounded-md border border-gray-300">
       {label}
       <button
         type="button"

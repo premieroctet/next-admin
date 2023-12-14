@@ -6,6 +6,7 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { EllipsisHorizontalIcon } from "@heroicons/react/24/solid";
 
 import {
   Table,
@@ -15,12 +16,20 @@ import {
   TableHeader,
   TableRow,
 } from "./radix/Table";
-import { ListData, ListDataItem, ModelName, Field } from "../types";
+import {
+  ListData,
+  ListDataItem,
+  ModelName,
+  Field,
+  ModelAction,
+} from "../types";
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Checkbox } from "./common/Checkbox";
 import Button from "./radix/Button";
 import clsx from "clsx";
+import ActionsDropdown from "./ActionsDropdown";
+import { DropdownTrigger } from "./radix/Dropdown";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
@@ -29,7 +38,7 @@ interface DataTableProps {
   resourcesIdProperty: Record<ModelName, string>;
   rowSelection: RowSelectionState;
   setRowSelection: OnChangeFn<RowSelectionState>;
-  onDelete?: (id: string | number) => void;
+  actions: ModelAction[];
 }
 
 export function DataTable({
@@ -39,16 +48,19 @@ export function DataTable({
   resourcesIdProperty,
   rowSelection,
   setRowSelection,
-  onDelete,
+  actions,
 }: DataTableProps) {
   const { router } = useRouterInternal();
   const { basePath } = useConfig();
-  const columnsVisibility = columns.reduce((acc, column) => {
-    // @ts-expect-error
-    const key = column.accessorKey as Field<typeof resource>;
-    acc[key] = Object.keys(data[0]).includes(key);
-    return acc;
-  }, {} as Record<Field<typeof resource>, boolean>);
+  const columnsVisibility = columns.reduce(
+    (acc, column) => {
+      // @ts-expect-error
+      const key = column.accessorKey as Field<typeof resource>;
+      acc[key] = Object.keys(data[0]).includes(key);
+      return acc;
+    },
+    {} as Record<Field<typeof resource>, boolean>
+  );
 
   const modelIdProperty = resourcesIdProperty[resource];
   const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
@@ -92,16 +104,18 @@ export function DataTable({
       const idProperty = resourcesIdProperty[resource];
 
       return (
-        <Button
-          variant="destructive"
-          size="sm"
-          onClick={(evt) => {
-            evt.stopPropagation();
-            onDelete?.(row.original[idProperty].value as string | number);
-          }}
-        >
-          Delete
-        </Button>
+        <ActionsDropdown
+          actions={actions}
+          resource={resource}
+          selectedIds={[row.original[idProperty].value as number]}
+          trigger={
+            <DropdownTrigger className="!px-1.5 !py-1 h-auto" asChild>
+              <Button variant="ghost">
+                <EllipsisHorizontalIcon className="text-gray-600 h-5 w-5" />
+              </Button>
+            </DropdownTrigger>
+          }
+        />
       );
     },
   };
@@ -122,9 +136,9 @@ export function DataTable({
   });
 
   return (
-    <div className="rounded-md border">
+    <div>
       <Table>
-        <TableHeader className="bg-indigo-100">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -148,9 +162,12 @@ export function DataTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className={clsx("cursor-pointer hover:bg-indigo-50", {
-                  "bg-indigo-50": row.getIsSelected(),
-                })}
+                className={clsx(
+                  "cursor-pointer hover:bg-indigo-50 text-[13px]",
+                  {
+                    "bg-indigo-50": row.getIsSelected(),
+                  }
+                )}
                 onClick={() => {
                   router.push({
                     pathname: `${basePath}/${resource.toLowerCase()}/${

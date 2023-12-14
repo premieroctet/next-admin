@@ -89,7 +89,7 @@ const FileWidget = (props: WidgetProps) => {
     <div className="relative">
       <div className="relative flex flex-col items-start py-1 gap-3">
         {fileInfo && (
-          <div className="relative flex flex-col items-center space-x-2 gap-1">
+          <div className="relative rounded-lg bg-gray-200 flex items-center gap-3 border border-gray-300 px-3 py-2 max-w-[50rem]">
             <a
               href={isLink ? props.value : undefined}
               className="relative"
@@ -98,13 +98,13 @@ const FileWidget = (props: WidgetProps) => {
             >
               {fileIsImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={fileImage!} alt="file" className="h-32" />
+                <img src={fileImage!} alt="file" className="h-10 rounded-md" />
               ) : (
-                <DocumentIcon className="h-12 w-12 text-gray-400" />
+                <DocumentIcon className="h-12 w-12 text-black" />
               )}
             </a>
             {!!fileName && (
-              <span className="ml-2 text-sm font-medium text-gray-700">
+              <span className="ml-2 text-sm font-medium text-black">
                 {fileName}
               </span>
             )}
@@ -116,17 +116,15 @@ const FileWidget = (props: WidgetProps) => {
               "flex items-center shadow-sm ring-1 ring-gray-300 border-0 rounded-md hover:cursor-pointer"
             )}
             type="button"
-            variant="ghost"
+            variant="secondary"
           >
             <label
               htmlFor={props.id}
               className="relative flex hover:cursor-pointer"
             >
               <div className="flex items-center space-x-2">
-                <CloudArrowUpIcon className="h-5 w-5 text-gray-400" />
-                <span className="ml-2 text-sm font-medium text-gray-700">
-                  Choose a file
-                </span>
+                <CloudArrowUpIcon className="h-5 w-5 " />
+                <span className="ml-2 text-sm font-medium ">Choose a file</span>
               </div>
               <input
                 ref={inputRef}

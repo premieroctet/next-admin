@@ -9,12 +9,14 @@ import {
   DropdownTrigger,
 } from "./radix/Dropdown";
 import { useAction } from "../hooks/useAction";
+import Button from "./radix/Button";
 
 type Props = {
   actions: ModelAction[];
   selectedIds: string[] | number[];
   resource: ModelName;
   selectedCount?: number;
+  trigger?: React.ReactNode;
 };
 
 const ActionsDropdown = ({
@@ -22,6 +24,7 @@ const ActionsDropdown = ({
   selectedIds,
   resource,
   selectedCount,
+  trigger,
 }: Props) => {
   const { runAction } = useAction(resource, selectedIds);
 
@@ -31,21 +34,24 @@ const ActionsDropdown = ({
 
   return (
     <Dropdown>
-      <DropdownTrigger
-        asChild
-        className="flex items-center gap-x-2 text-sm text-gray-700 rounded-md border border-input bg-transparent px-3 py-2"
-        data-testid="actions-dropdown"
-      >
-        <button type="button">
-          Action {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
-          <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
-        </button>
-      </DropdownTrigger>
+      {trigger || (
+        <DropdownTrigger
+          asChild
+          className="flex items-center gap-x-2 text-sm"
+          data-testid="actions-dropdown"
+        >
+          <Button type="button" variant="secondary" size="sm">
+            Action {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
+            <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+          </Button>
+        </DropdownTrigger>
+      )}
       <DropdownBody>
         <DropdownContent
-          className="min-w-[10rem] p-2"
+          className="min-w-[10rem] p-2 max-w-[20rem]"
           sideOffset={4}
           data-testid="actions-dropdown-content"
+          align="end"
         >
           {actions?.map((action) => {
             return (
@@ -54,7 +60,10 @@ const ActionsDropdown = ({
                 className={clsx("rounded-md py-1 px-2", {
                   "text-red-600": action.style === "destructive",
                 })}
-                onClick={() => onActionClick(action)}
+                onClick={(evt) => {
+                  evt.stopPropagation();
+                  onActionClick(action);
+                }}
               >
                 {action.title}
               </DropdownItem>

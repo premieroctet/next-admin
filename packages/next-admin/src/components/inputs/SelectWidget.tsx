@@ -5,6 +5,8 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { Enumeration } from "../../types";
 import { Selector } from "./Selector";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
+import clsx from "clsx";
+import { inputVariants } from "../radix/Input";
 
 const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
   options as { enumOptions: Enumeration[] };
@@ -34,7 +36,12 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
         }
       }}
     >
-      <div className="relative flex justify-between w-full px-3 py-2 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm cursor-default">
+      <div
+        className={clsx(
+          inputVariants({ variant: "default" }),
+          "flex justify-between"
+        )}
+      >
         <input
           type="hidden"
           value={value}

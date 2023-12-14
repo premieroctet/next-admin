@@ -3,6 +3,8 @@ import DoubleArrow from "../../assets/icons/DoubleArrow";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import MultiSelectItem from "./MultiSelectItem";
 import { Selector } from "./Selector";
+import { inputVariants } from "../radix/Input";
+import clsx from "clsx";
 
 const MultiSelectWidget = (props: any) => {
   const { formData, onChange, options, name } = props;
@@ -27,8 +29,11 @@ const MultiSelectWidget = (props: any) => {
       <div className="relative">
         <input type="hidden" name={name} value={JSON.stringify(selectValue)} />
         <div
-          className="w-full px-3 py-2 pr-10 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm cursor-default flex min-h-[38px] flex-wrap gap-x-1 gap-y-1"
           onClick={() => setOpen(!open)}
+          className={clsx(
+            inputVariants({ variant: "default" }),
+            "flex flex-wrap"
+          )}
         >
           {values &&
             values.map(
