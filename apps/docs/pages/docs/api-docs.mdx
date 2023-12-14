@@ -305,8 +305,7 @@ The `actions` property is an array of objects that allows you to define a set of
 
 ### `onCsvExport`
 
-`onCsvExport` is a function that triggers only on lists when the `Export CSV` button is clicked. This button will not appear if no function is provided. The function accepts an argument which is the current model name, and must return a string which is the CSV content.
-Next Admin provides an utility function to retrieve a model's data and convert it to CSV. You can import it from `@premieroctet/next-admin/dist/csv`. Check the example for the usage.
+`onCsvExport` is a function that triggers only on lists when the `Export CSV` button is clicked. This button will not appear if no function is provided. The function accepts an argument which is the current model name, and must return a string which is the CSV content. It is used only if you use App Router.
 
 Here is an example of using `NextAdminOptions` for the following schema :
 

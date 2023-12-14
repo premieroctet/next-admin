@@ -34,7 +34,7 @@ export default function ListHeader({
   onDelete,
   onCsvExport,
 }: Props) {
-  const { basePath } = useConfig();
+  const { basePath, isAppDir } = useConfig();
   const { t } = useI18n();
   const { download, isLoading } = useDownloadCsv({ onExport: onCsvExport });
 
@@ -87,7 +87,7 @@ export default function ListHeader({
             selectedCount={selectedRowsCount}
           />
         )}
-        {!!onCsvExport && (
+        {(isAppDir ? !!onCsvExport : true) && (
           <Button
             variant="outline"
             size="sm"
