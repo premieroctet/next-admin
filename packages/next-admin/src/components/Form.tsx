@@ -255,40 +255,42 @@ const Form = ({
   );
 
   return (
-    <div className="relative">
-      <div className="sm:flex sm:items-center justify-between">
-        <h1 className="text-base font-semibold leading-6 text-gray-900">
-          {title}
-        </h1>
-        {!!actions && actions.length > 0 && !!id && (
-          <ActionsDropdown
-            actions={actions}
-            resource={resource}
-            selectedIds={[id] as string[] | number[]}
-            selectedCount={1}
-          />
-        )}
+    <div className="flex flex-col rounded-lg border border-gray-200 shadow-lg px-6 py-4 gap-4">
+      <div className="relative">
+        <div className="sm:flex sm:items-center justify-between">
+          <h1 className="text-base font-semibold leading-6 text-gray-900">
+            {title}
+          </h1>
+          {!!actions && actions.length > 0 && !!id && (
+            <ActionsDropdown
+              actions={actions}
+              resource={resource}
+              selectedIds={[id] as string[] | number[]}
+              selectedCount={1}
+            />
+          )}
+        </div>
+        <CustomForm
+          // @ts-expect-error
+          action={action ? onSubmit : ""}
+          method="post"
+          idPrefix=""
+          idSeparator=""
+          enctype={!action ? "multipart/form-data" : undefined}
+          {...schemas}
+          formData={data}
+          validator={validator}
+          extraErrors={extraErrors}
+          fields={fields}
+          templates={{
+            ...templates,
+            ButtonTemplates: { SubmitButton: submitButton },
+          }}
+          widgets={widgets}
+          onSubmit={(e) => console.log("onSubmit", e)}
+          onError={(e) => console.log("onError", e)}
+        />
       </div>
-      <CustomForm
-        // @ts-expect-error
-        action={action ? onSubmit : ""}
-        method="post"
-        idPrefix=""
-        idSeparator=""
-        enctype={!action ? "multipart/form-data" : undefined}
-        {...schemas}
-        formData={data}
-        validator={validator}
-        extraErrors={extraErrors}
-        fields={fields}
-        templates={{
-          ...templates,
-          ButtonTemplates: { SubmitButton: submitButton },
-        }}
-        widgets={widgets}
-        onSubmit={(e) => console.log("onSubmit", e)}
-        onError={(e) => console.log("onError", e)}
-      />
     </div>
   );
 };

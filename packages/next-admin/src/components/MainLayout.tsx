@@ -30,14 +30,6 @@ export const MainLayout = ({
 
         <main className="py-10 lg:pl-72">
           <div className="px-3 sm:px-10 lg:px-18 space-y-4">
-            <h1>
-              <Link
-                className="text-neutral-500 hover:text-neutral-700 hover:underline cursor-pointer"
-                href={basePath}
-              >
-                Admin
-              </Link>
-            </h1>
             {message && (
               <Message message={message.content} type={message.type} />
             )}

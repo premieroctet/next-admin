@@ -100,7 +100,7 @@ const FileWidget = (props: WidgetProps) => {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={fileImage!} alt="file" className="h-10 rounded-md" />
               ) : (
-                <DocumentIcon className="h-12 w-12 text-black" />
+                <DocumentIcon className="h-10 w-10 text-black" />
               )}
             </a>
             {!!fileName && (
