@@ -1,12 +1,11 @@
-import { merge } from "lodash";
-import Link from "next/link";
 import { PropsWithChildren } from "react";
+import Link from "next/link";
+import { MainLayoutProps, Translations } from "../types";
+import Menu from "./Menu";
+import Message from "./Message";
 import { ConfigProvider } from "../context/ConfigContext";
 import { I18nProvider } from "../context/I18nContext";
 import { defaultTranslations } from "../i18n";
-import { MainLayoutProps } from "../types";
-import Menu from "./Menu";
-import Message from "./Message";
 
 type Props = MainLayoutProps;
 
@@ -22,7 +21,15 @@ export const MainLayout = ({
   isAppDir,
   translations,
 }: PropsWithChildren<Props>) => {
-  const mergedTranslations = merge(defaultTranslations, translations);
+  const mergedTranslations = Object.entries(translations ?? {}).reduce(
+    (acc, [key, value]) => {
+      if (value) {
+        acc[key] = value;
+      }
+      return acc;
+    },
+    defaultTranslations
+  );
 
   return (
     <ConfigProvider basePath={basePath} isAppDir={isAppDir}>
