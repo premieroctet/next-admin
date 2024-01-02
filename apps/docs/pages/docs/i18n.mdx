@@ -20,6 +20,9 @@ The following keys are accepted:
 | actions.label                   | The text displayed in the dropdown button for the actions list                        | Action                    |
 | actions.delete.label            | The text displayed for the default delete action in the actions dropdown              | Delete                    |
 
+There is two ways to translate these default keys, provide a function named `getMessagesFunc` inside the options or provide `translations` props to `NextAdmin` component.
+> Note that the function way allows you to provide an object with a multiple level structure to translate the keys, while the `translations` props only allows you to provide a flat object (`form.widgets.file_upload.delete` ex.)
+
 You can also pass your own set of translations. For example you can set a custom action name as a translation key, which will then be translated by the lib.
 
 ```js
