@@ -23,6 +23,7 @@ import { getMappedDataList } from "./prisma";
 import qs from "querystring";
 import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
+import { get } from "http";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -40,6 +41,7 @@ export type GetPropsFromParamsParams = {
     resource: ModelName,
     ids: string[] | number[]
   ) => Promise<void>;
+  getMessagesFunc?: ({ locale }: { locale: string }) => any;
 };
 
 export async function getPropsFromParams({
@@ -52,6 +54,7 @@ export async function getPropsFromParams({
   isAppDir = false,
   locale,
   deleteAction,
+  getMessagesFunc
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -104,6 +107,29 @@ export async function getPropsFromParams({
     resourcesIdProperty,
     deleteAction,
   };
+
+  if(getMessagesFunc) {
+  // @ts-expect-error
+  const { messages } = await getMessagesFunc({ locale })
+  const dottedProperty = {} as any
+  const dot = (obj: object, prefix = '') => {
+    Object.entries(obj).forEach(([key, value]) => {
+      if (typeof value === 'object') {
+        dot(value, `${prefix}${key}.`)
+      } else {
+        dottedProperty[`${prefix}${key}`] = value
+      }
+    })
+  }
+  dot(messages as object)
+  const translations = dottedProperty
+  return {
+    ...defaultProps,
+    translations
+  }
+  }
+
+
 
   if (!params) return defaultProps;
 

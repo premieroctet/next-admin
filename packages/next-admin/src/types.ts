@@ -1,6 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
-import { getTranslations } from "next-intl/server";
 import { ChangeEvent, ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
 
@@ -303,4 +302,8 @@ export type TranslationKeys =
   | "actions.label"
   | "actions.delete.label";
 
-export type Translations = Omit<Awaited<ReturnType<typeof getTranslations>>, "raw" | "rich" | "markup">;
+export type Translations = {
+  [key in TranslationKeys]?: string;
+} & {
+  [key: string]: string;
+};

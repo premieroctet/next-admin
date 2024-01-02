@@ -24,7 +24,7 @@
         }
       },
       "empty": {
-        "label": "Aucun(e) {resource} trouvée"
+        "label": "Aucun(e) {{resource}} trouvée"
       }
     },
     "form": {
