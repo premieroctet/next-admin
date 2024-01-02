@@ -7,6 +7,7 @@ import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Button from "../radix/Button";
+import { useI18n } from "../../context/I18nContext";
 
 const FileWidget = (props: WidgetProps) => {
   const [fileInfo, setFileInfo] = useState<number | null>(
@@ -18,6 +19,7 @@ const FileWidget = (props: WidgetProps) => {
   const [fileImage, setFileImage] = useState<string | null>(props.value);
   const [fileName, setFileName] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const { t } = useI18n();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     setHasChanged(true);
@@ -125,7 +127,7 @@ const FileWidget = (props: WidgetProps) => {
               <div className="flex items-center space-x-2">
                 <CloudArrowUpIcon className="h-5 w-5 text-gray-400" />
                 <span className="ml-2 text-sm font-medium text-gray-700">
-                  Choose a file
+                  {t("form.widgets.file_upload.label")}
                 </span>
               </div>
               <input
@@ -153,7 +155,7 @@ const FileWidget = (props: WidgetProps) => {
                   htmlFor="delete_file"
                   className="font-medium text-gray-900"
                 >
-                  Delete
+                  {t("form.widgets.file_upload.delete")}
                 </label>
               </div>
             </div>

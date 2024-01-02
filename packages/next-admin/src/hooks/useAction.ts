@@ -1,8 +1,10 @@
 import { useRouterInternal } from "./useRouterInternal";
 import { ModelAction, ModelName } from "../types";
+import { useI18n } from "../context/I18nContext";
 
 export const useAction = (resource: ModelName, ids: string[] | number[]) => {
   const { router } = useRouterInternal();
+  const { t } = useI18n();
 
   const runAction = async (modelAction: ModelAction) => {
     try {
@@ -12,7 +14,7 @@ export const useAction = (resource: ModelName, ids: string[] | number[]) => {
           {
             message: JSON.stringify({
               type: "success",
-              content: modelAction.successMessage,
+              content: t(modelAction.successMessage),
             }),
             error: null,
           },
@@ -23,7 +25,7 @@ export const useAction = (resource: ModelName, ids: string[] | number[]) => {
       if (modelAction.errorMessage) {
         router.setQuery(
           {
-            error: modelAction.errorMessage,
+            error: t(modelAction.errorMessage),
             message: null,
           },
           true

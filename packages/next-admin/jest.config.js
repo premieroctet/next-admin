@@ -1,6 +1,6 @@
 module.exports = {
   clearMocks: true,
   preset: "ts-jest",
-  testEnvironment: "node",
+  testEnvironment: "jsdom",
   setupFilesAfterEnv: ["<rootDir>/src/tests/singleton.tsx"],
 };

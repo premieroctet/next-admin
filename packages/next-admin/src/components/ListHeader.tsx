@@ -8,6 +8,7 @@ import { useConfig } from "../context/ConfigContext";
 import { ModelAction, ModelName } from "../types";
 import ActionsDropdown from "./ActionsDropdown";
 import { buttonVariants } from "./radix/Button";
+import { useI18n } from "../context/I18nContext";
 
 type Props = {
   resource: ModelName;
@@ -31,13 +32,14 @@ export default function ListHeader({
   onDelete,
 }: Props) {
   const { basePath } = useConfig();
+  const { t } = useI18n();
 
   const selectedRowsCount = Object.keys(selectedRows).length;
 
   const actions = useMemo<ModelAction[]>(() => {
     const defaultActions: ModelAction[] = [
       {
-        title: "Delete",
+        title: t("actions.delete.label"),
         style: "destructive",
         action: async () => {
           await onDelete();
@@ -46,7 +48,7 @@ export default function ListHeader({
     ];
 
     return [...(actionsProp || []), ...defaultActions];
-  }, [actionsProp, selectedRowsCount, onDelete]);
+  }, [actionsProp, onDelete, t]);
 
   return (
     <div className="flex justify-between items-end">
@@ -66,7 +68,7 @@ export default function ListHeader({
             defaultValue={search}
             type="search"
             className="px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm focus-visible:outline focus-visible:outline-indigo-500 focus-visible:ring focus-visible:ring-indigo-500"
-            placeholder={`Search`}
+            placeholder={t("list.header.search.placeholder")}
           />
         </div>
       </div>
@@ -87,7 +89,7 @@ export default function ListHeader({
             size: "sm",
           })}
         >
-          <span>Add</span>
+          <span>{t("list.header.add.label")}</span>
           <PlusIcon className="h-5 w-5 ml-2" aria-hidden="true" />
         </Link>
       </div>

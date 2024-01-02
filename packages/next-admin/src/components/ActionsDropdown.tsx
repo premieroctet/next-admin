@@ -9,6 +9,7 @@ import {
   DropdownTrigger,
 } from "./radix/Dropdown";
 import { useAction } from "../hooks/useAction";
+import { useI18n } from "../context/I18nContext";
 
 type Props = {
   actions: ModelAction[];
@@ -24,6 +25,7 @@ const ActionsDropdown = ({
   selectedCount,
 }: Props) => {
   const { runAction } = useAction(resource, selectedIds);
+  const { t } = useI18n();
 
   const onActionClick = (action: ModelAction) => {
     runAction(action);
@@ -37,7 +39,8 @@ const ActionsDropdown = ({
         data-testid="actions-dropdown"
       >
         <button type="button">
-          Action {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
+          {t("actions.label")}{" "}
+          {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
           <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
         </button>
       </DropdownTrigger>
@@ -56,7 +59,7 @@ const ActionsDropdown = ({
                 })}
                 onClick={() => onActionClick(action)}
               >
-                {action.title}
+                {t(action.title)}
               </DropdownItem>
             );
           })}

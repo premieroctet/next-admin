@@ -36,11 +36,11 @@ export const options: NextAdminOptions = {
           "role",
           "birthDate",
           "avatar",
-          "metadata"
+          "metadata",
         ],
         fields: {
           email: {
-            validate: (email) => email.includes("@") || "Invalid email",
+            validate: (email) => email.includes("@") || "form.user.email.error",
           },
           birthDate: {
             input: <DatePicker />,
@@ -63,27 +63,27 @@ export const options: NextAdminOptions = {
             validate: (value) => {
               try {
                 if (!value) {
-                  return true
+                  return true;
                 }
-                JSON.parse(value as string)
-                return true
+                JSON.parse(value as string);
+                return true;
               } catch {
-                return "Invalid JSON"
+                return "Invalid JSON";
               }
-            }
-          }
+            },
+          },
         },
       },
       actions: [
         {
-          title: "Send email",
+          title: "actions.user.email.title",
           action: async (...args) => {
             "use server";
             const { submitEmail } = await import("./actions/nextadmin");
             await submitEmail(...args);
           },
-          successMessage: "Email sent successfully",
-          errorMessage: "Error while sending email",
+          successMessage: "actions.user.email.success",
+          errorMessage: "actions.user.email.error",
         },
       ],
     },

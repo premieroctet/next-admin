@@ -1,0 +1,20 @@
+{
+  "admin": {
+    "actions": {
+      "user": {
+        "email": {
+          "title": "Send email",
+          "success": "Email sent successfully",
+          "error": "Error while sending email"
+        }
+      }
+    },
+    "form": {
+      "user": {
+        "email": {
+          "error": "Invalid email"
+        }
+      }
+    }
+  }
+}

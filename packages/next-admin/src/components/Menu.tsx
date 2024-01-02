@@ -40,7 +40,11 @@ export default function Menu({
   const customPagesNavigation = customPages?.map((page) => ({
     name: page.title,
     href: `${basePath}${page.path}`,
-    current: pathname === `${basePath}${page.path}`,
+    /**
+     * In case the path includes a locale for i18n, we just
+     * need to check if the pathname just ends with the page path
+     */
+    current: pathname.endsWith(`${basePath}${page.path}`),
   }));
 
   const renderNavigationItem = (item: {
