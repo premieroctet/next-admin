@@ -11,19 +11,19 @@ import "../../../../styles.css";
 export default async function AdminPage({
   params,
   searchParams,
-}: Readonly<{
-  params: { [key: string]: string[] };
+}: {
+  params: { [key: string]: string[] | string };
   searchParams: { [key: string]: string | string[] | undefined } | undefined;
-}>) {
+}) {
   const props = await getPropsFromParams({
-    params: params.nextadmin,
+    params: params.nextadmin as string[],
     searchParams,
     options,
     prisma,
     schema,
     action: submitFormAction,
     deleteAction: deleteItem,
-    getMessagesFunc: getMessages,
+    getMessagesFunc: () => getMessages({ locale: params.locale as string }).then((messages) => messages.admin),
   });
 
 

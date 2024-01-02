@@ -1,5 +1,6 @@
 "use server";
 import { Prisma, PrismaClient } from "@prisma/client";
+import qs from "querystring";
 import {
   ActionParams,
   AdminComponentProps,
@@ -7,23 +8,21 @@ import {
   MainLayoutProps,
   ModelName,
   NextAdminOptions,
-  SubmitFormResult,
+  SubmitFormResult
 } from "../types";
+import { createBoundServerAction } from "./actions";
+import { getCustomInputs } from "./options";
+import { getMappedDataList } from "./prisma";
 import {
   fillRelationInSchema,
   getModelIdProperty,
+  getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
   transformData,
   transformSchema,
-  getPrismaModelForResource,
 } from "./server";
-import { getMappedDataList } from "./prisma";
-import qs from "querystring";
-import { createBoundServerAction } from "./actions";
-import { getCustomInputs } from "./options";
-import { get } from "http";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -41,7 +40,7 @@ export type GetPropsFromParamsParams = {
     resource: ModelName,
     ids: string[] | number[]
   ) => Promise<void>;
-  getMessagesFunc?: ({ locale }: { locale: string }) => any;
+  getMessagesFunc?: () => Promise<any>;
 };
 
 export async function getPropsFromParams({
@@ -59,14 +58,14 @@ export async function getPropsFromParams({
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
-      AdminComponentProps,
-      | "pageComponent"
-      | "basePath"
-      | "isAppDir"
-      | "message"
-      | "resources"
-      | "error"
-    >
+    AdminComponentProps,
+    | "pageComponent"
+    | "basePath"
+    | "isAppDir"
+    | "message"
+    | "resources"
+    | "error"
+  >
 > {
   const {
     resource,
@@ -93,7 +92,7 @@ export async function getPropsFromParams({
     );
   }
 
-  const defaultProps: AdminComponentProps = {
+  let defaultProps: AdminComponentProps = {
     resources,
     basePath,
     isAppDir,
@@ -108,34 +107,31 @@ export async function getPropsFromParams({
     deleteAction,
   };
 
-  if(getMessagesFunc) {
-  // @ts-expect-error
-  const { messages } = await getMessagesFunc({ locale })
-  const dottedProperty = {} as any
-  const dot = (obj: object, prefix = '') => {
-    Object.entries(obj).forEach(([key, value]) => {
-      if (typeof value === 'object') {
-        dot(value, `${prefix}${key}.`)
-      } else {
-        dottedProperty[`${prefix}${key}`] = value
-      }
-    })
-  }
-  dot(messages as object)
-  const translations = dottedProperty
-  return {
-    ...defaultProps,
-    translations
-  }
-  }
-
-
-
   if (!params) return defaultProps;
 
   if (!resource) return defaultProps;
 
   const actions = options?.model?.[resource]?.actions;
+
+  if (getMessagesFunc) {
+    const messages = await getMessagesFunc()
+    const dottedProperty = {} as any
+    const dot = (obj: object, prefix = '') => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === 'object') {
+          dot(value, `${prefix}${key}.`)
+        } else {
+          dottedProperty[`${prefix}${key}`] = value
+        }
+      })
+    }
+    dot(messages as object)
+    console.log(dottedProperty)
+    defaultProps = {
+      ...defaultProps,
+      translations: dottedProperty
+    }
+  }
 
   switch (params.length) {
     case 1: {
@@ -144,7 +140,7 @@ export async function getPropsFromParams({
         prisma,
         resource,
         searchParams,
-        options
+        options,
       );
 
       const { data, total, error } = await getMappedDataList(
@@ -259,7 +255,7 @@ export const getMainLayoutProps = ({
     message = searchParams?.message
       ? JSON.parse(searchParams.message as string)
       : null;
-  } catch {}
+  } catch { }
 
   const resourcesTitles = resources.reduce((acc, resource) => {
     acc[resource as Prisma.ModelName] =

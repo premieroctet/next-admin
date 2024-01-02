@@ -22,7 +22,7 @@ export const MainLayout = ({
   isAppDir,
   translations,
 }: PropsWithChildren<Props>) => {
-  const mergedTranslations = merge(defaultTranslations, translations);
+  const mergedTranslations = merge({ ...defaultTranslations }, translations);
 
   return (
     <ConfigProvider basePath={basePath} isAppDir={isAppDir}>
