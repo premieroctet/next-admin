@@ -1,5 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
+import { getTranslations } from "next-intl/server";
 import { ChangeEvent, ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
 
@@ -17,18 +18,18 @@ export type Model<
   T extends object | number = object,
 > = ScalarField<M> & {
   [P in keyof ObjectField<M>]: ObjectField<M>[P] extends { scalars: infer S }
-    ? T extends object
-      ? S
-      : T
-    : never | ObjectField<M>[P] extends { scalars: infer S }[]
-      ? T extends object
-        ? S[]
-        : T[]
-      : never | ObjectField<M>[P] extends { scalars: infer S } | null
-        ? T extends object
-          ? S | null
-          : T | null
-        : never;
+  ? T extends object
+  ? S
+  : T
+  : never | ObjectField<M>[P] extends { scalars: infer S }[]
+  ? T extends object
+  ? S[]
+  : T[]
+  : never | ObjectField<M>[P] extends { scalars: infer S } | null
+  ? T extends object
+  ? S | null
+  : T | null
+  : never;
 };
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
@@ -65,23 +66,23 @@ export type Handler<
 
 export type FormatOptions<T> = T extends string
   ?
-      | "textarea"
-      | "password"
-      | "color"
-      | "email"
-      | "uri"
-      | "data-url"
-      | "date"
-      | "date-time"
-      | "time"
-      | "alt-datetime"
-      | "alt-date"
-      | "file"
+  | "textarea"
+  | "password"
+  | "color"
+  | "email"
+  | "uri"
+  | "data-url"
+  | "date"
+  | "date-time"
+  | "time"
+  | "alt-datetime"
+  | "alt-date"
+  | "file"
   : never | T extends Date
-    ? "date" | "date-time" | "time"
-    : never | T extends number
-      ? "updown" | "range"
-      : never;
+  ? "date" | "date-time" | "time"
+  : never | T extends number
+  ? "updown" | "range"
+  : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
@@ -191,16 +192,16 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
     | { type: "scalar"; value: string | number | boolean }
     | { type: "count"; value: number }
     | {
-        type: "link";
-        value: {
-          label: string;
-          url: string;
-        };
-      }
+      type: "link";
+      value: {
+        label: string;
+        url: string;
+      };
+    }
     | {
-        type: "date";
-        value: Date;
-      }
+      type: "date";
+      value: Date;
+    }
   );
 
 export type AdminComponentProps = {
@@ -302,8 +303,4 @@ export type TranslationKeys =
   | "actions.label"
   | "actions.delete.label";
 
-export type Translations = {
-  [key in TranslationKeys]?: string;
-} & {
-  [key: string]: string;
-};
+export type Translations = Omit<Awaited<ReturnType<typeof getTranslations>>, "raw" | "rich" | "markup">;
