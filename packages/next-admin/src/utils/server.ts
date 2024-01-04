@@ -1,10 +1,13 @@
 import { Prisma, PrismaClient } from "@prisma/client";
+import formidable from "formidable";
+import { IncomingMessage } from "http";
+import { Writable } from "stream";
 import {
+  AdminFormData,
   EditFieldsOptions,
   EditOptions,
   Enumeration,
   Field,
-  AdminFormData,
   ListOptions,
   ModelName,
   ModelWithoutRelationships,
@@ -14,9 +17,6 @@ import {
 } from "../types";
 import { createWherePredicate } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
-import { IncomingMessage } from "http";
-import formidable from "formidable";
-import { Writable } from "stream";
 
 export const models = Prisma.dmmf.datamodel.models;
 export const resources = models.map((model) => model.name as ModelName);
@@ -70,7 +70,7 @@ export const fillRelationInSchema = async (
       if (fieldKind === "enum") {
         const fieldValue =
           schema.definitions[modelName].properties[
-            field.name as Field<typeof modelName>
+          field.name as Field<typeof modelName>
           ];
         if (fieldValue) {
           fieldValue.enum = fieldValue.enum?.map((item) =>
@@ -100,7 +100,7 @@ export const fillRelationInSchema = async (
           nonChekedToString && !isNativeFunction(nonChekedToString)
             ? nonChekedToString
             : (item: any) =>
-                item[relationToFields?.[0]] ?? item[modelRelationIdField];
+              item[relationToFields?.[0]] ?? item[modelRelationIdField];
         if (
           relationFromFields &&
           relationFromFields.length > 0 &&
@@ -130,7 +130,7 @@ export const fillRelationInSchema = async (
         } else {
           const fieldValue =
             schema.definitions[modelName].properties[
-              field.name as Field<typeof modelName>
+            field.name as Field<typeof modelName>
             ];
           if (fieldValue) {
             let enumeration: Enumeration[] = [];
@@ -243,9 +243,8 @@ export const findRelationInData = async (
               type: "link",
               value: {
                 label: item[dmmfPropertyName],
-                url: `${dmmfProperty.type as ModelName}/${
-                  item[dmmfPropertyName]["id"]
-                }`,
+                url: `${dmmfProperty.type as ModelName}/${item[dmmfPropertyName]["id"]
+                  }`,
               },
             };
           } else {
@@ -344,7 +343,7 @@ export const formattedFormData = async <M extends ModelName>(
           const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
           const fieldValue =
             schema.definitions[modelName].properties[
-              dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
+            dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
             ];
           const model = models.find((model) => model.name === dmmfPropertyType);
           const formatId = (value?: string) =>
@@ -410,7 +409,7 @@ export const formattedFormData = async <M extends ModelName>(
               if (typeof uploadResult !== "string") {
                 console.warn(
                   "Upload handler must return a string, fallback to no-op for field " +
-                    dmmfPropertyName.toString()
+                  dmmfPropertyName.toString()
                 );
               } else {
                 formattedData[dmmfPropertyName] = uploadResult;
@@ -469,7 +468,7 @@ export const changeFormatInSchema = <M extends ModelName>(
     const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
     const fieldValue =
       schema.definitions[modelName].properties[
-        dmmfPropertyName as Field<typeof modelName>
+      dmmfPropertyName as Field<typeof modelName>
       ];
 
     if (fieldValue && dmmfProperty.type === "Json") {

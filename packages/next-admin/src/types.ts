@@ -63,6 +63,8 @@ export type Handler<
   upload?: (file: Buffer) => Promise<string>;
 };
 
+export type RichTextFormat = "html" | "json" | "md";
+
 export type FormatOptions<T> = T extends string
   ?
       | "textarea"
@@ -77,6 +79,7 @@ export type FormatOptions<T> = T extends string
       | "alt-datetime"
       | "alt-date"
       | "file"
+      | `richtext-${RichTextFormat}`
   : never | T extends Date
     ? "date" | "date-time" | "time"
     : never | T extends number
