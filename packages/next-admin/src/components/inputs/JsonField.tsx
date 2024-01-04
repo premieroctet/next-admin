@@ -1,7 +1,7 @@
 import Editor from '@monaco-editor/react';
-import { CustomInputProps } from '@premieroctet/next-admin';
 import { useMemo } from 'react';
 import * as React from "react";
+import { CustomInputProps } from '../../types';
 
 type Props = CustomInputProps
 
@@ -23,7 +23,7 @@ const JsonField = ({ value, onChange, name }: Props) => {
         defaultValue={defaultValue}
         onChange={(val, evt) => {
           // @ts-expect-error
-          onChange?.({ target: { value: val ?? "" }})
+          onChange?.({ target: { value: val ?? "" } })
         }}
         options={{
           minimap: { enabled: false }
