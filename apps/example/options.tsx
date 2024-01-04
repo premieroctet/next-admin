@@ -1,5 +1,4 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
-import React from "react";
 import DatePicker from "./components/DatePicker";
 import JsonEditor from "./components/JsonEditor";
 
@@ -41,6 +40,10 @@ export const options: NextAdminOptions = {
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
+            format: "email",
+          },
+          name: {
+            format: 'richtext-html'
           },
           birthDate: {
             input: <DatePicker />,
