@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.0.18",
-    "@monaco-editor/react": "^4.6.0",
     "@picocss/pico": "^1.5.7",
     "@premieroctet/next-admin": "*",
     "@prisma/client": "^5.2.0",
