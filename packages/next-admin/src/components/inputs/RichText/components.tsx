@@ -1,124 +1,111 @@
+import clsx from 'clsx'
 import * as React from 'react'
-import { PropsWithChildren, Ref } from 'react'
+import { PropsWithChildren } from 'react'
+import { useSlate } from 'slate-react'
+import { isBlockActive, isMarkActive, toggleBlock, toggleMark, TypeElement } from './utils'
+import { EditorMarks } from 'slate'
+import { isTypeElement } from 'typescript'
+
 
 interface BaseProps {
   className: string
   [key: string]: unknown
 }
-type OrNull<T> = T | null
 
-export const Button = React.forwardRef(
-  (
-    {
-      className,
-      active,
-      reversed,
-      ...props
-    }: PropsWithChildren<
-      {
-        active: boolean
-        reversed: boolean
-      } & BaseProps
-    >,
-    ref: Ref<OrNull<HTMLSpanElement>>
-  ) => (
-    <span
-      {...props}
-      ref={ref}
-      style={{
-        cursor: 'pointer',
-        color: reversed
-          ? active
-            ? 'white'
-            : '#aaa'
-          : active
-            ? 'black'
-            : '#ccc',
-      }}
-    />
-  )
-)
+type ButtonProps = PropsWithChildren<{
+  format: keyof EditorMarks,
+  icon: React.ReactElement,
+  title?: string,
+} & BaseProps>
+export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({ className, format, icon, ...props }, ref) => {
 
-Button.displayName = 'Button'
-
-
-
-export const EditorValue = React.forwardRef(
-  (
-    {
-      className,
-      value,
-      ...props
-    }: PropsWithChildren<
-      {
-        value: any
-      } & BaseProps
-    >,
-    ref: Ref<OrNull<null>>
-  ) => {
-    const textLines = value.document.nodes
-      .map(node => node.text)
-      .toArray()
-      .join('\n')
+    // chekc if format is a mark or a block by checking if it is a keyof EditorMarks
+    const isMark = isTypeElement(format)
+    const editor = useSlate()
+    const active = isMark ? isMarkActive(editor, format) : isBlockActive(editor, format)
+    const handleMouseDown = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+      event.preventDefault()
+      if (isMark) {
+        toggleMark(editor, format)
+      } else {
+        toggleBlock(editor, format)
+      }
+    }
     return (
-      <div
-        ref={ref}
+      <button
         {...props}
-        style={{
-          padding: '5px 20px',
-        }}
+        ref={ref}
+        className={clsx(
+          'pointer focus:outline-none focus:shadow-outline',
+          className,
+          {
+            'bg-gray-200 hover:bg-gray-200 focus:bg-gray-200': active,
+            'bg-white hover:bg-gray-100 focus:bg-gray-100': !active
+          })}
+        onMouseDown={handleMouseDown}
+        onClick={event => event.preventDefault()}
       >
-        <div
-          style={{
-            fontSize: '14px',
-            padding: '5px 20px',
-            color: '#404040',
-            borderTop: '2px solid #eeeeee',
-            background: '#f8f8f8',
-          }}
-        >
-          {`Slate's value as text`}
-        </div>
-        <div
-          style={{
-            color: '#404040',
-            font: '12px monospace',
-            whiteSpace: 'pre-wrap',
-            padding: '10px 20px',
-          }}
-        >
-          {textLines}
-        </div>
-      </div>
+        {icon}
+      </button>
     )
   }
 )
 
-EditorValue.displayName = 'EditorValue'
-
-export const Icon = React.forwardRef(
-  (
-    { className, ...props }: PropsWithChildren<BaseProps>,
-    ref: Ref<OrNull<HTMLSpanElement>>
-  ) => (
-    <span
-      {...props}
-      ref={ref}
-      style={{
-        fontSize: '18px',
-        verticalAlign: 'text-bottom'
-      }}
-    />
+export const EditorContainer = React.forwardRef<HTMLDivElement, PropsWithChildren<BaseProps>>(({ className, children }, ref) => {
+  return (
+    <div ref={ref} className={className}>
+      {children}
+    </div>
   )
-)
+})
 
-Icon.displayName = 'Icon'
+// type MenuButtonProps = PropsWithChildren<{
+//   value: any
+// } & BaseProps>
+// export const EditorValue = React.forwardRef<HTMLDivElement, MenuButtonProps>(
+//   ({ className, value, ...props }, ref) => {
+//     const textLines = value.document.nodes
+//       .map(node => node.text)
+//       .toArray()
+//       .join('\n')
+//     return (
+//       <div
+//         ref={ref}
+//         {...props}
+//         style={{
+//           padding: '5px 20px',
+//         }}
+//       >
+//         <div className='text-'
+//           style={{
+//             fontSize: '14px',
+//             padding: '5px 20px',
+//             color: '#404040',
+//             borderTop: '2px solid #eeeeee',
+//             background: '#f8f8f8',
+//           }}
+//         >
+//           {`Slate's value as text`}
+//         </div>
+//         <div
+//           style={{
+//             color: '#404040',
+//             font: '12px monospace',
+//             whiteSpace: 'pre-wrap',
+//             padding: '10px 20px',
+//           }}
+//         >
+//           {textLines}
+//         </div>
+//       </div>
+//     )
+//   }
+// )
 
-export const Menu = React.forwardRef(
-  (
-    { className, ...props }: PropsWithChildren<BaseProps>,
-    ref: Ref<OrNull<HTMLDivElement>>
-  ) => (
+type MenuProps = PropsWithChildren<BaseProps>
+export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
+  ({ className, ...props }, ref) => (
     <div
       {...props}
       data-test-id="menu"
@@ -127,13 +114,9 @@ export const Menu = React.forwardRef(
   )
 )
 
-Menu.displayName = 'Menu'
-
-export const Toolbar = React.forwardRef(
-  (
-    { className, ...props }: PropsWithChildren<BaseProps>,
-    ref: Ref<OrNull<HTMLDivElement>>
-  ) => (
+type ToolbarProps = PropsWithChildren<BaseProps>
+export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
+  ({ className, ...props }, ref) => (
     <Menu
       {...props}
       ref={ref}
@@ -147,5 +130,3 @@ export const Toolbar = React.forwardRef(
     />
   )
 )
-
-Toolbar.displayName = 'Toolbar'
