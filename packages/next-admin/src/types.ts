@@ -77,6 +77,7 @@ export type FormatOptions<T> = T extends string
       | "alt-datetime"
       | "alt-date"
       | "file"
+      | "json"
   : never | T extends Date
     ? "date" | "date-time" | "time"
     : never | T extends number
