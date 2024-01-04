@@ -671,3 +671,18 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
 
   return formValues;
 };
+
+export const getBody = async (req: IncomingMessage) => {
+  return new Promise<string>((resolve) => {
+    const bodyParts: Buffer[] = [];
+    let body: string;
+    req
+      .on("data", (chunk) => {
+        bodyParts.push(chunk);
+      })
+      .on("end", () => {
+        body = Buffer.concat(bodyParts).toString();
+        resolve(body);
+      });
+  });
+};

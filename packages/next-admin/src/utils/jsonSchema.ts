@@ -41,13 +41,15 @@ export function getSchemas(
   data: any,
   schema: any,
   dmmfSchema: Prisma.DMMF.Field[]
-): Schemas & { edit: boolean } {
+): Schemas & { edit: boolean; id?: string | number } {
   const uiSchema: UiSchema = {};
   let edit = false;
+  let id;
   if (schema && dmmfSchema) {
     const idProperty = dmmfSchema.find((property) => property.isId);
 
-    edit = data?.[idProperty?.name ?? "id"];
+    edit = !!data?.[idProperty?.name ?? "id"];
+    id = data?.[idProperty?.name ?? "id"];
     Object.keys(schema.properties).forEach((property) => {
       const dmmfProperty = dmmfSchema.find(
         (dmmfProperty) => dmmfProperty.name === property
@@ -65,5 +67,5 @@ export function getSchemas(
       }
     });
   }
-  return { uiSchema, schema, edit };
+  return { uiSchema, schema, edit, id };
 }

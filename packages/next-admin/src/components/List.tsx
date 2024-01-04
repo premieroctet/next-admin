@@ -1,13 +1,20 @@
 "use client";
-import { ColumnDef } from "@tanstack/react-table";
+import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
-import { ChangeEvent, useContext, useTransition } from "react";
+import {
+  ChangeEvent,
+  useContext,
+  useEffect,
+  useState,
+  useTransition,
+} from "react";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   ListData,
   ListDataFieldValue,
   ListDataItem,
   ListFieldsOptions,
+  ModelAction,
   ModelName,
   NextAdminOptions,
 } from "../types";
@@ -26,6 +33,7 @@ import {
 } from "./radix/Select";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { useConfig } from "../context/ConfigContext";
+import { useDeleteAction } from "../hooks/useDeleteAction";
 
 export type ListProps = {
   resource: ModelName;
@@ -34,6 +42,8 @@ export type ListProps = {
   options?: Required<NextAdminOptions>["model"][ModelName];
   resourcesIdProperty: Record<ModelName, string>;
   title: string;
+  actions?: ModelAction[];
+  deleteAction?: ModelAction["action"];
 };
 
 function List({
@@ -41,16 +51,20 @@ function List({
   data,
   total,
   options,
+  actions,
   resourcesIdProperty,
   title,
+  deleteAction,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
   const { isAppDir } = useConfig();
+  const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
   const sortColumn = query.sortColumn as string;
   const sortDirection = query.sortDirection as "asc" | "desc";
+  const { deleteItems } = useDeleteAction(resource, deleteAction);
 
   const onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
     startTransition(() => {
@@ -115,6 +129,24 @@ function List({
         })
       : [];
 
+  useEffect(() => {
+    setRowSelection({});
+  }, [data]);
+
+  const getSelectedRowsIds = () => {
+    const indices = Object.keys(rowSelection);
+
+    const selectedRows = data.filter((_, index) => {
+      return indices.includes(index.toString());
+    });
+
+    const idField = resourcesIdProperty[resource];
+
+    return selectedRows.map((row) => row[idField].value as string | number) as
+      | string[]
+      | number[];
+  };
+
   return (
     <>
       <div className="mt-4">
@@ -128,6 +160,10 @@ function List({
           search={(query.search as string) || ""}
           onSearchChange={onSearchChange}
           isPending={isPending}
+          selectedRows={rowSelection}
+          actions={actions}
+          getSelectedRowsIds={getSelectedRowsIds}
+          onDelete={() => deleteItems(getSelectedRowsIds())}
         />
         <div className="max-w-full mt-2 py-2 align-middle">
           <DataTable
@@ -135,6 +171,9 @@ function List({
             data={data}
             columns={columns}
             resourcesIdProperty={resourcesIdProperty}
+            rowSelection={rowSelection}
+            setRowSelection={setRowSelection}
+            onDelete={async (id) => deleteItems([id] as string[] | number[])}
           />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">

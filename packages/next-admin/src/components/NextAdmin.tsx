@@ -29,12 +29,17 @@ export function NextAdmin({
   resourcesIdProperty,
   customInputs: customInputsProp,
   customPages,
+  actions: actionsProp,
+  deleteAction,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
       "You must provide the options prop when using next-admin with page router"
     );
   }
+
+  const actions =
+    actionsProp || (resource ? options?.model?.[resource]?.actions : undefined);
 
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
@@ -52,6 +57,8 @@ export function NextAdmin({
           options={options?.model && options?.model[resource]}
           title={resourceTitle!}
           resourcesIdProperty={resourcesIdProperty!}
+          actions={actions}
+          deleteAction={deleteAction}
         />
       );
     }
@@ -71,6 +78,7 @@ export function NextAdmin({
           action={action}
           title={resourceTitle!}
           customInputs={customInputs}
+          actions={actions}
         />
       );
     }

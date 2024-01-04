@@ -36,6 +36,10 @@ export type GetPropsFromParamsParams = {
   ) => Promise<SubmitFormResult | undefined>;
   isAppDir?: boolean;
   locale?: string;
+  deleteAction?: (
+    resource: ModelName,
+    ids: string[] | number[]
+  ) => Promise<void>;
 };
 
 export async function getPropsFromParams({
@@ -47,6 +51,7 @@ export async function getPropsFromParams({
   action,
   isAppDir = false,
   locale,
+  deleteAction,
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -79,6 +84,12 @@ export async function getPropsFromParams({
     throw new Error("action is required when using App router");
   }
 
+  if (isAppDir && !deleteAction) {
+    console.warn(
+      "deleteAction not provided. Delete buttons will have no effect"
+    );
+  }
+
   const defaultProps: AdminComponentProps = {
     resources,
     basePath,
@@ -91,11 +102,14 @@ export async function getPropsFromParams({
     customPages,
     resourcesTitles,
     resourcesIdProperty,
+    deleteAction,
   };
 
   if (!params) return defaultProps;
 
   if (!resource) return defaultProps;
+
+  const actions = options?.model?.[resource]?.actions;
 
   switch (params.length) {
     case 1: {
@@ -121,8 +135,9 @@ export async function getPropsFromParams({
         resource,
         data,
         total,
-        error,
+        error: error ?? (searchParams?.error as string),
         schema,
+        actions: isAppDir ? actions : undefined,
       };
     }
     case 2: {
@@ -172,6 +187,7 @@ export async function getPropsFromParams({
           schema,
           dmmfSchema: dmmfSchema?.fields,
           customInputs,
+          actions: isAppDir ? actions : undefined,
         };
       }
 

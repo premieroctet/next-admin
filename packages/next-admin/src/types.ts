@@ -94,12 +94,23 @@ export type EditOptions<T extends ModelName> = {
   fields?: EditFieldsOptions<T>;
 };
 
+export type ActionStyle = "default" | "destructive";
+
+export type ModelAction = {
+  title: string;
+  action: (resource: ModelName, ids: string[] | number[]) => Promise<void>;
+  style?: ActionStyle;
+  successMessage?: string;
+  errorMessage?: string;
+};
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     toString?: (item: Model<P>) => string;
     list?: ListOptions<P>;
     edit?: EditOptions<P>;
     title?: string;
+    actions?: ModelAction[];
   };
 };
 
@@ -140,7 +151,7 @@ export type Body<F> = {
 };
 
 export type Order<M extends ModelName> = {
-  [P in Field<M>]?: Prisma.SortOrder;
+  [P in Field<M>]?: Prisma.SortOrder | { _count: Prisma.SortOrder };
 };
 
 export type Select<M extends ModelName> = {
@@ -223,6 +234,8 @@ export type AdminComponentProps = {
    */
   pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string }>;
+  actions?: ModelAction[];
+  deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
 };
 
 export type MainLayoutProps = Pick<

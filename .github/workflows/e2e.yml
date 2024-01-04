@@ -36,6 +36,7 @@ jobs:
         run: |
           yarn test
           yarn turbo test:e2e 
+          cd apps/example && yarn prisma db seed && cd -
           BASE_URL=http://localhost:3000/pagerouter/admin yarn test:e2e
       - uses: actions/upload-artifact@v3
         if: always()

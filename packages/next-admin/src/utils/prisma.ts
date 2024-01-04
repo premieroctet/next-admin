@@ -56,11 +56,22 @@ export const preparePrismaListRequest = <M extends ModelName>(
   let orderBy: Order<typeof resource> = {};
   const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
   const orderValue = searchParams.get("sortDirection") as Prisma.SortOrder;
-  if (
-    orderValue in Prisma.SortOrder &&
-    sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]
-  ) {
-    orderBy[sortParam] = orderValue;
+
+  const modelFieldSortParam = model?.fields.find(
+    ({ name }) => name === sortParam
+  );
+
+  if (orderValue in Prisma.SortOrder) {
+    if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
+      orderBy[sortParam] = orderValue;
+    } else if (
+      modelFieldSortParam?.kind === "object" &&
+      modelFieldSortParam.isList
+    ) {
+      orderBy[modelFieldSortParam.name as Field<M>] = {
+        _count: orderValue,
+      };
+    }
   }
 
   let select: Select<M> | undefined;
@@ -85,8 +96,8 @@ export const preparePrismaListRequest = <M extends ModelName>(
     );
 
     fieldsFiltered =
-      model?.fields.filter(
-        ({ name }) => list.search?.includes(name as Field<M>)
+      model?.fields.filter(({ name }) =>
+        list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
   }
   where = createWherePredicate(fieldsFiltered, search);
@@ -115,7 +126,7 @@ export const getMappedDataList = async (
   );
   let data: any[] = [];
   let total: number;
-  let error = null;
+  let error: string | null = null;
   const dmmfSchema = getPrismaModelForResource(resource);
 
   try {

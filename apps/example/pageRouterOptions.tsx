@@ -1,14 +1,13 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import React from "react";
 import DatePicker from "./components/DatePicker";
-import JsonEditor from "./components/JsonEditor";
 
 export const options: NextAdminOptions = {
-  basePath: "/admin",
+  basePath: "/pagerouter/admin",
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
-      title: "👥 Users",
+      title: "Users 👥",
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
@@ -36,7 +35,6 @@ export const options: NextAdminOptions = {
           "role",
           "birthDate",
           "avatar",
-          "metadata"
         ],
         fields: {
           email: {
@@ -58,29 +56,20 @@ export const options: NextAdminOptions = {
               },
             },
           },
-          metadata: {
-            input: <JsonEditor />,
-            validate: (value) => {
-              try {
-                if (!value) {
-                  return true
-                }
-                JSON.parse(value as string)
-                return true
-              } catch {
-                return "Invalid JSON"
-              }
-            }
-          }
         },
       },
       actions: [
         {
           title: "Send email",
-          action: async (...args) => {
-            "use server";
-            const { submitEmail } = await import("./actions/nextadmin");
-            await submitEmail(...args);
+          action: async (model, ids) => {
+            const response = await fetch("/api/email", {
+              method: "POST",
+              body: JSON.stringify(ids),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to send email");
+            }
           },
           successMessage: "Email sent successfully",
           errorMessage: "Error while sending email",
@@ -89,7 +78,7 @@ export const options: NextAdminOptions = {
     },
     Post: {
       toString: (post) => `${post.title}`,
-      title: "📝 Posts",
+      title: "Posts 📝",
       list: {
         display: [
           "id",
@@ -120,7 +109,7 @@ export const options: NextAdminOptions = {
       },
     },
     Category: {
-      title: "📚 Categories",
+      title: "Categories 📚",
       toString: (category) => `${category.name}`,
       list: {
         display: ["name", "posts"],
