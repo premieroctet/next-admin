@@ -34,7 +34,6 @@ const RichTextField = ({ schema, onChange, ...props }: RichTextFieldProps) => {
     )
     if (isAstChange) {
       const serializedValue = serialize(value, format)
-      console.log(serializedValue)
       // @ts-expect-error
       onChange?.({ target: { value: serializedValue } })
     }
