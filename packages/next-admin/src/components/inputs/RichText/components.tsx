@@ -2,9 +2,8 @@ import clsx from 'clsx'
 import * as React from 'react'
 import { PropsWithChildren } from 'react'
 import { useSlate } from 'slate-react'
-import { isBlockActive, isMarkActive, toggleBlock, toggleMark, TypeElement } from './utils'
-import { EditorMarks } from 'slate'
-import { isTypeElement } from 'typescript'
+import { TypeElement } from 'typescript'
+import { isBlockActive, isMark, isMarkActive, toggleBlock, toggleMark } from './utils'
 
 
 interface BaseProps {
@@ -13,22 +12,26 @@ interface BaseProps {
 }
 
 type ButtonProps = PropsWithChildren<{
-  format: keyof EditorMarks,
+  format: any,
   icon: React.ReactElement,
   title?: string,
 } & BaseProps>
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, format, icon, ...props }, ref) => {
-
-    // chekc if format is a mark or a block by checking if it is a keyof EditorMarks
-    const isMark = isTypeElement(format)
     const editor = useSlate()
-    const active = isMark ? isMarkActive(editor, format) : isBlockActive(editor, format)
-    const handleMouseDown = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-      event.preventDefault()
-      if (isMark) {
+    let active: boolean
+    let handleMouseDown: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void
+
+    if (isMark(format)) {
+      active = isMarkActive(editor, format)
+      handleMouseDown = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.preventDefault()
         toggleMark(editor, format)
-      } else {
+      }
+    } else {
+      active = isBlockActive(editor, format as TypeElement)
+      handleMouseDown = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        event.preventDefault()
         toggleBlock(editor, format)
       }
     }
@@ -37,12 +40,12 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
         ref={ref}
         className={clsx(
-          'pointer focus:outline-none focus:shadow-outline',
-          className,
+          'pointer focus:outline-none focus:shadow-outline p-1.5 rounded-md',
           {
             'bg-gray-200 hover:bg-gray-200 focus:bg-gray-200': active,
             'bg-white hover:bg-gray-100 focus:bg-gray-100': !active
-          })}
+          },
+          className)}
         onMouseDown={handleMouseDown}
         onClick={event => event.preventDefault()}
       >
@@ -103,30 +106,31 @@ export const EditorContainer = React.forwardRef<HTMLDivElement, PropsWithChildre
 //   }
 // )
 
-type MenuProps = PropsWithChildren<BaseProps>
-export const Menu = React.forwardRef<HTMLDivElement, MenuProps>(
-  ({ className, ...props }, ref) => (
-    <div
-      {...props}
-      data-test-id="menu"
-      ref={ref}
-    />
-  )
-)
+
+
+export const Separator = React.forwardRef<HTMLDivElement, BaseProps>(({ className, ...props }, ref) => (
+  <div
+    {...props}
+    ref={ref}
+    className={clsx(
+      ' border-gray-300 my-1 border-x-[0.5px] rounded-md',
+      className
+    )}
+  />
+))
 
 type ToolbarProps = PropsWithChildren<BaseProps>
 export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
   ({ className, ...props }, ref) => (
-    <Menu
+    <div
       {...props}
       ref={ref}
-      style={{
-        position: 'relative',
-        padding: '1px 18px 17px',
-        margin: '0 -20px',
-        borderBottom: '2px solid #eee',
-        marginBottom: '20px',
-      }}
+      data-test-id="menu"
+      className={clsx(
+        //on last child remove border right
+        'flex flex-row gap-1 border-b-0 border-gray-300 border p-1.5 rounded-t-md !last:border-r-0',
+        className
+      )}
     />
   )
 )

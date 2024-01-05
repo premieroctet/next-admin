@@ -42,9 +42,6 @@ export const options: NextAdminOptions = {
             validate: (email) => email.includes("@") || "Invalid email",
             format: "email",
           },
-          name: {
-            format: 'richtext-html'
-          },
           birthDate: {
             input: <DatePicker />,
           },
@@ -97,7 +94,6 @@ export const options: NextAdminOptions = {
         display: [
           "id",
           "title",
-          "content",
           "published",
           "author",
           "categories",
@@ -112,6 +108,11 @@ export const options: NextAdminOptions = {
         },
       },
       edit: {
+        fields: {
+          content: {
+            format: 'richtext-html'
+          }
+        },
         display: [
           "id",
           "title",
