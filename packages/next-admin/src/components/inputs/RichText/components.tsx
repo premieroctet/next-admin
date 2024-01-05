@@ -5,7 +5,6 @@ import { useSlate } from 'slate-react'
 import { TypeElement } from 'typescript'
 import { isBlockActive, isMark, isMarkActive, toggleBlock, toggleMark } from './utils'
 
-
 interface BaseProps {
   className: string
   [key: string]: unknown
@@ -62,51 +61,6 @@ export const EditorContainer = React.forwardRef<HTMLDivElement, PropsWithChildre
     </div>
   )
 })
-
-// type MenuButtonProps = PropsWithChildren<{
-//   value: any
-// } & BaseProps>
-// export const EditorValue = React.forwardRef<HTMLDivElement, MenuButtonProps>(
-//   ({ className, value, ...props }, ref) => {
-//     const textLines = value.document.nodes
-//       .map(node => node.text)
-//       .toArray()
-//       .join('\n')
-//     return (
-//       <div
-//         ref={ref}
-//         {...props}
-//         style={{
-//           padding: '5px 20px',
-//         }}
-//       >
-//         <div className='text-'
-//           style={{
-//             fontSize: '14px',
-//             padding: '5px 20px',
-//             color: '#404040',
-//             borderTop: '2px solid #eeeeee',
-//             background: '#f8f8f8',
-//           }}
-//         >
-//           {`Slate's value as text`}
-//         </div>
-//         <div
-//           style={{
-//             color: '#404040',
-//             font: '12px monospace',
-//             whiteSpace: 'pre-wrap',
-//             padding: '10px 20px',
-//           }}
-//         >
-//           {textLines}
-//         </div>
-//       </div>
-//     )
-//   }
-// )
-
-
 
 export const Separator = React.forwardRef<HTMLDivElement, BaseProps>(({ className, ...props }, ref) => (
   <div
