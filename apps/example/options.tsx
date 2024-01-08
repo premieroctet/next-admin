@@ -40,7 +40,6 @@ export const options: NextAdminOptions = {
         fields: {
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
-            format: "email",
           },
           birthDate: {
             input: <DatePicker />,
