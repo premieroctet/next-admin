@@ -11,19 +11,20 @@ import {
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import { ChangeEvent, cloneElement, useMemo, useState } from "react";
+import { useConfig } from "../context/ConfigContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
-import { Field, ModelAction, ModelName, SubmitFormResult } from "../types";
-import { Schemas, getSchemas } from "../utils/jsonSchema";
+import { useRouterInternal } from "../hooks/useRouterInternal";
+import { Field, ModelAction, ModelName, RichTextFormat, SubmitFormResult } from "../types";
+import { getSchemas } from "../utils/jsonSchema";
+import ActionsDropdown from "./ActionsDropdown";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
-import SelectWidget from "./inputs/SelectWidget";
-import Button from "./radix/Button";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
-import { useConfig } from "../context/ConfigContext";
-import { useRouterInternal } from "../hooks/useRouterInternal";
-import ActionsDropdown from "./ActionsDropdown";
+import SelectWidget from "./inputs/SelectWidget";
+import Button from "./radix/Button";
+import RichTextField from "./inputs/RichText/RichTextField";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -103,7 +104,7 @@ const Form = ({
             </Button>
           )}
         </div>
-        
+
       </div>
     );
   };
@@ -230,6 +231,17 @@ const Form = ({
             rawErrors,
             name: props.name,
           });
+        }
+
+        if (schema?.format?.startsWith('richtext-')) {
+          return <RichTextField
+            onChange={onChangeOverride || onTextChange}
+            readonly={readonly}
+            rawErrors={rawErrors}
+            name={props.name}
+            value={props.value}
+            schema={schema}
+          />
         }
 
         return (

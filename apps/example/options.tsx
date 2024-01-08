@@ -1,5 +1,4 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
-import React from "react";
 import DatePicker from "./components/DatePicker";
 import JsonEditor from "./components/JsonEditor";
 
@@ -94,7 +93,6 @@ export const options: NextAdminOptions = {
         display: [
           "id",
           "title",
-          "content",
           "published",
           "author",
           "categories",
@@ -109,6 +107,11 @@ export const options: NextAdminOptions = {
         },
       },
       edit: {
+        fields: {
+          content: {
+            format: 'richtext-html'
+          }
+        },
         display: [
           "id",
           "title",

@@ -41,6 +41,9 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-querybuilder": "^6.1.2",
+    "slate": "^0.101.5",
+    "slate-history": "^0.100.0",
+    "slate-react": "^0.101.5",
     "typescript": "^5.1.6",
     "util": "^0.12.5"
   },
