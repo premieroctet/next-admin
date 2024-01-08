@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.1.1
+
+### Patch Changes
+
+- 3c67158: Fix optionFormatter function
+
 ## 3.1.0
 
 ### Minor Changes
