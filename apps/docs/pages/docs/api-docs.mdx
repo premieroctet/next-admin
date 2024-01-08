@@ -255,6 +255,7 @@ For the `edit` property, it can take the following:
 | `handler`        | an object that can take the following properties                                                                                                                             |
 | `handler.get`    | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
 | `handler.upload` | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
+| `optionFormatter`| only for realtion fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                          |
 
 ### `pages`
 
