@@ -29,7 +29,7 @@
 
   ✨ Override model name in UI
 
-- fd1502a: add option `optionFormatter` to format select option of a related model at field option level
+- 28053ff: add option `optionFormatter` to format select option of a related model at field option level
 - 603b499: 🛠 add support for JSON fields
 - af7f123: 🪄 allow sort by relationship count
 
