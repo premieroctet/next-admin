@@ -27,7 +27,7 @@ const MultiSelectWidget = (props: any) => {
       <div className="relative">
         <input type="hidden" name={name} value={JSON.stringify(selectValue)} />
         <div
-          className="w-full px-3 py-2 pr-10 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm cursor-default flex space-x-2 min-h-[38px]"
+          className="w-full px-3 py-2 pr-10 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm cursor-default flex min-h-[38px] flex-wrap gap-x-1 gap-y-1"
           onClick={() => setOpen(!open)}
         >
           {values &&

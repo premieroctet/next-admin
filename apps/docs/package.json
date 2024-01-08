@@ -11,16 +11,16 @@
   "dependencies": {
     "@premieroctet/next-admin": "*",
     "next": "^13.1.1",
-    "nextra": "^2.7.1",
-    "nextra-theme-docs": "^2.7.1",
+    "nextra": "^2.13.2",
+    "nextra-theme-docs": "^2.13.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@types/node": "^17.0.12",
-    "@types/react": "^18.0.22",
-    "@types/react-dom": "^18.0.7",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "eslint": "7.32.0",
     "eslint-config-custom": "*",
     "tsconfig": "*",

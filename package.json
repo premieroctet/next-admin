@@ -7,13 +7,21 @@
     "packages/*"
   ],
   "scripts": {
+    "start": "turbo run start",
+    "start:example": "turbo run start --filter=example",
     "build": "turbo run build",
+    "build:example": "turbo run build --filter=example",
     "dev": "turbo run dev",
+    "dev:docs": "turbo run dev --filter=docs",
     "lint": "turbo run lint",
+    "test": "turbo run test",
+    "test:e2e": "dotenv turbo test:e2e",
+    "database": "dotenv turbo run database",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "publish-package": "turbo run build && changeset publish"
   },
   "devDependencies": {
+    "dotenv-cli": "7.2.1",
     "eslint-config-custom": "*",
     "prettier": "latest",
     "turbo": "latest"
@@ -30,5 +38,9 @@
     "type": "git",
     "url": "https://github.com/premieroctet/next-admin.git"
   },
-  "homepage": "https://next-admin.js.org"
+  "homepage": "https://next-admin.js.org",
+  "resolutions": {
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
+  }
 }

@@ -1,8 +1,10 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV"],
+  "globalDotEnv": ["**/.env"],
+  "globalEnv": ["NODE_ENV", "BASE_URL", "BASE_DOMAIN"],
   "pipeline": {
+    "start": {},
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
@@ -13,6 +15,10 @@
     "dev": {
       "cache": false,
       "persistent": true
-    }
+    },
+    "test": {},
+    "test:coverage": {},
+    "test:e2e": {},
+    "database": {}
   }
 }

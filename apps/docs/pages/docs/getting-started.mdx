@@ -1,3 +1,5 @@
+import { Tabs, Callout } from "nextra/components";
+
 # Getting Started
 
 ## Installation
@@ -39,39 +41,106 @@ yarn run prisma generate
 
 This will create a `json-schema.json` file in the `prisma/json-schema` directory.
 
-Then create an `admin` folder in the `pages` directory.
+<Tabs items={['App router', 'Page router']}>
+  <Tabs.Tab>
+    ```tsx
+    // app/admin/[[...nextadmin]]/page.tsx
+    import { NextAdmin } from "@premieroctet/next-admin";
+    import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
+    import "@premieroctet/next-admin/dist/styles.css";
+    import Dashboard from "../../../components/Dashboard";
+    import { options } from "../../../options";
+    import { prisma } from "../../../prisma";
+    import schema from "../../../prisma/json-schema/json-schema.json";
+    import "../../../styles.css";
+    import { submitFormAction } from "../../../actions/nextadmin";
 
-Within this directory, create a `[[...nextadmin]].tsx` file and copy this code:
+    export default async function AdminPage({
+      params,
+      searchParams,
+    }: {
+      params: { [key: string]: string[] };
+      searchParams: { [key: string]: string | string[] | undefined } | undefined;
+    }) {
+      const props = await getPropsFromParams({
+        params: params.nextadmin,
+        searchParams,
+        options,
+        prisma,
+        schema,
+        action: submitFormAction,
+      });
 
-```tsx
-// pages/admin/[[...nextadmin]].tsx
-import { GetServerSideProps, GetServerSidePropsResult } from "next";
-import { NextAdmin, AdminComponentProps } from "@premieroctet/next-admin";
-import schema from "./../../prisma/json-schema/json-schema.json"; // import the json-schema.json file
-import "@premieroctet/next-admin/dist/styles.css";
-import { PrismaClient } from "@prisma/client";
+      return <NextAdmin {...props} dashboard={Dashboard} />;
+    }
+    ```
 
-const prisma = new PrismaClient();
+    <Callout emoji="⚠️">
 
-export default function Admin(props: AdminComponentProps) {
-  return <NextAdmin {...props} />;
-}
+      Passing the `options` prop like you'd do on Page router will result in an error in case you
+      have functions defined inside the options object (formatter, handlers, etc.).
+      Make sure to pass no `options` prop at all.
 
-export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
-  const { nextAdminRouter } = await import(
-    "@premieroctet/next-admin/dist/router"
-  );
-  const adminRouter = await nextAdminRouter(prisma, schema);
-  return adminRouter.run(req, res) as Promise<
-    GetServerSidePropsResult<{ [key: string]: any }>
-  >;
-};
-```
+    </Callout>
 
-The nextAdminRouter function accepts a third optional parameter, which is a Next Admin [options](/docs/api-docs#next-admin-options) object.
+    <Callout emoji="⚠️">
+
+      Make sure to not use `"use client"` in the page.
+
+    </Callout>
+
+    You will also need to create the action:
+
+    ```tsx
+    // actions/nextadmin.ts
+    "use server";
+    import { ActionParams } from "@premieroctet/next-admin";
+    import { submitForm } from "@premieroctet/next-admin/dist/actions";
+    import { prisma } from "../prisma";
+    import { options } from "../options";
+
+    export const submitFormAction = async (
+      params: ActionParams,
+      formData: FormData
+    ) => {
+      return submitForm({ ...params, options, prisma }, formData);
+    };
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```tsx
+    // pages/admin/[[...nextadmin]].tsx
+    import { GetServerSideProps, GetServerSidePropsResult } from "next";
+    import { NextAdmin, AdminComponentProps } from "@premieroctet/next-admin";
+    import schema from "./../../prisma/json-schema/json-schema.json"; // import the json-schema.json file
+    import "@premieroctet/next-admin/dist/styles.css";
+    import { PrismaClient } from "@prisma/client";
+
+    const prisma = new PrismaClient();
+
+    export default function Admin(props: AdminComponentProps) {
+      return <NextAdmin {...props} />;
+    }
+
+    export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+      const { nextAdminRouter } = await import(
+        "@premieroctet/next-admin/dist/router"
+      );
+      const adminRouter = await nextAdminRouter(prisma, schema);
+      return adminRouter.run(req, res) as Promise<
+        GetServerSidePropsResult<{ [key: string]: any }>
+      >;
+    };
+    ```
+
+The `nextAdminRouter` function accepts a third optional parameter, which is a Next Admin [options](/docs/api-docs#next-admin-options) object.
+
+  </Tabs.Tab>
+</Tabs>
 
 ## Usage
 
-Once you have created the `[[...nextadmin]].tsx` file, you can start the server and go to the `/admin` route.
+Once done, you can navigate to the `/admin` route.
 
 You should be able to see the admin dashboard.

@@ -1,10 +1,12 @@
-import Link from "next/link";
-import { ADMIN_BASE_PATH } from "../config";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { ChangeEvent } from "react";
-import Loader from "../assets/icons/Loader";
-import { ModelName } from "../types";
 import { PlusIcon } from "@heroicons/react/24/solid";
+import { RowSelectionState } from "@tanstack/react-table";
+import Link from "next/link";
+import { ChangeEvent, useMemo } from "react";
+import Loader from "../assets/icons/Loader";
+import { useConfig } from "../context/ConfigContext";
+import { ModelAction, ModelName } from "../types";
+import ActionsDropdown from "./ActionsDropdown";
 import { buttonVariants } from "./radix/Button";
 
 type Props = {
@@ -12,6 +14,10 @@ type Props = {
   isPending: boolean;
   onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
   search: string;
+  actions?: ModelAction[];
+  selectedRows: RowSelectionState;
+  getSelectedRowsIds: () => string[] | number[];
+  onDelete: () => Promise<void>;
 };
 
 export default function ListHeader({
@@ -19,7 +25,29 @@ export default function ListHeader({
   isPending,
   onSearchChange,
   search,
+  actions: actionsProp,
+  selectedRows,
+  getSelectedRowsIds,
+  onDelete,
 }: Props) {
+  const { basePath } = useConfig();
+
+  const selectedRowsCount = Object.keys(selectedRows).length;
+
+  const actions = useMemo<ModelAction[]>(() => {
+    const defaultActions: ModelAction[] = [
+      {
+        title: "Delete",
+        style: "destructive",
+        action: async () => {
+          await onDelete();
+        },
+      },
+    ];
+
+    return [...(actionsProp || []), ...defaultActions];
+  }, [actionsProp, selectedRowsCount, onDelete]);
+
   return (
     <div className="flex justify-between items-end">
       <div>
@@ -42,17 +70,27 @@ export default function ListHeader({
           />
         </div>
       </div>
-      <Link
-        href={`${ADMIN_BASE_PATH}/${resource}/new`}
-        role="button"
-        className={buttonVariants({
-          variant: "default",
-          size: "sm",
-        })}
-      >
-        <span>Add</span>
-        <PlusIcon className="h-5 w-5 ml-2" aria-hidden="true" />
-      </Link>
+      <div className="flex items-center gap-x-4">
+        {!!selectedRowsCount && (
+          <ActionsDropdown
+            actions={actions}
+            resource={resource}
+            selectedIds={getSelectedRowsIds()}
+            selectedCount={selectedRowsCount}
+          />
+        )}
+        <Link
+          href={`${basePath}/${resource}/new`}
+          role="button"
+          className={buttonVariants({
+            variant: "default",
+            size: "sm",
+          })}
+        >
+          <span>Add</span>
+          <PlusIcon className="h-5 w-5 ml-2" aria-hidden="true" />
+        </Link>
+      </div>
     </div>
   );
 }

@@ -1,16 +1,22 @@
-import { Prisma } from "@prisma/client";
-import { getPrismaModelForResource } from "./server";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { ITEMS_PER_PAGE } from "../config";
 import {
-  ListFieldsOptions,
+  EditOptions,
+  Field,
+  ListOptions,
   ModelName,
+  NextAdminContext,
   NextAdminOptions,
   Order,
   PrismaListRequest,
   Select,
-  UField,
 } from "../types";
-import { ITEMS_PER_PAGE } from "../config";
-import { capitalize } from "./tools";
+import {
+  findRelationInData,
+  getModelIdProperty,
+  getPrismaModelForResource,
+} from "./server";
+import { capitalize, isScalar, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
   fieldsFiltered?: Prisma.DMMF.Field[],
@@ -48,37 +54,50 @@ export const preparePrismaListRequest = <M extends ModelName>(
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
   let orderBy: Order<typeof resource> = {};
-  const sortParam = searchParams.get("sortColumn") as UField<typeof resource>;
+  const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
   const orderValue = searchParams.get("sortDirection") as Prisma.SortOrder;
-  if (
-    orderValue in Prisma.SortOrder &&
-    sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]
-  ) {
-    orderBy[sortParam] = orderValue;
+
+  const modelFieldSortParam = model?.fields.find(
+    ({ name }) => name === sortParam
+  );
+
+  if (orderValue in Prisma.SortOrder) {
+    if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
+      orderBy[sortParam] = orderValue;
+    } else if (
+      modelFieldSortParam?.kind === "object" &&
+      modelFieldSortParam.isList
+    ) {
+      orderBy[modelFieldSortParam.name as Field<M>] = {
+        _count: orderValue,
+      };
+    }
   }
 
   let select: Select<M> | undefined;
   let where = {};
   let fieldsFiltered = model?.fields;
-  const list = options?.model?.[resource]?.list
-    ?.fields as ListFieldsOptions<M>;
+  const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
-    const listKeys = Object.keys(list) as Array<keyof ListFieldsOptions<M>>;
-    select = listKeys.reduce((acc, column) => {
-      const field = model?.fields.find(({ name }) => name === column);
-      if (field?.kind === "object") {
-        if (!acc._count) acc._count = { select: {} };
-        acc._count.select = { ...acc._count.select, [column]: true };
-      } else {
-        // @ts-expect-error
-        acc[column] = true;
-      }
-      return acc;
-    }, {} as Select<M>);
+    const listDisplayedKeys = list.display;
+    select = listDisplayedKeys?.reduce(
+      (acc, column) => {
+        const field = model?.fields.find(({ name }) => name === column);
+        if (field?.kind === "object" && field?.isList === true) {
+          if (!acc._count) acc._count = { select: {} };
+          acc._count.select = { ...acc._count.select, [column]: true };
+        } else {
+          // @ts-expect-error
+          acc[column] = true;
+        }
+        return acc;
+      },
+      { [getModelIdProperty(resource)]: true } as Select<M>
+    );
 
     fieldsFiltered =
-      model?.fields.filter(
-        ({ name }) => list[name as keyof ListFieldsOptions<M>]?.search
+      model?.fields.filter(({ name }) =>
+        list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
   }
   where = createWherePredicate(fieldsFiltered, search);
@@ -89,5 +108,103 @@ export const preparePrismaListRequest = <M extends ModelName>(
     orderBy,
     skip: (page - 1) * itemsPerPage,
     take: itemsPerPage,
+  };
+};
+
+export const getMappedDataList = async (
+  prisma: PrismaClient,
+  resource: ModelName,
+  options: NextAdminOptions,
+  searchParams: URLSearchParams,
+  context: NextAdminContext,
+  appDir = false
+) => {
+  const prismaListRequest = preparePrismaListRequest(
+    resource,
+    searchParams,
+    options
+  );
+  let data: any[] = [];
+  let total: number;
+  let error: string | null = null;
+  const dmmfSchema = getPrismaModelForResource(resource);
+
+  try {
+    // @ts-expect-error
+    data = await prisma[uncapitalize(resource)].findMany(prismaListRequest);
+    // @ts-expect-error
+    total = await prisma[uncapitalize(resource)].count({
+      where: prismaListRequest.where,
+    });
+  } catch (e: any) {
+    const { skip, take, orderBy } = prismaListRequest;
+    // @ts-expect-error
+    data = await prisma[uncapitalize(resource)].findMany({
+      skip,
+      take,
+      orderBy,
+    });
+    // @ts-expect-error
+    total = await prisma[uncapitalize(resource)].count();
+    error = e.message ? e.message : e;
+    console.error(e);
+  }
+  data = await findRelationInData(data, dmmfSchema?.fields);
+
+  const listFields = options.model?.[resource]?.list?.fields ?? {};
+
+  data.forEach((item, index) => {
+    Object.keys(item).forEach((key) => {
+      let itemValue;
+
+      if (typeof item[key] === "object" && item[key] !== null) {
+        const model = capitalize(key) as ModelName;
+        const idProperty = getModelIdProperty(model);
+
+        switch (item[key].type) {
+          case "link":
+            itemValue = item[key].value.label;
+            break;
+          case "count":
+            itemValue = item[key].value;
+            break;
+          case "date":
+            itemValue = item[key].value.toString();
+            break;
+          default:
+            itemValue = item[key][idProperty];
+            break;
+        }
+
+        item[key].__nextadmin_formatted = itemValue;
+      } else if (isScalar(item[key]) && item[key] !== null) {
+        item[key] = {
+          type: "scalar",
+          value: item[key],
+          __nextadmin_formatted: item[key].toString(),
+        };
+        itemValue = item[key].value;
+      }
+
+      if (
+        appDir &&
+        key in listFields &&
+        listFields[key as keyof typeof listFields]?.formatter &&
+        !!itemValue
+      ) {
+        item[key].__nextadmin_formatted = listFields[
+          key as keyof typeof listFields
+          // @ts-expect-error
+        ]?.formatter?.(itemValue ?? item[key], context);
+      } else {
+        data[index][key] = item[key];
+      }
+    });
+  });
+
+  return {
+    data,
+    total,
+    error,
   };
 };

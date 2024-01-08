@@ -2,362 +2,264 @@ import { PrismaClient } from "@prisma/client";
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
-} from "@prisma/client/runtime/data-proxy";
+} from "@prisma/client/runtime/library";
 import { createRouter } from "next-connect";
 
+import { EditFieldsOptions, NextAdminOptions } from "./types";
+import { getPropsFromParams } from "./utils/props";
 import {
-  fillRelationInSchema,
-  findRelationInData,
-  flatRelationInData,
   formatSearchFields,
   formattedFormData,
-  getBody,
-  getPrismaModelForResource,
-  getResourceFromUrl,
-  getResourceIdFromUrl,
-  removeHiddenProperties,
+  getFormDataValues,
+  getParamsFromUrl,
+  getResourceFromParams,
+  getResourceIdFromParam,
   getResources,
+  parseFormData,
+  getPrismaModelForResource,
+  getModelIdProperty,
+  getBody,
 } from "./utils/server";
-import {
-  NextAdminOptions,
-  FormData,
-  Body,
-  Select,
-  EditFieldsOptions,
-} from "./types";
-import { preparePrismaListRequest } from "./utils/prisma";
-import { ADMIN_BASE_PATH } from "./config";
+import { validate } from "./utils/validator";
+import { uncapitalize } from "./utils/tools";
 
 // Router
 export const nextAdminRouter = async (
   prisma: PrismaClient,
   schema: any,
-  options?: NextAdminOptions
+  options: NextAdminOptions
 ) => {
   const resources = getResources(options);
+  const defaultProps = { resources, basePath: options.basePath };
 
-  return createRouter()
-    // Error handling middleware
-    .use(async (req, res, next) => {
-      try {
-        return await next();
-      } catch (e: any) {
-        if (process.env.NODE_ENV === "development") {
-          throw e;
+  return (
+    createRouter()
+      // Error handling middleware
+      .use(async (req, res, next) => {
+        try {
+          return await next();
+        } catch (e: any) {
+          if (process.env.NODE_ENV === "development") {
+            throw e;
+          }
+
+          return {
+            props: { ...defaultProps, error: e.message },
+          };
         }
+      })
+      .get(async (req) => {
+        const params = getParamsFromUrl(req.url!, options.basePath);
 
-        return {
-          props: { resources, error: e.message },
-        };
-      }
-    })
-    .get(async (req, res) => {
-      const resource = getResourceFromUrl(req.url!, resources);
-      const requestOptions = formatSearchFields(req.url!);
+        const requestOptions = formatSearchFields(req.url!);
+        const locale = req.headers["accept-language"]?.split(",")[0];
 
-      // Dashboard
-      if (!resource) {
-        return { props: { resources } };
-      }
-      const model = getPrismaModelForResource(resource);
-
-      let selectedFields = model?.fields.reduce((acc, field) => {
-        // @ts-expect-error
-        acc[field.name] = true;
-        return acc;
-      }, {} as Select<typeof resource>);
-
-      schema = await fillRelationInSchema(
-        schema,
-        prisma,
-        resource,
-        requestOptions,
-        options
-      );
-      const edit = options?.model?.[resource]?.edit
-        ?.fields as EditFieldsOptions<typeof resource>;
-      const editKeys =
-        edit &&
-        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof resource>>);
-      const editSelect = editKeys?.reduce((acc, column) => {
-        if (edit[column]?.display) acc[column] = true;
-        return acc;
-      }, {} as Select<typeof resource>);
-      selectedFields = editSelect ?? selectedFields;
-
-      // Edit
-      const resourceId = getResourceIdFromUrl(req.url!, resource);
-
-      const dmmfSchema = getPrismaModelForResource(resource);
-      if (resourceId !== undefined) {
-        // @ts-expect-error
-        let data = await prisma[resource].findUniqueOrThrow({
-          where: { id: resourceId },
-          select: selectedFields,
-        });
-        schema = removeHiddenProperties(schema, edit, resource);
-        data = flatRelationInData(data, resource);
-        return {
-          props: {
-            resources,
-            resource,
-            data,
-            schema,
-            dmmfSchema: dmmfSchema?.fields,
-          },
-        };
-      }
-      // New
-      if (req.url!.includes("/new")) {
-        return {
-          props: {
-            resources,
-            resource,
-            schema,
-            dmmfSchema: dmmfSchema?.fields,
-          },
-        };
-      }
-
-      // List
-      const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-      const prismaListRequest = preparePrismaListRequest(
-        resource,
-        searchParams,
-        options
-      );
-      let data: any[] = [];
-      let total: number;
-      let error = null;
-
-      try {
-        // @ts-expect-error
-        data = await prisma[resource].findMany(prismaListRequest);
-        // @ts-expect-error
-        total = await prisma[resource].count({
-          where: prismaListRequest.where,
-        });
-      } catch (e: any) {
-        const { skip, take, orderBy } = prismaListRequest;
-        // @ts-expect-error
-        data = await prisma[resource].findMany({
-          skip,
-          take,
-          orderBy,
-        });
-        // @ts-expect-error
-        total = await prisma[resource].count();
-        error = e.message ? e.message : e;
-        console.error(e);
-      }
-      data = await findRelationInData(data, dmmfSchema?.fields);
-
-      return {
-        props: {
-          resources,
-          resource,
-          data,
-          total,
-          error,
+        const props = await getPropsFromParams({
+          options,
+          prisma,
           schema,
-          dmmfSchema,
-        },
-      };
-    })
-    .post(async (req, res) => {
-      const resource = getResourceFromUrl(req.url!, resources);
-      const requestOptions = formatSearchFields(req.url!);
-
-      if (!resource) {
-        return { notFound: true };
-      }
-      const resourceId = getResourceIdFromUrl(req.url!, resource);
-      const model = getPrismaModelForResource(resource);
-
-      let selectedFields = model?.fields.reduce((acc, field) => {
-        // @ts-expect-error
-        acc[field.name] = true;
-        return acc;
-      }, {} as Select<typeof resource>);
-
-      schema = await fillRelationInSchema(
-        schema,
-        prisma,
-        resource,
-        requestOptions,
-        options
-      );
-      const edit = options?.model?.[resource]?.edit
-        ?.fields as EditFieldsOptions<typeof resource>;
-      const editKeys =
-        edit &&
-        (Object.keys(edit) as Array<keyof EditFieldsOptions<typeof resource>>);
-      const editSelect = editKeys?.reduce((acc, column) => {
-        if (edit[column]?.display) acc[column] = true;
-        return acc;
-      }, {} as Select<typeof resource>);
-      selectedFields = editSelect ?? selectedFields;
-
-      schema = await fillRelationInSchema(
-        schema,
-        prisma,
-        resource,
-        requestOptions,
-        options
-      );
-      schema = removeHiddenProperties(schema, edit, resource);
-      await getBody(req, res);
-      // @ts-expect-error
-      const { id, ...formData } = req.body as Body<FormData<typeof resource>>;
-      const dmmfSchema = getPrismaModelForResource(resource);
-      try {
-        // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
-        if (resourceId === undefined && formData.action === "delete") {
-          const searchParams = new URLSearchParams(req.url!.split("?")[1]);
-          const prismaListRequest = preparePrismaListRequest(
-            resource,
-            searchParams,
-            options
-          );
-          // @ts-expect-error
-          let data = await prisma[resource].findMany(prismaListRequest);
-          data = await findRelationInData(data, dmmfSchema?.fields);
-          // @ts-expect-error
-          const total = await prisma[resource].count();
-
-          return {
-            props: {
-              resources,
-              resource,
-              message: {
-                type: "success",
-                content: "Deleted successfully",
-              },
-              total,
-              data,
-            },
-          };
-        }
-
-        // Delete
-        if (resourceId !== undefined && formData.action === "delete") {
-          // @ts-expect-error
-          await prisma[resource].delete({
-            where: {
-              id: resourceId,
-            },
-          });
-
-          return {
-            redirect: {
-              destination: `${ADMIN_BASE_PATH}/${resource}`,
-              permanent: false,
-            },
-          };
-        }
-
-        // Update
-        let data;
-
-        if (resourceId !== undefined) {
-          // @ts-expect-error
-          data = await prisma[resource].update({
-            where: {
-              id: resourceId,
-            },
-            data: formattedFormData(
-              formData,
-              dmmfSchema?.fields!,
-              schema,
-              resource,
-              false
-            ),
-            select: selectedFields,
-          });
-
-          data = flatRelationInData(data, resource);
-          const fromCreate = req.headers.referer
-            ?.split("?")[0]
-            .endsWith(`${ADMIN_BASE_PATH}/${resource}/new`);
-          const message = fromCreate
-            ? {
-              type: "success",
-              content: "Created successfully",
-            }
-            : {
-              type: "success",
-              content: "Updated successfully",
-            };
-
-          return {
-            props: {
-              resources,
-              resource,
-              data,
-              message,
-              schema,
-              dmmfSchema: dmmfSchema?.fields,
-            },
-          };
-        }
-
-        // Create
-        // @ts-expect-error
-        data = await prisma[resource].create({
-          data: formattedFormData(
-            formData,
-            dmmfSchema?.fields!,
-            schema,
-            resource,
-            true
-          ),
-          select: selectedFields,
+          searchParams: requestOptions,
+          params,
+          isAppDir: false,
+          locale,
         });
 
-        data = flatRelationInData(data, resource);
-        return {
-          redirect: {
-            destination: `${ADMIN_BASE_PATH}/${resource}/${data.id}`,
-            permanent: false,
-          },
-        };
-      } catch (error: any) {
-        if (
-          error.constructor.name === PrismaClientValidationError.name ||
-          error.constructor.name === PrismaClientKnownRequestError.name
-        ) {
-          let data;
-          if (resourceId !== undefined) {
-            // @ts-expect-error
-            data = await prisma[resource].findUnique({
-              where: { id: resourceId },
-              select: selectedFields,
-            });
-            data = flatRelationInData(data, resource);
+        return { props };
+      })
+      .post(async (req, res) => {
+        const params = getParamsFromUrl(req.url!, options.basePath);
+
+        const resource = getResourceFromParams(params, resources);
+        const requestOptions = formatSearchFields(req.url!);
+
+        if (!resource) {
+          return { notFound: true };
+        }
+
+        const resourceId = getResourceIdFromParam(params[1], resource);
+
+        const getProps = () =>
+          getPropsFromParams({
+            options,
+            prisma,
+            schema,
+            searchParams: requestOptions,
+            params,
+            isAppDir: false,
+          });
+
+        const {
+          __admin_action: action,
+          id,
+          ...formData
+        } = await getFormDataValues(req);
+
+        const dmmfSchema = getPrismaModelForResource(resource);
+
+        const parsedFormData = parseFormData(formData, dmmfSchema?.fields!);
+
+        const modelIdProperty = getModelIdProperty(resource);
+
+        try {
+          // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
+          if (!resourceId && action === "delete") {
             return {
               props: {
-                resources,
+                ...(await getProps()),
                 resource,
-                data,
-                schema,
-                dmmfSchema: dmmfSchema?.fields,
-                error: error.message,
+                message: {
+                  type: "success",
+                  content: "Deleted successfully",
+                },
               },
             };
           }
 
-          return {
-            props: {
-              resources,
-              resource,
+          // Delete
+          if (resourceId !== undefined && action === "delete") {
+            // @ts-expect-error
+            await prisma[resource].delete({
+              where: {
+                [modelIdProperty]: resourceId,
+              },
+            });
+
+            return {
+              redirect: {
+                destination: `${options.basePath}/${resource.toLowerCase()}`,
+                permanent: false,
+              },
+            };
+          }
+
+          const fields = options.model?.[resource]?.edit
+            ?.fields as EditFieldsOptions<typeof resource>;
+
+          // Validate
+          validate(parsedFormData, fields);
+
+          if (resourceId !== undefined) {
+            // @ts-expect-error
+            await prisma[resource].update({
+              where: {
+                [modelIdProperty]: resourceId,
+              },
+              data: await formattedFormData(
+                formData,
+                dmmfSchema?.fields!,
+                schema,
+                resource,
+                false,
+                fields
+              ),
+            });
+
+            const message = {
+              type: "success",
+              content: "Updated successfully",
+            };
+
+            return {
+              props: {
+                ...(await getProps()),
+                message,
+              },
+            };
+          }
+
+          // Create
+          // @ts-expect-error
+          const createdData = await prisma[resource].create({
+            data: await formattedFormData(
+              formData,
+              dmmfSchema?.fields!,
               schema,
-              dmmfSchema: dmmfSchema?.fields,
-              error: error.message,
-              data: formData,
+              resource,
+              true,
+              fields
+            ),
+          });
+
+          return {
+            redirect: {
+              destination: `${options.basePath}/${resource.toLowerCase()}/${
+                createdData[modelIdProperty]
+              }?message=${JSON.stringify({
+                type: "success",
+                content: "Created successfully",
+              })}`,
+              permanent: false,
             },
           };
+        } catch (error: any) {
+          if (
+            error.constructor.name === PrismaClientValidationError.name ||
+            error.constructor.name === PrismaClientKnownRequestError.name ||
+            error.name === "ValidationError"
+          ) {
+            let data = parsedFormData;
+
+            // TODO This could be improved by merging form values but it's breaking stuff
+            if (error.name === "ValidationError") {
+              error.errors.map((error: any) => {
+                // @ts-expect-error
+                data[error.property] = formData[error.property];
+              });
+            }
+
+            return {
+              props: {
+                ...(await getProps()),
+                error: error.message,
+                validation: error.errors,
+              },
+            };
+          }
+
+          throw error;
         }
-        throw error;
-      }
-    })
-}
+      })
+      .delete(async (req, res) => {
+        const params = getParamsFromUrl(req.url!, options.basePath);
+        const resource = getResourceFromParams(params, resources);
+
+        if (!resource) {
+          return { notFound: true };
+        }
+
+        const body = await getBody(req);
+        const bodyJson = JSON.parse(body) as string[] | number[];
+
+        console.log({ bodyJson });
+
+        const modelIdProperty = getModelIdProperty(resource);
+
+        // @ts-expect-error
+        await prisma[uncapitalize(resource)].deleteMany({
+          where: {
+            [modelIdProperty]: {
+              in: bodyJson,
+            },
+          },
+        });
+
+        return {
+          props: {
+            ...(await getPropsFromParams({
+              searchParams: formatSearchFields(req.url!),
+              options,
+              prisma,
+              schema,
+              params,
+              isAppDir: false,
+            })),
+            resource,
+            message: {
+              type: "success",
+              content: "Deleted successfully",
+            },
+          },
+        };
+      })
+  );
+};

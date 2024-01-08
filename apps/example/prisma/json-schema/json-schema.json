@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "definitions": {
-    "user": {
+    "User": {
       "type": "object",
       "properties": {
         "id": {
@@ -54,6 +54,22 @@
             "USER",
             "ADMIN"
           ]
+        },
+        "avatar": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "metadata": {
+          "type": [
+            "number",
+            "string",
+            "boolean",
+            "object",
+            "array",
+            "null"
+          ]
         }
       },
       "required": [
@@ -80,7 +96,7 @@
           "default": false
         },
         "author": {
-          "$ref": "#/definitions/user"
+          "$ref": "#/definitions/User"
         },
         "categories": {
           "type": "array",
@@ -115,7 +131,7 @@
         "user": {
           "anyOf": [
             {
-              "$ref": "#/definitions/user"
+              "$ref": "#/definitions/User"
             },
             {
               "type": "null"
@@ -191,7 +207,7 @@
   "type": "object",
   "properties": {
     "user": {
-      "$ref": "#/definitions/user"
+      "$ref": "#/definitions/User"
     },
     "post": {
       "$ref": "#/definitions/Post"

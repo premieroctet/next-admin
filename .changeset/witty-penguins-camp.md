@@ -2,4 +2,4 @@
 "@premieroctet/next-admin": patch
 ---
 
-feat: display currently selected menu
+feat: allow slug version of model in url
