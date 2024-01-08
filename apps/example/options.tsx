@@ -109,6 +109,11 @@ export const options: NextAdminOptions = {
         },
       },
       edit: {
+        fields: {
+          categories: {
+            optionFormatter: (category) => category.name,
+          }
+        },
         display: [
           "id",
           "title",

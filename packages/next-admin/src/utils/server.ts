@@ -9,6 +9,7 @@ import {
   ModelName,
   ModelWithoutRelationships,
   NextAdminOptions,
+  ObjectField,
   ScalarField,
   Schema,
 } from "../types";
@@ -88,13 +89,15 @@ export const fillRelationInSchema = async (
         const optionsForRelations =
           listOptions?.search ?? remoteModel?.fields.map((field) => field.name);
         const relationProperty: Field<typeof modelName> =
-          (relationFromFields?.[0] as Field<typeof modelName>) ?? fieldName;
+          ((relationFromFields?.[0] as Field<typeof modelName>) ?? fieldName);
         const fieldsFiltered = remoteModel?.fields.filter(
           (field) => (optionsForRelations as string[])?.includes(field.name)
         );
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
-        const nonChekedToString = options?.model?.[modelNameRelation]?.toString;
+        const nonChekedToString =
+          options?.model?.[modelName]?.edit?.fields?.[relationProperty]?.toString
+          || options?.model?.[modelNameRelation]?.toString;
         const modelRelationIdField = getModelIdProperty(modelNameRelation);
         const toStringForRelations =
           nonChekedToString && !isNativeFunction(nonChekedToString)
