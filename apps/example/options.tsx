@@ -111,7 +111,7 @@ export const options: NextAdminOptions = {
       edit: {
         fields: {
           categories: {
-            toString: (category) => `${category.name} - Cat${category.id}`
+            optionFormatter: (category) => category.name,
           }
         },
         display: [
