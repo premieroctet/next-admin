@@ -96,8 +96,7 @@ export const fillRelationInSchema = async (
         const search = requestOptions[`${relationProperty}search`];
         const where = createWherePredicate(fieldsFiltered, search);
         const nonChekedToString =
-        // @ts-expect-error
-          options?.model?.[modelName]?.edit?.fields?.[relationProperty]?.optionFormatter
+          options?.model?.[modelName]?.edit?.fields?.[relationProperty]?.toString
           || options?.model?.[modelNameRelation]?.toString;
         const modelRelationIdField = getModelIdProperty(modelNameRelation);
         const toStringForRelations =

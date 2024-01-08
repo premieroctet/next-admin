@@ -53,7 +53,7 @@ export type EditFieldsOptions<T extends ModelName> = {
     input?: React.ReactElement;
   } & (
     P extends keyof ObjectField<T> ? {
-      optionFormatter?: (item: Model<T>[P] extends Array<infer U> ? U : Model<T>[P]) => string;
+      toString?: (item: Model<T>[P] extends Array<infer U> ? U : Model<T>[P]) => string;
     } : {}
   )
 };
