@@ -11,6 +11,7 @@
     "start:example": "turbo run start --filter=example",
     "build": "turbo run build",
     "build:example": "turbo run build --filter=example",
+    "build:next-admin": "turbo run build --filter=@premieroctet/next-admin",
     "dev": "turbo run dev",
     "dev:docs": "turbo run dev --filter=docs",
     "lint": "turbo run lint",
@@ -18,7 +19,7 @@
     "test:e2e": "dotenv turbo test:e2e",
     "database": "dotenv turbo run database",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-package": "turbo run build && changeset publish"
+    "publish-package": "yarn build:next-admin && changeset publish"
   },
   "devDependencies": {
     "dotenv-cli": "7.2.1",
