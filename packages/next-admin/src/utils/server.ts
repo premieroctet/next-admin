@@ -496,7 +496,7 @@ export const removeHiddenProperties = <M extends ModelName>(
   resource: M,
   editOptions: EditOptions<M>
 ) => {
-  if (!editOptions) return schema;
+  if (!editOptions?.display) return schema;
   const properties = schema.definitions[resource].properties;
   Object.keys(properties).forEach((property) => {
     if (!editOptions.display?.includes(property as Field<M>)) {

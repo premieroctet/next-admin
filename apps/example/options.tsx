@@ -114,14 +114,6 @@ export const options: NextAdminOptions = {
             optionFormatter: (category) => `${category.name} Cat.${category.id}`,
           },
         },
-        display: [
-          "id",
-          "title",
-          "content",
-          "published",
-          "authorId",
-          "categories",
-        ],
       },
     },
     Category: {
