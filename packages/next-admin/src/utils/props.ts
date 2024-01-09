@@ -1,5 +1,6 @@
 "use server";
 import { Prisma, PrismaClient } from "@prisma/client";
+import qs from "querystring";
 import {
   ActionParams,
   AdminComponentProps,
@@ -9,20 +10,19 @@ import {
   NextAdminOptions,
   SubmitFormResult,
 } from "../types";
+import { createBoundServerAction } from "./actions";
+import { getCustomInputs } from "./options";
+import { getMappedDataList } from "./prisma";
 import {
   fillRelationInSchema,
   getModelIdProperty,
+  getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
   transformData,
   transformSchema,
-  getPrismaModelForResource,
 } from "./server";
-import { getMappedDataList } from "./prisma";
-import qs from "querystring";
-import { createBoundServerAction } from "./actions";
-import { getCustomInputs } from "./options";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -159,13 +159,20 @@ export async function getPropsFromParams({
         typeof resource
       >;
       schema = transformSchema(schema, resource, edit);
-
+      schema = await fillRelationInSchema(
+        schema,
+        prisma,
+        resource,
+        searchParams,
+        options
+      );
+      
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
 
       if (resourceId !== undefined) {
-        const editDisplayedKeys = edit && edit.display;
+        const editDisplayedKeys = edit?.display;
         const editSelect = editDisplayedKeys?.reduce(
           (acc, column) => {
             acc[column] = true;

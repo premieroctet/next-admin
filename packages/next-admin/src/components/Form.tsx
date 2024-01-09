@@ -11,19 +11,19 @@ import {
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import { ChangeEvent, cloneElement, useMemo, useState } from "react";
+import { useConfig } from "../context/ConfigContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Field, ModelAction, ModelName, SubmitFormResult } from "../types";
-import { Schemas, getSchemas } from "../utils/jsonSchema";
+import { getSchemas } from "../utils/jsonSchema";
+import ActionsDropdown from "./ActionsDropdown";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
-import SelectWidget from "./inputs/SelectWidget";
-import Button from "./radix/Button";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
-import { useConfig } from "../context/ConfigContext";
-import { useRouterInternal } from "../hooks/useRouterInternal";
-import ActionsDropdown from "./ActionsDropdown";
+import SelectWidget from "./inputs/SelectWidget";
+import Button from "./radix/Button";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -237,6 +237,7 @@ const Form = ({
           <input
             onChange={onChangeOverride || onTextChange}
             {...props}
+            value={props.value ?? undefined}
             className={clsx(
               "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed",
               { "ring-red-600": rawErrors }
@@ -274,7 +275,7 @@ const Form = ({
       <CustomForm
         // @ts-expect-error
         action={action ? onSubmit : ""}
-        method="post"
+        {...(!action ? { method: "post" } : {})}
         idPrefix=""
         idSeparator=""
         enctype={!action ? "multipart/form-data" : undefined}
