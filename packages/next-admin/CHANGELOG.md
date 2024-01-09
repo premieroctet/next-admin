@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 3.1.2
+
+### Patch Changes
+
+- 318748b: Fix form issue: relationship field are not displayed in form
+- 318748b: Display all properties even if editOptions are not empty
+
 ## 3.1.1
 
 ### Patch Changes
