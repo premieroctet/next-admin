@@ -188,27 +188,22 @@ export const transformData = <M extends ModelName>(
     const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
     if (get) {
       acc[key] = get(data[key]);
-    } else {
-      if (fieldKind === "object") {
-        const modelRelation = field!.type as ModelName;
-
-        const modelRelationIdField = getModelIdProperty(modelRelation);
-
-        // Flat relationships to id
-        if (Array.isArray(data[key])) {
-          acc[key] = data[key].map((item: any) => item[modelRelationIdField]);
-        } else {
-          acc[key] = data[key] ? data[key][modelRelationIdField] : null;
-        }
+    } else if (fieldKind === "object") {
+      const modelRelation = field!.type as ModelName;
+      const modelRelationIdField = getModelIdProperty(modelRelation);
+      if (Array.isArray(data[key])) {
+        acc[key] = data[key].map((item: any) => item[modelRelationIdField]);
       } else {
-        const fieldTypes = field?.type;
-        if (fieldTypes === "DateTime") {
-          acc[key] = data[key] ? data[key].toISOString() : null;
-        } else if (fieldTypes === "Json") {
-          acc[key] = data[key] ? JSON.stringify(data[key]) : null;
-        } else {
-          acc[key] = data[key] ? data[key] : null;
-        }
+        acc[key] = data[key] ? data[key][modelRelationIdField] : null;
+      }
+    } else {
+      const fieldTypes = field?.type;
+      if (fieldTypes === "DateTime") {
+        acc[key] = data[key] ? data[key].toISOString() : null;
+      } else if (fieldTypes === "Json") {
+        acc[key] = data[key] ? JSON.stringify(data[key]) : null;
+      } else {
+        acc[key] = data[key] ? data[key] : null;
       }
     }
     return acc;

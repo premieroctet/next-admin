@@ -42,6 +42,11 @@ export type GetPropsFromParamsParams = {
   ) => Promise<void>;
 };
 
+enum Page {
+  LIST = 1,
+  EDIT = 2,
+}
+
 export async function getPropsFromParams({
   params,
   searchParams,
@@ -56,14 +61,14 @@ export async function getPropsFromParams({
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
-      AdminComponentProps,
-      | "pageComponent"
-      | "basePath"
-      | "isAppDir"
-      | "message"
-      | "resources"
-      | "error"
-    >
+    AdminComponentProps,
+    | "pageComponent"
+    | "basePath"
+    | "isAppDir"
+    | "message"
+    | "resources"
+    | "error"
+  >
 > {
   const {
     resource,
@@ -112,7 +117,7 @@ export async function getPropsFromParams({
   const actions = options?.model?.[resource]?.actions;
 
   switch (params.length) {
-    case 1: {
+    case Page.LIST: {
       schema = await fillRelationInSchema(
         schema,
         prisma,
@@ -140,7 +145,7 @@ export async function getPropsFromParams({
         actions: isAppDir ? actions : undefined,
       };
     }
-    case 2: {
+    case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
       const model = getPrismaModelForResource(resource);
 
@@ -207,6 +212,7 @@ export async function getPropsFromParams({
           customInputs,
         };
       }
+      return defaultProps;
     }
     default:
       return defaultProps;
@@ -240,7 +246,7 @@ export const getMainLayoutProps = ({
     message = searchParams?.message
       ? JSON.parse(searchParams.message as string)
       : null;
-  } catch {}
+  } catch { }
 
   const resourcesTitles = resources.reduce((acc, resource) => {
     acc[resource as Prisma.ModelName] =

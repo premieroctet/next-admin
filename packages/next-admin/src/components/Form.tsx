@@ -12,6 +12,7 @@ import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import { ChangeEvent, cloneElement, useMemo, useState } from "react";
 import { useConfig } from "../context/ConfigContext";
+import { FormContext, FormProvider } from "../context/FormContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Field, ModelAction, ModelName, SubmitFormResult } from "../types";
@@ -272,26 +273,32 @@ const Form = ({
           />
         )}
       </div>
-      <CustomForm
-        // @ts-expect-error
-        action={action ? onSubmit : ""}
-        {...(!action ? { method: "post" } : {})}
-        idPrefix=""
-        idSeparator=""
-        enctype={!action ? "multipart/form-data" : undefined}
-        {...schemas}
-        formData={data}
-        validator={validator}
-        extraErrors={extraErrors}
-        fields={fields}
-        templates={{
-          ...templates,
-          ButtonTemplates: { SubmitButton: submitButton },
-        }}
-        widgets={widgets}
-        onSubmit={(e) => console.log("onSubmit", e)}
-        onError={(e) => console.log("onError", e)}
-      />
+      <FormProvider initialValue={data}>
+        <FormContext.Consumer>
+          {({formData, setFormData}) =>
+            <CustomForm
+              // @ts-expect-error
+              action={action ? onSubmit : ""}
+              {...(!action ? { method: "post" } : {})}
+              onChange={(e) => {setFormData(e.formData)}}
+              idPrefix=""
+              idSeparator=""
+              enctype={!action ? "multipart/form-data" : undefined}
+              {...schemas}
+              formData={formData}
+              validator={validator}
+              extraErrors={extraErrors}
+              fields={fields}
+              templates={{
+                ...templates,
+                ButtonTemplates: { SubmitButton: submitButton },
+              }}
+              widgets={widgets}
+              onSubmit={(e) => console.log("onSubmit", e)}
+              onError={(e) => console.log("onError", e)}
+            />}
+        </FormContext.Consumer>
+      </FormProvider>
     </div>
   );
 };

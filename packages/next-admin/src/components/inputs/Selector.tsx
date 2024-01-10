@@ -1,10 +1,9 @@
-import { useRouter } from "next/compat/router";
-import { ChangeEvent, useTransition } from "react";
-import debounce from "lodash/debounce";
 import clsx from "clsx";
+import debounce from "lodash/debounce";
+import { ChangeEvent, useTransition } from "react";
 import Loader from "../../assets/icons/Loader";
-import { Enumeration } from "../../types";
 import { useRouterInternal } from "../../hooks/useRouterInternal";
+import { Enumeration } from "../../types";
 
 export type SelectorProps = {
   open: boolean;
