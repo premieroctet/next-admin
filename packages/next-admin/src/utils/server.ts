@@ -94,6 +94,9 @@ export const fillRelationInSchema = async (
             typeof item !== "object" ? { label: item, value: item } : item
           );
         }
+        if(fieldValue?.default) {
+          fieldValue.default = { label: fieldValue.default, value: fieldValue.default };
+        }
       }
       if (fieldKind === "object") {
         const modelNameRelation = fieldType as ModelName;

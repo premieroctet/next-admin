@@ -98,7 +98,7 @@ export const fillForm = async (
       break;
     case "Post":
       await page.fill('input[id="title"]', dataTest.Post.title);
-      await page.getByLabel("authorId*").click();
+      await page.getByLabel("author*").click();
       await page.getByText(dataTest.Post.authorId).click();
       break;
     case "Category":
