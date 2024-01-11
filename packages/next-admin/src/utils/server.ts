@@ -213,6 +213,8 @@ export const transformData = <M extends ModelName>(
       } else {
         acc[key] = data[key] ? { label: toStringForRelations(data[key]), value: data[key][modelRelationIdField] } : null;
       }
+    } else if(fieldKind === "enum") {
+      acc[key] = data[key] ? { label: data[key], value: data[key] } : null;
     } else {
       const fieldTypes = field?.type;
       if (fieldTypes === "DateTime") {
