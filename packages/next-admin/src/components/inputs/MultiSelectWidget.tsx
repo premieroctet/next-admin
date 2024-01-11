@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useForm } from "../../context/FormContext";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
+import { Enumeration } from "../../types";
 import MultiSelectItem from "./MultiSelectItem";
 import { Selector } from "./Selector";
 
@@ -12,16 +13,13 @@ const MultiSelectWidget = (props: any) => {
   useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
 
   const onRemoveClick = (value: any) => {
-    onChange(formData?.filter((item: any) => item !== value));
+    onChange(formData?.filter((item: Enumeration) => item.value !== value));
   };
 
-  const values = formData?.map((item: any) =>
-    options.find((option: any) => option.value === item)
-  )
-  const selectedValues = values?.map((item: any) => item?.value) ?? [];
-  
+  const selectedValues = formData?.map((item: any) => item?.value) ?? [];
+
   const optionsLeft = options?.filter(
-    (option: any) => !formData?.find((item: any) => item === option.value)
+    (option: Enumeration) => !formData?.find((item: Enumeration) => item.value === option.value)
   );
 
   useEffect(() => {
@@ -39,7 +37,7 @@ const MultiSelectWidget = (props: any) => {
           className="w-full px-3 py-2 pr-10 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm cursor-default flex min-h-[38px] flex-wrap gap-x-1 gap-y-1"
           onClick={() => formContext.toggleOpen(name)}
         >
-          {values?.map(
+          {formData?.map(
             (value: any, index: number) =>
               value && (
                 <MultiSelectItem
@@ -58,8 +56,8 @@ const MultiSelectWidget = (props: any) => {
         open={formContext.relationState?.[name]?.open!}
         options={optionsLeft}
         name={name}
-        onChange={(value: string) => {
-          onChange([...(formData || []), value]);
+        onChange={(option: Enumeration) => {
+          onChange([...(formData || []), option]);
         }}
       />
     </div>

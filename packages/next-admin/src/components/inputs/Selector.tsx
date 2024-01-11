@@ -9,7 +9,7 @@ export type SelectorProps = {
   open: boolean;
   options?: Enumeration[];
   name: string;
-  onChange: (value: string) => void;
+  onChange: (otpion: Enumeration) => void;
 };
 
 export const Selector = ({ open, options, name, onChange }: SelectorProps) => {
@@ -57,7 +57,7 @@ export const Selector = ({ open, options, name, onChange }: SelectorProps) => {
               key={index}
               className="px-3 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900"
               onMouseDown={() => {
-                onChange(option.value);
+                onChange(option);
               }}
             >
               {option.label}

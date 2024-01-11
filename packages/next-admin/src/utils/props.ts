@@ -191,7 +191,7 @@ export async function getPropsFromParams({
           where: { [idProperty]: resourceId },
           select: selectedFields,
         });
-        data = transformData(data, resource, edit);
+        data = transformData(data, resource, edit, options);
         return {
           ...defaultProps,
           resource,

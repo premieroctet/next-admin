@@ -230,8 +230,6 @@ export const nextAdminRouter = async (
         const body = await getBody(req);
         const bodyJson = JSON.parse(body) as string[] | number[];
 
-        console.log({ bodyJson });
-
         const modelIdProperty = getModelIdProperty(resource);
 
         // @ts-expect-error
