@@ -17,6 +17,11 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
 
+  const handleChange = (option: Enumeration) => {
+    onChange(option);
+    formContext.setOpen(false, name);
+  }
+
   useEffect(() => {
     if (formContext.relationState?.[name]?.open) {
       // @ts-expect-error
@@ -58,7 +63,7 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
         open={formContext.relationState?.[name]?.open!}
         options={enumOptions}
         name={props.name}
-        onChange={onChange}
+        onChange={handleChange}
       />
     </div>
   );
