@@ -94,8 +94,8 @@ export const fillRelationInSchema = async (
             typeof item !== "object" ? { label: item, value: item } : item
           );
         }
-        if(fieldValue?.default) {
-          fieldValue.default = { label: fieldValue.default, value: fieldValue.default };
+        if (fieldValue?.default) {
+          fieldValue.default = typeof fieldValue.default !== "object" ? { label: fieldValue.default, value: fieldValue.default } : fieldValue.default;
         }
       }
       if (fieldKind === "object") {
@@ -207,6 +207,8 @@ export const transformData = <M extends ModelName>(
     const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
     if (get) {
       acc[key] = get(data[key]);
+    } else if (fieldKind === "enum") {
+      acc[key] = data[key] ? { label: data[key], value: data[key] } : null;
     } else if (fieldKind === "object") {
       const modelRelation = field!.type as ModelName;
       const modelRelationIdField = getModelIdProperty(modelRelation);
@@ -216,8 +218,6 @@ export const transformData = <M extends ModelName>(
       } else {
         acc[key] = data[key] ? { label: toStringForRelations(data[key]), value: data[key][modelRelationIdField] } : null;
       }
-    } else if(fieldKind === "enum") {
-      acc[key] = data[key] ? { label: data[key], value: data[key] } : null;
     } else {
       const fieldTypes = field?.type;
       if (fieldTypes === "DateTime") {
@@ -410,10 +410,9 @@ export const formattedFormData = async <M extends ModelName>(
               // no-op
             }
           } else if (
-
             dmmfPropertyType === "String" &&
             ["data-url", "file"].includes(
-              editOptions?.[dmmfPropertyName]!.format ?? ""
+              editOptions?.[dmmfPropertyName]?.format ?? ""
             ) &&
             formData[dmmfPropertyName] instanceof Buffer
           ) {
@@ -444,7 +443,6 @@ export const formattedFormData = async <M extends ModelName>(
       }
     })
   );
-
   return formattedData;
 };
 
@@ -668,7 +666,6 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
     if (key.startsWith("$ACTION")) {
       return;
     }
-
     tmpFormValues[key] = val;
   });
 
