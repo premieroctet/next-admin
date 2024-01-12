@@ -36,7 +36,6 @@ export const options: NextAdminOptions = {
           "birthDate",
           "avatar",
           "metadata",
-          "profile"
         ],
         fields: {
           email: {
@@ -133,16 +132,6 @@ export const options: NextAdminOptions = {
       },
       edit: {
         display: ["name", "posts"],
-      },
-    },
-    Profile: {
-      title: "👤 Profiles",
-      toString: (profile) => `${profile.user?.name}`,
-      list: {
-        display: ["bio", "user"],
-      },
-      edit: {
-        display: ["bio", "user"],
       },
     },
   },
