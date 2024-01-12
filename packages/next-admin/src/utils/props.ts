@@ -20,6 +20,7 @@ import {
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
+  orderSchema,
   transformData,
   transformSchema,
 } from "./server";
@@ -160,8 +161,8 @@ export async function getPropsFromParams({
         resource,
         searchParams,
         options,
-        
       );
+      schema = orderSchema(schema, resource, options);
       
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
