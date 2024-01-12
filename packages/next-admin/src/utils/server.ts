@@ -71,13 +71,22 @@ export const fillRelationInSchema = async (
   prisma: PrismaClient,
   resource: ModelName,
   requestOptions: any,
-  options?: NextAdminOptions
+  options?: NextAdminOptions,
 ) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
-  if (!model) return schema;
+  const display = options?.model?.[modelName]?.edit?.display;
+  let fields;
+  if (model?.fields && display) {
+    // @ts-expect-error
+    fields = model.fields.filter((field) => display.includes(field.name));
+  } else {
+    fields = model?.fields;
+  }
+
+  if (!model || !fields) return schema;
   await Promise.all(
-    model.fields.map(async (field) => {
+    fields.map(async (field) => {
       const fieldName = field.name as Field<typeof modelName>;
       const fieldType = field.type;
       const fieldKind = field.kind;
@@ -335,6 +344,13 @@ export const parseFormData = <M extends ModelName>(
   return parsedData;
 };
 
+export const formatId = (ressource: ModelName, id: string) => {
+  const model = models.find((model) => model.name === ressource);
+  const idProperty = getModelIdProperty(ressource);
+  return model?.fields.find((field) => field.name === idProperty)?.type === "Int"
+    ? Number(id)
+    : id;
+}
 /**
  * Convert the form data to the format expected by Prisma
  *
@@ -364,12 +380,6 @@ export const formattedFormData = async <M extends ModelName>(
             schema.definitions[modelName].properties[
             dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
             ];
-          const model = models.find((model) => model.name === dmmfPropertyType);
-          const idProperty = getModelIdProperty(modelName);
-          const formatId = (value?: string) =>
-            model?.fields.find((field) => field.name === idProperty)?.type === "Int"
-              ? Number(value)
-              : value;
           if (fieldValue?.type === "array") {
             formData[dmmfPropertyName] = JSON.parse(
               formData[dmmfPropertyName]!
@@ -377,15 +387,14 @@ export const formattedFormData = async <M extends ModelName>(
             formattedData[dmmfPropertyName] = {
               // @ts-expect-error
               [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
-                (item: any) => ({ id: formatId(item) })
+                (item: any) => ({ id: formatId(dmmfPropertyType as ModelName, item) })
               ),
             };
           } else {
             const connect = Boolean(formData[dmmfPropertyName]);
-            if (!creating)
-              formattedData[dmmfPropertyName] = connect
-                ? { connect: { id: formatId(formData[dmmfPropertyName]) } }
-                : { disconnect: true };
+            formattedData[dmmfPropertyName] = connect
+              ? { connect: { id: formatId(dmmfPropertyType as ModelName, formData[dmmfPropertyName]!) } }
+              : !creating && { disconnect: true }
           }
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
@@ -590,18 +599,7 @@ export const getResourceIdFromParam = (param: string, resource: ModelName) => {
   if (param === "new") {
     return undefined;
   }
-
-  const model = models.find((model) => model.name === resource);
-
-  const idType = model?.fields.find(
-    (field) => field.name === getModelIdProperty(resource)
-  )?.type;
-
-  if (idType === "Int") {
-    return Number(param);
-  }
-
-  return param;
+  return formatId(resource, param);
 };
 
 export const getFormDataValues = async (req: IncomingMessage) => {

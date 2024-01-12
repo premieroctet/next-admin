@@ -15,11 +15,13 @@ import { getCustomInputs } from "./options";
 import { getMappedDataList } from "./prisma";
 import {
   fillRelationInSchema,
+  formatId,
   getModelIdProperty,
   getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
+  orderSchema,
   transformData,
   transformSchema,
 } from "./server";
@@ -118,14 +120,6 @@ export async function getPropsFromParams({
 
   switch (params.length) {
     case Page.LIST: {
-      schema = await fillRelationInSchema(
-        schema,
-        prisma,
-        resource,
-        searchParams,
-        options
-      );
-
       const { data, total, error } = await getMappedDataList(
         prisma,
         resource,
@@ -148,9 +142,7 @@ export async function getPropsFromParams({
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
       const model = getPrismaModelForResource(resource);
-
       const idProperty = getModelIdProperty(resource);
-
       let selectedFields = model?.fields.reduce(
         (acc, field) => {
           acc[field.name] = true;
@@ -169,7 +161,8 @@ export async function getPropsFromParams({
         prisma,
         resource,
         searchParams,
-        options
+        options,
+        
       );
       
       const customInputs = isAppDir
