@@ -132,11 +132,9 @@ export const fillRelationInSchema = async (
           );
           const search = requestOptions[`${fieldName}search`];
           if (search) {
-            console.log(fieldValue.enum);
             fieldValue.enum = fieldValue.enum?.filter((item: any) =>
               item.label.toLowerCase().includes(search.toLowerCase())
             );
-            console.log(fieldValue.enum);
           }
         }
 
