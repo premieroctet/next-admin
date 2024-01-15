@@ -59,12 +59,40 @@ export const getToStringForRelations = <M extends ModelName>(modelName: M, field
 }
 
 /**
+ * Order the fields in the schema according to the display option
+ * 
+ * @param schema
+ * @param resource
+ * @param options
+ * 
+ * @returns schema
+ */
+export const orderSchema = (schema: Schema, resource: ModelName, options?: NextAdminOptions) => {
+  const modelName = resource;
+  const model = models.find((model) => model.name === modelName);
+  if (!model) return schema;
+  const edit = options?.model?.[modelName]?.edit as EditOptions<typeof modelName>;
+  const display = edit?.display;
+  if (display) {
+    const properties = schema.definitions[modelName].properties;
+    const propertiesOrdered = {} as Record<string, any>;
+    display.forEach((property) => {
+      propertiesOrdered[property] = properties[property];
+    });
+    schema.definitions[modelName].properties = propertiesOrdered;
+  }
+  return schema;
+}
+
+/**
  * Fill fields with relations with the values of the related model, and inject them into the schema
  *
  * @param schema
  * @param prisma
  * @param requestOptions
  * @param options
+ * 
+ * @returns schema
  */
 export const fillRelationInSchema = async (
   schema: Schema,
