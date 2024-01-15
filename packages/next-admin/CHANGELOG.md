@@ -1,5 +1,21 @@
 # @premieroctet/next-admin
 
+## 3.2.0
+
+### Minor Changes
+
+- ce1c30c: Only allow the relationship field in the configuration, not the field that carries the relationship at all - this allows several fields to be used in the Prisma @relation options
+- 2da9588: 🌐 add i18n support
+
+### Patch Changes
+
+- 8fcfa08: Add limit of 20 items on select for relationship
+- 8fcfa08: Fix search in enumeration selector
+- 7204981: Fix search for relationship fields and enum fields
+- c962865: Order fields in form according to display options order
+- e1ee443: Fix insensitive search for MySQL providers
+- ce1c30c: Form submitted with error will keep the state with user modification
+
 ## 3.1.2
 
 ### Patch Changes
