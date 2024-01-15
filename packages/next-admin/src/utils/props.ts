@@ -24,6 +24,7 @@ import {
   transformData,
   transformSchema,
 } from "./server";
+import { cloneDeep } from "lodash";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -154,8 +155,8 @@ export async function getPropsFromParams({
       const edit = options?.model?.[resource]?.edit as EditOptions<
         typeof resource
       >;
-
-      let deepCopySchema = JSON.parse(JSON.stringify(schema));
+      
+      let deepCopySchema = cloneDeep(schema);
       deepCopySchema = transformSchema(deepCopySchema, resource, edit);
       deepCopySchema = await fillRelationInSchema(
         deepCopySchema,
