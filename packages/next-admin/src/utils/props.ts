@@ -154,15 +154,17 @@ export async function getPropsFromParams({
       const edit = options?.model?.[resource]?.edit as EditOptions<
         typeof resource
       >;
-      schema = transformSchema(schema, resource, edit);
-      schema = await fillRelationInSchema(
-        schema,
+
+      let deepCopySchema = JSON.parse(JSON.stringify(schema));
+      deepCopySchema = transformSchema(deepCopySchema, resource, edit);
+      deepCopySchema = await fillRelationInSchema(
+        deepCopySchema,
         prisma,
         resource,
         searchParams,
         options,
       );
-      schema = orderSchema(schema, resource, options);
+      deepCopySchema = orderSchema(deepCopySchema, resource, options);
       
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
@@ -188,7 +190,7 @@ export async function getPropsFromParams({
           ...defaultProps,
           resource,
           data,
-          schema,
+          schema: deepCopySchema,
           dmmfSchema: dmmfSchema?.fields,
           customInputs,
           actions: isAppDir ? actions : undefined,
@@ -199,7 +201,7 @@ export async function getPropsFromParams({
         return {
           ...defaultProps,
           resource,
-          schema,
+          schema: deepCopySchema,
           dmmfSchema: dmmfSchema?.fields,
           customInputs,
         };
