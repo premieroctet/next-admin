@@ -30,7 +30,8 @@ describe("getMappedDataList", () => {
       prismaMock,
       "Post",
       options,
-      new URLSearchParams()
+      new URLSearchParams(),
+      {}
     );
     expect(result).toEqual({
       data: postData,

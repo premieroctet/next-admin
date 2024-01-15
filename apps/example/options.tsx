@@ -21,7 +21,7 @@ export const options: NextAdminOptions = {
             formatter: (date, context) => {
               return new Date(date as unknown as string)
                 ?.toLocaleString(context?.locale)
-                .split(" ")[0];
+                .split(/[\s,]+/)[0];
             },
           },
         },

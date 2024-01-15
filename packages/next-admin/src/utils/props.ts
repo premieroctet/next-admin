@@ -41,7 +41,8 @@ export type GetPropsFromParamsParams = {
     resource: ModelName,
     ids: string[] | number[]
   ) => Promise<void>;
-  getMessages?: () => Promise<any>;
+  locale?: string;
+  getMessages?: () => Promise<Record<string, string>>;
 };
 
 enum Page {
@@ -58,6 +59,7 @@ export async function getPropsFromParams({
   action,
   isAppDir = false,
   deleteAction,
+  locale,
   getMessages
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
@@ -144,7 +146,8 @@ export async function getPropsFromParams({
         resource,
         options,
         new URLSearchParams(qs.stringify(searchParams)),
-        isAppDir
+        { locale },
+        isAppDir,
       );
 
       return {
