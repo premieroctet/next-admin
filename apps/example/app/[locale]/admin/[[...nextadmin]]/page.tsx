@@ -30,6 +30,7 @@ export default async function AdminPage({
   return (
     <NextAdmin
       {...props}
+      locale={params.locale as string}
       dashboard={Dashboard}
     />
   );

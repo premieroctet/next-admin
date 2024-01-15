@@ -37,7 +37,6 @@ export type GetPropsFromParamsParams = {
     formData: FormData
   ) => Promise<SubmitFormResult | undefined>;
   isAppDir?: boolean;
-  locale?: string;
   deleteAction?: (
     resource: ModelName,
     ids: string[] | number[]
@@ -58,7 +57,6 @@ export async function getPropsFromParams({
   prisma,
   action,
   isAppDir = false,
-  locale,
   deleteAction,
   getMessages
 }: GetPropsFromParamsParams): Promise<
@@ -146,7 +144,6 @@ export async function getPropsFromParams({
         resource,
         options,
         new URLSearchParams(qs.stringify(searchParams)),
-        { locale },
         isAppDir
       );
 

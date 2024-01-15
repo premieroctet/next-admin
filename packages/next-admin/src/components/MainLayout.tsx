@@ -20,12 +20,13 @@ export const MainLayout = ({
   error,
   children,
   isAppDir,
+  locale,
   translations,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
-
+  const localePath = locale ? `/${locale}` : '';
   return (
-    <ConfigProvider basePath={basePath} isAppDir={isAppDir}>
+    <ConfigProvider basePath={`${localePath}${basePath}`} isAppDir={isAppDir}>
       <I18nProvider translations={mergedTranslations}>
         <div className="w-full">
           <Menu

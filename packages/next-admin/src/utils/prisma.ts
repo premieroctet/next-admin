@@ -117,8 +117,8 @@ export const getMappedDataList = async (
   resource: ModelName,
   options: NextAdminOptions,
   searchParams: URLSearchParams,
-  context: NextAdminContext,
-  appDir = false
+  appDir = false,
+  context?: NextAdminContext,
 ) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,

@@ -225,6 +225,7 @@ export type AdminComponentProps = {
   total?: number;
   dmmfSchema?: Prisma.DMMF.Field[];
   isAppDir?: boolean;
+  locale?: string;
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   /**
    * Mandatory for page router
@@ -254,6 +255,7 @@ export type MainLayoutProps = Pick<
   | "error"
   | "isAppDir"
   | "translations"
+  | "locale"
 >;
 
 export type CustomUIProps = {

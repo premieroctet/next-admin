@@ -52,7 +52,6 @@ export const nextAdminRouter = async (
         const params = getParamsFromUrl(req.url!, options.basePath);
 
         const requestOptions = formatSearchFields(req.url!);
-        const locale = req.headers["accept-language"]?.split(",")[0];
 
         const props = await getPropsFromParams({
           options,
@@ -61,7 +60,6 @@ export const nextAdminRouter = async (
           searchParams: requestOptions,
           params,
           isAppDir: false,
-          locale,
         });
 
         return { props };
