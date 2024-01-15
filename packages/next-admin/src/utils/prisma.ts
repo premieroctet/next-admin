@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { ITEMS_PER_PAGE } from "../config";
 import {
-  EditOptions,
   Field,
   ListOptions,
   ModelName,
@@ -28,8 +27,10 @@ export const createWherePredicate = (
           ?.filter((field) => field.kind === "scalar")
           .map((field) => {
             if (field.type === "String") {
+              // @ts-expect-error
+              const mode = Prisma?.QueryMode ? { mode: Prisma.QueryMode.insensitive } : {};
               return {
-                [field.name]: { contains: search, mode: "insensitive" },
+                [field.name]: { contains: search, ...mode },
               };
             }
             if (field.type === "Int" && !isNaN(Number(search))) {
