@@ -12,6 +12,7 @@ import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import { ChangeEvent, cloneElement, useMemo, useState } from "react";
 import { useConfig } from "../context/ConfigContext";
+import { FormContext, FormProvider } from "../context/FormContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Field, ModelAction, ModelName, SubmitFormResult } from "../types";
@@ -237,7 +238,7 @@ const Form = ({
           <input
             onChange={onChangeOverride || onTextChange}
             {...props}
-            value={props.value ?? undefined}
+            value={props.value ?? ""}
             className={clsx(
               "block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed",
               { "ring-red-600": rawErrors }
@@ -272,26 +273,32 @@ const Form = ({
           />
         )}
       </div>
-      <CustomForm
-        // @ts-expect-error
-        action={action ? onSubmit : ""}
-        {...(!action ? { method: "post" } : {})}
-        idPrefix=""
-        idSeparator=""
-        enctype={!action ? "multipart/form-data" : undefined}
-        {...schemas}
-        formData={data}
-        validator={validator}
-        extraErrors={extraErrors}
-        fields={fields}
-        templates={{
-          ...templates,
-          ButtonTemplates: { SubmitButton: submitButton },
-        }}
-        widgets={widgets}
-        onSubmit={(e) => console.log("onSubmit", e)}
-        onError={(e) => console.log("onError", e)}
-      />
+      <FormProvider initialValue={data}>
+        <FormContext.Consumer>
+          {({formData, setFormData}) =>
+            <CustomForm
+              // @ts-expect-error
+              action={action ? onSubmit : ""}
+              {...(!action ? { method: "post" } : {})}
+              onChange={(e) => {setFormData(e.formData)}}
+              idPrefix=""
+              idSeparator=""
+              enctype={!action ? "multipart/form-data" : undefined}
+              {...schemas}
+              formData={formData}
+              validator={validator}
+              extraErrors={extraErrors}
+              fields={fields}
+              templates={{
+                ...templates,
+                ButtonTemplates: { SubmitButton: submitButton },
+              }}
+              widgets={widgets}
+              onSubmit={(e) => console.log("onSubmit", e)}
+              onError={(e) => console.log("onError", e)}
+            />}
+        </FormContext.Consumer>
+      </FormProvider>
     </div>
   );
 };

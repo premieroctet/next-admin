@@ -41,7 +41,7 @@ model Post {
   title      String
   content    String?
   published  Boolean        @default(false)
-  author     User           @relation("author", fields: [authorId], references: [id])
+  author     User           @relation("author", fields: [authorId], references: [id]) // Many-to-one relation
   authorId   Int
   categories Category[]     @relation("category") // implicit Many-to-many relation
   comments   post_comment[] @relation("comments") // One-to-many relation

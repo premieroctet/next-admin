@@ -1,16 +1,15 @@
-import { useRouter } from "next/compat/router";
-import { ChangeEvent, useTransition } from "react";
-import debounce from "lodash/debounce";
 import clsx from "clsx";
+import debounce from "lodash/debounce";
+import { ChangeEvent, useTransition } from "react";
 import Loader from "../../assets/icons/Loader";
-import { Enumeration } from "../../types";
 import { useRouterInternal } from "../../hooks/useRouterInternal";
+import { Enumeration } from "../../types";
 
 export type SelectorProps = {
   open: boolean;
   options?: Enumeration[];
   name: string;
-  onChange: (value: string) => void;
+  onChange: (otpion: Enumeration) => void;
 };
 
 export const Selector = ({ open, options, name, onChange }: SelectorProps) => {
@@ -58,7 +57,7 @@ export const Selector = ({ open, options, name, onChange }: SelectorProps) => {
               key={index}
               className="px-3 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900"
               onMouseDown={() => {
-                onChange(option.value);
+                onChange(option);
               }}
             >
               {option.label}

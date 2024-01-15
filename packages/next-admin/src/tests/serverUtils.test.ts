@@ -32,7 +32,7 @@ describe("fillRelationInSchema", () => {
       },
     ]);
     const result = await fillRelationInSchema(schema, prismaMock, "Post", {});
-    expect(result.definitions.Post.properties.authorId?.enum).toEqual([
+    expect(result.definitions.Post.properties.author?.enum).toEqual([
       { label: 1, value: 1 },
       { label: 2, value: 2 },
     ]);

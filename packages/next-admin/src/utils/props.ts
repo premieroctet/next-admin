@@ -42,6 +42,11 @@ export type GetPropsFromParamsParams = {
   ) => Promise<void>;
 };
 
+enum Page {
+  LIST = 1,
+  EDIT = 2,
+}
+
 export async function getPropsFromParams({
   params,
   searchParams,
@@ -56,14 +61,14 @@ export async function getPropsFromParams({
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
-      AdminComponentProps,
-      | "pageComponent"
-      | "basePath"
-      | "isAppDir"
-      | "message"
-      | "resources"
-      | "error"
-    >
+    AdminComponentProps,
+    | "pageComponent"
+    | "basePath"
+    | "isAppDir"
+    | "message"
+    | "resources"
+    | "error"
+  >
 > {
   const {
     resource,
@@ -112,15 +117,7 @@ export async function getPropsFromParams({
   const actions = options?.model?.[resource]?.actions;
 
   switch (params.length) {
-    case 1: {
-      schema = await fillRelationInSchema(
-        schema,
-        prisma,
-        resource,
-        searchParams,
-        options
-      );
-
+    case Page.LIST: {
       const { data, total, error } = await getMappedDataList(
         prisma,
         resource,
@@ -140,12 +137,10 @@ export async function getPropsFromParams({
         actions: isAppDir ? actions : undefined,
       };
     }
-    case 2: {
+    case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
       const model = getPrismaModelForResource(resource);
-
       const idProperty = getModelIdProperty(resource);
-
       let selectedFields = model?.fields.reduce(
         (acc, field) => {
           acc[field.name] = true;
@@ -164,7 +159,8 @@ export async function getPropsFromParams({
         prisma,
         resource,
         searchParams,
-        options
+        options,
+        
       );
       
       const customInputs = isAppDir
@@ -186,7 +182,7 @@ export async function getPropsFromParams({
           where: { [idProperty]: resourceId },
           select: selectedFields,
         });
-        data = transformData(data, resource, edit);
+        data = transformData(data, resource, edit, options);
         return {
           ...defaultProps,
           resource,
@@ -207,6 +203,7 @@ export async function getPropsFromParams({
           customInputs,
         };
       }
+      return defaultProps;
     }
     default:
       return defaultProps;
@@ -240,7 +237,7 @@ export const getMainLayoutProps = ({
     message = searchParams?.message
       ? JSON.parse(searchParams.message as string)
       : null;
-  } catch {}
+  } catch { }
 
   const resourcesTitles = resources.reduce((acc, resource) => {
     acc[resource as Prisma.ModelName] =

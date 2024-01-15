@@ -16,7 +16,7 @@ const JsonEditor = ({ value, onChange, name }: Props) => {
 
   return (
     <>
-      <input type="hidden" name={name} value={value} />
+      <input type="hidden" name={name} value={value ?? ""} />
       <Editor
         height="20vh"
         defaultLanguage="json"
