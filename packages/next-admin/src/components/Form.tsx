@@ -10,9 +10,10 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import { ChangeEvent, cloneElement, useMemo, useState } from "react";
+import React, { ChangeEvent, cloneElement, useMemo, useState } from "react";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
+import { useI18n } from "../context/I18nContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Field, ModelAction, ModelName, SubmitFormResult } from "../types";
@@ -78,13 +79,10 @@ const Form = ({
   const { edit, id, ...schemas } = getSchemas(data, schema, dmmfSchema);
   const { basePath } = useConfig();
   const { router } = useRouterInternal();
+  const { t } = useI18n();
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
-    const {
-      norender,
-      submitText,
-      props: buttonProps,
-    } = getSubmitButtonOptions(uiSchema);
+    const { norender, props: buttonProps } = getSubmitButtonOptions(uiSchema);
     if (norender) {
       return null;
     }
@@ -92,7 +90,7 @@ const Form = ({
     return (
       <div className="flex space-x-2 mt-4 justify-between">
         <div className="flex space-x-2">
-          <Button {...buttonProps}>{submitText}</Button>
+          <Button {...buttonProps}>{t("form.button.save.label")}</Button>
           {edit && (
             <Button
               type="submit"
@@ -100,11 +98,10 @@ const Form = ({
               value="delete"
               variant="destructive"
             >
-              Delete
+              {t("form.button.delete.label")}
             </Button>
           )}
         </div>
-        
       </div>
     );
   };
@@ -251,7 +248,15 @@ const Form = ({
       },
       FieldErrorTemplate: ({ errors }) => {
         return errors ? (
-          <div className="text-sm text-red-600 mt-1">{errors}</div>
+          <div className="text-sm text-red-600 mt-1">
+            {errors.map((error, idx) => {
+              if (typeof error === "string") {
+                return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
+              }
+
+              return <React.Fragment key={idx}>{error}</React.Fragment>;
+            })}
+          </div>
         ) : null;
       },
     }),
@@ -275,12 +280,12 @@ const Form = ({
       </div>
       <FormProvider initialValue={data}>
         <FormContext.Consumer>
-          {({formData, setFormData}) =>
+          {({ formData, setFormData }) =>
             <CustomForm
               // @ts-expect-error
               action={action ? onSubmit : ""}
               {...(!action ? { method: "post" } : {})}
-              onChange={(e) => {setFormData(e.formData)}}
+              onChange={(e) => { setFormData(e.formData) }}
               idPrefix=""
               idSeparator=""
               enctype={!action ? "multipart/form-data" : undefined}

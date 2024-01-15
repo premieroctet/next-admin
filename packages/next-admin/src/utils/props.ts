@@ -8,7 +8,7 @@ import {
   MainLayoutProps,
   ModelName,
   NextAdminOptions,
-  SubmitFormResult,
+  SubmitFormResult
 } from "../types";
 import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
@@ -37,11 +37,12 @@ export type GetPropsFromParamsParams = {
     formData: FormData
   ) => Promise<SubmitFormResult | undefined>;
   isAppDir?: boolean;
-  locale?: string;
   deleteAction?: (
     resource: ModelName,
     ids: string[] | number[]
   ) => Promise<void>;
+  locale?: string;
+  getMessages?: () => Promise<Record<string, string>>;
 };
 
 enum Page {
@@ -57,8 +58,9 @@ export async function getPropsFromParams({
   prisma,
   action,
   isAppDir = false,
-  locale,
   deleteAction,
+  locale,
+  getMessages
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -97,7 +99,7 @@ export async function getPropsFromParams({
     );
   }
 
-  const defaultProps: AdminComponentProps = {
+  let defaultProps: AdminComponentProps = {
     resources,
     basePath,
     isAppDir,
@@ -118,6 +120,25 @@ export async function getPropsFromParams({
 
   const actions = options?.model?.[resource]?.actions;
 
+  if (getMessages) {
+    const messages = await getMessages()
+    const dottedProperty = {} as any
+    const dot = (obj: object, prefix = '') => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === 'object') {
+          dot(value, `${prefix}${key}.`)
+        } else {
+          dottedProperty[`${prefix}${key}`] = value
+        }
+      })
+    }
+    dot(messages as object)
+    defaultProps = {
+      ...defaultProps,
+      translations: dottedProperty
+    }
+  }
+
   switch (params.length) {
     case Page.LIST: {
       const { data, total, error } = await getMappedDataList(
@@ -126,7 +147,7 @@ export async function getPropsFromParams({
         options,
         new URLSearchParams(qs.stringify(searchParams)),
         { locale },
-        isAppDir
+        isAppDir,
       );
 
       return {

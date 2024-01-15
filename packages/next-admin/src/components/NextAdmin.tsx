@@ -30,6 +30,8 @@ export function NextAdmin({
   customPages,
   actions: actionsProp,
   deleteAction,
+  translations,
+  locale
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -105,6 +107,8 @@ export function NextAdmin({
         message={message}
         error={error}
         isAppDir={isAppDir}
+        translations={translations}
+        locale={locale}
       >
         {renderMainComponent()}
       </MainLayout>

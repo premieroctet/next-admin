@@ -17,18 +17,18 @@ export type Model<
   T extends object | number = object,
 > = ScalarField<M> & {
   [P in keyof ObjectField<M>]: ObjectField<M>[P] extends { scalars: infer S }
-    ? T extends object
-      ? S
-      : T
-    : never | ObjectField<M>[P] extends { scalars: infer S }[]
-      ? T extends object
-        ? S[]
-        : T[]
-      : never | ObjectField<M>[P] extends { scalars: infer S } | null
-        ? T extends object
-          ? S | null
-          : T | null
-        : never;
+  ? T extends object
+  ? S
+  : T
+  : never | ObjectField<M>[P] extends { scalars: infer S }[]
+  ? T extends object
+  ? S[]
+  : T[]
+  : never | ObjectField<M>[P] extends { scalars: infer S } | null
+  ? T extends object
+  ? S | null
+  : T | null
+  : never;
 };
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
@@ -69,23 +69,23 @@ export type Handler<
 
 export type FormatOptions<T> = T extends string
   ?
-      | "textarea"
-      | "password"
-      | "color"
-      | "email"
-      | "uri"
-      | "data-url"
-      | "date"
-      | "date-time"
-      | "time"
-      | "alt-datetime"
-      | "alt-date"
-      | "file"
+  | "textarea"
+  | "password"
+  | "color"
+  | "email"
+  | "uri"
+  | "data-url"
+  | "date"
+  | "date-time"
+  | "time"
+  | "alt-datetime"
+  | "alt-date"
+  | "file"
   : never | T extends Date
-    ? "date" | "date-time" | "time"
-    : never | T extends number
-      ? "updown" | "range"
-      : never;
+  ? "date" | "date-time" | "time"
+  : never | T extends number
+  ? "updown" | "range"
+  : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
@@ -195,16 +195,16 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
     | { type: "scalar"; value: string | number | boolean }
     | { type: "count"; value: number }
     | {
-        type: "link";
-        value: {
-          label: string;
-          url: string;
-        };
-      }
+      type: "link";
+      value: {
+        label: string;
+        url: string;
+      };
+    }
     | {
-        type: "date";
-        value: Date;
-      }
+      type: "date";
+      value: Date;
+    }
   );
 
 export type AdminComponentProps = {
@@ -225,6 +225,7 @@ export type AdminComponentProps = {
   total?: number;
   dmmfSchema?: Prisma.DMMF.Field[];
   isAppDir?: boolean;
+  locale?: string;
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   /**
    * Mandatory for page router
@@ -240,6 +241,7 @@ export type AdminComponentProps = {
   customPages?: Array<{ title: string; path: string }>;
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
+  translations?: Translations;
 };
 
 export type MainLayoutProps = Pick<
@@ -252,6 +254,8 @@ export type MainLayoutProps = Pick<
   | "message"
   | "error"
   | "isAppDir"
+  | "translations"
+  | "locale"
 >;
 
 export type CustomUIProps = {
@@ -288,3 +292,24 @@ export type CustomInputProps = Partial<{
   readonly: boolean;
   rawErrors: string[];
 }>;
+
+export type TranslationKeys =
+  | "list.header.add.label"
+  | "list.header.search.placeholder"
+  | "list.footer.indicator.showing"
+  | "list.footer.indicator.to"
+  | "list.footer.indicator.of"
+  | "list.row.actions.delete.label"
+  | "list.empty.label"
+  | "form.button.save.label"
+  | "form.button.delete.label"
+  | "form.widgets.file_upload.label"
+  | "form.widgets.file_upload.delete"
+  | "actions.label"
+  | "actions.delete.label";
+
+export type Translations = {
+  [key in TranslationKeys]?: string;
+} & {
+  [key: string]: string;
+};

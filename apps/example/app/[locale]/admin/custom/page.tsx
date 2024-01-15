@@ -1,8 +1,8 @@
 import { MainLayout } from "@premieroctet/next-admin";
-import { createRandomPost } from "../../../actions/posts";
+import { createRandomPost } from "../../../../actions/posts";
 import { getMainLayoutProps } from "@premieroctet/next-admin/dist/mainLayout";
-import { prisma } from "../../../prisma";
-import { options } from "../../../options";
+import { prisma } from "../../../../prisma";
+import { options } from "../../../../options";
 
 const CustomPage = async () => {
   const mainLayoutProps = getMainLayoutProps({ options, isAppDir: true });

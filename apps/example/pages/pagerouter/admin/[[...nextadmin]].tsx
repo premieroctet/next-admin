@@ -9,6 +9,7 @@ import schema from "../../../prisma/json-schema/json-schema.json";
 const pageOptions = options;
 
 export default function Admin(props: AdminComponentProps) {
+  
   return <NextAdmin {...props} dashboard={Dashboard} options={pageOptions} />;
 }
 
