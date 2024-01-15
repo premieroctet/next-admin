@@ -27,7 +27,7 @@ export const createWherePredicate = (
           ?.filter((field) => field.kind === "scalar")
           .map((field) => {
             if (field.type === "String") {
-              // @ts-expect-error
+              // @ts-ignore
               const mode = Prisma?.QueryMode ? { mode: Prisma.QueryMode.insensitive } : {};
               return {
                 [field.name]: { contains: search, ...mode },
