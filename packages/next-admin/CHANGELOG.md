@@ -1,5 +1,55 @@
 # @premieroctet/next-admin
 
+## 3.1.2
+
+### Patch Changes
+
+- 318748b: Fix form issue: relationship field are not displayed in form
+- 318748b: Display all properties even if editOptions are not empty
+
+## 3.1.1
+
+### Patch Changes
+
+- 3c67158: Fix optionFormatter function
+
+## 3.1.0
+
+### Minor Changes
+
+- cbf6925: 📄 add option for custom pages
+
+  In the `options`, add
+
+  ```tsx
+  pages: {
+    "/custom": {
+      title: "Custom page",
+      component: CustomPage,
+    },
+  },
+  ```
+
+  In the above example, navigating to `<basePath>/custom` will render the `CustomPage` component, in addition with the persistent Next Admin components (header, sidebar, message).
+
+- a261bc5: # New feature
+
+  ✏️ add ability to render a custom input
+
+- 4ddf12f: 🛠 add ability to create custom actions on resources
+- 244820a: use the `@id` field of a model as the id field instead of defaulting to "id"
+- 2d3f8ac: # New feature
+
+  ✨ Override model name in UI
+
+- 28053ff: add option `optionFormatter` to format select option of a related model at field option level
+- 603b499: 🛠 add support for JSON fields
+- af7f123: 🪄 allow sort by relationship count
+
+### Patch Changes
+
+- 11c3b5a: feat: allow slug version of model in url
+
 ## 3.0.1
 
 ### Patch Changes

@@ -23,7 +23,7 @@ export default async function AdminPage({
     schema,
     action: submitFormAction,
     deleteAction: deleteItem,
-    getMessagesFunc: () => getMessages({ locale: params.locale as string }).then((messages) => messages.admin),
+    getMessages: () => getMessages({ locale: params.locale as string }).then((messages) => messages.admin),
   });
 
 

@@ -51,7 +51,11 @@ export type EditFieldsOptions<T extends ModelName> = {
     format?: FormatOptions<ModelWithoutRelationships<T>[P]>;
     handler?: Handler<T, P, Model<T>[P]>;
     input?: React.ReactElement;
-  };
+  } & (
+    P extends keyof ObjectField<T> ? {
+      optionFormatter?: (item: Model<T>[P] extends Array<infer U> ? U : Model<T>[P]) => string;
+    } : {}
+  )
 };
 
 export type Handler<

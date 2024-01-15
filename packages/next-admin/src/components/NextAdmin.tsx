@@ -1,12 +1,11 @@
 import Head from "next/head";
 import NextNProgress from "nextjs-progressbar";
-import React from "react";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
+import { getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
-import { getCustomInputs } from "../utils/options";
 import { MainLayout } from "./MainLayout";
 
 // Components

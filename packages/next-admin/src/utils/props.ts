@@ -20,9 +20,11 @@ import {
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
+  orderSchema,
   transformData,
   transformSchema,
 } from "./server";
+import { cloneDeep } from "lodash";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -40,8 +42,13 @@ export type GetPropsFromParamsParams = {
     resource: ModelName,
     ids: string[] | number[]
   ) => Promise<void>;
-  getMessagesFunc?: () => Promise<any>;
+  getMessages?: () => Promise<any>;
 };
+
+enum Page {
+  LIST = 1,
+  EDIT = 2,
+}
 
 export async function getPropsFromParams({
   params,
@@ -53,7 +60,7 @@ export async function getPropsFromParams({
   isAppDir = false,
   locale,
   deleteAction,
-  getMessagesFunc
+  getMessages
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -113,8 +120,8 @@ export async function getPropsFromParams({
 
   const actions = options?.model?.[resource]?.actions;
 
-  if (getMessagesFunc) {
-    const messages = await getMessagesFunc()
+  if (getMessages) {
+    const messages = await getMessages()
     const dottedProperty = {} as any
     const dot = (obj: object, prefix = '') => {
       Object.entries(obj).forEach(([key, value]) => {
@@ -126,7 +133,6 @@ export async function getPropsFromParams({
       })
     }
     dot(messages as object)
-    console.log(dottedProperty)
     defaultProps = {
       ...defaultProps,
       translations: dottedProperty
@@ -134,15 +140,7 @@ export async function getPropsFromParams({
   }
 
   switch (params.length) {
-    case 1: {
-      schema = await fillRelationInSchema(
-        schema,
-        prisma,
-        resource,
-        searchParams,
-        options,
-      );
-
+    case Page.LIST: {
       const { data, total, error } = await getMappedDataList(
         prisma,
         resource,
@@ -162,12 +160,10 @@ export async function getPropsFromParams({
         actions: isAppDir ? actions : undefined,
       };
     }
-    case 2: {
+    case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
       const model = getPrismaModelForResource(resource);
-
       const idProperty = getModelIdProperty(resource);
-
       let selectedFields = model?.fields.reduce(
         (acc, field) => {
           acc[field.name] = true;
@@ -180,14 +176,24 @@ export async function getPropsFromParams({
       const edit = options?.model?.[resource]?.edit as EditOptions<
         typeof resource
       >;
-      schema = transformSchema(schema, resource, edit);
-
+      
+      let deepCopySchema = cloneDeep(schema);
+      deepCopySchema = transformSchema(deepCopySchema, resource, edit);
+      deepCopySchema = await fillRelationInSchema(
+        deepCopySchema,
+        prisma,
+        resource,
+        searchParams,
+        options,
+      );
+      deepCopySchema = orderSchema(deepCopySchema, resource, options);
+      
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
 
       if (resourceId !== undefined) {
-        const editDisplayedKeys = edit && edit.display;
+        const editDisplayedKeys = edit?.display;
         const editSelect = editDisplayedKeys?.reduce(
           (acc, column) => {
             acc[column] = true;
@@ -201,12 +207,12 @@ export async function getPropsFromParams({
           where: { [idProperty]: resourceId },
           select: selectedFields,
         });
-        data = transformData(data, resource, edit);
+        data = transformData(data, resource, edit, options);
         return {
           ...defaultProps,
           resource,
           data,
-          schema,
+          schema: deepCopySchema,
           dmmfSchema: dmmfSchema?.fields,
           customInputs,
           actions: isAppDir ? actions : undefined,
@@ -217,11 +223,12 @@ export async function getPropsFromParams({
         return {
           ...defaultProps,
           resource,
-          schema,
+          schema: deepCopySchema,
           dmmfSchema: dmmfSchema?.fields,
           customInputs,
         };
       }
+      return defaultProps;
     }
     default:
       return defaultProps;

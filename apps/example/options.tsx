@@ -1,5 +1,4 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
-import React from "react";
 import DatePicker from "./components/DatePicker";
 import JsonEditor from "./components/JsonEditor";
 
@@ -109,13 +108,18 @@ export const options: NextAdminOptions = {
         },
       },
       edit: {
+        fields: {
+          categories: {
+            optionFormatter: (category) => `${category.name} Cat.${category.id}`,
+          },
+        },
         display: [
           "id",
           "title",
           "content",
           "published",
-          "authorId",
           "categories",
+          "author",
         ],
       },
     },
