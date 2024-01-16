@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.2.1
+
+### Patch Changes
+
+- 8af3cc9: Fix parse error on relationship
+
 ## 3.2.0
 
 ### Minor Changes
