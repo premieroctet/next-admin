@@ -355,10 +355,9 @@ export const parseFormData = <M extends ModelName>(
       const dmmfPropertyType = dmmfProperty.type;
       const dmmfPropertyKind = dmmfProperty.kind;
       if (dmmfPropertyKind === "object") {
-        if (Boolean(formData[dmmfPropertyName])) {
-          parsedData[dmmfPropertyName] = JSON.parse(
-            formData[dmmfPropertyName] as string
-          ) as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        if (formData[dmmfPropertyName]) {
+          parsedData[dmmfPropertyName] =
+            formData[dmmfPropertyName] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         } else {
           parsedData[dmmfPropertyName] =
             null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
