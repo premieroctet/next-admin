@@ -1,5 +1,6 @@
 "use server";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { cloneDeep } from "lodash";
 import qs from "querystring";
 import {
   ActionParams,
@@ -24,7 +25,6 @@ import {
   transformData,
   transformSchema,
 } from "./server";
-import { cloneDeep } from "lodash";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -99,6 +99,18 @@ export async function getPropsFromParams({
     );
   }
 
+  const clientOptions: NextAdminOptions = {
+    basePath: options.basePath,
+    model: {
+      [resource as ModelName]: {
+        list: {
+          display: options.model?.[resource as ModelName]?.list?.display,
+          search: options.model?.[resource as ModelName]?.list?.search,
+        },
+      }
+    },
+  }
+
   let defaultProps: AdminComponentProps = {
     resources,
     basePath,
@@ -112,6 +124,7 @@ export async function getPropsFromParams({
     resourcesTitles,
     resourcesIdProperty,
     deleteAction,
+    options: clientOptions,
   };
 
   if (!params) return defaultProps;
