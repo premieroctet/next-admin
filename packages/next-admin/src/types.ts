@@ -3,6 +3,10 @@ import { JSONSchema7 } from "json-schema";
 import { ChangeEvent, ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
 
+declare type JSONSchema7Definition = JSONSchema7 & {
+  relation?: ModelName;
+};
+
 /** Type for Model */
 
 export type ModelName = Prisma.ModelName;
@@ -128,7 +132,10 @@ export type NextAdminOptions = {
 /** Type for Schema */
 
 export type SchemaProperty<M extends ModelName> = {
-  [P in Field<M>]?: JSONSchema7;
+  [P in Field<M>]?: JSONSchema7 & {
+    items?: JSONSchema7Definition;
+    relation?: ModelName
+  };
 };
 
 export type SchemaModel<M extends ModelName> = Partial<
