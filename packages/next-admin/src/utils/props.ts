@@ -103,6 +103,7 @@ export async function getPropsFromParams({
     basePath: options.basePath,
     model: {
       [resource as ModelName]: {
+        aliases: options.model?.[resource as ModelName]?.aliases,
         list: {
           display: options.model?.[resource as ModelName]?.list?.display,
           search: options.model?.[resource as ModelName]?.list?.search,

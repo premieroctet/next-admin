@@ -16,7 +16,7 @@ import { FormContext, FormProvider } from "../context/FormContext";
 import { useI18n } from "../context/I18nContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import { Field, ModelAction, ModelName, SubmitFormResult } from "../types";
+import { Field, ModelAction, ModelName, NextAdminOptions, SubmitFormResult } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
 import ActionsDropdown from "./ActionsDropdown";
 import ArrayField from "./inputs/ArrayField";
@@ -48,6 +48,7 @@ export type FormProps = {
   validation?: PropertyValidationError[];
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   title: string;
+  options?: Required<NextAdminOptions>["model"][ModelName];
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   actions?: ModelAction[];
 };
@@ -71,6 +72,7 @@ const Form = ({
   resource,
   validation: validationProp,
   action,
+  options,
   title,
   customInputs,
   actions,
@@ -184,13 +186,14 @@ const Form = ({
           errors,
           children,
         } = props;
+        const labelAlias = options?.aliases?.[id as Field<typeof resource>] || label;
         return (
           <div className={clsx(classNames, "py-1")} style={style}>
             <label
               className="block text-sm font-medium leading-6 text-gray-900 capitalize"
               htmlFor={id}
             >
-              {label}
+              {labelAlias}
               {required ? "*" : null}
             </label>
             {description}

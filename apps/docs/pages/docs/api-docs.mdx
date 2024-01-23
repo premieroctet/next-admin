@@ -206,13 +206,14 @@ It takes as **_key_** a model name of your schema as **_value_** an object to cu
 
 By default if no models are defined, they will all be displayed in the admin. If you want more control, you have to define each model individually as empty objects or with the following properties:
 
-| Name       | Description                                                                     | Default value |
-| ---------- | ------------------------------------------------------------------------------- | ------------- |
-| `toString` | a function that is used to display your record in related list                  | `id` field    |
-| `title`    | a string used to display the model name in the sidebar and in the section title | Model name    |
-| `list`     | an object containing the [list options](#list-property)                         | undefined     |
-| `edit`     | an object containing the [edit options](#edit-property)                         | undefined     |
-| `actions`  | an array of [actions](#actions-property)                                        | undefined     |
+| Name       | Description                                                                      | Default value |
+| ---------- | -------------------------------------------------------------------------------- | ------------- |
+| `toString` | a function that is used to display your record in related list                   | `id` field    |
+| `aliases`  | an object containing the aliases of the model fields as keys, and the field name | undefined     |
+| `title`    | a string used to display the model name in the sidebar and in the section title  | Model name    |
+| `list`     | an object containing the [list options](#list-property)                          | undefined     |
+| `edit`     | an object containing the [edit options](#edit-property)                          | undefined     |
+| `actions`  | an array of [actions](#actions-property)                                         | undefined     |
 
 You can customize the following for each model:
 
@@ -220,11 +221,11 @@ You can customize the following for each model:
 
 This property determines how your data is displayed in the [List View](/docs/glossary#list-view)
 
-| Name      | Description                                                                                            | Default value             |
-| --------- | ------------------------------------------------------------------------------------------------------ | ------------------------- |
-| `search`  | an array of searchable fields                                                                          | all fields are searchable |
-| `display` | an array of fields that are displayed in the list                                                      | all fields are displayed  |
-| `fields`  | an object containing the model fields as keys, and customization values, see [below](#fields-property) | undefined                 |
+| Name      | Description                                                                                            | Default value                         |
+| --------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------- |
+| `search`  | an array of searchable fields                                                                          | undefined - all scalar fields are searchable |
+| `display` | an array of fields that are displayed in the list                                                      | undefined - all scalar fields are displayed  |
+| `fields`  | an object containing the model fields as keys, and customization values, see [below](#fields-property) | undefined                             |
 
 > Note that the `search` property is only available for `scalar` fields.
 
@@ -232,10 +233,10 @@ This property determines how your data is displayed in the [List View](/docs/glo
 
 This property determines how your data is displayed in the [edit view](/docs/glossary#edit-view)
 
-| Name      | Description                                                             | Default value            |
-| --------- | ----------------------------------------------------------------------- | ------------------------ |
-| `display` | an array of fields that are displayed in the form                       | all fields are displayed |
-| `fields`  | an object containing the model fields as keys, and customization values | undefined                |
+| Name      | Description                                                             | Default value                   |
+| --------- | ----------------------------------------------------------------------- | ------------------------------- |
+| `display` | an array of fields that are displayed in the form                       | all scalar fields are displayed |
+| `fields`  | an object containing the model fields as keys, and customization values | undefined                       |
 
 ##### `fields` property
 

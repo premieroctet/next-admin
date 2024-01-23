@@ -8,6 +8,9 @@ export const options: NextAdminOptions = {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
       title: "👥 Users",
+      aliases: {
+        id: "ID",
+      },
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],

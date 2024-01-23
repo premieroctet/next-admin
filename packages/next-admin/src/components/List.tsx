@@ -80,6 +80,7 @@ function List({
   const columns: ColumnDef<ListDataItem<ModelName>>[] =
     data && data?.length > 0
       ? (options?.list?.display || Object.keys(data[0])).map((property) => {
+        const propertyAlias = options?.aliases?.[property as keyof ListFieldsOptions<typeof resource>] || property;
         return {
           accessorKey: property,
           header: () => {
@@ -87,13 +88,14 @@ function List({
               <TableHead
                 sortDirection={sortDirection}
                 sortColumn={sortColumn}
-                property={property}
+                property={propertyAlias}
+                key={property}
                 onClick={() => {
                   router?.push({
                     pathname: location.pathname,
                     query: {
                       ...query,
-                      sortColumn: property,
+                      sortColumn: propertyAlias,
                       sortDirection:
                         query.sortDirection === "asc" ? "desc" : "asc",
                     },
