@@ -114,6 +114,7 @@ export type ModelOptions<T extends ModelName> = {
     list?: ListOptions<P>;
     edit?: EditOptions<P>;
     title?: string;
+    aliases?: Partial<Record<Field<P>, string>>;
     actions?: ModelAction[];
   };
 };

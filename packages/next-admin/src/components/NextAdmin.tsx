@@ -77,6 +77,7 @@ export function NextAdmin({
           resource={resource!}
           validation={validation}
           action={action}
+          options={options?.model && options?.model[resource!]}
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}
