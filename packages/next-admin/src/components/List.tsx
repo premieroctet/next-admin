@@ -3,12 +3,14 @@ import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
 import {
   ChangeEvent,
-  useContext,
   useEffect,
   useState,
-  useTransition,
+  useTransition
 } from "react";
 import { ITEMS_PER_PAGE } from "../config";
+import { useConfig } from "../context/ConfigContext";
+import { useDeleteAction } from "../hooks/useDeleteAction";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   ListData,
   ListDataFieldValue,
@@ -31,9 +33,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
-import { useRouterInternal } from "../hooks/useRouterInternal";
-import { useConfig } from "../context/ConfigContext";
-import { useDeleteAction } from "../hooks/useDeleteAction";
 
 export type ListProps = {
   resource: ModelName;
@@ -66,67 +65,70 @@ function List({
   const sortDirection = query.sortDirection as "asc" | "desc";
   const { deleteItems } = useDeleteAction(resource, deleteAction);
 
-  const onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
-    startTransition(() => {
-      router?.push({
-        pathname: location.pathname,
-        query: { ...query, search: e.target.value },
+  let onSearchChange;
+  if (!(options?.list?.search && options?.list?.search?.length === 0)) {
+    onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
+      startTransition(() => {
+        router?.push({
+          pathname: location.pathname,
+          query: { ...query, search: e.target.value },
+        });
       });
-    });
-  }, 300);
+    }, 300);
+  }
 
   const columns: ColumnDef<ListDataItem<ModelName>>[] =
     data && data?.length > 0
       ? Object.keys(data[0]).map((property) => {
-          return {
-            accessorKey: property,
-            header: () => {
-              return (
-                <TableHead
-                  sortDirection={sortDirection}
-                  sortColumn={sortColumn}
-                  property={property}
-                  onClick={() => {
-                    router?.push({
-                      pathname: location.pathname,
-                      query: {
-                        ...query,
-                        sortColumn: property,
-                        sortDirection:
-                          query.sortDirection === "asc" ? "desc" : "asc",
-                      },
-                    });
-                  }}
-                />
-              );
-            },
-            cell: ({ row }) => {
-              const modelData = row.original;
-              const cellData = modelData[
+        return {
+          accessorKey: property,
+          header: () => {
+            return (
+              <TableHead
+                sortDirection={sortDirection}
+                sortColumn={sortColumn}
+                property={property}
+                onClick={() => {
+                  router?.push({
+                    pathname: location.pathname,
+                    query: {
+                      ...query,
+                      sortColumn: property,
+                      sortDirection:
+                        query.sortDirection === "asc" ? "desc" : "asc",
+                    },
+                  });
+                }}
+              />
+            );
+          },
+          cell: ({ row }) => {
+            const modelData = row.original;
+            const cellData = modelData[
+              property as keyof ListFieldsOptions<ModelName>
+            ] as unknown as ListDataFieldValue;
+
+            const dataFormatter =
+              options?.list?.fields?.[
                 property as keyof ListFieldsOptions<ModelName>
-              ] as unknown as ListDataFieldValue;
+              ]?.formatter ||
+              ((cell: any) => {
+                if (typeof cell === "object") {
+                  return cell[resourcesIdProperty[property as ModelName]];
+                } else {
+                  return cell;
+                }
+              });
 
-              const dataFormatter =
-                options?.list?.fields?.[
-                  property as keyof ListFieldsOptions<ModelName>
-                ]?.formatter ||
-                ((cell: any) => {
-                  if (typeof cell === "object") {
-                    return cell[resourcesIdProperty[property as ModelName]];
-                  } else {
-                    return cell;
-                  }
-                });
-
-              return (
-                <Cell
-                  cell={cellData}
-                  formatter={!isAppDir ? dataFormatter : undefined}
-                />
-              );
-            },
-          };
-        })
+            return (
+              <Cell
+                cell={cellData}
+                formatter={!isAppDir ? dataFormatter : undefined}
+              />
+            );
+          },
+        };
+      })
       : [];
 
   useEffect(() => {
