@@ -428,9 +428,11 @@ export const formattedFormData = async <M extends ModelName>(
             };
           } else {
             const connect = Boolean(formData[dmmfPropertyName]);
-            formattedData[dmmfPropertyName] = connect
-              ? { connect: { id: formatId(dmmfPropertyType as ModelName, formData[dmmfPropertyName]!) } }
-              : !creating && { disconnect: true }
+            if (connect) {
+              formattedData[dmmfPropertyName] = { connect: { id: formatId(dmmfPropertyType as ModelName, formData[dmmfPropertyName]!) } }
+            } else if (!creating) {
+              formattedData[dmmfPropertyName] = { disconnect: true }
+            }
           }
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
