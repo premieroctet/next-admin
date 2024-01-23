@@ -79,7 +79,7 @@ function List({
 
   const columns: ColumnDef<ListDataItem<ModelName>>[] =
     data && data?.length > 0
-      ? Object.keys(data[0]).map((property) => {
+      ? (options?.list?.display || Object.keys(data[0])).map((property) => {
         return {
           accessorKey: property,
           header: () => {
