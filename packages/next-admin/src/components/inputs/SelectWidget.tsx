@@ -1,7 +1,9 @@
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { ArrowTopRightOnSquareIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
-import { useEffect, useRef } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
+import { useConfig } from "../../context/ConfigContext";
 import { useForm } from "../../context/FormContext";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import { Enumeration } from "../../types";
@@ -17,6 +19,8 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
 
+  const { basePath } = useConfig();
+
   const handleChange = (option: Enumeration) => {
     onChange(option);
     formContext.setOpen(false, name);
@@ -28,6 +32,10 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
       containerRef.current?.querySelector(`#${name}-search`)?.focus();
     }
   }, []);
+
+  const hasValue = useMemo(() => {
+    return Object.keys(value || {}).length > 0;
+  }, [value]);
 
   return (
     <div
@@ -49,10 +57,13 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
           onMouseDown={() => formContext.toggleOpen(name)}
         />
         <div className="flex space-x-3">
-          {value && (
-            <div className="flex items-center" onClick={() => onChange({})}>
-              <XMarkIcon className="w-5 h-5 text-gray-400" />
-            </div>
+          {hasValue && props.schema.relation && (
+            <Link href={`${basePath}/${props.schema.relation}/${value?.value}`} className="flex items-center">
+              <ArrowTopRightOnSquareIcon className="w-5 h-5 text-gray-400 cursor-pointer" />
+            </Link>)}
+          {hasValue && (<div className="flex items-center" onClick={() => onChange({})}>
+            <XMarkIcon className="w-5 h-5 text-gray-400" />
+          </div>
           )}
           <div className="flex items-center pointer-events-none">
             <DoubleArrow />

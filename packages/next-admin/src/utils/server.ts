@@ -179,6 +179,7 @@ export const fillRelationInSchema = async (
             );
           schema.definitions[modelName].properties[fieldName] = {
             type: "string",
+            relation: modelNameRelation,
             enum: enumeration,
           };
 
@@ -196,7 +197,7 @@ export const fillRelationInSchema = async (
           const fieldValue =
             schema.definitions[modelName].properties[
             field.name as Field<typeof modelName>
-            ];
+            ]
           if (fieldValue) {
             let enumeration: Enumeration[] = [];
             await prisma[uncapitalize(modelNameRelation)]
@@ -215,14 +216,16 @@ export const fillRelationInSchema = async (
               );
 
             if (fieldValue.type === "array") {
-              //Relation One-to-Many, One side
+              //Relation Many-to-One
               fieldValue.items = {
                 type: "string",
+                relation: modelNameRelation,
                 enum: enumeration,
               };
             } else {
               //Relation One-to-One
               fieldValue.type = "string";
+              fieldValue.relation = modelNameRelation;
               fieldValue.enum = enumeration;
               delete fieldValue.anyOf;
             }
