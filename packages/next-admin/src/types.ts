@@ -12,24 +12,39 @@ export type ScalarField<T extends ModelName> =
 export type ObjectField<T extends ModelName> =
   Prisma.TypeMap["model"][T]["payload"]["objects"];
 
+export type Payload = Prisma.TypeMap["model"][ModelName]["payload"];
+
+export type ModelFromPayload<
+  P extends Payload,
+  T extends object | number = object,> = {
+    [Property in keyof P["scalars"]]: P["scalars"][Property]
+  } & {
+    [Property in keyof P["objects"]]: P["objects"][Property] extends { scalars: infer S }
+    ? T extends object
+    ? S
+    : T
+    : never | P["objects"][Property] extends { scalars: infer S }[]
+    ? T extends object
+    ? S[]
+    : T[]
+    : never | P["objects"][Property] extends { scalars: infer S } | null
+    ? T extends object
+    ? S | null
+    : T | null
+    : never;
+  };
+
 export type Model<
   M extends ModelName,
   T extends object | number = object,
-> = ScalarField<M> & {
-  [P in keyof ObjectField<M>]: ObjectField<M>[P] extends { scalars: infer S }
-  ? T extends object
-  ? S
-  : T
-  : never | ObjectField<M>[P] extends { scalars: infer S }[]
-  ? T extends object
-  ? S[]
-  : T[]
-  : never | ObjectField<M>[P] extends { scalars: infer S } | null
-  ? T extends object
-  ? S | null
-  : T | null
-  : never;
-};
+> = ModelFromPayload<Prisma.TypeMap["model"][M]["payload"], T>;
+
+export type PropertyPayload<M extends ModelName, P extends keyof ObjectField<M>> =
+  Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends Array<infer T> ? T : never |
+  Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends infer T | null ? T : never |
+  Prisma.TypeMap["model"][M]["payload"]["objects"][P]
+
+export type ModelFromProperty<M extends ModelName, P extends keyof ObjectField<M>> = PropertyPayload<M, P> extends Payload ? ModelFromPayload<PropertyPayload<M,P>> : never
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
 
@@ -53,7 +68,7 @@ export type EditFieldsOptions<T extends ModelName> = {
     input?: React.ReactElement;
   } & (
     P extends keyof ObjectField<T> ? {
-      optionFormatter?: (item: Model<T>[P] extends Array<infer U> ? U : Model<T>[P]) => string;
+      optionFormatter?: (item: ModelFromProperty<T, P>) => string;
     } : {}
   )
 };
