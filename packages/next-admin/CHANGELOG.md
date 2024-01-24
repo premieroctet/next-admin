@@ -1,5 +1,15 @@
 # @premieroctet/next-admin
 
+## 3.2.2
+
+### Patch Changes
+
+- 08d8a1e: Add redirection on relationship fields
+- 961996d: Fix optional relationship on creation
+- 84dc855: Possibility hide even id column in form
+- 6285e36: Possibility to not display search field on list if search option is an empty array. In case search options are not defined, all scalar fields are concerned
+- a1aa499: Add aliases options to rename columns name and form label
+
 ## 3.2.1
 
 ### Patch Changes
