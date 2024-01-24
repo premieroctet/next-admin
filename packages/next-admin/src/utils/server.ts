@@ -273,6 +273,8 @@ export const transformData = <M extends ModelName>(
         acc[key] = data[key] ? data[key].toISOString() : null;
       } else if (fieldTypes === "Json") {
         acc[key] = data[key] ? JSON.stringify(data[key]) : null;
+      } else if (fieldTypes === "Decimal") {
+        acc[key] = data[key] ? Number(data[key]) : null;
       } else {
         acc[key] = data[key] ? data[key] : null;
       }
@@ -439,7 +441,7 @@ export const formattedFormData = async <M extends ModelName>(
           }
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
-          if (dmmfPropertyType === "Int") {
+          if (dmmfPropertyType === "Int" || dmmfPropertyType === "Float" || dmmfPropertyType === "Decimal") {
             formattedData[dmmfPropertyName] = !isNaN(
               Number(formData[dmmfPropertyName])
             )
