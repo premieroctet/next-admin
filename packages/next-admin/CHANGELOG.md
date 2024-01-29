@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 3.2.3
+
+### Patch Changes
+
+- b26d0ae: Support Decimal and Float Prisma
+- e3ee58a: Add one level of access model in optionFormatter option
+
 ## 3.2.2
 
 ### Patch Changes
