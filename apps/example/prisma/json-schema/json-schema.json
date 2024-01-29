@@ -109,6 +109,12 @@
           "items": {
             "$ref": "#/definitions/post_comment"
           }
+        },
+        "rate": {
+          "type": [
+            "number",
+            "null"
+          ]
         }
       },
       "required": [

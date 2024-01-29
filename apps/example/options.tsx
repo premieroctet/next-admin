@@ -100,6 +100,7 @@ export const options: NextAdminOptions = {
           "published",
           "author",
           "categories",
+          "rate"
         ],
         search: ["title", "content"],
         fields: {
@@ -123,6 +124,7 @@ export const options: NextAdminOptions = {
           "published",
           "categories",
           "author",
+          "rate"
         ],
       },
     },
