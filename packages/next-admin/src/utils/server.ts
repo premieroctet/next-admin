@@ -275,6 +275,8 @@ export const transformData = <M extends ModelName>(
         acc[key] = data[key] ? JSON.stringify(data[key]) : null;
       } else if (fieldTypes === "Decimal") {
         acc[key] = data[key] ? Number(data[key]) : null;
+      } else if (fieldTypes === "BigInt") {
+        acc[key] = data[key] ? BigInt(data[key]).toString() : null;
       } else {
         acc[key] = data[key] ? data[key] : null;
       }
@@ -333,19 +335,28 @@ export const findRelationInData = async (
       }
     }
 
-    if (dmmfPropertyType === "DateTime") {
+    if (dmmfPropertyType === "DateTime" ||
+      dmmfPropertyType === "Decimal" ||
+      dmmfPropertyType === "BigInt") {
       data.map((item) => {
         if (item[dmmfProperty.name]) {
-          item[dmmfProperty.name] = {
-            type: "date",
-            value: item[dmmfProperty.name].toISOString(),
-          };
+          if (dmmfPropertyType === "DateTime") {
+            item[dmmfProperty.name] = {
+              type: "date",
+              value: item[dmmfProperty.name].toISOString(),
+            };
+          } else if (dmmfPropertyType === "Decimal") {
+            item[dmmfProperty.name] = Number(item[dmmfProperty.name])
+          } else if (dmmfPropertyType === "BigInt") {
+            item[dmmfProperty.name] = BigInt(item[dmmfProperty.name]).toString()
+          }
         } else {
           return item;
         }
       });
     }
   });
+
   return data;
 };
 
@@ -441,6 +452,7 @@ export const formattedFormData = async <M extends ModelName>(
           }
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
+          console.log(dmmfPropertyName, dmmfPropertyType)
           if (dmmfPropertyType === "Int" || dmmfPropertyType === "Float" || dmmfPropertyType === "Decimal") {
             formattedData[dmmfPropertyName] = !isNaN(
               Number(formData[dmmfPropertyName])
@@ -461,6 +473,8 @@ export const formattedFormData = async <M extends ModelName>(
             } catch {
               // no-op
             }
+          } else if (dmmfPropertyType === "BigInt") {
+            formattedData[dmmfPropertyName] = formData[dmmfPropertyName] ? BigInt(formData[dmmfPropertyName]!) : null;
           } else if (
             dmmfPropertyType === "String" &&
             ["data-url", "file"].includes(

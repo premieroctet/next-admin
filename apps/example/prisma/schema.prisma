@@ -45,6 +45,7 @@ model Post {
   authorId   Int
   categories Category[]     @relation("category") // implicit Many-to-many relation
   comments   post_comment[] @relation("comments") // One-to-many relation
+  rate       Decimal?       @db.Decimal(5, 2)
 }
 
 model Profile {

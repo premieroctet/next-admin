@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/library";
 import { getMappedDataList } from "../utils/prisma";
 import { options, prismaMock } from "./singleton";
 
@@ -11,6 +12,7 @@ describe("getMappedDataList", () => {
         published: true,
         author: 1,
         authorId: 1,
+        rate: new Decimal(5),
       },
       {
         id: 2,
@@ -19,6 +21,7 @@ describe("getMappedDataList", () => {
         published: true,
         author: 1,
         authorId: 1,
+        rate: new Decimal(5),
       },
     ];
 
