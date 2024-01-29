@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.2.4
+
+### Patch Changes
+
+- 8434ec4: BigInt support
+
 ## 3.2.3
 
 ### Patch Changes
