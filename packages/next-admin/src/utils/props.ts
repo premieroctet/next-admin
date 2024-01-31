@@ -15,13 +15,11 @@ import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
 import { getMappedDataList, selectPayloadForModel } from "./prisma";
 import {
-  fillRelationInSchema,
   getModelIdProperty,
   getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
-  orderSchema,
   transformData,
   transformSchema
 } from "./server";
@@ -183,17 +181,7 @@ export async function getPropsFromParams({
         typeof resource
       >;
 
-      let deepCopySchema = cloneDeep(schema);
-      deepCopySchema = transformSchema(deepCopySchema, resource, edit);
-      deepCopySchema = await fillRelationInSchema(
-        deepCopySchema,
-        prisma,
-        resource,
-        searchParams,
-        options,
-      );
-      deepCopySchema = orderSchema(deepCopySchema, resource, options);
-
+      let deepCopySchema = await transformSchema(resource, edit, prisma, searchParams, options)(cloneDeep(schema));
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;

@@ -19,3 +19,10 @@ export const isScalar = (value: string | boolean | number) => {
     typeof value === "number"
   );
 };
+
+
+export const pipe = <T>(...fns: Function[]) =>  (x: T) => {
+  return fns.reduce(async (v, f) => {
+    return await f(await v)
+  }, Promise.resolve(x));
+}
