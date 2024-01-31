@@ -16,8 +16,8 @@ import {
   ScalarField,
   Schema
 } from "../types";
-import { createWherePredicate } from "./prisma";
-import { isNativeFunction, uncapitalize } from "./tools";
+import { createWherePredicate, selectPayloadForModel } from "./prisma";
+import { isNativeFunction, pipe, uncapitalize } from "./tools";
 
 export const models = Prisma.dmmf.datamodel.models;
 export const resources = models.map((model) => model.name as ModelName);
@@ -44,14 +44,14 @@ export const getResources = (
 };
 
 export const getToStringForRelations = <M extends ModelName>(modelName: M, fieldName: Field<M>, modelNameRelation: ModelName, options?: NextAdminOptions, relationToFields?: any[]) => {
-  const nonChekedToString =
+  const nonCheckedToString =
     // @ts-expect-error
     options?.model?.[modelName]?.edit?.fields?.[fieldName]?.optionFormatter
     || options?.model?.[modelNameRelation]?.toString;
   const modelRelationIdField = getModelIdProperty(modelNameRelation);
   const toStringForRelations =
-    (nonChekedToString && !isNativeFunction(nonChekedToString))
-      ? nonChekedToString
+    (nonCheckedToString && !isNativeFunction(nonCheckedToString))
+      ? nonCheckedToString
       : (item: any) =>
         item[relationToFields?.[0]] ?? item[modelRelationIdField];
 
@@ -67,7 +67,7 @@ export const getToStringForRelations = <M extends ModelName>(modelName: M, field
  * 
  * @returns schema
  */
-export const orderSchema = (schema: Schema, resource: ModelName, options?: NextAdminOptions) => {
+export const orderSchema = (resource: ModelName, options?: NextAdminOptions) => (schema: Schema) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return schema;
@@ -94,13 +94,12 @@ export const orderSchema = (schema: Schema, resource: ModelName, options?: NextA
  * 
  * @returns schema
  */
-export const fillRelationInSchema = async (
-  schema: Schema,
+export const fillRelationInSchema = (
   prisma: PrismaClient,
   resource: ModelName,
   requestOptions: any,
   options?: NextAdminOptions,
-) => {
+) => async (schema: Schema) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   const display = options?.model?.[modelName]?.edit?.display;
@@ -157,26 +156,29 @@ export const fillRelationInSchema = async (
         const search = requestOptions[`${fieldName}search`];
         const where = createWherePredicate(fieldsFiltered, search);
         const toStringForRelations = getToStringForRelations(modelName, fieldName, modelNameRelation, options, relationToFields);
+        const select = selectPayloadForModel(modelNameRelation)
+        const data = prisma[uncapitalize(modelNameRelation)]
+          // @ts-expect-error
+          .findMany({
+            select,
+            where,
+            take: 20,
+          })
         if (
           relationToFields!.length > 0
         ) {
           //Relation One-to-Many, Many side
           const relationRemoteProperty = relationToFields![0];
           let enumeration: Enumeration[] = [];
-          await prisma[uncapitalize(modelNameRelation)]
-            // @ts-expect-error
-            .findMany({
-              where,
-              take: 20,
+
+          await data.then((data: any[]) =>
+            data.forEach((item) => {
+              enumeration.push({
+                label: toStringForRelations(item),
+                value: item[relationRemoteProperty],
+              });
             })
-            .then((data: any[]) =>
-              data.forEach((item) => {
-                enumeration.push({
-                  label: toStringForRelations(item),
-                  value: item[relationRemoteProperty],
-                });
-              })
-            );
+          );
           schema.definitions[modelName].properties[fieldName] = {
             type: "string",
             relation: modelNameRelation,
@@ -200,20 +202,14 @@ export const fillRelationInSchema = async (
             ]
           if (fieldValue) {
             let enumeration: Enumeration[] = [];
-            await prisma[uncapitalize(modelNameRelation)]
-              // @ts-expect-error
-              .findMany({
-                where,
-                take: 20,
+            await data.then((data: any[]) =>
+              data.forEach((item) => {
+                enumeration.push({
+                  label: toStringForRelations(item),
+                  value: item[modelRelationIdField],
+                });
               })
-              .then((data: any[]) =>
-                data.forEach((item) => {
-                  enumeration.push({
-                    label: toStringForRelations(item),
-                    value: item[modelRelationIdField],
-                  });
-                })
-              );
+            );
 
             if (fieldValue.type === "array") {
               //Relation Many-to-One
@@ -233,7 +229,7 @@ export const fillRelationInSchema = async (
         }
       }
     })
-  );
+  )
   return schema;
 };
 
@@ -319,18 +315,15 @@ export const findRelationInData = async (
                 url: `${dmmfProperty.type as ModelName}/${item[dmmfPropertyName][idProperty]}`,
               },
             };
-          } else {
-            return item;
           }
+          return item;
         });
       } else {
         data.map((item) => {
-          if (item._count) {
-            Object.keys(item._count).forEach((key) => {
-              item[key] = { type: "count", value: item._count[key] };
-            });
-            delete item._count;
+          if (item[dmmfPropertyName]) {
+            item[dmmfPropertyName] = { type: "count", value: item[dmmfPropertyName].length };
           }
+          return item;
         });
       }
     }
@@ -452,7 +445,6 @@ export const formattedFormData = async <M extends ModelName>(
           }
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
-          console.log(dmmfPropertyName, dmmfPropertyType)
           if (dmmfPropertyType === "Int" || dmmfPropertyType === "Float" || dmmfPropertyType === "Decimal") {
             formattedData[dmmfPropertyName] = !isNaN(
               Number(formData[dmmfPropertyName])
@@ -532,21 +524,35 @@ export const formattedFormData = async <M extends ModelName>(
 export const formatSearchFields = (uri: string) =>
   Object.fromEntries(new URLSearchParams(uri.split("?")[1]));
 
+
+/**
+ * 
+ * Centralizes the transformation of the schema
+ * 
+ * @param resource 
+ * @param edit 
+ * @param prisma 
+ * @param searchParams 
+ * @param options 
+ * @returns 
+ */
 export const transformSchema = <M extends ModelName>(
-  schema: Schema,
   resource: M,
-  editOptions: EditOptions<M>
-) => {
-  schema = removeHiddenProperties(schema, resource, editOptions);
-  schema = changeFormatInSchema(schema, resource, editOptions);
-  return schema;
-};
+  edit: EditOptions<M>,
+  prisma: PrismaClient,
+  searchParams: any,
+  options?: NextAdminOptions
+) => pipe<Schema>(
+  removeHiddenProperties(resource, edit),
+  changeFormatInSchema(resource, edit),
+  fillRelationInSchema(prisma, resource, searchParams, options),
+  orderSchema(resource, options),
+)
 
 export const changeFormatInSchema = <M extends ModelName>(
-  schema: Schema,
   resource: M,
   editOptions: EditOptions<M>
-) => {
+) => (schema: Schema) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);
   if (!model) return schema;
@@ -577,10 +583,9 @@ export const changeFormatInSchema = <M extends ModelName>(
 };
 
 export const removeHiddenProperties = <M extends ModelName>(
-  schema: Schema,
   resource: M,
   editOptions: EditOptions<M>
-) => {
+) => (schema: Schema) => {
   if (!editOptions?.display) return schema;
   const properties = schema.definitions[resource].properties;
   Object.keys(properties).forEach((property) => {

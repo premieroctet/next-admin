@@ -13,17 +13,15 @@ import {
 } from "../types";
 import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
-import { getMappedDataList } from "./prisma";
+import { getMappedDataList, selectPayloadForModel } from "./prisma";
 import {
-  fillRelationInSchema,
   getModelIdProperty,
   getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
-  orderSchema,
   transformData,
-  transformSchema,
+  transformSchema
 } from "./server";
 
 export type GetPropsFromParamsParams = {
@@ -176,50 +174,24 @@ export async function getPropsFromParams({
     }
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
-      const model = getPrismaModelForResource(resource);
       const idProperty = getModelIdProperty(resource);
-      let selectedFields = model?.fields.reduce(
-        (acc, field) => {
-          acc[field.name] = true;
-          return acc;
-        },
-        { [idProperty]: true }
-      );
 
       const dmmfSchema = getPrismaModelForResource(resource);
       const edit = options?.model?.[resource]?.edit as EditOptions<
         typeof resource
       >;
-      
-      let deepCopySchema = cloneDeep(schema);
-      deepCopySchema = transformSchema(deepCopySchema, resource, edit);
-      deepCopySchema = await fillRelationInSchema(
-        deepCopySchema,
-        prisma,
-        resource,
-        searchParams,
-        options,
-      );
-      deepCopySchema = orderSchema(deepCopySchema, resource, options);
-      
+
+      let deepCopySchema = await transformSchema(resource, edit, prisma, searchParams, options)(cloneDeep(schema));
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
 
       if (resourceId !== undefined) {
-        const editDisplayedKeys = edit?.display;
-        const editSelect = editDisplayedKeys?.reduce(
-          (acc, column) => {
-            acc[column] = true;
-            return acc;
-          },
-          { [idProperty]: true }
-        );
-        selectedFields = editSelect ?? selectedFields;
+        const select = selectPayloadForModel(resource, edit, "object");
         // @ts-expect-error
         let data = await prisma[resource].findUniqueOrThrow({
+          select,
           where: { [idProperty]: resourceId },
-          select: selectedFields,
         });
         data = transformData(data, resource, edit, options);
         return {
