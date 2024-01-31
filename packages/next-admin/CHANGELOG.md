@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.2.5
+
+### Patch Changes
+
+- 6697dd2: Add deep access for relationship formatter
+
 ## 3.2.4
 
 ### Patch Changes
