@@ -16,7 +16,7 @@ import {
   ScalarField,
   Schema
 } from "../types";
-import { createWherePredicate } from "./prisma";
+import { createWherePredicate, selectPayloadForModel } from "./prisma";
 import { isNativeFunction, uncapitalize } from "./tools";
 
 export const models = Prisma.dmmf.datamodel.models;
@@ -44,14 +44,14 @@ export const getResources = (
 };
 
 export const getToStringForRelations = <M extends ModelName>(modelName: M, fieldName: Field<M>, modelNameRelation: ModelName, options?: NextAdminOptions, relationToFields?: any[]) => {
-  const nonChekedToString =
+  const nonCheckedToString =
     // @ts-expect-error
     options?.model?.[modelName]?.edit?.fields?.[fieldName]?.optionFormatter
     || options?.model?.[modelNameRelation]?.toString;
   const modelRelationIdField = getModelIdProperty(modelNameRelation);
   const toStringForRelations =
-    (nonChekedToString && !isNativeFunction(nonChekedToString))
-      ? nonChekedToString
+    (nonCheckedToString && !isNativeFunction(nonCheckedToString))
+      ? nonCheckedToString
       : (item: any) =>
         item[relationToFields?.[0]] ?? item[modelRelationIdField];
 
@@ -163,9 +163,11 @@ export const fillRelationInSchema = async (
           //Relation One-to-Many, Many side
           const relationRemoteProperty = relationToFields![0];
           let enumeration: Enumeration[] = [];
+          const select = selectPayloadForModel(modelNameRelation)
           await prisma[uncapitalize(modelNameRelation)]
             // @ts-expect-error
             .findMany({
+              select,
               where,
               take: 20,
             })
@@ -200,9 +202,11 @@ export const fillRelationInSchema = async (
             ]
           if (fieldValue) {
             let enumeration: Enumeration[] = [];
+            const select = selectPayloadForModel(modelNameRelation)
             await prisma[uncapitalize(modelNameRelation)]
               // @ts-expect-error
               .findMany({
+                select,
                 where,
                 take: 20,
               })
@@ -319,18 +323,15 @@ export const findRelationInData = async (
                 url: `${dmmfProperty.type as ModelName}/${item[dmmfPropertyName][idProperty]}`,
               },
             };
-          } else {
-            return item;
           }
+          return item;
         });
       } else {
         data.map((item) => {
-          if (item._count) {
-            Object.keys(item._count).forEach((key) => {
-              item[key] = { type: "count", value: item._count[key] };
-            });
-            delete item._count;
+          if (item[dmmfPropertyName]) {
+            item[dmmfPropertyName] = { type: "count", value: item[dmmfPropertyName].length };
           }
+          return item;
         });
       }
     }
@@ -452,7 +453,6 @@ export const formattedFormData = async <M extends ModelName>(
           }
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
-          console.log(dmmfPropertyName, dmmfPropertyType)
           if (dmmfPropertyType === "Int" || dmmfPropertyType === "Float" || dmmfPropertyType === "Decimal") {
             formattedData[dmmfPropertyName] = !isNaN(
               Number(formData[dmmfPropertyName])

@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { ITEMS_PER_PAGE } from "../config";
 import {
+  EditOptions,
   Field,
   ListOptions,
   ModelName,
@@ -23,23 +24,23 @@ export const createWherePredicate = (
 ) => {
   return search
     ? {
-        OR: fieldsFiltered
-          ?.filter((field) => field.kind === "scalar")
-          .map((field) => {
-            if (field.type === "String") {
-              // @ts-ignore
-              const mode = Prisma?.QueryMode ? { mode: Prisma.QueryMode.insensitive } : {};
-              return {
-                [field.name]: { contains: search, ...mode },
-              };
-            }
-            if (field.type === "Int" && !isNaN(Number(search))) {
-              return { [field.name]: Number(search) };
-            }
-            return null;
-          })
-          .filter(Boolean),
-      }
+      OR: fieldsFiltered
+        ?.filter((field) => field.kind === "scalar")
+        .map((field) => {
+          if (field.type === "String") {
+            // @ts-ignore
+            const mode = Prisma?.QueryMode ? { mode: Prisma.QueryMode.insensitive } : {};
+            return {
+              [field.name]: { contains: search, ...mode },
+            };
+          }
+          if (field.type === "Int" && !isNaN(Number(search))) {
+            return { [field.name]: Number(search) };
+          }
+          return null;
+        })
+        .filter(Boolean),
+    }
     : {};
 };
 
@@ -80,22 +81,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
   let fieldsFiltered = model?.fields;
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
-    const listDisplayedKeys = list.display;
-    select = listDisplayedKeys?.reduce(
-      (acc, column) => {
-        const field = model?.fields.find(({ name }) => name === column);
-        if (field?.kind === "object" && field?.isList === true) {
-          if (!acc._count) acc._count = { select: {} };
-          acc._count.select = { ...acc._count.select, [column]: true };
-        } else {
-          // @ts-expect-error
-          acc[column] = true;
-        }
-        return acc;
-      },
-      { [getModelIdProperty(resource)]: true } as Select<M>
-    );
-
+    select = selectPayloadForModel(resource, list, 'object');
     fieldsFiltered =
       model?.fields.filter(({ name }) =>
         list.search?.includes(name as Field<M>)
@@ -157,11 +143,9 @@ export const getMappedDataList = async (
   data.forEach((item, index) => {
     Object.keys(item).forEach((key) => {
       let itemValue;
-
+      const model = capitalize(key) as ModelName;
+      const idProperty = getModelIdProperty(model);
       if (typeof item[key] === "object" && item[key] !== null) {
-        const model = capitalize(key) as ModelName;
-        const idProperty = getModelIdProperty(model);
-
         switch (item[key].type) {
           case "link":
             itemValue = item[key].value.label;
@@ -196,10 +180,18 @@ export const getMappedDataList = async (
         item[key].__nextadmin_formatted = listFields[
           key as keyof typeof listFields
           // @ts-expect-error
-        ]?.formatter?.(itemValue ?? item[key], context);
+        ]?.formatter?.(itemValue ?? item[key], context)
       } else {
+        if (typeof item[key]?.__nextadmin_formatted === 'object') {
+          item[key].__nextadmin_formatted = item[key].__nextadmin_formatted[idProperty]
+        }
         data[index][key] = item[key];
       }
+
+      if (typeof item[key]?.value === 'object') {
+        item[key].value.label = item[key].value.label[idProperty]
+      }
+
     });
   });
 
@@ -209,3 +201,26 @@ export const getMappedDataList = async (
     error,
   };
 };
+
+export const selectPayloadForModel = <M extends ModelName>(resource: M, options?: EditOptions<M> | ListOptions<M>, level: 'scalar' | 'object' = 'scalar') => {
+  const model = getPrismaModelForResource(resource);
+  const idProperty = getModelIdProperty(resource);
+
+  const displayKeys = options?.display;
+
+  let selectedFields = model?.fields.reduce(
+    (acc, field) => {
+      if ((displayKeys && displayKeys.includes(field.name as Field<M>) || !displayKeys)) {
+        if (level === 'object' && field.kind === 'object') {
+          acc[field.name] = { select: selectPayloadForModel(field.type as ModelName, {}, 'scalar') };
+        } else {
+          acc[field.name] = true;
+        }
+      }
+      return acc;
+    },
+    { [idProperty]: true } as any
+  );
+
+  return selectedFields;
+}

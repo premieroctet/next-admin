@@ -48,7 +48,7 @@ export type PropertyPayload<M extends ModelName, P extends keyof ObjectField<M>>
   Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends infer T | null ? T : never |
   Prisma.TypeMap["model"][M]["payload"]["objects"][P]
 
-export type ModelFromProperty<M extends ModelName, P extends keyof ObjectField<M>> = PropertyPayload<M, P> extends Payload ? ModelFromPayload<PropertyPayload<M,P>> : never
+export type ModelFromProperty<M extends ModelName, P extends keyof ObjectField<M>> = PropertyPayload<M, P> extends Payload ? ModelFromPayload<PropertyPayload<M, P>> : never
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
 
@@ -60,7 +60,7 @@ export type Field<P extends ModelName> = keyof Model<P>;
 
 export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    formatter?: (item: Model<T>[P], context?: NextAdminContext) => ReactNode;
+    formatter?: (item: P extends keyof ObjectField<T> ? ModelFromProperty<T, P> : Model<T>[P], context?: NextAdminContext) => ReactNode;
   };
 };
 
@@ -184,7 +184,7 @@ export type Order<M extends ModelName> = {
 export type Select<M extends ModelName> = {
   [P in Field<M>]?: boolean;
 } & {
-  _count: {
+  _count?: {
     select: {
       [key in string]: boolean;
     };
