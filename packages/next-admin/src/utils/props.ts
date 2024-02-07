@@ -106,6 +106,10 @@ export async function getPropsFromParams({
           display: options.model?.[resource as ModelName]?.list?.display,
           search: options.model?.[resource as ModelName]?.list?.search,
         },
+        edit: {
+          display: options.model?.[resource as ModelName]?.edit?.display,
+          styles: options.model?.[resource as ModelName]?.edit?.styles,
+        },
       }
     },
   }

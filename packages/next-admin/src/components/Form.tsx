@@ -5,8 +5,9 @@ import {
   BaseInputTemplateProps,
   ErrorSchema,
   FieldTemplateProps,
+  ObjectFieldTemplateProps,
   SubmitButtonProps,
-  getSubmitButtonOptions,
+  getSubmitButtonOptions
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
@@ -187,10 +188,15 @@ const Form = ({
           children,
         } = props;
         const labelAlias = options?.aliases?.[id as Field<typeof resource>] || label;
+        let styleField = options?.edit?.styles?.[id as Field<typeof resource>]
+        const sanitizedClassNames = classNames
+          ?.split(",")
+          .filter((className) => className !== "null")
+          .join(" ");
         return (
-          <div className={clsx(classNames, "py-1")} style={style}>
+          <div style={style} className={clsx(sanitizedClassNames, styleField)}>
             <label
-              className="block text-sm font-medium leading-6 text-gray-900 capitalize"
+              className={clsx("block text-sm font-medium leading-6 text-gray-900 capitalize")}
               htmlFor={id}
             >
               {labelAlias}
@@ -200,6 +206,14 @@ const Form = ({
             {children}
             {errors}
             {help}
+          </div>
+        );
+      },
+      ObjectFieldTemplate: (props: ObjectFieldTemplateProps) => {
+        const styleForm = options?.edit?.styles?._form
+        return (
+          <div className={clsx('grid', styleForm)}>
+            {props.properties.map((element) => element.content)}
           </div>
         );
       },

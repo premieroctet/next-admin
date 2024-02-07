@@ -38,8 +38,18 @@ export const options: NextAdminOptions = {
           "role",
           "birthDate",
           "avatar",
-          "metadata",
         ],
+        styles: {
+          _form: 'grid-cols-3 gap-2 md:grid-cols-4',
+          id: 'col-span-2',
+          name: 'col-span-2 row-start-2',
+          email: 'col-span-2 row-start-2',
+          posts: 'col-span-2 row-start-3',
+          role: 'col-span-2 row-start-3',
+          birthDate: 'col-span-3 row-start-4',
+          avatar: 'col-span-1 row-start-4',
+          metadata: "col-span-4 row-start-5",
+        },
         fields: {
           email: {
             validate: (email) => email.includes("@") || "form.user.email.error",
