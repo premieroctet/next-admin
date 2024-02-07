@@ -16,7 +16,7 @@ import {
   ScalarField,
   Schema
 } from "../types";
-import { createWherePredicate, selectPayloadForModel } from "./prisma";
+import { isSatisfyingSearch } from "./prisma";
 import { isNativeFunction, pipe, uncapitalize } from "./tools";
 
 export const models = Prisma.dmmf.datamodel.models;
@@ -154,16 +154,40 @@ export const fillRelationInSchema = (
         );
         const modelRelationIdField = getModelIdProperty(modelNameRelation);
         const search = requestOptions[`${fieldName}search`];
-        const where = createWherePredicate(fieldsFiltered, search);
         const toStringForRelations = getToStringForRelations(modelName, fieldName, modelNameRelation, options, relationToFields);
-        const select = selectPayloadForModel(modelNameRelation)
-        const data = prisma[uncapitalize(modelNameRelation)]
+        const nonCheckedToString =
           // @ts-expect-error
-          .findMany({
-            select,
-            where,
-            take: 20,
+          options?.model?.[modelName]?.edit?.fields?.[fieldName]?.optionFormatter
+          || options?.model?.[modelNameRelation]?.toString;
+
+        const prismaExtended = nonCheckedToString ? prisma.$extends({
+          result: {
+            [uncapitalize(modelNameRelation)]: {
+              _formatted: {
+                compute: toStringForRelations
+              }
+            }
+          }
+        }) : prisma;
+
+        const data = (prismaExtended[uncapitalize(modelNameRelation)]
+        // @ts-expect-error
+          .findMany() ?? Promise.resolve([]))
+          .then((data: any[]) => {
+            const result: typeof data = [];
+            const dataIte = data[Symbol.iterator]();
+            while (result.length < 20) {
+              const item = dataIte.next();
+              if (item.done) {
+                break;
+              }
+              if (isSatisfyingSearch(item.value, fieldsFiltered, search, Boolean(nonCheckedToString))) {
+                result.push(item.value);
+              }
+            }
+            return result;
           })
+
         if (
           relationToFields!.length > 0
         ) {

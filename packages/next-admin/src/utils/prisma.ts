@@ -44,6 +44,21 @@ export const createWherePredicate = (
     : {};
 };
 
+export const isSatisfyingSearch = (
+  item: any,
+  fieldsFiltered?: Prisma.DMMF.Field[],
+  search?: string,
+  withFormatter: boolean = false) => {
+  const fieldsFilteredNames = fieldsFiltered
+    ?.filter((field) => field.kind === "scalar")
+    ?.map((field) => field.name) ?? [];
+  withFormatter && fieldsFilteredNames?.push('_formatted')
+  if (!fieldsFilteredNames || !search) return true;
+  return fieldsFilteredNames?.reduce((acc, field) => {
+    return item[field].toString().toLowerCase().includes(search?.trim().toLowerCase()) || acc;
+  }, false);
+}
+
 export const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
