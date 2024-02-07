@@ -67,7 +67,7 @@ describe("Server utils", () => {
     });
 
     it("should not return an id from /admin/Dummy/--__", () => {
-      expect(getResourceIdFromParam("--__", "User")).toEqual(NaN);
+      expect(getResourceIdFromParam("--__", "User")).toEqual(undefined);
     });
   });
 

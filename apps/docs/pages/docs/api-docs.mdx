@@ -221,11 +221,11 @@ You can customize the following for each model:
 
 This property determines how your data is displayed in the [List View](/docs/glossary#list-view)
 
-| Name      | Description                                                                                            | Default value                         |
-| --------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------- |
+| Name      | Description                                                                                            | Default value                                |
+| --------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
 | `search`  | an array of searchable fields                                                                          | undefined - all scalar fields are searchable |
 | `display` | an array of fields that are displayed in the list                                                      | undefined - all scalar fields are displayed  |
-| `fields`  | an object containing the model fields as keys, and customization values, see [below](#fields-property) | undefined                             |
+| `fields`  | an object containing the model fields as keys, and customization values, see [below](#fields-property) | undefined                                    |
 
 > Note that the `search` property is only available for `scalar` fields.
 
@@ -236,7 +236,26 @@ This property determines how your data is displayed in the [edit view](/docs/glo
 | Name      | Description                                                             | Default value                   |
 | --------- | ----------------------------------------------------------------------- | ------------------------------- |
 | `display` | an array of fields that are displayed in the form                       | all scalar fields are displayed |
+| `styles`  | an object containing the styles of the form                             | undefined                       |
 | `fields`  | an object containing the model fields as keys, and customization values | undefined                       |
+
+##### `styles` property
+
+The `styles` property is available in the `edit` property.
+
+| Name    | Description                                                                    |
+| ------- | ------------------------------------------------------------------------------ |
+| `_form` | a string defining the classname of the form                                    |
+| ...     | all fields of the model, with the field name as key and the classname as value |
+
+Here is an example of using `styles` property:
+
+```ts
+styles: {
+  _form: "form-classname",
+  ... // all fields
+};
+```
 
 ##### `fields` property
 
@@ -250,15 +269,15 @@ For the `list` property, it can take the following:
 
 For the `edit` property, it can take the following:
 
-| Name             | Description                                                                                                                                                                  |
-| ---------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `validate`       | a function that takes the field value as a parameter, and that returns a boolean                                                                                             |
-| `format`         | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                       |
-| `input`          | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                          |
-| `handler`        | an object that can take the following properties                                                                                                                             |
-| `handler.get`    | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
-| `handler.upload` | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
-| `optionFormatter`| only for realtion fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                          |
+| Name              | Description                                                                                                                                                                  |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `validate`        | a function that takes the field value as a parameter, and that returns a boolean                                                                                             |
+| `format`          | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                       |
+| `input`           | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                          |
+| `handler`         | an object that can take the following properties                                                                                                                             |
+| `handler.get`     | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
+| `handler.upload`  | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
+| `optionFormatter` | only for realtion fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                          |
 
 ### `pages`
 

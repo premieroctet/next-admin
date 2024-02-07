@@ -113,7 +113,10 @@ export type ListOptions<T extends ModelName> = {
 };
 
 export type EditOptions<T extends ModelName> = {
-  display?: Field<T>[];
+  display?: Field<T>[]
+  styles?: {
+    _form?: string;
+  } & Partial<Record<Field<T>, string>>;
   fields?: EditFieldsOptions<T>;
 };
 
