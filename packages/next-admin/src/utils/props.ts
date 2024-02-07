@@ -23,6 +23,7 @@ import {
   transformData,
   transformSchema
 } from "./server";
+import { extract } from "./tools";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -96,23 +97,29 @@ export async function getPropsFromParams({
       "deleteAction not provided. Delete buttons will have no effect"
     );
   }
-
-  const clientOptions: NextAdminOptions = {
-    basePath: options.basePath,
+  const prototype = {
+    basePath: String.prototype.valueOf(),
     model: {
       [resource as ModelName]: {
-        aliases: options.model?.[resource as ModelName]?.aliases,
+        aliases: String.prototype.valueOf(),
         list: {
-          display: options.model?.[resource as ModelName]?.list?.display,
-          search: options.model?.[resource as ModelName]?.list?.search,
+          display: String.prototype.valueOf(),
+          search: String.prototype.valueOf(),
         },
         edit: {
-          display: options.model?.[resource as ModelName]?.edit?.display,
-          styles: options.model?.[resource as ModelName]?.edit?.styles,
+          display: String.prototype.valueOf(),
+          styles: String.prototype.valueOf(),
+          fields: {
+            [String.prototype.valueOf()]: {
+              format: String.prototype.valueOf(),
+            },
+          }
         },
       }
-    },
+    }
   }
+
+  const clientOptions: NextAdminOptions = extract(options, prototype)
 
   let defaultProps: AdminComponentProps = {
     resources,

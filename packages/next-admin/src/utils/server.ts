@@ -27,9 +27,7 @@ export const getPrismaModelForResource = (resource: ModelName) =>
 
 export const getModelIdProperty = (model: ModelName) => {
   const prismaModel = models.find((m) => m.name === model);
-
   const idField = prismaModel?.fields.find((f) => f.isId);
-
   return idField?.name ?? "id";
 };
 

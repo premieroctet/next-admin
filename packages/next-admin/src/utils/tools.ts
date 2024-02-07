@@ -20,9 +20,26 @@ export const isScalar = (value: string | boolean | number) => {
   );
 };
 
-
-export const pipe = <T>(...fns: Function[]) =>  (x: T) => {
+export const pipe = <T>(...fns: Function[]) => (x: T) => {
   return fns.reduce(async (v, f) => {
     return await f(await v)
   }, Promise.resolve(x));
 }
+
+export const extract = <T>(obj: T, prototype: Partial<T>): T => {
+  let newObj: any = {};
+  for (const key in prototype) {
+    if (key === '') {
+      newObj = obj ? Object.keys(obj as object).reduce((acc, key) => {
+        // @ts-expect-error
+        acc[key] = extract(obj[key], prototype[String.prototype.valueOf()]!);
+        return acc
+      }, {} as any) : {};
+    } else if (typeof prototype[key] === "object") {
+      newObj[key] = extract(obj[key], prototype[key]!);
+    } else if (obj[key] !== undefined) {
+      newObj[key] = obj[key];
+    }
+  }
+  return newObj
+};
