@@ -23,7 +23,7 @@ import {
   transformData,
   transformSchema
 } from "./server";
-import { extract } from "./tools";
+import { extractSerializable } from "./tools";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -97,30 +97,8 @@ export async function getPropsFromParams({
       "deleteAction not provided. Delete buttons will have no effect"
     );
   }
-  const prototype = {
-    basePath: String.prototype.valueOf(),
-    model: {
-      [resource as ModelName]: {
-        aliases: String.prototype.valueOf(),
-        list: {
-          display: String.prototype.valueOf(),
-          search: String.prototype.valueOf(),
-        },
-        edit: {
-          display: String.prototype.valueOf(),
-          styles: String.prototype.valueOf(),
-          fields: {
-            [String.prototype.valueOf()]: {
-              format: String.prototype.valueOf(),
-            },
-          }
-        },
-      }
-    }
-  }
 
-  const clientOptions: NextAdminOptions = extract(options, prototype)
-
+  const clientOptions: NextAdminOptions = extractSerializable(options);
   let defaultProps: AdminComponentProps = {
     resources,
     basePath,

@@ -12,7 +12,7 @@ export const isNativeFunction = (fn: Function) => {
   return /\{\s*\[native code\]\s*\}/.test(fn.toString());
 };
 
-export const isScalar = (value: string | boolean | number) => {
+export const isScalar = (value: any): value is string | boolean | number => {
   return (
     typeof value === "string" ||
     typeof value === "boolean" ||
@@ -26,20 +26,26 @@ export const pipe = <T>(...fns: Function[]) => (x: T) => {
   }, Promise.resolve(x));
 }
 
-export const extract = <T>(obj: T, prototype: Partial<T>): T => {
-  let newObj: any = {};
-  for (const key in prototype) {
-    if (key === '') {
-      newObj = obj ? Object.keys(obj as object).reduce((acc, key) => {
-        // @ts-expect-error
-        acc[key] = extract(obj[key], prototype[String.prototype.valueOf()]!);
-        return acc
-      }, {} as any) : {};
-    } else if (typeof prototype[key] === "object") {
-      newObj[key] = extract(obj[key], prototype[key]!);
-    } else if (obj[key] !== undefined) {
-      newObj[key] = obj[key];
+
+export const extractSerializable = <T>(obj: T): T => {
+  if (Array.isArray(obj)) {
+    return obj.map(extractSerializable) as unknown as T;
+  } else if (obj === null) {
+    return obj;
+  } else if (typeof obj === "object") {
+    let newObj = {} as T;
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        newObj = {
+          ...newObj,
+          [key]: extractSerializable(obj[key])
+        }
+      }
     }
+    return newObj;
+  } else if (isScalar(obj)) {
+    return obj;
+  } else {
+    return undefined as unknown as T;
   }
-  return newObj
-};
+}
