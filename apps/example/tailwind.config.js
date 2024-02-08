@@ -7,6 +7,7 @@ module.exports = {
     "./../../node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
     "./../../node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}",
+    "./options.{js,ts,jsx,tsx}",
   ],
   theme: {
     transparent: "transparent",
