@@ -685,7 +685,8 @@ export const getResourceIdFromParam = (param: string, resource: ModelName) => {
   if (param === "new") {
     return undefined;
   }
-  return formatId(resource, param);
+  const idProperty = formatId(resource, param);
+  return typeof idProperty === "number" && isNaN(idProperty) ? undefined : idProperty;
 };
 
 export const getFormDataValues = async (req: IncomingMessage) => {
