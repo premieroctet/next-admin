@@ -26,6 +26,7 @@ import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
 import SelectWidget from "./inputs/SelectWidget";
+import TextareaWidget from "./inputs/TextareaWidget";
 import Button from "./radix/Button";
 
 // Override Form functions to not prevent the submit
@@ -64,6 +65,7 @@ const widgets: CustomForm["props"]["widgets"] = {
   SelectWidget: SelectWidget,
   CheckboxWidget: CheckboxWidget,
   FileWidget: FileWidget,
+  TextareaWidget: TextareaWidget,
 };
 
 const Form = ({

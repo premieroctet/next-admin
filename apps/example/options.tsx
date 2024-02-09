@@ -124,6 +124,9 @@ export const options: NextAdminOptions = {
       },
       edit: {
         fields: {
+          content: {
+            format: "textarea",
+          },
           categories: {
             optionFormatter: (category) => `${category.name} Cat.${category.id}`,
           },

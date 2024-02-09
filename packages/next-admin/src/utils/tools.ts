@@ -12,7 +12,7 @@ export const isNativeFunction = (fn: Function) => {
   return /\{\s*\[native code\]\s*\}/.test(fn.toString());
 };
 
-export const isScalar = (value: string | boolean | number) => {
+export const isScalar = (value: any): value is string | boolean | number => {
   return (
     typeof value === "string" ||
     typeof value === "boolean" ||
@@ -20,9 +20,32 @@ export const isScalar = (value: string | boolean | number) => {
   );
 };
 
-
-export const pipe = <T>(...fns: Function[]) =>  (x: T) => {
+export const pipe = <T>(...fns: Function[]) => (x: T) => {
   return fns.reduce(async (v, f) => {
     return await f(await v)
   }, Promise.resolve(x));
+}
+
+
+export const extractSerializable = <T>(obj: T): T => {
+  if (Array.isArray(obj)) {
+    return obj.map(extractSerializable) as unknown as T;
+  } else if (obj === null) {
+    return obj;
+  } else if (typeof obj === "object") {
+    let newObj = {} as T;
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        newObj = {
+          ...newObj,
+          [key]: extractSerializable(obj[key])
+        }
+      }
+    }
+    return newObj;
+  } else if (isScalar(obj)) {
+    return obj;
+  } else {
+    return undefined as unknown as T;
+  }
 }

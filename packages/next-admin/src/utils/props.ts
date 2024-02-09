@@ -23,6 +23,7 @@ import {
   transformData,
   transformSchema
 } from "./server";
+import { extractSerializable } from "./tools";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -97,23 +98,7 @@ export async function getPropsFromParams({
     );
   }
 
-  const clientOptions: NextAdminOptions = {
-    basePath: options.basePath,
-    model: {
-      [resource as ModelName]: {
-        aliases: options.model?.[resource as ModelName]?.aliases,
-        list: {
-          display: options.model?.[resource as ModelName]?.list?.display,
-          search: options.model?.[resource as ModelName]?.list?.search,
-        },
-        edit: {
-          display: options.model?.[resource as ModelName]?.edit?.display,
-          styles: options.model?.[resource as ModelName]?.edit?.styles,
-        },
-      }
-    },
-  }
-
+  const clientOptions: NextAdminOptions = extractSerializable(options);
   let defaultProps: AdminComponentProps = {
     resources,
     basePath,
