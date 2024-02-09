@@ -95,18 +95,19 @@ const Form = ({
     return (
       <div className="flex space-x-2 mt-4 justify-between">
         <div className="flex space-x-2">
-          <Button {...buttonProps}>{t("form.button.save.label")}</Button>
-          {edit && (
-            <Button
-              type="submit"
-              name="__admin_action"
-              value="delete"
-              variant="destructive"
-            >
-              {t("form.button.delete.label")}
-            </Button>
-          )}
+          <Button {...buttonProps} name='__admin_redirect' value="list">{t("form.button.save.label")}</Button>
+          <Button {...buttonProps} variant={'ghost'}>{t("form.button.save_edit.label")}</Button>
         </div>
+        {edit && (
+          <Button
+            type="submit"
+            name="__admin_action"
+            value="delete"
+            variant="destructive"
+          >
+            {t("form.button.delete.label")}
+          </Button>
+        )}
       </div>
     );
   };
@@ -142,10 +143,10 @@ const Form = ({
           },
         });
       }
-
       if (result?.created) {
+        const pathname = result?.redirect ? `${basePath}/${resource.toLowerCase()}` : `${basePath}/${resource.toLowerCase()}/${result.createdId}`
         return router.replace({
-          pathname: `${basePath}/${resource.toLowerCase()}/${result.createdId}`,
+          pathname,
           query: {
             message: JSON.stringify({
               type: "success",
@@ -156,12 +157,16 @@ const Form = ({
       }
 
       if (result?.updated) {
-        location.search = `?message=${encodeURIComponent(
-          JSON.stringify({
-            type: "success",
-            content: "Updated successfully",
-          })
-        )}`;
+        const pathname = result?.redirect ? `${basePath}/${resource.toLowerCase()}` : location.pathname
+        return router.replace({
+          pathname,
+          query: {
+            message: JSON.stringify({
+              type: "success",
+              content: "Updated successfully",
+            }),
+          },
+        });
       }
 
       if (result?.error) {
