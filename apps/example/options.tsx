@@ -37,17 +37,17 @@ export const options: NextAdminOptions = {
           "role",
           "birthDate",
           "avatar",
-          "metadata"
+          "metadata",
         ],
         styles: {
-          _form: 'grid-cols-3 gap-2 md:grid-cols-4',
-          id: 'col-span-2',
-          name: 'col-span-2 row-start-2',
-          email: 'col-span-2 row-start-3',
-          posts: 'col-span-2 row-start-4',
-          role: 'col-span-2 row-start-4',
-          birthDate: 'col-span-3 row-start-5',
-          avatar: 'col-span-1 row-start-5',
+          _form: "grid-cols-3 gap-2 md:grid-cols-4",
+          id: "col-span-2",
+          name: "col-span-2 row-start-2",
+          email: "col-span-2 row-start-3",
+          posts: "col-span-2 row-start-4",
+          role: "col-span-2 row-start-4",
+          birthDate: "col-span-3 row-start-5",
+          avatar: "col-span-1 row-start-5",
           metadata: "col-span-4 row-start-6",
         },
         fields: {
@@ -103,15 +103,7 @@ export const options: NextAdminOptions = {
       toString: (post) => `${post.title}`,
       title: "📝 Posts",
       list: {
-        display: [
-          "id",
-          "title",
-          "content",
-          "published",
-          "author",
-          "categories",
-          "rate"
-        ],
+        display: ["id", "title", "published", "author", "categories", "rate"],
         search: ["title", "content"],
         fields: {
           author: {
@@ -124,10 +116,11 @@ export const options: NextAdminOptions = {
       edit: {
         fields: {
           content: {
-            format: "textarea",
+            format: "richtext-html",
           },
           categories: {
-            optionFormatter: (category) => `${category.name} Cat.${category.id}`,
+            optionFormatter: (category) =>
+              `${category.name} Cat.${category.id}`,
           },
         },
         display: [
@@ -137,7 +130,7 @@ export const options: NextAdminOptions = {
           "published",
           "categories",
           "author",
-          "rate"
+          "rate",
         ],
       },
     },

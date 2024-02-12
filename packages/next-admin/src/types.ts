@@ -20,10 +20,13 @@ export type Payload = Prisma.TypeMap["model"][ModelName]["payload"];
 
 export type ModelFromPayload<
   P extends Payload,
-  T extends object | number = object,> = {
-    [Property in keyof P["scalars"]]: P["scalars"][Property]
-  } & {
-    [Property in keyof P["objects"]]: P["objects"][Property] extends { scalars: infer S }
+  T extends object | number = object,
+> = {
+  [Property in keyof P["scalars"]]: P["scalars"][Property];
+} & {
+    [Property in keyof P["objects"]]: P["objects"][Property] extends {
+      scalars: infer S;
+    }
     ? T extends object
     ? S
     : T
@@ -43,12 +46,23 @@ export type Model<
   T extends object | number = object,
 > = ModelFromPayload<Prisma.TypeMap["model"][M]["payload"], T>;
 
-export type PropertyPayload<M extends ModelName, P extends keyof ObjectField<M>> =
-  Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends Array<infer T> ? T : never |
-  Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends infer T | null ? T : never |
-  Prisma.TypeMap["model"][M]["payload"]["objects"][P]
+export type PropertyPayload<
+  M extends ModelName,
+  P extends keyof ObjectField<M>,
+> = Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends Array<infer T>
+  ? T
+  : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends
+  | infer T
+  | null
+  ? T
+  : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
 
-export type ModelFromProperty<M extends ModelName, P extends keyof ObjectField<M>> = PropertyPayload<M, P> extends Payload ? ModelFromPayload<PropertyPayload<M, P>> : never
+export type ModelFromProperty<
+  M extends ModelName,
+  P extends keyof ObjectField<M>,
+> = PropertyPayload<M, P> extends Payload
+  ? ModelFromPayload<PropertyPayload<M, P>>
+  : never;
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
 
@@ -60,7 +74,12 @@ export type Field<P extends ModelName> = keyof Model<P>;
 
 export type ListFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
-    formatter?: (item: P extends keyof ObjectField<T> ? ModelFromProperty<T, P> : Model<T>[P], context?: NextAdminContext) => ReactNode;
+    formatter?: (
+      item: P extends keyof ObjectField<T>
+        ? ModelFromProperty<T, P>
+        : Model<T>[P],
+      context?: NextAdminContext
+    ) => ReactNode;
   };
 };
 
@@ -70,11 +89,11 @@ export type EditFieldsOptions<T extends ModelName> = {
     format?: FormatOptions<ModelWithoutRelationships<T>[P]>;
     handler?: Handler<T, P, Model<T>[P]>;
     input?: React.ReactElement;
-  } & (
-    P extends keyof ObjectField<T> ? {
+  } & (P extends keyof ObjectField<T>
+    ? {
       optionFormatter?: (item: ModelFromProperty<T, P>) => string;
-    } : {}
-  )
+    }
+    : {});
 };
 
 export type Handler<
@@ -85,6 +104,8 @@ export type Handler<
   get?: (input: T) => any;
   upload?: (file: Buffer) => Promise<string>;
 };
+
+export type RichTextFormat = "html" | "json";
 
 export type FormatOptions<T> = T extends string
   ?
@@ -100,6 +121,7 @@ export type FormatOptions<T> = T extends string
   | "alt-datetime"
   | "alt-date"
   | "file"
+  | `richtext-${RichTextFormat}`
   | "json"
   : never | T extends Date
   ? "date" | "date-time" | "time"
@@ -114,7 +136,7 @@ export type ListOptions<T extends ModelName> = {
 };
 
 export type EditOptions<T extends ModelName> = {
-  display?: Field<T>[]
+  display?: Field<T>[];
   styles?: {
     _form?: string;
   } & Partial<Record<Field<T>, string>>;
@@ -153,7 +175,7 @@ export type NextAdminOptions = {
 export type SchemaProperty<M extends ModelName> = {
   [P in Field<M>]?: JSONSchema7 & {
     items?: JSONSchema7Definition;
-    relation?: ModelName
+    relation?: ModelName;
   };
 };
 

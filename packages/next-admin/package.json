@@ -68,7 +68,10 @@
     "tsconfig": "*",
     "tsup": "^6.7.0"
   },
-"optionalDependencies": {
-    "@monaco-editor/react": "^4.6.0"
+  "optionalDependencies": {
+    "@monaco-editor/react": "^4.6.0",
+    "slate": "^0.101.5",
+    "slate-history": "^0.100.0",
+    "slate-react": "^0.101.5"
   }
 }

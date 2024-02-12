@@ -9,7 +9,6 @@ import "../../../styles.css";
 const pageOptions = options;
 
 export default function Admin(props: AdminComponentProps) {
-  
   return <NextAdmin {...props} dashboard={Dashboard} options={pageOptions} />;
 }
 

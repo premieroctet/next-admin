@@ -102,7 +102,11 @@ export const nextAdminRouter = async (
 
         try {
           // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
-          if ((!resourceId && params[1] !== 'new') && (action === "delete" || redirect) ) {
+          if (
+            !resourceId &&
+            params[1] !== "new" &&
+            (action === "delete" || redirect)
+          ) {
             if (message) {
               return {
                 props: {
@@ -132,10 +136,12 @@ export const nextAdminRouter = async (
             const message = {
               type: "success",
               content: "Deleted successfully",
-            }
+            };
             return {
               redirect: {
-                destination: `${options.basePath}/${resource.toLowerCase()}?message=${JSON.stringify(message)}`,
+                destination: `${
+                  options.basePath
+                }/${resource.toLowerCase()}?message=${JSON.stringify(message)}`,
                 permanent: false,
               },
             };
@@ -171,7 +177,11 @@ export const nextAdminRouter = async (
             if (redirect) {
               return {
                 redirect: {
-                  destination: `${options.basePath}/${resource.toLowerCase()}?message=${JSON.stringify(message)}`,
+                  destination: `${
+                    options.basePath
+                  }/${resource.toLowerCase()}?message=${JSON.stringify(
+                    message
+                  )}`,
                   permanent: false,
                 },
               };
@@ -185,7 +195,7 @@ export const nextAdminRouter = async (
             }
           }
 
-          console.log('createeeeeee')
+          console.log("createeeeeee");
 
           // Create
           // @ts-expect-error
@@ -200,7 +210,11 @@ export const nextAdminRouter = async (
             ),
           });
 
-          const pathname = redirect ? `${options.basePath}/${resource.toLowerCase()}` : `${options.basePath}/${resource.toLowerCase()}/${createdData[modelIdProperty]}`;
+          const pathname = redirect
+            ? `${options.basePath}/${resource.toLowerCase()}`
+            : `${options.basePath}/${resource.toLowerCase()}/${
+                createdData[modelIdProperty]
+              }`;
           return {
             redirect: {
               destination: `${pathname}?message=${JSON.stringify({
