@@ -68,5 +68,8 @@
     "ts-node": "^10.9.1",
     "tsconfig": "*",
     "tsup": "^6.7.0"
+  },
+"optionalDependencies": {
+    "@monaco-editor/react": "^4.6.0"
   }
 }
