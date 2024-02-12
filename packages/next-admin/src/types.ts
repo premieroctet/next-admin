@@ -24,22 +24,22 @@ export type ModelFromPayload<
 > = {
   [Property in keyof P["scalars"]]: P["scalars"][Property];
 } & {
-    [Property in keyof P["objects"]]: P["objects"][Property] extends {
-      scalars: infer S;
-    }
+  [Property in keyof P["objects"]]: P["objects"][Property] extends {
+    scalars: infer S;
+  }
     ? T extends object
-    ? S
-    : T
+      ? S
+      : T
     : never | P["objects"][Property] extends { scalars: infer S }[]
-    ? T extends object
-    ? S[]
-    : T[]
-    : never | P["objects"][Property] extends { scalars: infer S } | null
-    ? T extends object
-    ? S | null
-    : T | null
-    : never;
-  };
+      ? T extends object
+        ? S[]
+        : T[]
+      : never | P["objects"][Property] extends { scalars: infer S } | null
+        ? T extends object
+          ? S | null
+          : T | null
+        : never;
+};
 
 export type Model<
   M extends ModelName,
@@ -52,10 +52,10 @@ export type PropertyPayload<
 > = Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends Array<infer T>
   ? T
   : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends
-  | infer T
-  | null
-  ? T
-  : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
+        | infer T
+        | null
+    ? T
+    : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
 
 export type ModelFromProperty<
   M extends ModelName,
@@ -91,8 +91,8 @@ export type EditFieldsOptions<T extends ModelName> = {
     input?: React.ReactElement;
   } & (P extends keyof ObjectField<T>
     ? {
-      optionFormatter?: (item: ModelFromProperty<T, P>) => string;
-    }
+        optionFormatter?: (item: ModelFromProperty<T, P>) => string;
+      }
     : {});
 };
 
@@ -109,25 +109,25 @@ export type RichTextFormat = "html" | "json";
 
 export type FormatOptions<T> = T extends string
   ?
-  | "textarea"
-  | "password"
-  | "color"
-  | "email"
-  | "uri"
-  | "data-url"
-  | "date"
-  | "date-time"
-  | "time"
-  | "alt-datetime"
-  | "alt-date"
-  | "file"
-  | `richtext-${RichTextFormat}`
-  | "json"
+      | "textarea"
+      | "password"
+      | "color"
+      | "email"
+      | "uri"
+      | "data-url"
+      | "date"
+      | "date-time"
+      | "time"
+      | "alt-datetime"
+      | "alt-date"
+      | "file"
+      | `richtext-${RichTextFormat}`
+      | "json"
   : never | T extends Date
-  ? "date" | "date-time" | "time"
-  : never | T extends number
-  ? "updown" | "range"
-  : never;
+    ? "date" | "date-time" | "time"
+    : never | T extends number
+      ? "updown" | "range"
+      : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
@@ -244,16 +244,16 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
     | { type: "scalar"; value: string | number | boolean }
     | { type: "count"; value: number }
     | {
-      type: "link";
-      value: {
-        label: string;
-        url: string;
-      };
-    }
+        type: "link";
+        value: {
+          label: string;
+          url: string;
+        };
+      }
     | {
-      type: "date";
-      value: Date;
-    }
+        type: "date";
+        value: Date;
+      }
   );
 
 export type AdminComponentProps = {

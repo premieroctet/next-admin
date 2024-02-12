@@ -274,11 +274,14 @@ const Form = ({
         }
 
         if (schema?.format === "json") {
-          return (<JsonField
-            onChange={onChangeOverride || onTextChange}
-            readonly={readonly}
-            rawErrors={rawErrors}
-            {...props} />)
+          return (
+            <JsonField
+              onChange={onChangeOverride || onTextChange}
+              readonly={readonly}
+              rawErrors={rawErrors}
+              {...props}
+            />
+          );
         }
         if (schema?.format?.startsWith("richtext-")) {
           return (
