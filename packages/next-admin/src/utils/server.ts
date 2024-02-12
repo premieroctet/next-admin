@@ -16,8 +16,6 @@ import {
   ScalarField,
   Schema
 } from "../types";
-import { createWherePredicate } from "./prisma";
-import { isNativeFunction, uncapitalize } from "./tools";
 import { isSatisfyingSearch } from "./prisma";
 import { isNativeFunction, pipe, uncapitalize } from "./tools";
 
@@ -171,7 +169,7 @@ export const fillRelationInSchema = (
         }) : prisma;
 
         const data = (prismaExtended[uncapitalize(modelNameRelation)]
-        // @ts-expect-error
+          // @ts-expect-error
           .findMany() ?? Promise.resolve([]))
           .then((data: any[]) => {
             const result: typeof data = [];
