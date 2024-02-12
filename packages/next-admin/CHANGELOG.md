@@ -1,5 +1,106 @@
 # @premieroctet/next-admin
 
+## 3.2.5
+
+### Patch Changes
+
+- 6697dd2: Add deep access for relationship formatter
+
+## 3.2.4
+
+### Patch Changes
+
+- 8434ec4: BigInt support
+
+## 3.2.3
+
+### Patch Changes
+
+- b26d0ae: Support Decimal and Float Prisma
+- e3ee58a: Add one level of access model in optionFormatter option
+
+## 3.2.2
+
+### Patch Changes
+
+- 08d8a1e: Add redirection on relationship fields
+- 961996d: Fix optional relationship on creation
+- 84dc855: Possibility hide even id column in form
+- 6285e36: Possibility to not display search field on list if search option is an empty array. In case search options are not defined, all scalar fields are concerned
+- a1aa499: Add aliases options to rename columns name and form label
+
+## 3.2.1
+
+### Patch Changes
+
+- 8af3cc9: Fix parse error on relationship
+
+## 3.2.0
+
+### Minor Changes
+
+- ce1c30c: Only allow the relationship field in the configuration, not the field that carries the relationship at all - this allows several fields to be used in the Prisma @relation options
+- 2da9588: 🌐 add i18n support
+
+### Patch Changes
+
+- 8fcfa08: Add limit of 20 items on select for relationship
+- 8fcfa08: Fix search in enumeration selector
+- 7204981: Fix search for relationship fields and enum fields
+- c962865: Order fields in form according to display options order
+- e1ee443: Fix insensitive search for MySQL providers
+- ce1c30c: Form submitted with error will keep the state with user modification
+
+## 3.1.2
+
+### Patch Changes
+
+- 318748b: Fix form issue: relationship field are not displayed in form
+- 318748b: Display all properties even if editOptions are not empty
+
+## 3.1.1
+
+### Patch Changes
+
+- 3c67158: Fix optionFormatter function
+
+## 3.1.0
+
+### Minor Changes
+
+- cbf6925: 📄 add option for custom pages
+
+  In the `options`, add
+
+  ```tsx
+  pages: {
+    "/custom": {
+      title: "Custom page",
+      component: CustomPage,
+    },
+  },
+  ```
+
+  In the above example, navigating to `<basePath>/custom` will render the `CustomPage` component, in addition with the persistent Next Admin components (header, sidebar, message).
+
+- a261bc5: # New feature
+
+  ✏️ add ability to render a custom input
+
+- 4ddf12f: 🛠 add ability to create custom actions on resources
+- 244820a: use the `@id` field of a model as the id field instead of defaulting to "id"
+- 2d3f8ac: # New feature
+
+  ✨ Override model name in UI
+
+- 28053ff: add option `optionFormatter` to format select option of a related model at field option level
+- 603b499: 🛠 add support for JSON fields
+- af7f123: 🪄 allow sort by relationship count
+
+### Patch Changes
+
+- 11c3b5a: feat: allow slug version of model in url
+
 ## 3.0.1
 
 ### Patch Changes

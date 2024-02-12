@@ -39,7 +39,7 @@ export const submitForm = async (
 
   const resourceId = getResourceIdFromParam(params[1], resource);
 
-  const { __admin_action: action, ...formValues } =
+  const { __admin_redirect: redirect, __admin_action: action,  ...formValues } =
     await getFormValuesFromFormData(formData);
 
   const dmmfSchema = getPrismaModelForResource(resource);
@@ -84,7 +84,7 @@ export const submitForm = async (
         ),
       });
 
-      return { updated: true };
+      return { updated: true, redirect: redirect === "list"};
     }
 
     // Create
@@ -100,7 +100,7 @@ export const submitForm = async (
       ),
     });
 
-    return { created: true, createdId: data[resourceIdField] };
+    return { created: true, createdId: data[resourceIdField], redirect: redirect === "list" };
   } catch (error: any) {
     if (
       error.constructor.name === PrismaClientValidationError.name ||

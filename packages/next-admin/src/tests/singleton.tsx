@@ -130,7 +130,7 @@ export const options: NextAdminOptions = {
           "title",
           "content",
           "published",
-          "authorId",
+          "author",
           "categories",
         ],
       },
