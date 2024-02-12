@@ -31,7 +31,7 @@ export function NextAdmin({
   actions: actionsProp,
   deleteAction,
   translations,
-  locale
+  locale,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(

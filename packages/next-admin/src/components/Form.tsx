@@ -7,7 +7,7 @@ import {
   FieldTemplateProps,
   ObjectFieldTemplateProps,
   SubmitButtonProps,
-  getSubmitButtonOptions
+  getSubmitButtonOptions,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
@@ -17,7 +17,13 @@ import { FormContext, FormProvider } from "../context/FormContext";
 import { useI18n } from "../context/I18nContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import { Field, ModelAction, ModelName, NextAdminOptions, SubmitFormResult } from "../types";
+import {
+  Field,
+  ModelAction,
+  ModelName,
+  NextAdminOptions,
+  SubmitFormResult,
+} from "../types";
 import { getSchemas } from "../utils/jsonSchema";
 import ActionsDropdown from "./ActionsDropdown";
 import ArrayField from "./inputs/ArrayField";
@@ -96,8 +102,12 @@ const Form = ({
     return (
       <div className="flex space-x-2 mt-4 justify-between">
         <div className="flex space-x-2">
-          <Button {...buttonProps} name='__admin_redirect' value="list">{t("form.button.save.label")}</Button>
-          <Button {...buttonProps} variant={'ghost'}>{t("form.button.save_edit.label")}</Button>
+          <Button {...buttonProps} name="__admin_redirect" value="list">
+            {t("form.button.save.label")}
+          </Button>
+          <Button {...buttonProps} variant={"ghost"}>
+            {t("form.button.save_edit.label")}
+          </Button>
         </div>
         {edit && (
           <Button
@@ -109,7 +119,7 @@ const Form = ({
             {t("form.button.delete.label")}
           </Button>
         )}
-      </div >
+      </div>
     );
   };
 
@@ -145,7 +155,9 @@ const Form = ({
         });
       }
       if (result?.created) {
-        const pathname = result?.redirect ? `${basePath}/${resource.toLowerCase()}` : `${basePath}/${resource.toLowerCase()}/${result.createdId}`
+        const pathname = result?.redirect
+          ? `${basePath}/${resource.toLowerCase()}`
+          : `${basePath}/${resource.toLowerCase()}/${result.createdId}`;
         return router.replace({
           pathname,
           query: {
@@ -158,7 +170,9 @@ const Form = ({
       }
 
       if (result?.updated) {
-        const pathname = result?.redirect ? `${basePath}/${resource.toLowerCase()}` : location.pathname
+        const pathname = result?.redirect
+          ? `${basePath}/${resource.toLowerCase()}`
+          : location.pathname;
         return router.replace({
           pathname,
           query: {
@@ -195,8 +209,9 @@ const Form = ({
           errors,
           children,
         } = props;
-        const labelAlias = options?.aliases?.[id as Field<typeof resource>] || label;
-        let styleField = options?.edit?.styles?.[id as Field<typeof resource>]
+        const labelAlias =
+          options?.aliases?.[id as Field<typeof resource>] || label;
+        let styleField = options?.edit?.styles?.[id as Field<typeof resource>];
         const sanitizedClassNames = classNames
           ?.split(",")
           .filter((className) => className !== "null")
@@ -204,7 +219,9 @@ const Form = ({
         return (
           <div style={style} className={clsx(sanitizedClassNames, styleField)}>
             <label
-              className={clsx("block text-sm font-medium leading-6 text-gray-900 capitalize")}
+              className={clsx(
+                "block text-sm font-medium leading-6 text-gray-900 capitalize"
+              )}
               htmlFor={id}
             >
               {labelAlias}
@@ -218,9 +235,9 @@ const Form = ({
         );
       },
       ObjectFieldTemplate: (props: ObjectFieldTemplateProps) => {
-        const styleForm = options?.edit?.styles?._form
+        const styleForm = options?.edit?.styles?._form;
         return (
-          <div className={clsx('grid', styleForm)}>
+          <div className={clsx("grid", styleForm)}>
             {props.properties.map((element) => element.content)}
           </div>
         );
@@ -255,15 +272,17 @@ const Form = ({
           });
         }
 
-        if (schema?.format?.startsWith('richtext-')) {
-          return <RichTextField
-            onChange={onChangeOverride || onTextChange}
-            readonly={readonly}
-            rawErrors={rawErrors}
-            name={props.name}
-            value={props.value}
-            schema={schema}
-          />
+        if (schema?.format?.startsWith("richtext-")) {
+          return (
+            <RichTextField
+              onChange={onChangeOverride || onTextChange}
+              readonly={readonly}
+              rawErrors={rawErrors}
+              name={props.name}
+              value={props.value}
+              schema={schema}
+            />
+          );
         }
 
         return (
@@ -316,12 +335,14 @@ const Form = ({
       </div>
       <FormProvider initialValue={data}>
         <FormContext.Consumer>
-          {({ formData, setFormData }) =>
+          {({ formData, setFormData }) => (
             <CustomForm
               // @ts-expect-error
               action={action ? onSubmit : ""}
               {...(!action ? { method: "post" } : {})}
-              onChange={(e) => { setFormData(e.formData) }}
+              onChange={(e) => {
+                setFormData(e.formData);
+              }}
               idPrefix=""
               idSeparator=""
               enctype={!action ? "multipart/form-data" : undefined}
@@ -337,7 +358,8 @@ const Form = ({
               widgets={widgets}
               onSubmit={(e) => console.log("onSubmit", e)}
               onError={(e) => console.log("onError", e)}
-            />}
+            />
+          )}
         </FormContext.Consumer>
       </FormProvider>
     </div>

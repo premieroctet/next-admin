@@ -1,18 +1,18 @@
-"use client"
-import Editor from '@monaco-editor/react';
-import { CustomInputProps } from '@premieroctet/next-admin';
-import { useMemo } from 'react';
+"use client";
+import Editor from "@monaco-editor/react";
+import { CustomInputProps } from "@premieroctet/next-admin";
+import { useMemo } from "react";
 
-type Props = CustomInputProps
+type Props = CustomInputProps;
 
 const JsonEditor = ({ value, onChange, name }: Props) => {
   const defaultValue = useMemo(() => {
     try {
-      return JSON.stringify(JSON.parse(value!), null, 2)
+      return JSON.stringify(JSON.parse(value!), null, 2);
     } catch {
-      return ""
+      return "";
     }
-  }, [])
+  }, []);
 
   return (
     <>
@@ -23,15 +23,15 @@ const JsonEditor = ({ value, onChange, name }: Props) => {
         defaultValue={defaultValue}
         onChange={(val, evt) => {
           // @ts-expect-error
-          onChange?.({ target: { value: val ?? "" }})
+          onChange?.({ target: { value: val ?? "" } });
         }}
         options={{
-          minimap: { enabled: false }
+          minimap: { enabled: false },
         }}
         className="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed [&>div]:border-none"
       />
     </>
-  )
-}
+  );
+};
 
-export default JsonEditor
+export default JsonEditor;

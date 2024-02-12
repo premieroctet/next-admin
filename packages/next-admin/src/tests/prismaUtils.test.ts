@@ -45,44 +45,44 @@ describe("getMappedDataList", () => {
   });
 });
 
-describe('isSatisfyingSearch', () => {
+describe("isSatisfyingSearch", () => {
+  const fieldsFiltered =
+    Prisma.dmmf.datamodel.models
+      .find((model) => model.name === "Post")
+      ?.fields.filter(({ name }) => ["title", "content"].includes(name)) ?? [];
 
-  const fieldsFiltered = Prisma.dmmf.datamodel.models
-  .find(model => model.name === 'Post')?.fields
-  .filter(({ name }) => ['title', 'content'].includes(name)) ?? [];
-
-  it('should return true if the search is satisfying', () => {
-    const search = 'test';
+  it("should return true if the search is satisfying", () => {
+    const search = "test";
     const data = {
       id: 1,
-      title: 'Test',
-      content: 'Test',
+      title: "Test",
+      content: "Test",
       published: true,
-    }
+    };
 
     expect(isSatisfyingSearch(data, fieldsFiltered, search)).toBe(true);
-  })
+  });
 
-  it('should return false if the search is not satisfying', () => {
-    const search = 'not matching';
+  it("should return false if the search is not satisfying", () => {
+    const search = "not matching";
     const data = {
       id: 1,
-      title: 'Test',
-      content: 'Test',
+      title: "Test",
+      content: "Test",
       published: true,
-    }
+    };
     expect(isSatisfyingSearch(data, fieldsFiltered, search)).toBe(false);
-  })
+  });
 
-  it('should return true if the search matches the _formatted field', () => {
-    const search = 'formatted test';
+  it("should return true if the search matches the _formatted field", () => {
+    const search = "formatted test";
     const data = {
       id: 1,
-      title: 'Test',
-      content: 'Test',
+      title: "Test",
+      content: "Test",
       published: true,
-      _formatted: 'formatted test',
-    }
+      _formatted: "formatted test",
+    };
     expect(isSatisfyingSearch(data, fieldsFiltered, search, true)).toBe(true);
-  })
+  });
 });

@@ -6,8 +6,8 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
   WidgetProps,
-} from '@rjsf/utils';
-import { useMemo } from 'react';
+} from "@rjsf/utils";
+import { useMemo } from "react";
 
 /** The `DateTimeWidget` component uses the `BaseInputTemplate` changing the type to `datetime-local` and transforms
  * the value to/from utc using the appropriate utility functions.
@@ -17,26 +17,30 @@ import { useMemo } from 'react';
 export default function DateTimeWidget<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
-  F extends FormContextType = any
+  F extends FormContextType = any,
 >({ name, ...props }: WidgetProps<T, S, F>) {
   const { onChange, value, options, registry } = props;
-  const BaseInputTemplate = getTemplate<'BaseInputTemplate', T, S, F>('BaseInputTemplate', registry, options);
+  const BaseInputTemplate = getTemplate<"BaseInputTemplate", T, S, F>(
+    "BaseInputTemplate",
+    registry,
+    options
+  );
 
   const hiddenValue = useMemo(() => {
-    return value ? new Date(value).toISOString() : ""
-  }, [value])
+    return value ? new Date(value).toISOString() : "";
+  }, [value]);
 
   return (
     <>
       <input type="hidden" name={name} value={hiddenValue} />
       <BaseInputTemplate
-        type='datetime-local'
+        type="datetime-local"
         {...props}
         // @ts-expect-error
         name={undefined}
         value={utcToLocal(value)}
         onChange={(value) => {
-          onChange(localToUTC(value))
+          onChange(localToUTC(value));
         }}
       />
     </>

@@ -24,23 +24,25 @@ export const createWherePredicate = (
 ) => {
   return search
     ? {
-      OR: fieldsFiltered
-        ?.filter((field) => field.kind === "scalar")
-        .map((field) => {
-          if (field.type === "String") {
-            // @ts-ignore
-            const mode = Prisma?.QueryMode ? { mode: Prisma.QueryMode.insensitive } : {};
-            return {
-              [field.name]: { contains: search, ...mode },
-            };
-          }
-          if (field.type === "Int" && !isNaN(Number(search))) {
-            return { [field.name]: Number(search) };
-          }
-          return null;
-        })
-        .filter(Boolean),
-    }
+        OR: fieldsFiltered
+          ?.filter((field) => field.kind === "scalar")
+          .map((field) => {
+            if (field.type === "String") {
+              // @ts-ignore
+              const mode = Prisma?.QueryMode
+                ? { mode: Prisma.QueryMode.insensitive }
+                : {};
+              return {
+                [field.name]: { contains: search, ...mode },
+              };
+            }
+            if (field.type === "Int" && !isNaN(Number(search))) {
+              return { [field.name]: Number(search) };
+            }
+            return null;
+          })
+          .filter(Boolean),
+      }
     : {};
 };
 
@@ -48,16 +50,23 @@ export const isSatisfyingSearch = (
   item: any,
   fieldsFiltered?: Prisma.DMMF.Field[],
   search?: string,
-  withFormatter: boolean = false) => {
-  const fieldsFilteredNames = fieldsFiltered
-    ?.filter((field) => field.kind === "scalar")
-    ?.map((field) => field.name) ?? [];
-  withFormatter && fieldsFilteredNames?.push('_formatted')
+  withFormatter: boolean = false
+) => {
+  const fieldsFilteredNames =
+    fieldsFiltered
+      ?.filter((field) => field.kind === "scalar")
+      ?.map((field) => field.name) ?? [];
+  withFormatter && fieldsFilteredNames?.push("_formatted");
   if (!fieldsFilteredNames || !search) return true;
   return fieldsFilteredNames?.reduce((acc, field) => {
-    return item[field].toString().toLowerCase().includes(search?.trim().toLowerCase()) || acc;
+    return (
+      item[field]
+        .toString()
+        .toLowerCase()
+        .includes(search?.trim().toLowerCase()) || acc
+    );
   }, false);
-}
+};
 
 export const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
@@ -96,10 +105,10 @@ export const preparePrismaListRequest = <M extends ModelName>(
   let fieldsFiltered = model?.fields;
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
-    select = selectPayloadForModel(resource, list, 'object');
+    select = selectPayloadForModel(resource, list, "object");
     fieldsFiltered =
-      model?.fields.filter(({ name }) =>
-        list.search?.includes(name as Field<M>)
+      model?.fields.filter(
+        ({ name }) => list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
   }
   where = createWherePredicate(fieldsFiltered, search);
@@ -119,7 +128,7 @@ export const getMappedDataList = async (
   options: NextAdminOptions,
   searchParams: URLSearchParams,
   context: NextAdminContext,
-  appDir = false,
+  appDir = false
 ) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
@@ -195,18 +204,18 @@ export const getMappedDataList = async (
         item[key].__nextadmin_formatted = listFields[
           key as keyof typeof listFields
           // @ts-expect-error
-        ]?.formatter?.(itemValue ?? item[key], context)
+        ]?.formatter?.(itemValue ?? item[key], context);
       } else {
-        if (typeof item[key]?.__nextadmin_formatted === 'object') {
-          item[key].__nextadmin_formatted = item[key].__nextadmin_formatted[idProperty]
+        if (typeof item[key]?.__nextadmin_formatted === "object") {
+          item[key].__nextadmin_formatted =
+            item[key].__nextadmin_formatted[idProperty];
         }
         data[index][key] = item[key];
       }
 
-      if (typeof item[key]?.value === 'object') {
-        item[key].value.label = item[key].value.label[idProperty]
+      if (typeof item[key]?.value === "object") {
+        item[key].value.label = item[key].value.label[idProperty];
       }
-
     });
   });
 
@@ -217,7 +226,11 @@ export const getMappedDataList = async (
   };
 };
 
-export const selectPayloadForModel = <M extends ModelName>(resource: M, options?: EditOptions<M> | ListOptions<M>, level: 'scalar' | 'object' = 'scalar') => {
+export const selectPayloadForModel = <M extends ModelName>(
+  resource: M,
+  options?: EditOptions<M> | ListOptions<M>,
+  level: "scalar" | "object" = "scalar"
+) => {
   const model = getPrismaModelForResource(resource);
   const idProperty = getModelIdProperty(resource);
 
@@ -225,9 +238,18 @@ export const selectPayloadForModel = <M extends ModelName>(resource: M, options?
 
   let selectedFields = model?.fields.reduce(
     (acc, field) => {
-      if ((displayKeys && displayKeys.includes(field.name as Field<M>) || !displayKeys)) {
-        if (level === 'object' && field.kind === 'object') {
-          acc[field.name] = { select: selectPayloadForModel(field.type as ModelName, {}, 'scalar') };
+      if (
+        (displayKeys && displayKeys.includes(field.name as Field<M>)) ||
+        !displayKeys
+      ) {
+        if (level === "object" && field.kind === "object") {
+          acc[field.name] = {
+            select: selectPayloadForModel(
+              field.type as ModelName,
+              {},
+              "scalar"
+            ),
+          };
         } else {
           acc[field.name] = true;
         }
@@ -238,4 +260,4 @@ export const selectPayloadForModel = <M extends ModelName>(resource: M, options?
   );
 
   return selectedFields;
-}
+};
