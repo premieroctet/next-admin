@@ -176,8 +176,7 @@ export const fillRelationInSchema =
           );
           const nonCheckedToString =
             // @ts-expect-error
-            options?.model?.[modelName]?.edit?.fields?.[fieldName]
-              ?.optionFormatter ||
+            options?.model?.[modelName]?.edit?.fields?.[fieldName]?.optionFormatter ||
             options?.model?.[modelNameRelation]?.toString;
 
           const prismaExtended = nonCheckedToString
