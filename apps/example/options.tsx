@@ -1,6 +1,5 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
-import JsonEditor from "./components/JsonEditor";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
@@ -72,7 +71,7 @@ export const options: NextAdminOptions = {
             },
           },
           metadata: {
-            input: <JsonEditor />,
+            format: "json",
             validate: (value) => {
               try {
                 if (!value) {

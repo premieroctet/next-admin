@@ -138,9 +138,9 @@ export function DataTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                   </TableHead>
                 );
               })}
@@ -155,7 +155,9 @@ export function DataTable({
                 data-state={row.getIsSelected() && "selected"}
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
-                  window.location.href = `${basePath}/${resource.toLowerCase()}/${row.original[modelIdProperty].value}`
+                  window.location.href = `${basePath}/${resource.toLowerCase()}/${
+                    row.original[modelIdProperty].value
+                  }`;
                 }}
               >
                 {row.getVisibleCells().map((cell) => (

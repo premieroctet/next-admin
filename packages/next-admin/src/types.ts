@@ -122,6 +122,7 @@ export type FormatOptions<T> = T extends string
       | "alt-date"
       | "file"
       | `richtext-${RichTextFormat}`
+      | "json"
   : never | T extends Date
     ? "date" | "date-time" | "time"
     : never | T extends number

@@ -12,7 +12,7 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "tsc": "tsc --noemit"
+    "tsc": "tsc --noEmit"
   },
   "peerDependencies": {
     "@prisma/client": ">=4",
@@ -69,6 +69,7 @@
     "tsup": "^6.7.0"
   },
   "optionalDependencies": {
+    "@monaco-editor/react": "^4.6.0",
     "slate": "^0.101.5",
     "slate-history": "^0.100.0",
     "slate-react": "^0.101.5"

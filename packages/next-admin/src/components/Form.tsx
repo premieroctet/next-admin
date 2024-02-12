@@ -31,6 +31,7 @@ import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
+import JsonField from "./inputs/JsonField";
 import RichTextField from "./inputs/RichText/RichTextField";
 import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
@@ -272,6 +273,16 @@ const Form = ({
           });
         }
 
+        if (schema?.format === "json") {
+          return (
+            <JsonField
+              onChange={onChangeOverride || onTextChange}
+              readonly={readonly}
+              rawErrors={rawErrors}
+              {...props}
+            />
+          );
+        }
         if (schema?.format?.startsWith("richtext-")) {
           return (
             <RichTextField
