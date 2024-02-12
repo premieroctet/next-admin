@@ -1,5 +1,17 @@
 # @premieroctet/next-admin
 
+## 3.2.6
+
+### Patch Changes
+
+- 382ac9a: Richtext Editor : Add `slate` dependencies as optional = To use richtext editor, install the corresponding version of `slate`, `slate-history` and `slate-react`
+- bb41a1d: Change button in form, add save and continue button
+- c01ca4d: Fix text area input field
+- 5098926: Add a warning message if the form is modified and not saved
+- 89d1a85: Custom style for form
+- 2253dbd: Apply search on formatted field in form
+- c3b875e: Add `@monaco-editor` as optionalDependencies - To use the JSON editor, install the corresponding version of `@monaco-editor/react`
+
 ## 3.2.5
 
 ### Patch Changes
