@@ -1,4 +1,5 @@
 "use client";
+import { isEqual } from "lodash";
 import React, { PropsWithChildren, createContext, useEffect, useState } from "react";
 
 type FormContextType = {
@@ -39,6 +40,19 @@ type RelationState = {
 export const FormProvider = ({ children, initialValue }: Props) => {
   const [formData, setFormData] = useState(initialValue);
   const [relationState, setRelationState] = useState<RelationState>({});
+  useEffect(() => {
+    const isDirty = !isEqual(initialValue, formData);
+    const onBeforeUnload = (e: any) => {
+      e.preventDefault();
+      e.returnValue = true
+    }
+    if (isDirty) {
+      window.addEventListener('beforeunload', onBeforeUnload)
+    }
+    return () => {
+      window.removeEventListener('beforeunload', onBeforeUnload)
+    }
+  }, [formData, initialValue]);
 
   const setOpen = (open: boolean, name: string) => {
     if (!relationState) return;
