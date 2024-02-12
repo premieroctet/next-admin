@@ -20,6 +20,7 @@ import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Checkbox } from "./common/Checkbox";
 import Button from "./radix/Button";
+import { useI18n } from "../context/I18nContext";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
@@ -42,6 +43,8 @@ export function DataTable({
 }: DataTableProps) {
   const { router } = useRouterInternal();
   const { basePath } = useConfig();
+  const { t } = useI18n();
+
   const columnsVisibility = columns.reduce(
     (acc, column) => {
       // @ts-expect-error
@@ -102,7 +105,7 @@ export function DataTable({
             onDelete?.(row.original[idProperty].value as string | number);
           }}
         >
-          Delete
+          {t("list.row.actions.delete.label")}
         </Button>
       );
     },
@@ -169,7 +172,9 @@ export function DataTable({
           ) : (
             <TableRow>
               <TableCell colSpan={columns.length} className="h-24 text-center">
-                <div className="text-center text-gray-500">{`No ${resource} found`}</div>
+                <div className="text-center text-gray-500">
+                  {t("list.empty.label", { resource })}
+                </div>
               </TableCell>
             </TableRow>
           )}

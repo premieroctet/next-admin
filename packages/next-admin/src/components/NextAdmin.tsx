@@ -1,12 +1,11 @@
 import Head from "next/head";
 import NextNProgress from "nextjs-progressbar";
-import React from "react";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
+import { getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
-import { getCustomInputs } from "../utils/options";
 import { MainLayout } from "./MainLayout";
 
 // Components
@@ -31,6 +30,8 @@ export function NextAdmin({
   customPages,
   actions: actionsProp,
   deleteAction,
+  translations,
+  locale
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -76,6 +77,7 @@ export function NextAdmin({
           resource={resource!}
           validation={validation}
           action={action}
+          options={options?.model && options?.model[resource!]}
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}
@@ -106,6 +108,8 @@ export function NextAdmin({
         message={message}
         error={error}
         isAppDir={isAppDir}
+        translations={translations}
+        locale={locale}
       >
         {renderMainComponent()}
       </MainLayout>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
 import { ModelAction, ModelName } from "../types";
 import ActionsDropdown from "./ActionsDropdown";
 import { buttonVariants } from "./radix/Button";
@@ -12,7 +13,7 @@ import { buttonVariants } from "./radix/Button";
 type Props = {
   resource: ModelName;
   isPending: boolean;
-  onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onSearchChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   search: string;
   actions?: ModelAction[];
   selectedRows: RowSelectionState;
@@ -31,13 +32,14 @@ export default function ListHeader({
   onDelete,
 }: Props) {
   const { basePath } = useConfig();
+  const { t } = useI18n();
 
   const selectedRowsCount = Object.keys(selectedRows).length;
 
   const actions = useMemo<ModelAction[]>(() => {
     const defaultActions: ModelAction[] = [
       {
-        title: "Delete",
+        title: t("actions.delete.label"),
         style: "destructive",
         action: async () => {
           await onDelete();
@@ -46,12 +48,12 @@ export default function ListHeader({
     ];
 
     return [...(actionsProp || []), ...defaultActions];
-  }, [actionsProp, selectedRowsCount, onDelete]);
+  }, [actionsProp, onDelete, t]);
 
   return (
     <div className="flex justify-between items-end">
       <div>
-        <div className="mt-4 flex justify-end items-center gap-2">
+        {onSearchChange && <div className="mt-4 flex justify-end items-center gap-2">
           {isPending ? (
             <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
           ) : (
@@ -66,9 +68,9 @@ export default function ListHeader({
             defaultValue={search}
             type="search"
             className="px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm focus-visible:outline focus-visible:outline-indigo-500 focus-visible:ring focus-visible:ring-indigo-500"
-            placeholder={`Search`}
+            placeholder={t("list.header.search.placeholder")}
           />
-        </div>
+        </div>}
       </div>
       <div className="flex items-center gap-x-4">
         {!!selectedRowsCount && (
@@ -87,7 +89,7 @@ export default function ListHeader({
             size: "sm",
           })}
         >
-          <span>Add</span>
+          <span>{t("list.header.add.label")}</span>
           <PlusIcon className="h-5 w-5 ml-2" aria-hidden="true" />
         </Link>
       </div>

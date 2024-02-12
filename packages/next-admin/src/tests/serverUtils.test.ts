@@ -31,8 +31,8 @@ describe("fillRelationInSchema", () => {
         metadata: null
       },
     ]);
-    const result = await fillRelationInSchema(schema, prismaMock, "Post", {});
-    expect(result.definitions.Post.properties.authorId?.enum).toEqual([
+    const result = await fillRelationInSchema(prismaMock, "Post", {})(schema)
+    expect(result.definitions.Post.properties.author?.enum).toEqual([
       { label: 1, value: 1 },
       { label: 2, value: 2 },
     ]);
@@ -43,14 +43,14 @@ describe("transformSchema", () => {
   const userEditOptions = options.model?.User?.edit!;
 
   it("should return the schema with the new format", async () => {
-    const result = changeFormatInSchema(schema, "User", userEditOptions);
+    const result = changeFormatInSchema("User", userEditOptions)(schema);
     expect(result.definitions.User.properties.birthDate?.format).toEqual(
       "date"
     );
   });
 
   it("should return the schema without the hidden properties", async () => {
-    const result = removeHiddenProperties(schema, "User", userEditOptions);
+    const result = removeHiddenProperties("User", userEditOptions)(schema)
     expect(result.definitions.User.properties).not.toHaveProperty("createdAt");
     expect(result.definitions.User.properties).not.toHaveProperty("updatedAt");
   });

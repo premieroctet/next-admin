@@ -10,18 +10,18 @@ import { getPropsFromParams } from "./utils/props";
 import {
   formatSearchFields,
   formattedFormData,
+  getBody,
   getFormDataValues,
+  getModelIdProperty,
   getParamsFromUrl,
+  getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
   parseFormData,
-  getPrismaModelForResource,
-  getModelIdProperty,
-  getBody,
 } from "./utils/server";
-import { validate } from "./utils/validator";
 import { uncapitalize } from "./utils/tools";
+import { validate } from "./utils/validator";
 
 // Router
 export const nextAdminRouter = async (
@@ -52,7 +52,6 @@ export const nextAdminRouter = async (
         const params = getParamsFromUrl(req.url!, options.basePath);
 
         const requestOptions = formatSearchFields(req.url!);
-        const locale = req.headers["accept-language"]?.split(",")[0];
 
         const props = await getPropsFromParams({
           options,
@@ -61,13 +60,13 @@ export const nextAdminRouter = async (
           searchParams: requestOptions,
           params,
           isAppDir: false,
-          locale,
         });
 
         return { props };
       })
       .post(async (req, res) => {
         const params = getParamsFromUrl(req.url!, options.basePath);
+        const message = req.url?.split("?message=")[1];
 
         const resource = getResourceFromParams(params, resources);
         const requestOptions = formatSearchFields(req.url!);
@@ -90,6 +89,7 @@ export const nextAdminRouter = async (
 
         const {
           __admin_action: action,
+          __admin_redirect: redirect,
           id,
           ...formData
         } = await getFormDataValues(req);
@@ -102,15 +102,21 @@ export const nextAdminRouter = async (
 
         try {
           // Delete redirect, display the list (this is needed because next keeps the HTTP method on redirects)
-          if (!resourceId && action === "delete") {
+          if ((!resourceId && params[1] !== 'new') && (action === "delete" || redirect) ) {
+            if (message) {
+              return {
+                props: {
+                  ...(await getProps()),
+                  resource,
+                  message: JSON.parse(decodeURIComponent(message)),
+                },
+              };
+            }
+
             return {
               props: {
                 ...(await getProps()),
                 resource,
-                message: {
-                  type: "success",
-                  content: "Deleted successfully",
-                },
               },
             };
           }
@@ -123,10 +129,13 @@ export const nextAdminRouter = async (
                 [modelIdProperty]: resourceId,
               },
             });
-
+            const message = {
+              type: "success",
+              content: "Deleted successfully",
+            }
             return {
               redirect: {
-                destination: `${options.basePath}/${resource.toLowerCase()}`,
+                destination: `${options.basePath}/${resource.toLowerCase()}?message=${JSON.stringify(message)}`,
                 permanent: false,
               },
             };
@@ -159,13 +168,24 @@ export const nextAdminRouter = async (
               content: "Updated successfully",
             };
 
-            return {
-              props: {
-                ...(await getProps()),
-                message,
-              },
-            };
+            if (redirect) {
+              return {
+                redirect: {
+                  destination: `${options.basePath}/${resource.toLowerCase()}?message=${JSON.stringify(message)}`,
+                  permanent: false,
+                },
+              };
+            } else {
+              return {
+                props: {
+                  ...(await getProps()),
+                  message,
+                },
+              };
+            }
           }
+
+          console.log('createeeeeee')
 
           // Create
           // @ts-expect-error
@@ -180,11 +200,10 @@ export const nextAdminRouter = async (
             ),
           });
 
+          const pathname = redirect ? `${options.basePath}/${resource.toLowerCase()}` : `${options.basePath}/${resource.toLowerCase()}/${createdData[modelIdProperty]}`;
           return {
             redirect: {
-              destination: `${options.basePath}/${resource.toLowerCase()}/${
-                createdData[modelIdProperty]
-              }?message=${JSON.stringify({
+              destination: `${pathname}?message=${JSON.stringify({
                 type: "success",
                 content: "Created successfully",
               })}`,
@@ -229,8 +248,6 @@ export const nextAdminRouter = async (
 
         const body = await getBody(req);
         const bodyJson = JSON.parse(body) as string[] | number[];
-
-        console.log({ bodyJson });
 
         const modelIdProperty = getModelIdProperty(resource);
 

@@ -8,6 +8,9 @@ export const options: NextAdminOptions = {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
       title: "👥 Users",
+      aliases: {
+        id: "ID",
+      },
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
@@ -21,7 +24,7 @@ export const options: NextAdminOptions = {
             formatter: (date, context) => {
               return new Date(date as unknown as string)
                 ?.toLocaleString(context?.locale)
-                .split(" ")[0];
+                .split(/[\s,]+/)[0];
             },
           },
         },
@@ -37,9 +40,20 @@ export const options: NextAdminOptions = {
           "avatar",
           "metadata"
         ],
+        styles: {
+          _form: 'grid-cols-3 gap-2 md:grid-cols-4',
+          id: 'col-span-2',
+          name: 'col-span-2 row-start-2',
+          email: 'col-span-2 row-start-3',
+          posts: 'col-span-2 row-start-4',
+          role: 'col-span-2 row-start-4',
+          birthDate: 'col-span-3 row-start-5',
+          avatar: 'col-span-1 row-start-5',
+          metadata: "col-span-4 row-start-6",
+        },
         fields: {
           email: {
-            validate: (email) => email.includes("@") || "Invalid email",
+            validate: (email) => email.includes("@") || "form.user.email.error",
           },
           birthDate: {
             input: <DatePicker />,
@@ -62,27 +76,27 @@ export const options: NextAdminOptions = {
             validate: (value) => {
               try {
                 if (!value) {
-                  return true
+                  return true;
                 }
-                JSON.parse(value as string)
-                return true
+                JSON.parse(value as string);
+                return true;
               } catch {
-                return "Invalid JSON"
+                return "Invalid JSON";
               }
-            }
-          }
+            },
+          },
         },
       },
       actions: [
         {
-          title: "Send email",
+          title: "actions.user.email.title",
           action: async (...args) => {
             "use server";
             const { submitEmail } = await import("./actions/nextadmin");
             await submitEmail(...args);
           },
-          successMessage: "Email sent successfully",
-          errorMessage: "Error while sending email",
+          successMessage: "actions.user.email.success",
+          errorMessage: "actions.user.email.error",
         },
       ],
     },
@@ -96,6 +110,7 @@ export const options: NextAdminOptions = {
           "published",
           "author",
           "categories",
+          "rate"
         ],
         search: ["title", "content"],
         fields: {
@@ -110,15 +125,19 @@ export const options: NextAdminOptions = {
         fields: {
           content: {
             format: 'richtext-html'
-          }
+          },
+          categories: {
+            optionFormatter: (category) => `${category.name} Cat.${category.id}`,
+          },
         },
         display: [
           "id",
           "title",
           "content",
           "published",
-          "authorId",
           "categories",
+          "author",
+          "rate"
         ],
       },
     },

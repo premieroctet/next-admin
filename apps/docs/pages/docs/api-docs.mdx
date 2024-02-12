@@ -19,6 +19,7 @@ import { Tabs } from "nextra/components";
     - `prisma`: your Prisma client instance
     - `action`: the [server action](https://nextjs.org/docs/app/api-reference/functions/server-actions) used to submit the form. It should be your own action, that wraps the `submitForm` action imported from `@premieroctet/next-admin/dist/actions`.
     - `deleteAction`: the [server action](https://nextjs.org/docs/app/api-reference/functions/server-actions) used to delete one or more records in a resource. It is optional, and should be your own action. This action takes 3 parameters: `model` (the model name) and `ids` (an array of ids to delete). Next Admin provides a default action for deletion, that you can call in your own action. Check the example app for more details.
+    - `getMessages`: a function with no parameters that returns translation messages. It is used to translate the default messages of the library. See [i18n](/docs/i18n) for more details.
 
   </Tabs.Tab>
   <Tabs.Tab>
@@ -30,7 +31,7 @@ import { Tabs } from "nextra/components";
 
     Usage example:
 
-    ```ts
+    ```ts copy
     // pages/api/admin/[[...nextadmin]].ts
     export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       const { nextAdminRouter } = await import(
@@ -144,6 +145,7 @@ import { Tabs } from "nextra/components";
 - `AdminComponentProps`, which are passed by the [router function](#nextadminrouter-function) via getServerSideProps
 - `options` used to customize the UI, like field formatters for example. Do not use with App router.
 - `dashboard` used to customize the rendered dashboard
+- `translations` used to customize some of the texts displayed in the UI. See [i18n](/docs/i18n) for more details.
 
 > ⚠️ : Do not override these `AdminComponentProps` props, they are used internally by Next Admin.
 
@@ -192,6 +194,10 @@ export default function Admin(props: AdminComponentProps) {
 
 Next Admin options is the third parameter of the [router function](#nextadminrouter-function) and it's an object of options that has the following properties:
 
+### `basePath`
+
+`basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
+
 ### `model`
 
 `model` is an object that represents the customization options for each model in your schema.
@@ -200,10 +206,14 @@ It takes as **_key_** a model name of your schema as **_value_** an object to cu
 
 By default if no models are defined, they will all be displayed in the admin. If you want more control, you have to define each model individually as empty objects or with the following properties:
 
-| Name       | Description                                                                     | Default value |
-| ---------- | ------------------------------------------------------------------------------- | ------------- |
-| `toString` | a function that is used to display your record in related list                  | `id` field    |
-| `title`    | a string used to display the model name in the sidebar and in the section title | Model name    |
+| Name       | Description                                                                      | Default value |
+| ---------- | -------------------------------------------------------------------------------- | ------------- |
+| `toString` | a function that is used to display your record in related list                   | `id` field    |
+| `aliases`  | an object containing the aliases of the model fields as keys, and the field name | undefined     |
+| `title`    | a string used to display the model name in the sidebar and in the section title  | Model name    |
+| `list`     | an object containing the [list options](#list-property)                          | undefined     |
+| `edit`     | an object containing the [edit options](#edit-property)                          | undefined     |
+| `actions`  | an array of [actions](#actions-property)                                         | undefined     |
 
 You can customize the following for each model:
 
@@ -211,11 +221,11 @@ You can customize the following for each model:
 
 This property determines how your data is displayed in the [List View](/docs/glossary#list-view)
 
-| Name    | Description                                                             | Default value             |
-| ------- | ----------------------------------------------------------------------- | ------------------------- |
-| search  | an array of searchable fields                                           | all fields are searchable |
-| display | an array of fields that are displayed in the list                       | all fields are displayed  |
-| fields  | an object containing the model fields as keys, and customization values | undefined                 |
+| Name      | Description                                                                                            | Default value                                |
+| --------- | ------------------------------------------------------------------------------------------------------ | -------------------------------------------- |
+| `search`  | an array of searchable fields                                                                          | undefined - all scalar fields are searchable |
+| `display` | an array of fields that are displayed in the list                                                      | undefined - all scalar fields are displayed  |
+| `fields`  | an object containing the model fields as keys, and customization values, see [below](#fields-property) | undefined                                    |
 
 > Note that the `search` property is only available for `scalar` fields.
 
@@ -223,10 +233,34 @@ This property determines how your data is displayed in the [List View](/docs/glo
 
 This property determines how your data is displayed in the [edit view](/docs/glossary#edit-view)
 
-| Name    | Description                                                             | Default value            |
-| ------- | ----------------------------------------------------------------------- | ------------------------ |
-| display | an array of fields that are displayed in the form                       | all fields are displayed |
-| fields  | an object containing the model fields as keys, and customization values | undefined                |
+| Name      | Description                                                             | Default value                   |
+| --------- | ----------------------------------------------------------------------- | ------------------------------- |
+| `display` | an array of fields that are displayed in the form                       | all scalar fields are displayed |
+| `styles`  | an object containing the styles of the form                             | undefined                       |
+| `fields`  | an object containing the model fields as keys, and customization values | undefined                       |
+
+##### `styles` property
+
+The `styles` property is available in the `edit` property.
+
+> ⚠️ If your options are defined in a separate file, make sure to add the path to the `content` property of the `tailwind.config.js` file
+
+
+```ts
+
+| Name    | Description                                                                    |
+| ------- | ------------------------------------------------------------------------------ |
+| `_form` | a string defining the classname of the form                                    |
+| ...     | all fields of the model, with the field name as key and the classname as value |
+
+Here is an example of using `styles` property:
+
+```ts
+styles: {
+  _form: "form-classname",
+  ... // all fields
+};
+```
 
 ##### `fields` property
 
@@ -234,20 +268,21 @@ The `fields` property is available in both `list` and `edit` properties.
 
 For the `list` property, it can take the following:
 
-| Name      | Description                                                                                                                                                                |
-| --------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| formatter | a function that takes the field value as a parameter, and that return a JSX node. It also accepts a second argument which is the [`NextAdmin` context](#nextadmin-context) |
+| Name        | Description                                                                                                                                                                |
+| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `formatter` | a function that takes the field value as a parameter, and that return a JSX node. It also accepts a second argument which is the [`NextAdmin` context](#nextadmin-context) |
 
 For the `edit` property, it can take the following:
 
-| Name           | Description                                                                                                                                                                  |
-| -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| validate       | a function that takes the field value as a parameter, and that returns a boolean                                                                                             |
-| format         | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                       |
-| input          | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                          |
-| handler        | an object that can take the following properties                                                                                                                             |
-| handler.get    | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
-| handler.upload | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
+| Name              | Description                                                                                                                                                                  |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `validate`        | a function that takes the field value as a parameter, and that returns a boolean                                                                                             |
+| `format`          | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                       |
+| `input`           | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                          |
+| `handler`         | an object that can take the following properties                                                                                                                             |
+| `handler.get`     | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
+| `handler.upload`  | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
+| `optionFormatter` | only for realtion fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                          |
 
 ### `pages`
 
@@ -261,12 +296,12 @@ For the `edit` property, it can take the following:
 
 The `actions` property is an array of objects that allows you to define a set of actions that can be executed on one or more records of the resource. On the list view, there is a default action for deletion. The object can take the following properties:
 
-| Name           | Description                                                                                                                                | Default value |
-| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------- |
-| title          | action title that will be shown in the action dropdown                                                                                     | undefined     |
-| action         | an async function that will be triggered when selecting the action in the dropdown. For App Router, it must be defined as a server action. | undefined     |
-| successMessage | a message that will be displayed when the action is successful                                                                             | undefined     |
-| errorMessage   | a message that will be displayed when the action fails                                                                                     | undefined     |
+| Name             | Description                                                                                                                                | Default value |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | ------------- |
+| `title`          | action title that will be shown in the action dropdown                                                                                     | undefined     |
+| `action`         | an async function that will be triggered when selecting the action in the dropdown. For App Router, it must be defined as a server action. | undefined     |
+| `successMessage` | a message that will be displayed when the action is successful                                                                             | undefined     |
+| `errorMessage`   | a message that will be displayed when the action fails                                                                                     | undefined     |
 
 Here is an example of using `NextAdminOptions` for the following schema :
 

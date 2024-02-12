@@ -18,7 +18,7 @@ export const dataTest: DataTest = {
   },
   Post: {
     title: "MY_POST",
-    authorId: "User 0 (user0@nextadmin.io)",
+    author: "User 0 (user0@nextadmin.io)",
   },
   Category: {
     name: "MY_CATEGORY",
@@ -32,7 +32,7 @@ const dataTestUpdate: DataTest = {
   },
   Post: {
     title: "UPDATE_MY_POST",
-    authorId: "User 1 (user1@nextadmin.io)",
+    author: "User 1 (user1@nextadmin.io)",
   },
   Category: {
     name: "UPDATE_MY_CATEGORY",
@@ -47,7 +47,7 @@ export const createItem = async (
   await page.getByRole("button", { name: "Add" }).click();
   await page.waitForURL(`${process.env.BASE_URL}/${model}/new`);
   await fillForm(model, page, dataTest);
-  await page.click('button:has-text("Submit")');
+  await page.click('button:has-text("Save and continue editing")');
   await page.waitForURL((url) => !url.pathname.endsWith("/new"));
   const url = new URL(page.url());
   const id = url.pathname.split("/").pop();
@@ -75,7 +75,7 @@ export const updateItem = async (model: ModelName, page: Page, id: string) => {
   await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
   await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
   await fillForm(model, page, dataTestUpdate);
-  await page.click('button:has-text("Submit")');
+  await page.click('button:has-text("Save and continue editing")');
   await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
   await readForm(model, page, dataTestUpdate);
   expect(page.getByText("Updated successfully")).toBeDefined();
@@ -98,8 +98,11 @@ export const fillForm = async (
       break;
     case "Post":
       await page.fill('input[id="title"]', dataTest.Post.title);
-      await page.getByLabel("authorId*").click();
-      await page.getByText(dataTest.Post.authorId).click();
+      await page.getByLabel("author*").click();
+      /* Search for realtionship test */
+      await page.fill('input[id="author-search"]', dataTest.Post.author.slice(0, 10));
+      await page.waitForTimeout(1000);
+      await page.getByText(dataTest.Post.author).click();
       break;
     case "Category":
       await page.fill('input[id="name"]', dataTest.Category.name);
@@ -132,8 +135,8 @@ export const readForm = async (
       expect(await page.inputValue('input[id="title"]')).toBe(
         dataTest.Post.title
       );
-      expect(await page.inputValue('input[id="authorId"]')).toBe(
-        dataTest.Post.authorId
+      expect(await page.inputValue('input[id="author"]')).toBe(
+        dataTest.Post.author
       );
       break;
     case "Category":
