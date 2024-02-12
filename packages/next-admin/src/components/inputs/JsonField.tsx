@@ -1,7 +1,7 @@
+"use client";
 import Editor from '@monaco-editor/react';
 import { useMemo } from 'react';
 import { CustomInputProps } from '../../types';
-"use client";
 
 type Props = CustomInputProps;
 
