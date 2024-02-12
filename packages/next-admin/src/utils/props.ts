@@ -9,7 +9,7 @@ import {
   MainLayoutProps,
   ModelName,
   NextAdminOptions,
-  SubmitFormResult
+  SubmitFormResult,
 } from "../types";
 import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
@@ -21,7 +21,7 @@ import {
   getResourceIdFromParam,
   getResources,
   transformData,
-  transformSchema
+  transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
 
@@ -59,19 +59,19 @@ export async function getPropsFromParams({
   isAppDir = false,
   deleteAction,
   locale,
-  getMessages
+  getMessages,
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
-    AdminComponentProps,
-    | "pageComponent"
-    | "basePath"
-    | "isAppDir"
-    | "message"
-    | "resources"
-    | "error"
-  >
+      AdminComponentProps,
+      | "pageComponent"
+      | "basePath"
+      | "isAppDir"
+      | "message"
+      | "resources"
+      | "error"
+    >
 > {
   const {
     resource,
@@ -83,10 +83,13 @@ export async function getPropsFromParams({
     message,
   } = getMainLayoutProps({ options, params, searchParams, isAppDir });
 
-  const resourcesIdProperty = resources!.reduce((acc, resource) => {
-    acc[resource] = getModelIdProperty(resource);
-    return acc;
-  }, {} as Record<ModelName, string>);
+  const resourcesIdProperty = resources!.reduce(
+    (acc, resource) => {
+      acc[resource] = getModelIdProperty(resource);
+      return acc;
+    },
+    {} as Record<ModelName, string>
+  );
 
   if (isAppDir && !action) {
     throw new Error("action is required when using App router");
@@ -122,22 +125,22 @@ export async function getPropsFromParams({
   const actions = options?.model?.[resource]?.actions;
 
   if (getMessages) {
-    const messages = await getMessages()
-    const dottedProperty = {} as any
-    const dot = (obj: object, prefix = '') => {
+    const messages = await getMessages();
+    const dottedProperty = {} as any;
+    const dot = (obj: object, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {
-        if (typeof value === 'object') {
-          dot(value, `${prefix}${key}.`)
+        if (typeof value === "object") {
+          dot(value, `${prefix}${key}.`);
         } else {
-          dottedProperty[`${prefix}${key}`] = value
+          dottedProperty[`${prefix}${key}`] = value;
         }
-      })
-    }
-    dot(messages as object)
+      });
+    };
+    dot(messages as object);
     defaultProps = {
       ...defaultProps,
-      translations: dottedProperty
-    }
+      translations: dottedProperty,
+    };
   }
 
   switch (params.length) {
@@ -148,7 +151,7 @@ export async function getPropsFromParams({
         options,
         new URLSearchParams(qs.stringify(searchParams)),
         { locale },
-        isAppDir,
+        isAppDir
       );
 
       return {
@@ -170,7 +173,13 @@ export async function getPropsFromParams({
         typeof resource
       >;
 
-      let deepCopySchema = await transformSchema(resource, edit, prisma, searchParams, options)(cloneDeep(schema));
+      let deepCopySchema = await transformSchema(
+        resource,
+        edit,
+        prisma,
+        searchParams,
+        options
+      )(cloneDeep(schema));
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
@@ -237,14 +246,17 @@ export const getMainLayoutProps = ({
     message = searchParams?.message
       ? JSON.parse(searchParams.message as string)
       : null;
-  } catch { }
+  } catch {}
 
-  const resourcesTitles = resources.reduce((acc, resource) => {
-    acc[resource as Prisma.ModelName] =
-      options.model?.[resource as keyof typeof options.model]?.title ??
-      resource;
-    return acc;
-  }, {} as { [key in Prisma.ModelName]: string });
+  const resourcesTitles = resources.reduce(
+    (acc, resource) => {
+      acc[resource as Prisma.ModelName] =
+        options.model?.[resource as keyof typeof options.model]?.title ??
+        resource;
+      return acc;
+    },
+    {} as { [key in Prisma.ModelName]: string }
+  );
 
   return {
     resources,

@@ -62,7 +62,10 @@ export function getSchemas(
           dmmfProperty?.isUpdatedAt)
       ) {
         edit
-          ? (uiSchema[property] = { ...uiSchema[property], "ui:disabled": true })
+          ? (uiSchema[property] = {
+              ...uiSchema[property],
+              "ui:disabled": true,
+            })
           : delete schema.properties[property];
       }
     });

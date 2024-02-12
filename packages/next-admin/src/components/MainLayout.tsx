@@ -24,7 +24,7 @@ export const MainLayout = ({
   translations,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
-  const localePath = locale ? `/${locale}` : '';
+  const localePath = locale ? `/${locale}` : "";
   return (
     <ConfigProvider basePath={`${localePath}${basePath}`} isAppDir={isAppDir}>
       <I18nProvider translations={mergedTranslations}>

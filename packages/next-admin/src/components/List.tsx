@@ -1,12 +1,7 @@
 "use client";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
-import {
-  ChangeEvent,
-  useEffect,
-  useState,
-  useTransition
-} from "react";
+import { ChangeEvent, useEffect, useState, useTransition } from "react";
 import { ITEMS_PER_PAGE } from "../config";
 import { useConfig } from "../context/ConfigContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
@@ -80,57 +75,60 @@ function List({
   const columns: ColumnDef<ListDataItem<ModelName>>[] =
     data && data?.length > 0
       ? (options?.list?.display || Object.keys(data[0])).map((property) => {
-        const propertyAlias = options?.aliases?.[property as keyof ListFieldsOptions<typeof resource>] || property;
-        return {
-          accessorKey: property,
-          header: () => {
-            return (
-              <TableHead
-                sortDirection={sortDirection}
-                sortColumn={sortColumn}
-                property={propertyAlias}
-                key={property}
-                onClick={() => {
-                  router?.push({
-                    pathname: location.pathname,
-                    query: {
-                      ...query,
-                      sortColumn: propertyAlias,
-                      sortDirection:
-                        query.sortDirection === "asc" ? "desc" : "asc",
-                    },
-                  });
-                }}
-              />
-            );
-          },
-          cell: ({ row }) => {
-            const modelData = row.original;
-            const cellData = modelData[
-              property as keyof ListFieldsOptions<ModelName>
-            ] as unknown as ListDataFieldValue;
-
-            const dataFormatter =
-              options?.list?.fields?.[
+          const propertyAlias =
+            options?.aliases?.[
+              property as keyof ListFieldsOptions<typeof resource>
+            ] || property;
+          return {
+            accessorKey: property,
+            header: () => {
+              return (
+                <TableHead
+                  sortDirection={sortDirection}
+                  sortColumn={sortColumn}
+                  property={propertyAlias}
+                  key={property}
+                  onClick={() => {
+                    router?.push({
+                      pathname: location.pathname,
+                      query: {
+                        ...query,
+                        sortColumn: propertyAlias,
+                        sortDirection:
+                          query.sortDirection === "asc" ? "desc" : "asc",
+                      },
+                    });
+                  }}
+                />
+              );
+            },
+            cell: ({ row }) => {
+              const modelData = row.original;
+              const cellData = modelData[
                 property as keyof ListFieldsOptions<ModelName>
-              ]?.formatter ||
-              ((cell: any) => {
-                if (typeof cell === "object") {
-                  return cell[resourcesIdProperty[property as ModelName]];
-                } else {
-                  return cell;
-                }
-              });
+              ] as unknown as ListDataFieldValue;
 
-            return (
-              <Cell
-                cell={cellData}
-                formatter={!isAppDir ? dataFormatter : undefined}
-              />
-            );
-          },
-        };
-      })
+              const dataFormatter =
+                options?.list?.fields?.[
+                  property as keyof ListFieldsOptions<ModelName>
+                ]?.formatter ||
+                ((cell: any) => {
+                  if (typeof cell === "object") {
+                    return cell[resourcesIdProperty[property as ModelName]];
+                  } else {
+                    return cell;
+                  }
+                });
+
+              return (
+                <Cell
+                  cell={cellData}
+                  formatter={!isAppDir ? dataFormatter : undefined}
+                />
+              );
+            },
+          };
+        })
       : [];
 
   useEffect(() => {

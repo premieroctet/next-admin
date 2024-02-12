@@ -100,7 +100,10 @@ export const fillForm = async (
       await page.fill('input[id="title"]', dataTest.Post.title);
       await page.getByLabel("author*").click();
       /* Search for realtionship test */
-      await page.fill('input[id="author-search"]', dataTest.Post.author.slice(0, 10));
+      await page.fill(
+        'input[id="author-search"]',
+        dataTest.Post.author.slice(0, 10)
+      );
       await page.waitForTimeout(1000);
       await page.getByText(dataTest.Post.author).click();
       break;

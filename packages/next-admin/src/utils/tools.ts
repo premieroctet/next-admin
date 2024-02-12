@@ -20,12 +20,13 @@ export const isScalar = (value: any): value is string | boolean | number => {
   );
 };
 
-export const pipe = <T>(...fns: Function[]) => (x: T) => {
-  return fns.reduce(async (v, f) => {
-    return await f(await v)
-  }, Promise.resolve(x));
-}
-
+export const pipe =
+  <T>(...fns: Function[]) =>
+  (x: T) => {
+    return fns.reduce(async (v, f) => {
+      return await f(await v);
+    }, Promise.resolve(x));
+  };
 
 export const extractSerializable = <T>(obj: T): T => {
   if (Array.isArray(obj)) {
@@ -38,8 +39,8 @@ export const extractSerializable = <T>(obj: T): T => {
       if (obj.hasOwnProperty(key)) {
         newObj = {
           ...newObj,
-          [key]: extractSerializable(obj[key])
-        }
+          [key]: extractSerializable(obj[key]),
+        };
       }
     }
     return newObj;
@@ -48,4 +49,4 @@ export const extractSerializable = <T>(obj: T): T => {
   } else {
     return undefined as unknown as T;
   }
-}
+};

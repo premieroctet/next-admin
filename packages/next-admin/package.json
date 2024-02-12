@@ -67,5 +67,10 @@
     "ts-node": "^10.9.1",
     "tsconfig": "*",
     "tsup": "^6.7.0"
+  },
+  "optionalDependencies": {
+    "slate": "^0.101.5",
+    "slate-history": "^0.100.0",
+    "slate-react": "^0.101.5"
   }
 }
