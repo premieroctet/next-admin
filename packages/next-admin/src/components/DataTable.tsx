@@ -7,6 +7,12 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
+import { useRouterInternal } from "../hooks/useRouterInternal";
+import { Field, ListData, ListDataItem, ModelName } from "../types";
+import { Checkbox } from "./common/Checkbox";
+import Button from "./radix/Button";
 import {
   Table,
   TableBody,
@@ -15,12 +21,6 @@ import {
   TableHeader,
   TableRow,
 } from "./radix/Table";
-import { ListData, ListDataItem, ModelName, Field } from "../types";
-import { useConfig } from "../context/ConfigContext";
-import { useRouterInternal } from "../hooks/useRouterInternal";
-import { Checkbox } from "./common/Checkbox";
-import Button from "./radix/Button";
-import { useI18n } from "../context/I18nContext";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
@@ -138,9 +138,9 @@ export function DataTable({
                     {header.isPlaceholder
                       ? null
                       : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
                   </TableHead>
                 );
               })}
@@ -155,11 +155,7 @@ export function DataTable({
                 data-state={row.getIsSelected() && "selected"}
                 className="cursor-pointer hover:bg-indigo-50"
                 onClick={() => {
-                  router.push({
-                    pathname: `${basePath}/${resource.toLowerCase()}/${
-                      row.original[modelIdProperty].value
-                    }`,
-                  });
+                  window.location.href = `${basePath}/${resource.toLowerCase()}/${row.original[modelIdProperty].value}`
                 }}
               >
                 {row.getVisibleCells().map((cell) => (
