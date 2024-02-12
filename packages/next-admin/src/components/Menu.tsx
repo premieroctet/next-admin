@@ -54,7 +54,7 @@ export default function Menu({
     icon?: React.ElementType;
   }) => {
     return (
-      <Link
+      <a
         href={item.href}
         className={clsx(
           item.current
@@ -75,7 +75,7 @@ export default function Menu({
           />
         )}
         {item.name}
-      </Link>
+      </a>
     );
   };
 
