@@ -302,6 +302,7 @@ export type SubmitFormResult = {
   deleted?: boolean;
   created?: boolean;
   updated?: boolean;
+  redirect?: boolean;
   error?: string;
   createdId?: number;
   validation?: any;

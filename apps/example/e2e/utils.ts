@@ -47,7 +47,7 @@ export const createItem = async (
   await page.getByRole("button", { name: "Add" }).click();
   await page.waitForURL(`${process.env.BASE_URL}/${model}/new`);
   await fillForm(model, page, dataTest);
-  await page.click('button:has-text("Submit")');
+  await page.click('button:has-text("Save and continue editing")');
   await page.waitForURL((url) => !url.pathname.endsWith("/new"));
   const url = new URL(page.url());
   const id = url.pathname.split("/").pop();
@@ -75,7 +75,7 @@ export const updateItem = async (model: ModelName, page: Page, id: string) => {
   await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
   await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
   await fillForm(model, page, dataTestUpdate);
-  await page.click('button:has-text("Submit")');
+  await page.click('button:has-text("Save and continue editing")');
   await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
   await readForm(model, page, dataTestUpdate);
   expect(page.getByText("Updated successfully")).toBeDefined();
@@ -99,6 +99,9 @@ export const fillForm = async (
     case "Post":
       await page.fill('input[id="title"]', dataTest.Post.title);
       await page.getByLabel("author*").click();
+      /* Search for realtionship test */
+      await page.fill('input[id="author-search"]', dataTest.Post.author.slice(0, 10));
+      await page.waitForTimeout(1000);
       await page.getByText(dataTest.Post.author).click();
       break;
     case "Category":
