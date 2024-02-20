@@ -80,7 +80,13 @@ export const preparePrismaListRequest = <M extends ModelName>(
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
   let orderBy: Order<typeof resource> = {};
-  const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
+  const sortParam = options === null || options === void 0
+      ? searchParams.get("sortColumn")
+      : Object.values(options.model[resource].aliases).includes(searchParams.get("sortColumn"))
+      ? Object.keys(options.model[resource].aliases).find(
+          (key) => options.model[resource].aliases[key] === searchParams.get("sortColumn")
+        )
+      : searchParams.get("sortColumn") as Field<typeof resource>;
   const orderValue = searchParams.get("sortDirection") as Prisma.SortOrder;
 
   const modelFieldSortParam = model?.fields.find(
