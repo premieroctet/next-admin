@@ -193,12 +193,16 @@ export const fillRelationInSchema =
 
             const editOptions = options?.model?.[modelNameRelation]?.edit as EditOptions<typeof modelNameRelation>;
             const select = selectPayloadForModel(modelNameRelation, editOptions, "object");
-
+            if (nonCheckedToString) {
+              select._formatted = true;
+            }
             const data = (
               prismaExtended[uncapitalize(modelNameRelation)]
                 // @ts-expect-error
                 .findMany({
-                  select
+                  select: {
+                    ...select,
+                  }
                 }) ?? Promise.resolve([])
             ).then((data: any[]) => {
               const result: typeof data = [];
