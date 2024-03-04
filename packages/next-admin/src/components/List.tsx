@@ -93,7 +93,7 @@ function List({
                       pathname: location.pathname,
                       query: {
                         ...query,
-                        sortColumn: propertyAlias,
+                        sortColumn: property,
                         sortDirection:
                           query.sortDirection === "asc" ? "desc" : "asc",
                       },
