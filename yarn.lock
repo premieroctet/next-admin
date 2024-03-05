@@ -2019,16 +2019,6 @@
   dependencies:
     "@babel/runtime" "^7.13.10"
 
-"@react-querybuilder/ctx@^6.1.2":
-  version "6.1.2"
-  resolved "https://registry.npmjs.org/@react-querybuilder/ctx/-/ctx-6.1.2.tgz"
-  integrity sha512-L10HKstU9UBCDEmD30gm1l9Co9D5D1GVMs5W1IDONKpd3V/RXrH1mTjkSH2fAy2uuD6tVcKNz0fSFuz8dV/g/g==
-
-"@react-querybuilder/ts@^6.1.2":
-  version "6.1.2"
-  resolved "https://registry.npmjs.org/@react-querybuilder/ts/-/ts-6.1.2.tgz"
-  integrity sha512-CaKattfKZFsudGJ4E9V/MXEAUzSf6+Q2HNmrTZJHBvOxIkiH1ewGgAD0ClN9Dl9C1c5oSOclM7Ew+0oCxpSwrw==
-
 "@rjsf/core@^5.3.0":
   version "5.3.1"
   resolved "https://registry.npmjs.org/@rjsf/core/-/core-5.3.1.tgz"
@@ -5691,11 +5681,6 @@ immer@^10.0.3:
   resolved "https://registry.yarnpkg.com/immer/-/immer-10.0.3.tgz#a8de42065e964aa3edf6afc282dfc7f7f34ae3c9"
   integrity sha512-pwupu3eWfouuaowscykeckFmVTpqbzW+rXFCX8rQLkZzM9ftBmU/++Ra+o+L27mz03zJTlyV4UUr+fdKNffo4A==
 
-immer@^9.0.19:
-  version "9.0.19"
-  resolved "https://registry.npmjs.org/immer/-/immer-9.0.19.tgz"
-  integrity sha512-eY+Y0qcsB4TZKwgQzLaE/lqYMlKhv5J9dyd2RhhtGhNo2njPXDqU9XPfcNfa3MIDsdtZt5KlkIsirlo4dHsWdQ==
-
 import-fresh@^3.0.0, import-fresh@^3.2.1:
   version "3.3.0"
   resolved "https://registry.npmjs.org/import-fresh/-/import-fresh-3.3.0.tgz"
@@ -8757,16 +8742,6 @@ react-popper@^2.2.5, react-popper@^2.3.0:
   dependencies:
     react-fast-compare "^3.0.1"
     warning "^4.0.2"
-
-react-querybuilder@^6.1.2:
-  version "6.1.2"
-  resolved "https://registry.npmjs.org/react-querybuilder/-/react-querybuilder-6.1.2.tgz"
-  integrity sha512-Nb2ymANaznLQj2ets7XjhrLDARs39x9qCLVQjnae8F8I7ZT/JmoxW393yC9Brzb6LXvNXVBKbZEwR0hVMv9eDA==
-  dependencies:
-    "@react-querybuilder/ctx" "^6.1.2"
-    "@react-querybuilder/ts" "^6.1.2"
-    clsx "^1.2.1"
-    immer "^9.0.19"
 
 react-remove-scroll-bar@^2.3.3:
   version "2.3.4"

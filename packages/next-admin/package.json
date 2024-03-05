@@ -40,7 +40,6 @@
     "nextjs-progressbar": "^0.0.16",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-querybuilder": "^6.1.2",
     "typescript": "^5.1.6",
     "util": "^0.12.5"
   },
