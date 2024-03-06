@@ -34,12 +34,12 @@ export const SkeletonOne = () => {
       initial="initial"
       animate="visible"
       whileHover="hover"
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2"
+      className=" flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2"
     >
       {false && (
         <motion.div className="w-0 h-0 border-l-[30px] border-b-[50px] border-r-[30px] border-l-transparent border-r-transparent border-b-black" />
       )}
-      <motion.div className="text-sm text-stone-600 font-light flex flex-col justify-center h-full">
+      <motion.div className="dark:text-white/70 text-sm text-stone-600 font-light flex flex-col justify-center h-full">
         <motion.div variants={variants}>app/</motion.div>
         <motion.div variants={variants} className="ml-3">
           layout.tsx
@@ -49,13 +49,13 @@ export const SkeletonOne = () => {
         </motion.div>
         <motion.div
           variants={variants}
-          className="ml-6 p-1 rounded-lg px-2 bg-gradient-to-r from-green-100/80 to-green-100/10 font-medium"
+          className="dark:text-black/80 ml-6 p-1 rounded-lg px-2 bg-gradient-to-r from-green-100/80 to-green-100/10 font-medium"
         >
           [[...nextadmin]]/
         </motion.div>
         <motion.div
           variants={variants}
-          className="ml-14 bg-gradient-to-r from-yellow-100/80 to-yellow-100/10 font-medium px-2 p-1"
+          className="dark:text-black/80 ml-14 bg-gradient-to-r from-yellow-100/80 to-yellow-100/10 font-medium px-2 p-1"
         >
           page.tsx
         </motion.div>
@@ -133,14 +133,14 @@ export const SkeletonThree = () => {
       initial="initial"
       animate="animate"
       variants={variants}
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col text-xs font-mono justify-center text-black/30"
+      className="dark:text-white/70 flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col text-xs font-mono justify-center text-black/30"
     >
       <motion.div>{`datasource db {`}</motion.div>
       <motion.div className="pl-4">{`provider = "postgresql"`}</motion.div>
       <motion.div className="pl-4">{`url = env("DATABASE_URL")`}</motion.div>
       <motion.div>{`}`}</motion.div>
       <motion.div className="mt-3">{`generator jsonSchema {`}</motion.div>
-      <motion.div className="ml-2 pl-2 py-2 my-1 bg-gradient-to-r from-green-100/80 to-green-100/10 text-stone-600 rounded-lg relative">
+      <motion.div className="dark:text-black/70 ml-2 pl-2 py-2 my-1 bg-gradient-to-r from-green-100/80 to-green-100/10 text-stone-600 rounded-lg relative">
         {`provider = "prisma-json-schema-generator"`}
         <div>
           <CheckBadgeIcon className="h-6 w-6 absolute right-0 top-6 text-teal-600" />
@@ -240,10 +240,10 @@ export const SkeletonFive = () => {
     >
       <motion.div
         variants={variants}
-        className="h-24 w-24 flex items-end justify-end p-1 relative rounded-lg text-4xl bg-gradient-to-b from-green-100 to-green-100/10 5 text-green-800"
+        className="dark:text-gray-400 h-24 w-24 flex items-end justify-end p-1 relative rounded-lg text-4xl bg-gradient-to-b from-green-100 to-green-100/10 5 text-green-800"
       >
         TS
-        <ShieldCheckIcon className="w-8 h-8 absolute -bottom-2 left-0 text-green-700" />
+        <ShieldCheckIcon className="w-8 h-8 absolute -bottom-2 left-0 dark:text-gray-500 text-green-700" />
       </motion.div>
     </motion.div>
   );

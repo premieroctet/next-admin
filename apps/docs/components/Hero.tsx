@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Spotlight } from "./effects/Spotlight";
 
 export const GitHubIcon = () => (
@@ -18,29 +19,29 @@ export function Hero() {
         fill="#82e9a6"
       />
       <div className=" p-4 max-w-7xl  mx-auto relative z-10  w-full pt-20 md:pt-0">
-        <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-black/70 to-black/90 bg-opacity-50">
+        <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-black/70 to-black/90 dark:text-white bg-opacity-50">
           Full-featured Admin
           <br /> for Next.js
         </h1>
-        <p className="mt-4 font-normal text-2xl text-black max-w-xl text-center mx-auto">
+        <p className="mt-4 font-normal text-2xl text-black dark:text-white max-w-xl text-center mx-auto">
           Ready-to-go Admin for Next.js and Prisma
         </p>
         <div className="mt-10 max-w-xl text-center mx-auto flex flex-raw gap-4 justify-center">
-          <a
+          <Link
             href="https://next-admin.js.org"
             target="_blank"
-            className="bg-black rounded-lg px-6 py-3 text-white text-md font-semibold hover:bg-gray-800 transition-colors duration-300 ease-in-out"
+            className="bg-black dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-6 py-3 text-white text-md font-semibold hover:bg-gray-800 transition-colors duration-300 ease-in-out"
           >
             Documentation
-          </a>
-          <a
+          </Link>
+          <Link
             href="https://github.com/premieroctet/next-admin"
             target="_blank"
-            className="rounded-lg px-6 py-3 text-black text-md font-semibold hover:bg-gray-100 transition-colors duration-300 ease-in-out border border-gray-300 flex gap-2"
+            className="dark:text-white dark:fill-white dark:hover:text-black dark:hover:fill-black rounded-lg px-6 py-3 text-black text-md font-semibold hover:bg-gray-100 transition-colors duration-300 ease-in-out border border-gray-300 flex gap-2"
           >
             <GitHubIcon />
             View on GitHub
-          </a>
+          </Link>
         </div>
       </div>
     </div>

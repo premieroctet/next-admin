@@ -1,22 +1,24 @@
-# 🧞 Next Admin
+---
+title: Next Admin - Full-featured Admin for Next.js and Prisma
+description: Ready-to-go Admin for Next.js and Prisma
+---
 
-###### `next-admin` is a library built on top of [Prisma](https://www.prisma.io/) and [Next.js](https://nextjs.org/) that allows you to easily manage and visualize your Prisma database in a nice GUI.
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
+import { Hero } from "@/components/Hero";
+import Subtitle from "@/components/Subtitle";
+import { FeaturesBento } from "@/components/bento/FeaturesBento";
 
-Get started by following the [installation guide](/docs/getting-started) or check out the [live demo](https://next-admin-po.vercel.app/admin).
-
-![Hello](/screenshot.png)
-
-## ✨ Features
-
-This library is still under development. The following features are available:
-
-- 👀 Visualize, search and filter your data quickly
-- 💅 Customizable admin dashboard
-- 💽 Database relationships management
-- 👩🏻‍💻 User management (CRUD operations)
-- 🎨 Dashboard widgets and customizable panels
-- ⚛️ Integration with Prisma ORM
-- 👔 Customizable list and form
-- ⚙️ Supports App Router and Page Router
-
-If you want to request a feature, please open an issue [here](https://github.com/premieroctet/next-admin/issues/new)
+<main className="flex min-h-screen flex-col items-center justify-between px-10">
+  <Hero />
+  <div className="w-full bg-grid-small-black/20 dark:bg-grid-small-white/20">
+    <div className="max-w-4xl mx-auto flex flex-col gap-10">
+      <Subtitle>Getting Started</Subtitle>
+      <div className="bg-black text-white font-mono px-5 py-3 rounded-md mx-auto inline-block shadow-[0_10px_20px_rgba(230,253,238,1)]">
+        yarn add @premieroctet/next-admin prisma-json-schema-generator
+      </div>
+    </div>
+    <Subtitle>Features</Subtitle>
+    <FeaturesBento />
+  </div>
+</main>
