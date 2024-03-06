@@ -1,6 +1,12 @@
 {
-  "index": "Introduction",
-  "docs": "Documentation",
+  "index": {
+    "type": "page",
+    "title": "Next Admin",
+    "display": "hidden",
+    "theme": {
+      "layout": "raw"
+    }
+  },
   "demo": {
     "title": "Demo",
     "type": "page",
