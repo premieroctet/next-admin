@@ -188,24 +188,24 @@ export const SkeletonFour = () => {
     >
       <motion.div
         variants={variants}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2  items-center space-x-2 bg-white dark:bg-black"
+        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.4] p-2  items-center space-x-2 bg-white dark:bg-black"
       >
         <MagnifyingGlassIcon className="h-6 w-6" />
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-900" />
+        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-700" />
       </motion.div>
       <motion.div
         variants={variantsSecond}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2 items-center space-x-2 w-3/4 ml-auto bg-white dark:bg-black"
+        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.4] p-2 items-center space-x-2 w-3/4 ml-auto bg-white dark:bg-black"
       >
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-900" />
+        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-700" />
         <FunnelIcon className="h-6 w-6" />
       </motion.div>
       <motion.div
         variants={variants}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.2] p-2 items-center space-x-2 bg-white dark:bg-black"
+        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.4] p-2 items-center space-x-2 bg-white dark:bg-black"
       >
         <AdjustmentsVerticalIcon className="h-6 w-6" />
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-900" />
+        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-700" />
       </motion.div>
     </motion.div>
   );

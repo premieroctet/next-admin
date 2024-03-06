@@ -13,7 +13,7 @@ export const GitHubIcon = () => (
 
 export function Hero() {
   return (
-    <div className="h-[35rem] w-full rounded-md flex md:items-center md:justify-center bg-transparent antialiased relative overflow-hidden border-b border-dashed">
+    <div className="h-[35rem] w-full flex md:items-center md:justify-center bg-transparent antialiased relative overflow-hidden border-b border-dashed dark:border-b-stone-500">
       <Spotlight
         className="-top-40 left-0 md:left-60 md:-top-20"
         fill="#82e9a6"
@@ -29,7 +29,7 @@ export function Hero() {
         <div className="mt-10 max-w-xl text-center mx-auto flex flex-raw gap-4 justify-center">
           <Link
             href="/docs"
-            className="bg-black dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-6 py-3 text-white text-md font-semibold hover:bg-gray-800 transition-colors duration-300 ease-in-out"
+            className="bg-black dark:bg-white dark:hover:bg-gray-700 rounded-lg px-6 py-3 text-white dark:text-black text-md font-semibold hover:bg-gray-800 dark:hover:bg-white/80 transition-colors duration-300 ease-in-out"
           >
             Documentation
           </Link>
