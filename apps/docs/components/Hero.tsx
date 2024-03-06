@@ -28,8 +28,7 @@ export function Hero() {
         </p>
         <div className="mt-10 max-w-xl text-center mx-auto flex flex-raw gap-4 justify-center">
           <Link
-            href="https://next-admin.js.org"
-            target="_blank"
+            href="/docs"
             className="bg-black dark:bg-gray-800 dark:hover:bg-gray-700 rounded-lg px-6 py-3 text-white text-md font-semibold hover:bg-gray-800 transition-colors duration-300 ease-in-out"
           >
             Documentation

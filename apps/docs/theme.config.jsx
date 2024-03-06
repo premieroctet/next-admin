@@ -3,7 +3,12 @@ import { useRouter } from "next/router";
 import Logo from "./components/Logo";
 
 const config = {
-  logo: <Logo width={45} />,
+  logo: (
+    <div className="flex items-center gap-2">
+      <Logo width={45} />
+      <span className="font-semibold">Next Admin</span>
+    </div>
+  ),
   project: {
     link: "https://github.com/premieroctet/next-admin",
   },

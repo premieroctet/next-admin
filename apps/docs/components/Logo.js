@@ -15,6 +15,14 @@ const Logo = ({ width }) => (
         animation-iteration-count: infinite;
     }
 
+    .selection-effect {
+      stroke: #000;
+    }
+
+    .dark .selection-effect {
+        stroke: #fff;
+    }
+
     @keyframes selectionEffect {
         from {
             stroke-opacity: 1;
@@ -57,7 +65,6 @@ const Logo = ({ width }) => (
         y1="32"
         x2="93"
         y2="32"
-        stroke="#CB31EA"
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -68,7 +75,6 @@ const Logo = ({ width }) => (
         y1="22"
         x2="99"
         y2="22"
-        stroke="#CB31EA"
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -79,7 +85,6 @@ const Logo = ({ width }) => (
         y1="42"
         x2="89"
         y2="42"
-        stroke="#CB31EA"
         strokeWidth="4"
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -91,6 +96,6 @@ const Logo = ({ width }) => (
       </clipPath>
     </defs>
   </svg>
-)
+);
 
-export default Logo
+export default Logo;
