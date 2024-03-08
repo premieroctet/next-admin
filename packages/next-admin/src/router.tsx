@@ -195,8 +195,6 @@ export const nextAdminRouter = async (
             }
           }
 
-          console.log("createeeeeee");
-
           // Create
           // @ts-expect-error
           const createdData = await prisma[resource].create({
