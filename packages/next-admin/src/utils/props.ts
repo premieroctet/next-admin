@@ -1,4 +1,3 @@
-"use server";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { cloneDeep } from "lodash";
 import qs from "querystring";
