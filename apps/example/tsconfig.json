@@ -1,4 +1,13 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": [
+        "*"
+      ]
+    },
+    "strictNullChecks": true
+  },
   "extends": "tsconfig/nextjs.json",
   "include": [
     "next-env.d.ts",
