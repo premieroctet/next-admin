@@ -1,5 +1,14 @@
 # @premieroctet/next-admin
 
+## 3.2.7
+
+### Patch Changes
+
+- 55a6506: Fix: allow sublevel on items in select
+- 15d2e83: Turn utils function file into non server component
+- b4b8a92: Remove query-builder and unused styles
+- 4ef126f: Fix: Order by alias name in list
+
 ## 3.2.6
 
 ### Patch Changes
