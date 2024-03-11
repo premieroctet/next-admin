@@ -45,18 +45,25 @@ const FileWidget = (props: WidgetProps) => {
     }
   };
 
-  const getFileType = async (signal: AbortSignal) => {
+  const getFileType = () => {
     if (!props.value) {
       return;
     }
+
     try {
-      const response = await fetch(props.value, {
-        signal,
-      });
-      setFileIsImage(
-        response.headers.get("Content-Type")?.includes("image") ?? false
-      );
-      setFileImage(props.value);
+      const img = new Image();
+
+      img.onload = () => {
+        setFileIsImage(true);
+        setFileImage(props.value);
+      };
+
+      img.onerror = () => {
+        setFileIsImage(false);
+        setFileImage(props.value);
+      };
+
+      img.src = props.value as string;
     } catch (error) {
       setFileIsImage(false);
     }
@@ -70,13 +77,7 @@ const FileWidget = (props: WidgetProps) => {
   };
 
   useEffect(() => {
-    const abortController = new AbortController();
-
-    getFileType(abortController.signal);
-
-    return () => {
-      abortController.abort();
-    };
+    getFileType();
   }, []);
 
   let isLink = false;
