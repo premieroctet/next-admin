@@ -22,6 +22,77 @@ npm install -S @premieroctet/next-admin prisma-json-schema-generator
 pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
 ```
 
+## SuperJson configuration
+
+SuperJson is required to avoid errors related to invalid serialisation properties that can occur when passing data from server to client.
+
+### With Babel
+
+###### yarn
+
+```bash
+yarn add -D babel-plugin-superjson-next superjson@^1
+```
+
+###### npm
+
+```bash
+npm install --save-dev babel-plugin-superjson-next superjson@^1
+```
+
+###### pnpm
+
+```bash
+pnpm install -D babel-plugin-superjson-next superjson@^1
+```
+
+Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
+
+```json
+{
+  "presets": ["next/babel"],
+  "plugins": ["superjson-next"]
+}
+```
+
+## With SWC (Experimental)
+
+###### yarn
+
+```bash
+yarn add -E -D next-superjson-plugin@0.6.1 superjson
+```
+
+###### npm
+
+```bash
+npm install --save-dev -E next-superjson-plugin@0.6.1 superjson
+```
+
+###### pnpm
+
+```bash
+pnpm install -E -D next-superjson-plugin@0.6.1 superjson
+```
+
+Add the `next-superjson-plugin` plugin to your `next.config.js` file:
+
+```js
+module.exports = {
+  // your current config
+  experimental: {
+    swcPlugins: [
+      [
+        "next-superjson-plugin",
+        {
+          excluded: [],
+        },
+      ],
+    ],
+  },
+};
+```
+
 ## Quick Start
 
 Add the `prisma-json-schema-generator` generator to your `schema.prisma` file:
