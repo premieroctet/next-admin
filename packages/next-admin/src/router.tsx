@@ -153,20 +153,37 @@ export const nextAdminRouter = async (
           // Validate
           validate(parsedFormData, fields);
 
+          const { formattedData, errors } = await formattedFormData(
+            formData,
+            dmmfSchema?.fields!,
+            schema,
+            resource,
+            resourceId === undefined,
+            fields
+          );
+
+          if (errors.length) {
+            return {
+              props: {
+                ...(await getProps()),
+                error:
+                  options.model?.[resource]?.edit?.submissionErrorMessage ??
+                  "Submission error",
+                validation: errors.map((error) => ({
+                  property: error.field,
+                  message: error.message,
+                })),
+              },
+            };
+          }
+
           if (resourceId !== undefined) {
             // @ts-expect-error
             await prisma[resource].update({
               where: {
                 [modelIdProperty]: resourceId,
               },
-              data: await formattedFormData(
-                formData,
-                dmmfSchema?.fields!,
-                schema,
-                resource,
-                false,
-                fields
-              ),
+              data: formattedData,
             });
 
             const message = {
@@ -198,14 +215,7 @@ export const nextAdminRouter = async (
           // Create
           // @ts-expect-error
           const createdData = await prisma[resource].create({
-            data: await formattedFormData(
-              formData,
-              dmmfSchema?.fields!,
-              schema,
-              resource,
-              true,
-              fields
-            ),
+            data: formattedData,
           });
 
           const pathname = redirect
