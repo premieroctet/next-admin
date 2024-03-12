@@ -45,15 +45,12 @@ export function DataTable({
   const { basePath } = useConfig();
   const { t } = useI18n();
 
-  const columnsVisibility = columns.reduce(
-    (acc, column) => {
-      // @ts-expect-error
-      const key = column.accessorKey as Field<typeof resource>;
-      acc[key] = Object.keys(data[0]).includes(key);
-      return acc;
-    },
-    {} as Record<Field<typeof resource>, boolean>
-  );
+  const columnsVisibility = columns.reduce((acc, column) => {
+    // @ts-expect-error
+    const key = column.accessorKey as Field<typeof resource>;
+    acc[key] = Object.keys(data[0]).includes(key);
+    return acc;
+  }, {} as Record<Field<typeof resource>, boolean>);
 
   const modelIdProperty = resourcesIdProperty[resource];
   const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
@@ -161,7 +158,7 @@ export function DataTable({
                 }}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
+                  <TableCell className="group" key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
