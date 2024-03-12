@@ -1,5 +1,16 @@
 # @premieroctet/next-admin
 
+## 3.3.0
+
+### Minor Changes
+
+- e16aa42: feat: add custom error message for upload handler ([#144](https://github.com/premieroctet/next-admin/issues/144))
+  feat: add custom error message for form submission
+
+### Patch Changes
+
+- 104aaba: fix: image display in file input field ([#154](https://github.com/premieroctet/next-admin/issues/154))
+
 ## 3.2.7
 
 ### Patch Changes
