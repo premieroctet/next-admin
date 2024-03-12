@@ -103,6 +103,7 @@ export type Handler<
 > = {
   get?: (input: T) => any;
   upload?: (file: Buffer) => Promise<string>;
+  uploadErrorMessage?: string;
 };
 
 export type RichTextFormat = "html" | "json";
@@ -141,6 +142,7 @@ export type EditOptions<T extends ModelName> = {
     _form?: string;
   } & Partial<Record<Field<T>, string>>;
   fields?: EditFieldsOptions<T>;
+  submissionErrorMessage?: string;
 };
 
 export type ActionStyle = "default" | "destructive";

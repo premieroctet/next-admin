@@ -71,20 +71,34 @@ export const submitForm = async (
     // Validate
     validate(parsedFormData, fields);
 
+    const { formattedData, errors } = await formattedFormData(
+      formValues,
+      dmmfSchema?.fields!,
+      schema,
+      resource,
+      resourceId === undefined,
+      fields
+    );
+
+    if (errors.length) {
+      return {
+        error:
+          options.model?.[resource]?.edit?.submissionErrorMessage ??
+          "Submission error",
+        validation: errors.map((error) => ({
+          property: error.field,
+          message: error.message,
+        })),
+      };
+    }
+
     if (resourceId !== undefined) {
       // @ts-expect-error
       data = await prisma[resource].update({
         where: {
           [resourceIdField]: resourceId,
         },
-        data: await formattedFormData(
-          formValues,
-          dmmfSchema?.fields!,
-          schema,
-          resource,
-          false,
-          fields
-        ),
+        data: formattedData,
       });
 
       return { updated: true, redirect: redirect === "list" };
@@ -93,14 +107,7 @@ export const submitForm = async (
     // Create
     // @ts-expect-error
     data = await prisma[resource].create({
-      data: await formattedFormData(
-        formValues,
-        dmmfSchema?.fields!,
-        schema,
-        resource,
-        true,
-        fields
-      ),
+      data: formattedData,
     });
 
     return {
