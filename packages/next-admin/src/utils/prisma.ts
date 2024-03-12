@@ -61,7 +61,7 @@ export const isSatisfyingSearch = (
   return fieldsFilteredNames?.reduce((acc, field) => {
     return (
       item[field]
-        .toString()
+        ?.toString()
         .toLowerCase()
         .includes(search?.trim().toLowerCase()) || acc
     );
@@ -107,8 +107,8 @@ export const preparePrismaListRequest = <M extends ModelName>(
   if (list) {
     select = selectPayloadForModel(resource, list, "object");
     fieldsFiltered =
-      model?.fields.filter(
-        ({ name }) => list.search?.includes(name as Field<M>)
+      model?.fields.filter(({ name }) =>
+        list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
   }
   where = createWherePredicate(fieldsFiltered, search);
