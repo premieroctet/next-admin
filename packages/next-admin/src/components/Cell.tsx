@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react";
 
+import Clipboard from "./common/Clipboard";
 import { ListDataFieldValue } from "../types";
 import Link from "next/link";
 import clsx from "clsx";
@@ -34,9 +35,10 @@ export default function Cell({ cell, formatter }: Props) {
           <Link
             onClick={(e) => e.stopPropagation()}
             href={`${basePath}/${cell.value.url}`}
-            className="hover:underline cursor-pointer text-indigo-700 hover:text-indigo-900 font-semibold"
+            className="hover:underline cursor-pointer text-indigo-700 hover:text-indigo-900 font-semibold flex items-center gap-1"
           >
             {cellValue}
+            <Clipboard value={cell.value.url} />
           </Link>
         );
       } else if (cell.type === "count") {
@@ -47,20 +49,23 @@ export default function Cell({ cell, formatter }: Props) {
         );
       } else if (cell.type === "date") {
         return (
-          <div className="whitespace-nowrap max-w-[20ch] overflow-hidden text-ellipsis text-neutral-600">
+          <div className="whitespace-nowrap max-w-[20ch] overflow-hidden text-ellipsis text-neutral-600 flex items-center gap-1">
             <p>{cellValue}</p>
+            <Clipboard value={cellValue?.toString() ?? ""} />
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "string") {
         return (
-          <div className="whitespace-nowrap overflow-hidden text-ellipsis text-neutral-600">
+          <div className="whitespace-nowrap overflow-hidden text-ellipsis text-neutral-600 flex items-center gap-1">
             <p>{cellValue}</p>
+            <Clipboard value={cellValue?.toString() ?? ""} />
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "number") {
         return (
-          <div className="whitespace-nowrap max-w-[20ch] overflow-hidden text-ellipsis text-neutral-600">
+          <div className="whitespace-nowrap max-w-[20ch] overflow-hidden text-ellipsis text-neutral-600 flex items-center gap-1">
             <p>{cellValue}</p>
+            <Clipboard value={cellValue?.toString() ?? ""} />
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "boolean") {
@@ -79,7 +84,12 @@ export default function Cell({ cell, formatter }: Props) {
       }
     }
 
-    return <div>{JSON.stringify(cellValue)}</div>;
+    return (
+      <div className="flex items-center gap-1">
+        {JSON.stringify(cellValue)}
+        <Clipboard value={JSON.stringify(cellValue)} />
+      </div>
+    );
   }
   return null;
 }
