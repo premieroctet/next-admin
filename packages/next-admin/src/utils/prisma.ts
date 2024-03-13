@@ -81,7 +81,7 @@ export const isSatisfyingSearch = (
   return fieldsFilteredNames?.reduce((acc, field) => {
     return (
       item[field]
-        .toString()
+        ?.toString()
         .toLowerCase()
         .includes(search?.trim().toLowerCase()) || acc
     );
