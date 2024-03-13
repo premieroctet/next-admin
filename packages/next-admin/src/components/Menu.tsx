@@ -58,8 +58,8 @@ export default function Menu({
         href={item.href}
         className={clsx(
           item.current
-            ? "bg-gray-50 text-indigo-600"
-            : "text-gray-700 hover:text-indigo-600 hover:bg-gray-50",
+            ? "bg-gray-50 text-nextadmin-primary-600"
+            : "text-gray-700 hover:text-nextadmin-primary-600 hover:bg-gray-50",
           "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
         )}
       >
@@ -67,8 +67,8 @@ export default function Menu({
           <item.icon
             className={clsx(
               item.current
-                ? "text-indigo-600"
-                : "text-gray-400 group-hover:text-indigo-600",
+                ? "text-nextadmin-primary-600"
+                : "text-gray-400 group-hover:text-nextadmin-primary-600",
               "h-6 w-6 shrink-0"
             )}
             aria-hidden="true"
@@ -137,7 +137,7 @@ export default function Menu({
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
                   <div className="flex h-16 shrink-0 items-center">
                     <Link href={basePath}>
-                      <HomeIcon className="h-6 w-6 text-indigo-600" />
+                      <HomeIcon className="h-6 w-6 text-nextadmin-primary--500" />
                     </Link>
                   </div>
                   <nav className="flex flex-1 flex-col">
@@ -171,7 +171,7 @@ export default function Menu({
         <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
           <div className="flex h-16 shrink-0 items-center">
             <Link href={basePath}>
-              <HomeIcon className="h-6 w-6 text-indigo-600" />
+              <HomeIcon className="h-6 w-6 text-nextadmin-primary-600" />
             </Link>
           </div>
           <nav className="flex flex-1 flex-col">

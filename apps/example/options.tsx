@@ -47,8 +47,8 @@ export const options: NextAdminOptions = {
           posts: "col-span-2 row-start-4",
           role: "col-span-2 row-start-4",
           birthDate: "col-span-3 row-start-5",
-          avatar: "col-span-1 row-start-5",
-          metadata: "col-span-4 row-start-6",
+          avatar: "col-span-4 row-start-6",
+          metadata: "col-span-4 row-start-7",
         },
         fields: {
           email: {

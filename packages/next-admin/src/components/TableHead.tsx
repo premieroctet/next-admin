@@ -29,23 +29,19 @@ export default function TableHead({
       }}
       className="inline-flex items-center justify-center text-sm"
     >
-      <span
-        className={clsx(
-          "whitespace-nowrap font-bold text-indigo-500 capitalize"
-        )}
-      >
+      <span className={clsx("whitespace-nowrap font-semibold capitalize")}>
         {property}
       </span>
       <span className="sr-only">, activate to sort column descending</span>
       {isSorted && sortDirection === "desc" && (
         <ArrowSmallDownIcon
-          className="ml-2 h-5 w-5 text-indigo-500"
+          className="ml-2 h-5 w-5 text-nextadmin-primary-500"
           aria-hidden="true"
         />
       )}
       {isSorted && sortDirection === "asc" && (
         <ArrowSmallUpIcon
-          className="ml-2 h-5 w-5 text-indigo-500"
+          className="ml-2 h-5 w-5 text-nextadmin-primary-500"
           aria-hidden="true"
         />
       )}

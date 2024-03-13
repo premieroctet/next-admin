@@ -18,7 +18,7 @@ const Clipboard = ({ value }: Props) => {
     <Component
       className={clx(
         "invisible group-hover:visible w-5 transition-colors",
-        copied ? "text-green-700" : "hover:text-indigo-500"
+        copied ? "text-green-700" : "hover:text-nextadmin-primary-500"
       )}
       onClick={(evt) => {
         evt.stopPropagation();

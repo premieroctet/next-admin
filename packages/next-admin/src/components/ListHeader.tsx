@@ -68,7 +68,7 @@ export default function ListHeader({
               onInput={onSearchChange}
               defaultValue={search}
               type="search"
-              className="px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm focus-visible:outline focus-visible:outline-indigo-500 focus-visible:ring focus-visible:ring-indigo-500"
+              className="transition-all px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-nextadmin-primary-500 focus:border-nextadmin-primary-500 sm:text-sm focus-visible:outline focus-visible:outline-nextadmin-primary-500 focus-visible:ring-0 focus-visible:ring-nextadmin-primary-500"
               placeholder={t("list.header.search.placeholder")}
             />
           </div>

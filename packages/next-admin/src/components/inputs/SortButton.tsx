@@ -39,12 +39,12 @@ const SortButton = ({ field }: { field: string }) => {
       ></button>
       {sort === "asc" ? (
         <ArrowSmallUpIcon
-          className="h-5 w-5 text-indigo-500"
+          className="h-5 w-5 text-nextadmin-primary-500"
           aria-hidden="true"
         />
       ) : sort === "desc" ? (
         <ArrowSmallDownIcon
-          className="h-5 w-5 text-indigo-500"
+          className="h-5 w-5 text-nextadmin-primary-500"
           aria-hidden="true"
         />
       ) : null}

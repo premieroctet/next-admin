@@ -20,7 +20,7 @@ const CheckboxWidget = ({
           checked={value}
           onChange={(event) => onChange(event.target.checked)}
           type="checkbox"
-          className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+          className="focus:ring-nextadmin-primary-500 h-4 w-4 text-nextadmin-primary-600 border-gray-300 rounded"
         />
       </div>
     </div>

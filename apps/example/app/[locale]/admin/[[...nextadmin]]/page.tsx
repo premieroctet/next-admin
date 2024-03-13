@@ -6,7 +6,6 @@ import Dashboard from "@/components/Dashboard";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import schema from "@/prisma/json-schema/json-schema.json";
-import "@premieroctet/next-admin/dist/styles.css";
 
 export default async function AdminPage({
   params,

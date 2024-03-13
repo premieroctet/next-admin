@@ -1,0 +1,42 @@
+# Theming
+
+Next Admin comes with a default theme which currently consists of Tailwind's indigo color as a primary color.
+
+To use the default theme, you can import the generated CSS file from Next Admin:
+
+```js
+import "@premieroctet/next-admin/dist/styles.css";
+```
+
+However, you might want to override this primary color. It is possible to do so in your own Tailwind config file:
+
+```js
+module.exports = {
+  content: [
+    ...yourFiles,
+    "./node_modules/@premieroctet/next-admin/dist/**/*.js",
+  ],
+  theme: {
+    extend: {
+      colors: {
+        nextadmin: {
+          primary: {
+            50: "#f3f4f6",
+            100: "#e7e9ed",
+            200: "#c7cdd6",
+            300: "#a7b1bf",
+            400: "#67788f",
+            500: "#27445f",
+            600: "#24405a",
+            700: "#1c334b",
+            800: "#172940",
+            900: "#0f1d2e",
+          },
+        },
+      },
+    },
+  },
+};
+```
+
+You will then need to import your own generated CSS file instead of the Next Admin's one.

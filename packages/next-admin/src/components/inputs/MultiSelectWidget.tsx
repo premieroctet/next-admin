@@ -58,7 +58,7 @@ const MultiSelectWidget = (props: any) => {
         </div>
       </div>
       <Selector
-        open={formContext.relationState?.[name]?.open!}
+        open={!!formContext.relationState?.[name]?.open!}
         options={optionsLeft}
         name={name}
         onChange={(option: Enumeration) => {

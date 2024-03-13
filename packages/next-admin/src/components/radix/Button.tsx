@@ -9,12 +9,15 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-indigo-600 text-white hover:bg-indigo-700",
+        default:
+          "bg-nextadmin-primary-600 text-white hover:bg-nextadmin-primary-700",
         destructive: "bg-red-600 text-white hover:bg-red-700",
+        destructiveOutline: "text-red-600 hover:bg-red-100 bg-transparent",
         outline:
           "border border-input hover:bg-accent hover:text-accent-foreground",
         secondary: "bg-neutral-700 text-white hover:bg-neutral-600",
-        ghost: "hover:bg-indigo-100 hover:text-indigo-700 text-indigo-700",
+        ghost:
+          "hover:bg-nextadmin-primary-100 hover:text-nextadmin-primary-700 text-nextadmin-primary-700",
         link: "underline-offset-4 hover:underline text-black",
       },
       size: {

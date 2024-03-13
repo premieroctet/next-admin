@@ -10,6 +10,8 @@ import {
 } from "./radix/Dropdown";
 import { useAction } from "../hooks/useAction";
 import { useI18n } from "../context/I18nContext";
+import { Fragment, useState } from "react";
+import { Transition } from "@headlessui/react";
 
 type Props = {
   actions: ModelAction[];
@@ -26,13 +28,14 @@ const ActionsDropdown = ({
 }: Props) => {
   const { runAction } = useAction(resource, selectedIds);
   const { t } = useI18n();
+  const [isOpen, setIsOpen] = useState(false);
 
   const onActionClick = (action: ModelAction) => {
     runAction(action);
   };
 
   return (
-    <Dropdown>
+    <Dropdown onOpenChange={setIsOpen}>
       <DropdownTrigger
         asChild
         className="flex items-center gap-x-2 text-sm text-gray-700 rounded-md border border-input bg-transparent px-3 py-2"
@@ -44,26 +47,35 @@ const ActionsDropdown = ({
           <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
         </button>
       </DropdownTrigger>
-      <DropdownBody>
-        <DropdownContent
-          className="min-w-[10rem] p-2"
-          sideOffset={4}
-          data-testid="actions-dropdown-content"
-        >
-          {actions?.map((action) => {
-            return (
-              <DropdownItem
-                key={action.title}
-                className={clsx("rounded-md py-1 px-2", {
-                  "text-red-600": action.style === "destructive",
-                })}
-                onClick={() => onActionClick(action)}
-              >
-                {t(action.title)}
-              </DropdownItem>
-            );
-          })}
-        </DropdownContent>
+      <DropdownBody forceMount>
+        <Transition.Root as={Fragment} show={isOpen}>
+          <Transition.Child
+            as={DropdownContent}
+            className="min-w-[10rem] p-2"
+            sideOffset={4}
+            data-testid="actions-dropdown-content"
+            enter="transition-all ease-out"
+            enterFrom="opacity-0 -translate-y-1"
+            enterTo="opacity-100 translate-y-0"
+            leave="transition-all ease-in"
+            leaveFrom="opacity-100 translate-y-0"
+            leaveTo="opacity-0 -translate-y-1"
+          >
+            {actions?.map((action) => {
+              return (
+                <DropdownItem
+                  key={action.title}
+                  className={clsx("rounded-md py-1 px-2", {
+                    "text-red-600": action.style === "destructive",
+                  })}
+                  onClick={() => onActionClick(action)}
+                >
+                  {t(action.title)}
+                </DropdownItem>
+              );
+            })}
+          </Transition.Child>
+        </Transition.Root>
       </DropdownBody>
     </Dropdown>
   );
