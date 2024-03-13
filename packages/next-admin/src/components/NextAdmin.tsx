@@ -1,5 +1,5 @@
 import Head from "next/head";
-import NextNProgress from "nextjs-progressbar";
+import NextNProgress from "nextjs-toploader";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getCustomInputs } from "../utils/options";
@@ -93,7 +93,7 @@ export function NextAdmin({
 
   return (
     <>
-      {!isAppDir && <NextNProgress color="#6366f1" />}
+      <NextNProgress color="#6366f1" showSpinner={false} />
       <Head>
         <title>Admin</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
