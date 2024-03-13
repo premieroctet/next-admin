@@ -1,5 +1,14 @@
 # @premieroctet/next-admin
 
+## 3.3.1
+
+### Patch Changes
+
+- 4c34134: feat: migrate to nextjs-toploader, compatible with app dir
+- 5d40824: feat: add clipboard for table cells
+- 5ca2b7b: feat: add search for enum fields
+- cbc3797: fix: fix combobox search on nullable values
+
 ## 3.3.0
 
 ### Minor Changes
