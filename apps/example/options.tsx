@@ -12,7 +12,7 @@ export const options: NextAdminOptions = {
       },
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
-        search: ["name", "email"],
+        search: ["name", "email", "role"],
         fields: {
           role: {
             formatter: (role) => {

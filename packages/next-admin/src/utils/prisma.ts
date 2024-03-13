@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, $Enums } from "@prisma/client";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   EditOptions,
@@ -12,6 +12,7 @@ import {
   Select,
 } from "../types";
 import {
+  enumValueForEnumType,
   findRelationInData,
   getModelIdProperty,
   getPrismaModelForResource,
@@ -25,8 +26,27 @@ export const createWherePredicate = (
   return search
     ? {
         OR: fieldsFiltered
-          ?.filter((field) => field.kind === "scalar")
+          ?.filter((field) => {
+            return field.kind === "scalar" || field.kind === "enum";
+          })
           .map((field) => {
+            if (field.kind === "enum") {
+              const enumValueForSearchTerm = enumValueForEnumType(
+                field.type,
+                search
+              );
+
+              if (enumValueForSearchTerm) {
+                return {
+                  [field.name]:
+                    // @ts-expect-error
+                    $Enums[field.type as keyof typeof $Enums][
+                      enumValueForSearchTerm.name
+                    ],
+                };
+              }
+            }
+
             if (field.type === "String") {
               // @ts-ignore
               const mode = Prisma?.QueryMode
@@ -107,10 +127,11 @@ export const preparePrismaListRequest = <M extends ModelName>(
   if (list) {
     select = selectPayloadForModel(resource, list, "object");
     fieldsFiltered =
-      model?.fields.filter(
-        ({ name }) => list.search?.includes(name as Field<M>)
+      model?.fields.filter(({ name }) =>
+        list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
   }
+
   where = createWherePredicate(fieldsFiltered, search);
 
   return {

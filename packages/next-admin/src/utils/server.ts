@@ -20,7 +20,23 @@ import { isSatisfyingSearch, selectPayloadForModel } from "./prisma";
 import { isNativeFunction, pipe, uncapitalize } from "./tools";
 
 export const models = Prisma.dmmf.datamodel.models;
+export const enums = Prisma.dmmf.datamodel.enums;
 export const resources = models.map((model) => model.name as ModelName);
+
+export const getEnumValues = (enumName: string) => {
+  const enumValues = enums.find((en) => en.name === enumName);
+  return enumValues?.values;
+};
+
+export const enumValueForEnumType = (enumName: string, value: string) => {
+  const enumValues = getEnumValues(enumName);
+
+  if (enumValues) {
+    return enumValues.find((enumValue) => enumValue.name === value);
+  }
+
+  return false;
+};
 
 export const getPrismaModelForResource = (resource: ModelName) =>
   models.find((datamodel) => datamodel.name === resource);
@@ -162,8 +178,8 @@ export const fillRelationInSchema =
           const optionsForRelations =
             listOptions?.search ??
             remoteModel?.fields.map((field) => field.name);
-          const fieldsFiltered = remoteModel?.fields.filter(
-            (field) => (optionsForRelations as string[])?.includes(field.name)
+          const fieldsFiltered = remoteModel?.fields.filter((field) =>
+            (optionsForRelations as string[])?.includes(field.name)
           );
           const modelRelationIdField = getModelIdProperty(modelNameRelation);
           const search = requestOptions[`${fieldName}search`];
