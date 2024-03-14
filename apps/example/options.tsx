@@ -1,5 +1,6 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
+import { exportCsvAction } from "./actions/nextadmin";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
@@ -150,5 +151,9 @@ export const options: NextAdminOptions = {
     "/custom": {
       title: "Custom page",
     },
+  },
+  onCsvExport: async (model) => {
+    "use server";
+    return exportCsvAction(model);
   },
 };
