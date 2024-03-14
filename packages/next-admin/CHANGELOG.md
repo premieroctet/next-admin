@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.4.0
+
+### Minor Changes
+
+- 150787b: feat: ui revamp, add theming capability
+
 ## 3.3.1
 
 ### Patch Changes
