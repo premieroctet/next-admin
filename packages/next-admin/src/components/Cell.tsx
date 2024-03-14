@@ -35,7 +35,7 @@ export default function Cell({ cell, formatter }: Props) {
           <Link
             onClick={(e) => e.stopPropagation()}
             href={`${basePath}/${cell.value.url}`}
-            className="hover:underline cursor-pointer text-indigo-700 hover:text-indigo-900 font-semibold flex items-center gap-1"
+            className="hover:underline cursor-pointer text-nextadmin-primary-700 hover:text-nextadmin-primary-900 font-semibold flex items-center gap-1"
           >
             {cellValue}
             <Clipboard value={cell.value.url} />
@@ -74,7 +74,7 @@ export default function Cell({ cell, formatter }: Props) {
             className={clsx(
               "inline-flex items-center rounded-md px-2 py-1 text-xs font-medium",
               cell
-                ? "bg-indigo-50 text-indigo-500"
+                ? "bg-nextadmin-primary-50 text-nextadmin-primary-500"
                 : "bg-neutral-50 text-neutral-600"
             )}
           >

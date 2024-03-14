@@ -45,17 +45,24 @@ export function DataTable({
   const { basePath } = useConfig();
   const { t } = useI18n();
 
-  const columnsVisibility = columns.reduce((acc, column) => {
-    // @ts-expect-error
-    const key = column.accessorKey as Field<typeof resource>;
-    acc[key] = Object.keys(data[0]).includes(key);
-    return acc;
-  }, {} as Record<Field<typeof resource>, boolean>);
+  const columnsVisibility = columns.reduce(
+    (acc, column) => {
+      // @ts-expect-error
+      const key = column.accessorKey as Field<typeof resource>;
+      acc[key] = Object.keys(data[0]).includes(key);
+      return acc;
+    },
+    {} as Record<Field<typeof resource>, boolean>
+  );
 
   const modelIdProperty = resourcesIdProperty[resource];
   const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
     id: "__nextadmin-select-row",
     header: ({ table }) => {
+      if (table.getRowModel().rows.length === 0) {
+        return null;
+      }
+
       return (
         <div className="px-1">
           <Checkbox
@@ -95,8 +102,8 @@ export function DataTable({
 
       return (
         <Button
-          variant="destructive"
           size="sm"
+          variant="destructiveOutline"
           onClick={(evt) => {
             evt.stopPropagation();
             onDelete?.(row.original[idProperty].value as string | number);
@@ -124,9 +131,9 @@ export function DataTable({
   });
 
   return (
-    <div className="rounded-md border">
+    <div className="overflow-hidden shadow-md ring-1 ring-black ring-opacity-5 sm:rounded-lg">
       <Table>
-        <TableHeader className="bg-indigo-100">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
@@ -150,7 +157,7 @@ export function DataTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="cursor-pointer hover:bg-indigo-50"
+                className="cursor-pointer even:bg-gray-50"
                 onClick={() => {
                   window.location.href = `${basePath}/${resource.toLowerCase()}/${
                     row.original[modelIdProperty].value
@@ -166,7 +173,10 @@ export function DataTable({
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
+              <TableCell
+                colSpan={table.getAllColumns().length}
+                className="h-24 text-center"
+              >
                 <div className="text-center text-gray-500">
                   {t("list.empty.label", { resource })}
                 </div>

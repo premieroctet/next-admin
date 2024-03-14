@@ -1,3 +1,5 @@
+const defaultColors = require("tailwindcss/colors");
+
 /** @type {import('tailwindcss').Config} */
 /* eslint-disable max-len */
 module.exports = {
@@ -22,6 +24,9 @@ module.exports = {
     },
     extend: {
       colors: {
+        nextadmin: {
+          primary: defaultColors.indigo,
+        },
         // light mode
         tremor: {
           brand: {

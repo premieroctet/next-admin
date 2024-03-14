@@ -76,7 +76,7 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
         </div>
       </div>
       <Selector
-        open={formContext.relationState?.[name]?.open!}
+        open={!!formContext.relationState?.[name]?.open!}
         options={enumOptions}
         name={props.name}
         onChange={handleChange}
