@@ -18,6 +18,7 @@ import { useI18n } from "../context/I18nContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
+  AdminComponentProps,
   Field,
   ModelAction,
   ModelName,
@@ -61,6 +62,7 @@ export type FormProps = {
   options?: Required<NextAdminOptions>["model"][ModelName];
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   actions?: ModelAction[];
+  searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
 };
 
 const fields: CustomForm["props"]["fields"] = {
@@ -87,6 +89,7 @@ const Form = ({
   title,
   customInputs,
   actions,
+  searchPaginatedResourceAction,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
   const { edit, id, ...schemas } = getSchemas(data, schema, dmmfSchema);
@@ -346,7 +349,11 @@ const Form = ({
           />
         )}
       </div>
-      <FormProvider initialValue={data}>
+      <FormProvider
+        initialValue={data}
+        searchPaginatedResourceAction={searchPaginatedResourceAction}
+        dmmfSchema={dmmfSchema}
+      >
         <FormContext.Consumer>
           {({ formData, setFormData }) => (
             <CustomForm

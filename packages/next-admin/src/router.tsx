@@ -48,7 +48,7 @@ export const nextAdminRouter = async (
           };
         }
       })
-      .get(async (req) => {
+      .get(async (req, res) => {
         const params = getParamsFromUrl(req.url!, options.basePath);
 
         const requestOptions = formatSearchFields(req.url!);
@@ -61,6 +61,18 @@ export const nextAdminRouter = async (
           params,
           isAppDir: false,
         });
+
+        if (requestOptions.json && "data" in props && "total" in props) {
+          res.setHeader("Content-Type", "application/json");
+          res.write(
+            JSON.stringify({
+              data: props.data,
+              total: props.total,
+              error: props.error,
+            })
+          );
+          res.end();
+        }
 
         return { props };
       })

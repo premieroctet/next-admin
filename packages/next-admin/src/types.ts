@@ -1,7 +1,8 @@
 import { Prisma, PrismaClient } from "@prisma/client";
-import { JSONSchema7 } from "json-schema";
-import { ChangeEvent, ReactNode } from "react";
-import { PropertyValidationError } from "./exceptions/ValidationError";
+import type { JSONSchema7 } from "json-schema";
+import type { ChangeEvent, ReactNode } from "react";
+import type { PropertyValidationError } from "./exceptions/ValidationError";
+import type { SearchPaginatedResourceParams } from "./actions";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -155,9 +156,15 @@ export type ModelAction = {
   errorMessage?: string;
 };
 
+export type Primitives = string | number | boolean | Date | null;
+
+export type PrimitivesOnlyModel<M extends ModelName> = {
+  [P in Field<M>]: Model<M>[P] extends Primitives ? Model<M>[P] : never;
+};
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
-    toString?: (item: Model<P>) => string;
+    toString?: (item: PrimitivesOnlyModel<P>) => string;
     list?: ListOptions<P>;
     edit?: EditOptions<P>;
     title?: string;
@@ -293,6 +300,13 @@ export type AdminComponentProps = {
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
   translations?: Translations;
+  searchPaginatedResourceAction?: (
+    params: SearchPaginatedResourceParams
+  ) => Promise<{
+    data: Enumeration[];
+    total: number;
+    error: string | null;
+  }>;
 };
 
 export type MainLayoutProps = Pick<

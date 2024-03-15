@@ -2,6 +2,7 @@ import { Prisma, PrismaClient, $Enums } from "@prisma/client";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   EditOptions,
+  Enumeration,
   Field,
   ListOptions,
   ModelName,
@@ -91,7 +92,8 @@ export const isSatisfyingSearch = (
 export const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
-  options?: NextAdminOptions
+  options?: NextAdminOptions,
+  nestedSelect = true
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
@@ -124,11 +126,11 @@ export const preparePrismaListRequest = <M extends ModelName>(
   let where = {};
   let fieldsFiltered = model?.fields;
   const list = options?.model?.[resource]?.list as ListOptions<M>;
-  if (list) {
+  if (list && nestedSelect) {
     select = selectPayloadForModel(resource, list, "object");
     fieldsFiltered =
-      model?.fields.filter(({ name }) =>
-        list.search?.includes(name as Field<M>)
+      model?.fields.filter(
+        ({ name }) => list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
   }
 
@@ -143,18 +145,30 @@ export const preparePrismaListRequest = <M extends ModelName>(
   };
 };
 
-export const getMappedDataList = async (
-  prisma: PrismaClient,
-  resource: ModelName,
-  options: NextAdminOptions,
-  searchParams: URLSearchParams,
-  context: NextAdminContext,
-  appDir = false
-) => {
+type GetMappedDataListParams = {
+  prisma: PrismaClient;
+  resource: ModelName;
+  options: NextAdminOptions;
+  searchParams: URLSearchParams;
+  context: NextAdminContext;
+  appDir?: boolean;
+  asJson?: boolean;
+};
+
+export const getMappedDataList = async ({
+  prisma,
+  resource,
+  options,
+  searchParams,
+  context,
+  appDir = false,
+  asJson,
+}: GetMappedDataListParams) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,
-    options
+    options,
+    !asJson
   );
   let data: any[] = [];
   let total: number;
@@ -182,6 +196,22 @@ export const getMappedDataList = async (
     console.error(e);
   }
   data = await findRelationInData(data, dmmfSchema?.fields);
+
+  if (asJson) {
+    const toStringModel = options.model?.[resource]?.toString;
+    const idProperty = getModelIdProperty(resource);
+
+    return {
+      data: data.map((item): Enumeration => {
+        return {
+          label: toStringModel ? toStringModel(item) : item[idProperty],
+          value: item[idProperty],
+        };
+      }),
+      total,
+      error,
+    };
+  }
 
   const listFields = options.model?.[resource]?.list?.fields ?? {};
 
@@ -263,14 +293,16 @@ export const selectPayloadForModel = <M extends ModelName>(
         (displayKeys && displayKeys.includes(field.name as Field<M>)) ||
         !displayKeys
       ) {
-        if (level === "object" && field.kind === "object") {
-          acc[field.name] = {
-            select: selectPayloadForModel(
-              field.type as ModelName,
-              {},
-              "scalar"
-            ),
-          };
+        if (field.kind === "object") {
+          if (level === "object") {
+            acc[field.name] = {
+              select: selectPayloadForModel(
+                field.type as ModelName,
+                {},
+                "scalar"
+              ),
+            };
+          }
         } else {
           acc[field.name] = true;
         }

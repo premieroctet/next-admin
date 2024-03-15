@@ -241,14 +241,18 @@ export const serializeHtml = (node: Node) => {
 };
 
 export const deserialize = (string: string, format: RichTextFormat) => {
-  if (format === "html") {
+  if (format === "html" && typeof DOMParser !== "undefined") {
     const dom = new DOMParser().parseFromString(string, "text/html");
     return deserializeHtml(dom.body);
   } else {
     try {
-      return JSON.parse(string);
+      return (
+        JSON.parse(string) || [
+          { type: "paragraph", children: [{ text: string || "" }] },
+        ]
+      );
     } catch {
-      return [{ type: "paragraph", children: [{ text: string }] }];
+      return [{ type: "paragraph", children: [{ text: string || "" }] }];
     }
   }
 };

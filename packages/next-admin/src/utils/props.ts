@@ -23,6 +23,7 @@ import {
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
+import type { SearchPaginatedResourceParams } from "../actions";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -41,6 +42,14 @@ export type GetPropsFromParamsParams = {
   ) => Promise<void>;
   locale?: string;
   getMessages?: () => Promise<Record<string, string>>;
+  searchPaginatedResourceAction?: (
+    actionBaseParams: ActionParams,
+    params: SearchPaginatedResourceParams
+  ) => Promise<{
+    data: any[];
+    total: number;
+    error: string | null;
+  }>;
 };
 
 enum Page {
@@ -59,6 +68,7 @@ export async function getPropsFromParams({
   deleteAction,
   locale,
   getMessages,
+  searchPaginatedResourceAction,
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -100,6 +110,12 @@ export async function getPropsFromParams({
     );
   }
 
+  if (isAppDir && !searchPaginatedResourceAction) {
+    console.warn(
+      "searchPaginatedResourceAction not provided. Search on select widgets will have no effect"
+    );
+  }
+
   const clientOptions: NextAdminOptions = extractSerializable(options);
   let defaultProps: AdminComponentProps = {
     resources,
@@ -115,6 +131,12 @@ export async function getPropsFromParams({
     resourcesIdProperty,
     deleteAction,
     options: clientOptions,
+    searchPaginatedResourceAction: searchPaginatedResourceAction
+      ? createBoundServerAction(
+          { schema, params },
+          searchPaginatedResourceAction
+        )
+      : undefined,
   };
 
   if (!params) return defaultProps;
@@ -144,14 +166,15 @@ export async function getPropsFromParams({
 
   switch (params.length) {
     case Page.LIST: {
-      const { data, total, error } = await getMappedDataList(
+      const { data, total, error } = await getMappedDataList({
         prisma,
         resource,
         options,
-        new URLSearchParams(qs.stringify(searchParams)),
-        { locale },
-        isAppDir
-      );
+        searchParams: new URLSearchParams(qs.stringify(searchParams)),
+        context: { locale },
+        appDir: isAppDir,
+        asJson: !!searchParams?.json && !isAppDir,
+      });
 
       return {
         ...defaultProps,
@@ -175,8 +198,6 @@ export async function getPropsFromParams({
       let deepCopySchema = await transformSchema(
         resource,
         edit,
-        prisma,
-        searchParams,
         options
       )(cloneDeep(schema));
       const customInputs = isAppDir

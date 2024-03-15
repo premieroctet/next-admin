@@ -32,6 +32,7 @@ export function NextAdmin({
   deleteAction,
   translations,
   locale,
+  searchPaginatedResourceAction,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -81,6 +82,7 @@ export function NextAdmin({
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}
+          searchPaginatedResourceAction={searchPaginatedResourceAction}
         />
       );
     }

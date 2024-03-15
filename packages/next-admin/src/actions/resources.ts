@@ -1,8 +1,9 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { ModelName } from "../types";
+import { ActionFullParams, ModelName } from "../types";
 import { getModelIdProperty } from "../utils/server";
+import { getMappedDataList } from "../utils/prisma";
 import { uncapitalize } from "../utils/tools";
 
 export const deleteResourceItems = async <M extends ModelName>(
@@ -17,4 +18,32 @@ export const deleteResourceItems = async <M extends ModelName>(
       [modelIdProperty]: { in: ids },
     },
   });
+};
+
+export type SearchPaginatedResourceParams = {
+  model: string;
+  query: string;
+  page?: number;
+  perPage?: number;
+};
+
+export const searchPaginatedResource = async (
+  { options, prisma }: ActionFullParams,
+  { model, query, page = 1, perPage = 25 }: SearchPaginatedResourceParams
+) => {
+  const data = await getMappedDataList({
+    prisma,
+    resource: model as ModelName,
+    options,
+    context: {},
+    searchParams: new URLSearchParams({
+      query,
+      page: page.toString(),
+      itemsPerPage: perPage.toString(),
+    }),
+    appDir: true,
+    asJson: true,
+  });
+
+  return data;
 };

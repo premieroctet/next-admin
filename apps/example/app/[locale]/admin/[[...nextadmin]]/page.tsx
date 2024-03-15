@@ -1,7 +1,11 @@
 import { NextAdmin } from "@premieroctet/next-admin";
 import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
 import { getMessages } from "next-intl/server";
-import { deleteItem, submitFormAction } from "@/actions/nextadmin";
+import {
+  deleteItem,
+  searchResource,
+  submitFormAction,
+} from "@/actions/nextadmin";
 import Dashboard from "@/components/Dashboard";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
@@ -27,6 +31,7 @@ export default async function AdminPage({
         (messages) => messages.admin as Record<string, string>
       ),
     locale: params.locale as string,
+    searchPaginatedResourceAction: searchResource,
   });
 
   return (

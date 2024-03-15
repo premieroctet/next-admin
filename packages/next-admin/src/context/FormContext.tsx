@@ -6,6 +6,8 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { AdminComponentProps } from "../types";
+import { Prisma } from "@prisma/client";
 
 type FormContextType = {
   formData: any;
@@ -21,6 +23,8 @@ type FormContextType = {
   setOpen: (open: boolean, name: string) => void;
   toggleOpen: (name: string) => void;
   setSelectedValue: (selectedValue: any, name: string) => void;
+  searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
+  dmmfSchema?: Prisma.DMMF.Field[];
 };
 
 export const FormContext = createContext<FormContextType>({
@@ -34,6 +38,8 @@ export const FormContext = createContext<FormContextType>({
 
 type Props = PropsWithChildren<{
   initialValue: any;
+  searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
+  dmmfSchema: Prisma.DMMF.Field[];
 }>;
 
 type RelationState = {
@@ -45,7 +51,12 @@ type RelationState = {
   };
 };
 
-export const FormProvider = ({ children, initialValue }: Props) => {
+export const FormProvider = ({
+  children,
+  initialValue,
+  searchPaginatedResourceAction,
+  dmmfSchema,
+}: Props) => {
   const [formData, setFormData] = useState(initialValue);
   const [relationState, setRelationState] = useState<RelationState>({});
   useEffect(() => {
@@ -104,6 +115,8 @@ export const FormProvider = ({ children, initialValue }: Props) => {
         setOpen,
         setSelectedValue,
         toggleOpen,
+        searchPaginatedResourceAction,
+        dmmfSchema,
       }}
     >
       {children}

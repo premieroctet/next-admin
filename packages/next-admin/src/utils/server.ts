@@ -117,12 +117,7 @@ export const orderSchema =
  * @returns schema
  */
 export const fillRelationInSchema =
-  (
-    prisma: PrismaClient,
-    resource: ModelName,
-    requestOptions: any,
-    options?: NextAdminOptions
-  ) =>
+  (resource: ModelName, options?: NextAdminOptions) =>
   async (schema: Schema) => {
     const modelName = resource;
     const model = models.find((model) => model.name === modelName);
@@ -153,12 +148,6 @@ export const fillRelationInSchema =
             fieldValue.enum = fieldValue.enum?.map((item) =>
               typeof item !== "object" ? { label: item, value: item } : item
             );
-            const search = requestOptions[`${fieldName}search`];
-            if (search) {
-              fieldValue.enum = fieldValue.enum?.filter((item: any) =>
-                item.label.toLowerCase().includes(search.toLowerCase())
-              );
-            }
           }
 
           if (fieldValue?.default) {
@@ -170,98 +159,10 @@ export const fillRelationInSchema =
         }
         if (fieldKind === "object") {
           const modelNameRelation = fieldType as ModelName;
-          const remoteModel = models.find(
-            (model) => model.name === modelNameRelation
-          );
-          const listOptions = options?.model?.[modelNameRelation]
-            ?.list as ListOptions<typeof modelNameRelation>;
-          const optionsForRelations =
-            listOptions?.search ??
-            remoteModel?.fields.map((field) => field.name);
-          const fieldsFiltered = remoteModel?.fields.filter((field) =>
-            (optionsForRelations as string[])?.includes(field.name)
-          );
-          const modelRelationIdField = getModelIdProperty(modelNameRelation);
-          const search = requestOptions[`${fieldName}search`];
-          const toStringForRelations = getToStringForRelations(
-            modelName,
-            fieldName,
-            modelNameRelation,
-            options,
-            relationToFields
-          );
-          const nonCheckedToString =
-            options?.model?.[modelName]?.edit?.fields?.[fieldName]
-              // prettier-ignore
-              // @ts-expect-error
-              ?.optionFormatter ||
-            options?.model?.[modelNameRelation]?.toString;
-
-          const prismaExtended = nonCheckedToString
-            ? prisma.$extends({
-                result: {
-                  [uncapitalize(modelNameRelation)]: {
-                    _formatted: {
-                      compute: toStringForRelations,
-                    },
-                  },
-                },
-              })
-            : prisma;
-
-          const editOptions = options?.model?.[modelNameRelation]
-            ?.edit as EditOptions<typeof modelNameRelation>;
-          const select = selectPayloadForModel(
-            modelNameRelation,
-            editOptions,
-            "object"
-          );
-          if (nonCheckedToString) {
-            select._formatted = true;
-          }
-          const data = (
-            prismaExtended[uncapitalize(modelNameRelation)]
-              // @ts-expect-error
-              .findMany({
-                select: {
-                  ...select,
-                },
-              }) ?? Promise.resolve([])
-          ).then((data: any[]) => {
-            const result: typeof data = [];
-            const dataIte = data[Symbol.iterator]();
-            while (result.length < 20) {
-              const item = dataIte.next();
-              if (item.done) {
-                break;
-              }
-              if (
-                isSatisfyingSearch(
-                  item.value,
-                  fieldsFiltered,
-                  search,
-                  Boolean(nonCheckedToString)
-                )
-              ) {
-                result.push(item.value);
-              }
-            }
-            return result;
-          });
 
           if (relationToFields!.length > 0) {
             //Relation One-to-Many, Many side
-            const relationRemoteProperty = relationToFields![0];
-            let enumeration: Enumeration[] = [];
-
-            await data.then((data: any[]) =>
-              data.forEach((item) => {
-                enumeration.push({
-                  label: toStringForRelations(item),
-                  value: item[relationRemoteProperty],
-                });
-              })
-            );
+            const enumeration: Enumeration[] = [];
             schema.definitions[modelName].properties[fieldName] = {
               type: "string",
               relation: modelNameRelation,
@@ -283,15 +184,7 @@ export const fillRelationInSchema =
                 field.name as Field<typeof modelName>
               ];
             if (fieldValue) {
-              let enumeration: Enumeration[] = [];
-              await data.then((data: any[]) =>
-                data.forEach((item) => {
-                  enumeration.push({
-                    label: toStringForRelations(item),
-                    value: item[modelRelationIdField],
-                  });
-                })
-              );
+              const enumeration: Enumeration[] = [];
 
               if (fieldValue.type === "array") {
                 //Relation Many-to-One
@@ -672,14 +565,12 @@ export const formatSearchFields = (uri: string) =>
 export const transformSchema = <M extends ModelName>(
   resource: M,
   edit: EditOptions<M>,
-  prisma: PrismaClient,
-  searchParams: any,
   options?: NextAdminOptions
 ) =>
   pipe<Schema>(
     removeHiddenProperties(resource, edit),
     changeFormatInSchema(resource, edit),
-    fillRelationInSchema(prisma, resource, searchParams, options),
+    fillRelationInSchema(resource, options),
     orderSchema(resource, options)
   );
 
