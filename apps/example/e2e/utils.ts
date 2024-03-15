@@ -102,7 +102,7 @@ export const fillForm = async (
       /* Search for realtionship test */
       await page.fill(
         'input[id="author-search"]',
-        dataTest.Post.author.slice(0, 10)
+        dataTest.Post.author.slice(0, 4)
       );
       await page.waitForTimeout(1000);
       await page.getByText(dataTest.Post.author).click();
