@@ -30,15 +30,64 @@ describe("getMappedDataList", () => {
 
     prismaMock.post.count.mockResolvedValueOnce(2);
 
-    const result = await getMappedDataList(
-      prismaMock,
-      "Post",
+    const result = await getMappedDataList({
+      prisma: prismaMock,
+      resource: "Post",
       options,
-      new URLSearchParams(),
-      {}
-    );
+      searchParams: new URLSearchParams(),
+      context: {},
+      appDir: false,
+      asJson: false,
+    });
+
     expect(result).toEqual({
       data: postData,
+      total: postData.length,
+      error: null,
+    });
+  });
+
+  it("should return the data list as an enumeration", async () => {
+    const postData = [
+      {
+        id: 1,
+        title: "Post 1",
+        content: "Content 1",
+        published: true,
+        author: 1,
+        authorId: 1,
+        rate: new Decimal(5),
+      },
+      {
+        id: 2,
+        title: "Post 2",
+        content: "Content 2",
+        published: true,
+        author: 1,
+        authorId: 1,
+        rate: new Decimal(5),
+      },
+    ];
+
+    prismaMock.post.findMany.mockResolvedValueOnce(postData);
+
+    prismaMock.post.count.mockResolvedValueOnce(2);
+
+    const result = await getMappedDataList({
+      prisma: prismaMock,
+      resource: "Post",
+      options,
+      searchParams: new URLSearchParams(),
+      context: {},
+      appDir: false,
+      asJson: true,
+    });
+
+    expect(result).toEqual({
+      data: postData.map((post) => ({
+        label: post.title,
+        value: post.id,
+      })),
       total: postData.length,
       error: null,
     });

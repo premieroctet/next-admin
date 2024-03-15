@@ -31,11 +31,8 @@ describe("fillRelationInSchema", () => {
         metadata: null,
       },
     ]);
-    const result = await fillRelationInSchema(prismaMock, "Post", {})(schema);
-    expect(result.definitions.Post.properties.author?.enum).toEqual([
-      { label: 1, value: 1 },
-      { label: 2, value: 2 },
-    ]);
+    const result = await fillRelationInSchema("Post")(schema);
+    expect(result.definitions.Post.properties.author?.enum).toEqual([]);
   });
 });
 
