@@ -26,7 +26,7 @@ export function Hero() {
         <p className="mt-4 font-normal text-2xl text-black dark:text-white max-w-xl text-center mx-auto">
           Ready-to-go Admin for Next.js and Prisma
         </p>
-        <div className="mt-10 max-w-xl text-center mx-auto flex flex-raw gap-4 justify-center">
+        <div className="mt-10 max-w-xl text-center mx-auto flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/docs"
             className="bg-black dark:bg-white dark:hover:bg-gray-700 rounded-lg px-6 py-3 text-white dark:text-black text-md font-semibold hover:bg-gray-800 dark:hover:bg-white/80 transition-colors duration-300 ease-in-out"
@@ -36,7 +36,7 @@ export function Hero() {
           <Link
             href="https://github.com/premieroctet/next-admin"
             target="_blank"
-            className="dark:text-white dark:fill-white dark:hover:text-black dark:hover:fill-black rounded-lg px-6 py-3 text-black text-md font-semibold hover:bg-gray-100 transition-colors duration-300 ease-in-out border border-gray-300 flex gap-2"
+            className="dark:text-white dark:fill-white dark:hover:text-black dark:hover:fill-black rounded-lg px-6 py-3 text-black text-md font-semibold hover:bg-gray-100 transition-colors duration-300 ease-in-out border border-gray-300 flex gap-2 justify-center"
           >
             <GitHubIcon />
             View on GitHub
