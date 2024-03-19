@@ -6,6 +6,7 @@ import {
 import { createRouter } from "next-connect";
 
 import { EditFieldsOptions, NextAdminOptions } from "./types";
+import { optionsFromResource } from "./utils/prisma";
 import { getPropsFromParams } from "./utils/props";
 import {
   formatSearchFields,
@@ -62,19 +63,37 @@ export const nextAdminRouter = async (
           isAppDir: false,
         });
 
-        if (requestOptions.json && "data" in props && "total" in props) {
-          res.setHeader("Content-Type", "application/json");
-          res.write(
-            JSON.stringify({
-              data: props.data,
-              total: props.total,
-              error: props.error,
-            })
-          );
-          res.end();
-        }
-
         return { props };
+      })
+      .post(`${options.basePath}/api/options`, async (req, res) => {
+        const body = await getBody(req);
+        const {
+          originModel,
+          property,
+          model,
+          query,
+          page,
+          perPage,
+        } = JSON.parse(body) as any
+
+        const data = await optionsFromResource({
+          prisma,
+          originResource: originModel,
+          property: property,
+          resource: model,
+          options,
+          context: {},
+          searchParams: new URLSearchParams({
+            search: query,
+            page: page.toString(),
+            itemsPerPage: perPage.toString(),
+          }),
+          appDir: false,
+        });
+
+        res.setHeader("Content-Type", "application/json");
+        res.write(JSON.stringify(data));
+        res.end();
       })
       .post(async (req, res) => {
         const params = getParamsFromUrl(req.url!, options.basePath);
@@ -151,9 +170,8 @@ export const nextAdminRouter = async (
             };
             return {
               redirect: {
-                destination: `${
-                  options.basePath
-                }/${resource.toLowerCase()}?message=${JSON.stringify(message)}`,
+                destination: `${options.basePath
+                  }/${resource.toLowerCase()}?message=${JSON.stringify(message)}`,
                 permanent: false,
               },
             };
@@ -206,11 +224,10 @@ export const nextAdminRouter = async (
             if (redirect) {
               return {
                 redirect: {
-                  destination: `${
-                    options.basePath
-                  }/${resource.toLowerCase()}?message=${JSON.stringify(
-                    message
-                  )}`,
+                  destination: `${options.basePath
+                    }/${resource.toLowerCase()}?message=${JSON.stringify(
+                      message
+                    )}`,
                   permanent: false,
                 },
               };
@@ -232,9 +249,8 @@ export const nextAdminRouter = async (
 
           const pathname = redirect
             ? `${options.basePath}/${resource.toLowerCase()}`
-            : `${options.basePath}/${resource.toLowerCase()}/${
-                createdData[modelIdProperty]
-              }`;
+            : `${options.basePath}/${resource.toLowerCase()}/${createdData[modelIdProperty]
+            }`;
           return {
             redirect: {
               destination: `${pathname}?message=${JSON.stringify({

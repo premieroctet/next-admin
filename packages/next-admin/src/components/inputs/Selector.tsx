@@ -76,7 +76,20 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
         }
       } else {
         const response = await fetch(
-          `${basePath}/${model}?search=${query}&itemsPerPage=${perPage}&json=true&page=${searchPage.current}`
+          `${basePath}/api/options`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              originModel: resource!,
+              property: name,
+              model,
+              query,
+              page: searchPage.current,
+              perPage,
+            }),
+          }
         );
 
         if (response.ok) {
