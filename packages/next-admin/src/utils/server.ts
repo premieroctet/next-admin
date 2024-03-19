@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
 import { Writable } from "stream";
@@ -8,16 +8,14 @@ import {
   EditOptions,
   Enumeration,
   Field,
-  ListOptions,
   ModelName,
   ModelWithoutRelationships,
   NextAdminOptions,
   ObjectField,
   ScalarField,
-  Schema,
+  Schema
 } from "../types";
-import { isSatisfyingSearch, selectPayloadForModel } from "./prisma";
-import { isNativeFunction, pipe, uncapitalize } from "./tools";
+import { isNativeFunction, pipe } from "./tools";
 
 export const models = Prisma.dmmf.datamodel.models;
 export const enums = Prisma.dmmf.datamodel.enums;
@@ -72,7 +70,7 @@ export const getToStringForRelations = <M extends ModelName>(
     nonCheckedToString && !isNativeFunction(nonCheckedToString)
       ? nonCheckedToString
       : (item: any) =>
-          item[relationToFields?.[0]] ?? item[modelRelationIdField];
+        item[relationToFields?.[0]] ?? item[modelRelationIdField];
 
   return toStringForRelations;
 };
@@ -118,95 +116,95 @@ export const orderSchema =
  */
 export const fillRelationInSchema =
   (resource: ModelName, options?: NextAdminOptions) =>
-  async (schema: Schema) => {
-    const modelName = resource;
-    const model = models.find((model) => model.name === modelName);
-    const display = options?.model?.[modelName]?.edit?.display;
-    let fields;
-    if (model?.fields && display) {
-      // @ts-expect-error
-      fields = model.fields.filter((field) => display.includes(field.name));
-    } else {
-      fields = model?.fields;
-    }
+    async (schema: Schema) => {
+      const modelName = resource;
+      const model = models.find((model) => model.name === modelName);
+      const display = options?.model?.[modelName]?.edit?.display;
+      let fields;
+      if (model?.fields && display) {
+        // @ts-expect-error
+        fields = model.fields.filter((field) => display.includes(field.name));
+      } else {
+        fields = model?.fields;
+      }
 
-    if (!model || !fields) return schema;
-    await Promise.all(
-      fields.map(async (field) => {
-        const fieldName = field.name as Field<typeof modelName>;
-        const fieldType = field.type;
-        const fieldKind = field.kind;
-        const relationToFields = field.relationToFields;
-        const relationFromFields = field.relationFromFields;
+      if (!model || !fields) return schema;
+      await Promise.all(
+        fields.map(async (field) => {
+          const fieldName = field.name as Field<typeof modelName>;
+          const fieldType = field.type;
+          const fieldKind = field.kind;
+          const relationToFields = field.relationToFields;
+          const relationFromFields = field.relationFromFields;
 
-        if (fieldKind === "enum") {
-          const fieldValue =
-            schema.definitions[modelName].properties[
-              field.name as Field<typeof modelName>
-            ];
-          if (fieldValue) {
-            fieldValue.enum = fieldValue.enum?.map((item) =>
-              typeof item !== "object" ? { label: item, value: item } : item
-            );
-          }
-
-          if (fieldValue?.default) {
-            fieldValue.default =
-              typeof fieldValue.default !== "object"
-                ? { label: fieldValue.default, value: fieldValue.default }
-                : fieldValue.default;
-          }
-        }
-        if (fieldKind === "object") {
-          const modelNameRelation = fieldType as ModelName;
-
-          if (relationToFields!.length > 0) {
-            //Relation One-to-Many, Many side
-            const enumeration: Enumeration[] = [];
-            schema.definitions[modelName].properties[fieldName] = {
-              type: "string",
-              relation: modelNameRelation,
-              enum: enumeration,
-            };
-
-            const required = schema.definitions[modelName].required;
-            const relationFromFieldsRequired = relationFromFields?.every(
-              (field) => required?.includes(field)
-            );
-
-            if (relationFromFieldsRequired) {
-              required?.push(fieldName);
-              schema.definitions[modelName].required = required;
-            }
-          } else {
+          if (fieldKind === "enum") {
             const fieldValue =
               schema.definitions[modelName].properties[
-                field.name as Field<typeof modelName>
+              field.name as Field<typeof modelName>
               ];
             if (fieldValue) {
-              const enumeration: Enumeration[] = [];
+              fieldValue.enum = fieldValue.enum?.map((item) =>
+                typeof item !== "object" ? { label: item, value: item } : item
+              );
+            }
 
-              if (fieldValue.type === "array") {
-                //Relation Many-to-One
-                fieldValue.items = {
-                  type: "string",
-                  relation: modelNameRelation,
-                  enum: enumeration,
-                };
-              } else {
-                //Relation One-to-One
-                fieldValue.type = "string";
-                fieldValue.relation = modelNameRelation;
-                fieldValue.enum = enumeration;
-                delete fieldValue.anyOf;
+            if (fieldValue?.default) {
+              fieldValue.default =
+                typeof fieldValue.default !== "object"
+                  ? { label: fieldValue.default, value: fieldValue.default }
+                  : fieldValue.default;
+            }
+          }
+          if (fieldKind === "object") {
+            const modelNameRelation = fieldType as ModelName;
+
+            if (relationToFields!.length > 0) {
+              //Relation One-to-Many, Many side
+              const enumeration: Enumeration[] = [];
+              schema.definitions[modelName].properties[fieldName] = {
+                type: "string",
+                relation: modelNameRelation,
+                enum: enumeration,
+              };
+
+              const required = schema.definitions[modelName].required;
+              const relationFromFieldsRequired = relationFromFields?.every(
+                (field) => required?.includes(field)
+              );
+
+              if (relationFromFieldsRequired) {
+                required?.push(fieldName);
+                schema.definitions[modelName].required = required;
+              }
+            } else {
+              const fieldValue =
+                schema.definitions[modelName].properties[
+                field.name as Field<typeof modelName>
+                ];
+              if (fieldValue) {
+                const enumeration: Enumeration[] = [];
+
+                if (fieldValue.type === "array") {
+                  //Relation Many-to-One
+                  fieldValue.items = {
+                    type: "string",
+                    relation: modelNameRelation,
+                    enum: enumeration,
+                  };
+                } else {
+                  //Relation One-to-One
+                  fieldValue.type = "string";
+                  fieldValue.relation = modelNameRelation;
+                  fieldValue.enum = enumeration;
+                  delete fieldValue.anyOf;
+                }
               }
             }
           }
-        }
-      })
-    );
-    return schema;
-  };
+        })
+      );
+      return schema;
+    };
 
 /**
  * This is used to transform the data from server to client
@@ -246,9 +244,9 @@ export const transformData = <M extends ModelName>(
       } else {
         acc[key] = data[key]
           ? {
-              label: toStringForRelations(data[key]),
-              value: data[key][modelRelationIdField],
-            }
+            label: toStringForRelations(data[key]),
+            value: data[key][modelRelationIdField],
+          }
           : null;
       }
     } else {
@@ -300,9 +298,8 @@ export const findRelationInData = async (
               type: "link",
               value: {
                 label: item[dmmfPropertyName],
-                url: `${dmmfProperty.type as ModelName}/${
-                  item[dmmfPropertyName][idProperty]
-                }`,
+                url: `${dmmfProperty.type as ModelName}/${item[dmmfPropertyName][idProperty]
+                  }`,
               },
             };
           }
@@ -424,7 +421,7 @@ export const formattedFormData = async <M extends ModelName>(
           const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
           const fieldValue =
             schema.definitions[modelName].properties[
-              dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
+            dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
             ];
           if (fieldValue?.type === "array") {
             formData[dmmfPropertyName] = JSON.parse(
@@ -507,7 +504,7 @@ export const formattedFormData = async <M extends ModelName>(
                 if (typeof uploadResult !== "string") {
                   console.warn(
                     "Upload handler must return a string, fallback to no-op for field " +
-                      dmmfPropertyName.toString()
+                    dmmfPropertyName.toString()
                   );
                 } else {
                   formattedData[dmmfPropertyName] = uploadResult;
@@ -576,48 +573,48 @@ export const transformSchema = <M extends ModelName>(
 
 export const changeFormatInSchema =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
-  (schema: Schema) => {
-    const modelName = resource;
-    const model = models.find((model) => model.name === modelName);
-    if (!model) return schema;
-    model.fields.forEach((dmmfProperty) => {
-      const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
-      const fieldValue =
-        schema.definitions[modelName].properties[
+    (schema: Schema) => {
+      const modelName = resource;
+      const model = models.find((model) => model.name === modelName);
+      if (!model) return schema;
+      model.fields.forEach((dmmfProperty) => {
+        const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
+        const fieldValue =
+          schema.definitions[modelName].properties[
           dmmfPropertyName as Field<typeof modelName>
-        ];
+          ];
 
-      if (fieldValue && dmmfProperty.type === "Json") {
-        fieldValue.type = "string";
-      }
+        if (fieldValue && dmmfProperty.type === "Json") {
+          fieldValue.type = "string";
+        }
 
-      if (fieldValue && editOptions?.fields?.[dmmfPropertyName]?.input) {
-        fieldValue.format = "string";
-      } else if (editOptions?.fields?.[dmmfPropertyName]?.format) {
-        if (fieldValue) {
-          if (editOptions?.fields?.[dmmfPropertyName]?.format === "file") {
-            fieldValue.format = "data-url";
-          } else {
-            fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
+        if (fieldValue && editOptions?.fields?.[dmmfPropertyName]?.input) {
+          fieldValue.format = "string";
+        } else if (editOptions?.fields?.[dmmfPropertyName]?.format) {
+          if (fieldValue) {
+            if (editOptions?.fields?.[dmmfPropertyName]?.format === "file") {
+              fieldValue.format = "data-url";
+            } else {
+              fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
+            }
           }
         }
-      }
-    });
-    return schema;
-  };
+      });
+      return schema;
+    };
 
 export const removeHiddenProperties =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
-  (schema: Schema) => {
-    if (!editOptions?.display) return schema;
-    const properties = schema.definitions[resource].properties;
-    Object.keys(properties).forEach((property) => {
-      if (!editOptions.display?.includes(property as Field<M>)) {
-        delete properties[property as Field<M>];
-      }
-    });
-    return schema;
-  };
+    (schema: Schema) => {
+      if (!editOptions?.display) return schema;
+      const properties = schema.definitions[resource].properties;
+      Object.keys(properties).forEach((property) => {
+        if (!editOptions.display?.includes(property as Field<M>)) {
+          delete properties[property as Field<M>];
+        }
+      });
+      return schema;
+    };
 
 export const getResourceFromUrl = (
   url: string,

@@ -353,6 +353,7 @@ const Form = ({
         initialValue={data}
         searchPaginatedResourceAction={searchPaginatedResourceAction}
         dmmfSchema={dmmfSchema}
+        resource={resource}
       >
         <FormContext.Consumer>
           {({ formData, setFormData }) => (

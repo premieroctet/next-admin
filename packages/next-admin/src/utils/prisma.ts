@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient, $Enums } from "@prisma/client";
+import { $Enums, Prisma, PrismaClient } from "@prisma/client";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   EditOptions,
@@ -17,6 +17,7 @@ import {
   findRelationInData,
   getModelIdProperty,
   getPrismaModelForResource,
+  getToStringForRelations,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
@@ -26,74 +27,51 @@ export const createWherePredicate = (
 ) => {
   return search
     ? {
-        OR: fieldsFiltered
-          ?.filter((field) => {
-            return field.kind === "scalar" || field.kind === "enum";
-          })
-          .map((field) => {
-            if (field.kind === "enum") {
-              const enumValueForSearchTerm = enumValueForEnumType(
-                field.type,
-                search
-              );
+      OR: fieldsFiltered
+        ?.filter((field) => {
+          return field.kind === "scalar" || field.kind === "enum";
+        })
+        .map((field) => {
+          if (field.kind === "enum") {
+            const enumValueForSearchTerm = enumValueForEnumType(
+              field.type,
+              search
+            );
 
-              if (enumValueForSearchTerm) {
-                return {
-                  [field.name]:
-                    // @ts-expect-error
-                    $Enums[field.type as keyof typeof $Enums][
-                      enumValueForSearchTerm.name
-                    ],
-                };
-              }
-            }
-
-            if (field.type === "String") {
-              // @ts-ignore
-              const mode = Prisma?.QueryMode
-                ? { mode: Prisma.QueryMode.insensitive }
-                : {};
+            if (enumValueForSearchTerm) {
               return {
-                [field.name]: { contains: search, ...mode },
+                [field.name]:
+                  // @ts-expect-error
+                  $Enums[field.type as keyof typeof $Enums][
+                  enumValueForSearchTerm.name
+                  ],
               };
             }
-            if (field.type === "Int" && !isNaN(Number(search))) {
-              return { [field.name]: Number(search) };
-            }
-            return null;
-          })
-          .filter(Boolean),
-      }
-    : {};
-};
+          }
 
-export const isSatisfyingSearch = (
-  item: any,
-  fieldsFiltered?: Prisma.DMMF.Field[],
-  search?: string,
-  withFormatter: boolean = false
-) => {
-  const fieldsFilteredNames =
-    fieldsFiltered
-      ?.filter((field) => field.kind === "scalar")
-      ?.map((field) => field.name) ?? [];
-  withFormatter && fieldsFilteredNames?.push("_formatted");
-  if (!fieldsFilteredNames || !search) return true;
-  return fieldsFilteredNames?.reduce((acc, field) => {
-    return (
-      item[field]
-        ?.toString()
-        .toLowerCase()
-        .includes(search?.trim().toLowerCase()) || acc
-    );
-  }, false);
+          if (field.type === "String") {
+            // @ts-ignore
+            const mode = Prisma?.QueryMode
+              ? { mode: Prisma.QueryMode.insensitive }
+              : {};
+            return {
+              [field.name]: { contains: search, ...mode },
+            };
+          }
+          if (field.type === "Int" && !isNaN(Number(search))) {
+            return { [field.name]: Number(search) };
+          }
+          return null;
+        })
+        .filter(Boolean),
+    }
+    : {};
 };
 
 export const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
   options?: NextAdminOptions,
-  nestedSelect = true
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
@@ -126,12 +104,14 @@ export const preparePrismaListRequest = <M extends ModelName>(
   let where = {};
   let fieldsFiltered = model?.fields;
   const list = options?.model?.[resource]?.list as ListOptions<M>;
-  if (list && nestedSelect) {
+  if (list) {
     select = selectPayloadForModel(resource, list, "object");
     fieldsFiltered =
       model?.fields.filter(
         ({ name }) => list.search?.includes(name as Field<M>)
       ) ?? fieldsFiltered;
+  } else {
+    select = selectPayloadForModel(resource, undefined, "object");
   }
 
   where = createWherePredicate(fieldsFiltered, search);
@@ -152,28 +132,60 @@ type GetMappedDataListParams = {
   searchParams: URLSearchParams;
   context: NextAdminContext;
   appDir?: boolean;
-  asJson?: boolean;
 };
 
-export const getMappedDataList = async ({
+type OptionsFromResourceParams = {
+  originResource: ModelName;
+  property: string;
+} & GetMappedDataListParams;
+
+export const optionsFromResource = async (
+  { originResource, property, ...args }: OptionsFromResourceParams
+) => {
+  const data = await fetchDataList(args);
+  const { data: dataItems, total, error } = data;
+  const { resource } = args;
+
+  const toStringModel = getToStringForRelations(
+    originResource,
+    property as Field<typeof originResource>,
+    args.resource,
+    args.options
+  )
+  const idProperty = getModelIdProperty(resource);
+  return {
+    data: dataItems.map((item): Enumeration => {
+      return {
+        label: toStringModel ? toStringModel(item) : item[idProperty],
+        value: item[idProperty],
+      };
+    }),
+    total,
+    error,
+  };
+};
+
+type FetchDataListParams = {
+  prisma: PrismaClient;
+  resource: ModelName;
+  options: NextAdminOptions;
+  searchParams: URLSearchParams;
+};
+
+export const fetchDataList = async ({
   prisma,
   resource,
   options,
   searchParams,
-  context,
-  appDir = false,
-  asJson,
-}: GetMappedDataListParams) => {
+}: FetchDataListParams) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,
     options,
-    !asJson
   );
   let data: any[] = [];
   let total: number;
   let error: string | null = null;
-  const dmmfSchema = getPrismaModelForResource(resource);
 
   try {
     // @ts-expect-error
@@ -195,24 +207,22 @@ export const getMappedDataList = async ({
     error = e.message ? e.message : e;
     console.error(e);
   }
-  data = await findRelationInData(data, dmmfSchema?.fields);
+  return {
+    data,
+    total,
+    error,
+  };
+}
 
-  if (asJson) {
-    const toStringModel = options.model?.[resource]?.toString;
-    const idProperty = getModelIdProperty(resource);
-
-    return {
-      data: data.map((item): Enumeration => {
-        return {
-          label: toStringModel ? toStringModel(item) : item[idProperty],
-          value: item[idProperty],
-        };
-      }),
-      total,
-      error,
-    };
-  }
-
+export const getMappedDataList = async ({
+  context,
+  appDir = false,
+  ...args
+}: GetMappedDataListParams) => {
+  const { data: fetchData, total, error } = await fetchDataList(args);
+  const { resource, options } = args;
+  const dmmfSchema = getPrismaModelForResource(resource);
+  const data = await findRelationInData(fetchData, dmmfSchema?.fields);
   const listFields = options.model?.[resource]?.list?.fields ?? {};
 
   data.forEach((item, index) => {
@@ -293,16 +303,14 @@ export const selectPayloadForModel = <M extends ModelName>(
         (displayKeys && displayKeys.includes(field.name as Field<M>)) ||
         !displayKeys
       ) {
-        if (field.kind === "object") {
-          if (level === "object") {
-            acc[field.name] = {
-              select: selectPayloadForModel(
-                field.type as ModelName,
-                {},
-                "scalar"
-              ),
-            };
-          }
+        if (field.kind === "object" && level === "object") {
+          acc[field.name] = {
+            select: selectPayloadForModel(
+              field.type as ModelName,
+              {},
+              "scalar"
+            ),
+          };
         } else {
           acc[field.name] = true;
         }

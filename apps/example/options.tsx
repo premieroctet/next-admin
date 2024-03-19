@@ -5,7 +5,7 @@ export const options: NextAdminOptions = {
   basePath: "/admin",
   model: {
     User: {
-      toString: (user) => `${user.name} (${user.email})`,
+      toString: (author) => `${author.name} (${author.email})`,
       title: "👥 Users",
       aliases: {
         id: "ID",

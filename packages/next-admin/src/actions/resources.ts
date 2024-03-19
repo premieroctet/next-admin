@@ -2,7 +2,7 @@
 
 import { PrismaClient } from "@prisma/client";
 import { ActionFullParams, ModelName } from "../types";
-import { getMappedDataList } from "../utils/prisma";
+import { optionsFromResource } from "../utils/prisma";
 import { getModelIdProperty } from "../utils/server";
 import { uncapitalize } from "../utils/tools";
 
@@ -21,6 +21,8 @@ export const deleteResourceItems = async <M extends ModelName>(
 };
 
 export type SearchPaginatedResourceParams = {
+  originModel: string;
+  property: string;
   model: string;
   query: string;
   page?: number;
@@ -29,10 +31,12 @@ export type SearchPaginatedResourceParams = {
 
 export const searchPaginatedResource = async (
   { options, prisma }: ActionFullParams,
-  { model, query, page = 1, perPage = 25 }: SearchPaginatedResourceParams
+  { originModel, property, model, query, page = 1, perPage = 25 }: SearchPaginatedResourceParams
 ) => {
-  const data = await getMappedDataList({
+  const data = await optionsFromResource({
     prisma,
+    originResource: originModel as ModelName,
+    property: property,
     resource: model as ModelName,
     options,
     context: {},
@@ -42,7 +46,6 @@ export const searchPaginatedResource = async (
       itemsPerPage: perPage.toString(),
     }),
     appDir: true,
-    asJson: true,
   });
 
   return data;

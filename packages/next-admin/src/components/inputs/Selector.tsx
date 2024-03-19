@@ -1,6 +1,6 @@
 import { Transition } from "@headlessui/react";
 import debounce from "lodash/debounce";
-import { ChangeEvent, createRef, use, useEffect, useRef, useState } from "react";
+import { ChangeEvent, createRef, useEffect, useRef, useState } from "react";
 import { useConfig } from "../../context/ConfigContext";
 import { useForm } from "../../context/FormContext";
 import { Enumeration } from "../../types";
@@ -15,7 +15,7 @@ export type SelectorProps = {
 
 export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   const { basePath, isAppDir } = useConfig();
-  const { searchPaginatedResourceAction, dmmfSchema } = useForm();
+  const { searchPaginatedResourceAction, dmmfSchema, resource } = useForm();
   const [isPending, setIsPending] = useState(false);
   const [allOptions, setAllOptions] = useState<Enumeration[]>(options ?? []);
   const totalSearchedItems = useRef(0);
@@ -30,14 +30,19 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
     }
   }, [open, searchInput]);
 
+  useEffect(() => {
+    if (open) {
+      runSearch(true);
+    }
+
+    return () => {
+      searchPage.current = 1;
+    }
+  }, [open]);
+
   const runSearch = async (resetOptions = true) => {
     const perPage = 25;
     const query = currentQuery.current;
-
-    if (!query) {
-      setAllOptions([]);
-      return;
-    }
 
     const fieldFromDmmf = dmmfSchema?.find((model) => model.name === name);
 
@@ -51,6 +56,8 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
       setIsPending(true);
       if (isAppDir) {
         const response = await searchPaginatedResourceAction?.({
+          originModel: resource!,
+          property: name,
           model,
           query,
           page: searchPage.current,
@@ -102,7 +109,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
       setAllOptions(filteredOptions);
       return;
     }
-    
+
     setAllOptions([]);
     searchPage.current = 1;
     currentQuery.current = e.target.value;
@@ -112,7 +119,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if(allOptions?.length > 0 && allOptions.length >= totalSearchedItems.current) {
+    if (allOptions?.length > 0 && allOptions.length >= totalSearchedItems.current) {
       setIsLastRowReached(true);
     }
   }, [allOptions, totalSearchedItems]);
@@ -158,6 +165,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
               <input
                 id={`${name}-search`}
                 ref={searchInput}
+                defaultValue={currentQuery.current}
                 type="text"
                 className="transition-all block w-full px-3 py-2 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none sm:text-sm"
                 placeholder="Search..."

@@ -156,15 +156,9 @@ export type ModelAction = {
   errorMessage?: string;
 };
 
-export type Primitives = string | number | boolean | Date | null;
-
-export type PrimitivesOnlyModel<M extends ModelName> = {
-  [P in Field<M>]: Model<M>[P] extends Primitives ? Model<M>[P] : never;
-};
-
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
-    toString?: (item: PrimitivesOnlyModel<P>) => string;
+    toString?: (item: Model<P>) => string;
     list?: ListOptions<P>;
     edit?: EditOptions<P>;
     title?: string;

@@ -173,7 +173,6 @@ export async function getPropsFromParams({
         searchParams: new URLSearchParams(qs.stringify(searchParams)),
         context: { locale },
         appDir: isAppDir,
-        asJson: !!searchParams?.json && !isAppDir,
       });
 
       return {
