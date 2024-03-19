@@ -18,10 +18,13 @@ import {
 } from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
+import Divider from "./Divider";
 import ListHeader from "./ListHeader";
+import MainHeader from "./MainHeader";
 import { Pagination } from "./Pagination";
 import TableHead from "./TableHead";
 import TableRowsIndicator from "./TableRowsIndicator";
+import ResourceIcon from "./common/ResourceIcon";
 import {
   Select,
   SelectContent,
@@ -29,7 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
-import ResourceIcon from "./common/ResourceIcon";
 
 export type ListProps = {
   resource: ModelName;
@@ -155,13 +157,16 @@ function List({
 
   return (
     <>
-      <div className="mt-4">
-        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4 flex items-center gap-2">
-          {!!icon && <ResourceIcon icon={icon} className="h-8 w-8" />} {title}
-        </h1>
-      </div>
-      <div className="mt-4 flow-root">
+      <MainHeader
+        breadcrumbItems={[
+          { label: title, href: location.pathname, current: true },
+        ]}
+      />
+      {!!icon && <ResourceIcon icon={icon} className="h-8 w-8" />} {title}
+      <Divider />
+      <div className="mt-4 flow-root px-4">
         <ListHeader
+          title={title}
           resource={resource}
           search={(query.search as string) || ""}
           onSearchChange={onSearchChange}
@@ -171,7 +176,8 @@ function List({
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
         />
-        <div className="max-w-full mt-2 py-2 align-middle">
+        <Divider />
+        <div className="max-w-full align-middle">
           <DataTable
             resource={resource}
             data={data}
@@ -209,16 +215,28 @@ function List({
                     <SelectValue placeholder={pageSize} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem className="cursor-pointer" value={"10"}>
+                    <SelectItem
+                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
+                      value={"10"}
+                    >
                       10
                     </SelectItem>
-                    <SelectItem className="cursor-pointer" value={"20"}>
+                    <SelectItem
+                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
+                      value={"20"}
+                    >
                       20
                     </SelectItem>
-                    <SelectItem className="cursor-pointer" value={"50"}>
+                    <SelectItem
+                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
+                      value={"50"}
+                    >
                       50
                     </SelectItem>
-                    <SelectItem className="cursor-pointer" value={"100"}>
+                    <SelectItem
+                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
+                      value={"100"}
+                    >
                       100
                     </SelectItem>
                   </SelectContent>

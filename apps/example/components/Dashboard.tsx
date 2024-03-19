@@ -1,5 +1,5 @@
-import Image from "next/image";
 import { Divider, Text, Title } from "@tremor/react";
+import Image from "next/image";
 
 const Dashboard = () => {
   return (

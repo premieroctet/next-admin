@@ -1,8 +1,8 @@
+import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ChangeEvent, ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
-import * as OutlineIcons from "@heroicons/react/24/outline";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -282,6 +282,7 @@ export type AdminComponentProps = {
   basePath: string;
   schema?: Schema;
   data?: ListData<ModelName>;
+  title?: string;
   resource?: ModelName;
   /**
    * Page router only
