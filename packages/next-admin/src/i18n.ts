@@ -7,6 +7,7 @@ export const defaultTranslations: Translations = {
   "form.button.save.label": "Save",
   "form.button.save_edit.label": "Save and continue editing",
   "list.empty.label": "No {{resource}} found",
+  "list.empty.caption": "Get started by creating a new {{resource}}.",
   "list.footer.indicator.showing": "Showing from",
   "list.footer.indicator.to": "to",
   "list.footer.indicator.of": "of",

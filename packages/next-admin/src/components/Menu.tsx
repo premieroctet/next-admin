@@ -10,15 +10,17 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 
+import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
+import { useConfig } from "../context/ConfigContext";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
   ModelIcon,
   ModelName,
   SidebarConfiguration,
 } from "../types";
-import { useConfig } from "../context/ConfigContext";
-import { useRouterInternal } from "../hooks/useRouterInternal";
 import ResourceIcon from "./common/ResourceIcon";
+import Button from "./radix/Button";
 import {
   Dropdown,
   DropdownBody,
@@ -28,8 +30,6 @@ import {
   DropdownSeparator,
   DropdownTrigger,
 } from "./radix/Dropdown";
-import Button from "./radix/Button";
-import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
 
 export type MenuProps = {
   resource?: ModelName;
@@ -40,6 +40,13 @@ export type MenuProps = {
   resourcesIcons: AdminComponentProps["resourcesIcons"];
   user?: AdminComponentProps["user"];
   externalLinks?: AdminComponentProps["externalLinks"];
+};
+
+type NavigationElement = {
+  name: string;
+  href: string;
+  current: boolean;
+  icon?: React.ElementType;
 };
 
 export default function Menu({
@@ -259,7 +266,7 @@ export default function Menu({
             leaveFrom="opacity-100"
             leaveTo="opacity-0"
           >
-            <div className="fixed inset-0 bg-gray-900/80" />
+            <div className="fixed inset-0 bg-slate-900/80" />
           </Transition.Child>
 
           <div className="fixed inset-0 flex">
@@ -339,13 +346,13 @@ export default function Menu({
       <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden">
         <button
           type="button"
-          className="-m-2.5 p-2.5 text-gray-700 lg:hidden"
+          className="-m-2.5 p-2.5 text-slate-700 lg:hidden"
           onClick={() => setSidebarOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
           <Bars3Icon className="h-6 w-6" aria-hidden="true" />
         </button>
-        <div className="flex-1 text-sm font-semibold leading-6 text-gray-900">
+        <div className="flex-1 text-sm font-semibold leading-6 text-slate-900">
           Dashboard
         </div>
       </div>

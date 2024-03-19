@@ -1,5 +1,7 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { PlusIcon } from "@heroicons/react/24/solid";
+import {
+  MagnifyingGlassIcon,
+  PlusSmallIcon,
+} from "@heroicons/react/24/outline";
 import { RowSelectionState } from "@tanstack/react-table";
 import Link from "next/link";
 import { ChangeEvent, useMemo } from "react";
@@ -19,6 +21,7 @@ type Props = {
   selectedRows: RowSelectionState;
   getSelectedRowsIds: () => string[] | number[];
   onDelete: () => Promise<void>;
+  title: string;
 };
 
 export default function ListHeader({
@@ -30,6 +33,7 @@ export default function ListHeader({
   selectedRows,
   getSelectedRowsIds,
   onDelete,
+  title,
 }: Props) {
   const { basePath } = useConfig();
   const { t } = useI18n();
@@ -51,50 +55,58 @@ export default function ListHeader({
   }, [actionsProp, onDelete, t]);
 
   return (
-    <div className="flex justify-between items-end">
-      <div>
-        {onSearchChange && (
-          <div className="mt-4 flex justify-end items-center gap-2">
-            {isPending ? (
-              <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
-            ) : (
-              <MagnifyingGlassIcon
-                className="h-6 w-6 text-gray-400"
-                aria-hidden="true"
+    <>
+      <div className="flex justify-between sm:items-center mb-6 flex-col sm:flex-row items-start gap-4">
+        <h1 className="font-semibold leading-7 text-slate-800 sm:truncate text-3xl sm:tracking-tight py-3">
+          {title}
+        </h1>
+        <div className="flex items-center justify-between gap-x-4 w-full sm:w-auto">
+          {onSearchChange && (
+            <div className="flex justify-end items-center gap-2 bg-slate-100 border-gray-300 px-3 py-1 rounded-xl">
+              <label htmlFor="search">
+                {isPending ? (
+                  <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
+                ) : (
+                  <MagnifyingGlassIcon
+                    className="h-6 w-6 text-gray-400"
+                    aria-hidden="true"
+                  />
+                )}
+              </label>
+              <input
+                id="search"
+                name="search"
+                onInput={onSearchChange}
+                defaultValue={search}
+                type="search"
+                className="bg-transparent py-1.5 rounded-md text-sm focus:outline-none focus:ring-0 focus:ring-offset-0"
+                placeholder={`${t(
+                  "list.header.search.placeholder"
+                )} ${title?.toLowerCase()}`}
               />
-            )}
-            <input
-              name="search"
-              onInput={onSearchChange}
-              defaultValue={search}
-              type="search"
-              className="transition-all px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-nextadmin-primary-500 focus:border-nextadmin-primary-500 sm:text-sm focus-visible:outline focus-visible:outline-nextadmin-primary-500 focus-visible:ring-0 focus-visible:ring-nextadmin-primary-500"
-              placeholder={t("list.header.search.placeholder")}
+            </div>
+          )}
+          {Boolean(selectedRowsCount) && (
+            <ActionsDropdown
+              actions={actions}
+              resource={resource}
+              selectedIds={getSelectedRowsIds()}
+              selectedCount={selectedRowsCount}
             />
-          </div>
-        )}
+          )}
+          <Link
+            href={`${basePath}/${resource}/new`}
+            role="button"
+            className={buttonVariants({
+              variant: "default",
+              size: "sm",
+            })}
+          >
+            <span>{t("list.header.add.label")}</span>
+            <PlusSmallIcon className="h-5 w-5 ml-2" aria-hidden="true" />
+          </Link>
+        </div>
       </div>
-      <div className="flex items-center gap-x-4">
-        {!!selectedRowsCount && (
-          <ActionsDropdown
-            actions={actions}
-            resource={resource}
-            selectedIds={getSelectedRowsIds()}
-            selectedCount={selectedRowsCount}
-          />
-        )}
-        <Link
-          href={`${basePath}/${resource}/new`}
-          role="button"
-          className={buttonVariants({
-            variant: "default",
-            size: "sm",
-          })}
-        >
-          <span>{t("list.header.add.label")}</span>
-          <PlusIcon className="h-5 w-5 ml-2" aria-hidden="true" />
-        </Link>
-      </div>
-    </div>
+    </>
   );
 }

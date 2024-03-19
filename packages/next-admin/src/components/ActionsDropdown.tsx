@@ -1,5 +1,9 @@
-import clsx from "clsx";
+import { Transition } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import clsx from "clsx";
+import { Fragment, useState } from "react";
+import { useI18n } from "../context/I18nContext";
+import { useAction } from "../hooks/useAction";
 import { ModelAction, ModelName } from "../types";
 import {
   Dropdown,
@@ -8,10 +12,6 @@ import {
   DropdownItem,
   DropdownTrigger,
 } from "./radix/Dropdown";
-import { useAction } from "../hooks/useAction";
-import { useI18n } from "../context/I18nContext";
-import { Fragment, useState } from "react";
-import { Transition } from "@headlessui/react";
 
 type Props = {
   actions: ModelAction[];
@@ -65,8 +65,9 @@ const ActionsDropdown = ({
               return (
                 <DropdownItem
                   key={action.title}
-                  className={clsx("rounded-md py-1 px-2", {
-                    "text-red-600": action.style === "destructive",
+                  className={clsx("rounded-md py-1 px-2 cursor-pointer", {
+                    "text-red-700": action.style === "destructive",
+                    "hover:bg-red-50": action.style === "destructive",
                   })}
                   onClick={() => onActionClick(action)}
                 >

@@ -11,6 +11,7 @@ import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Field, ListData, ListDataItem, ModelName } from "../types";
+import EmptyState from "./EmptyState";
 import { Checkbox } from "./common/Checkbox";
 import Button from "./radix/Button";
 import {
@@ -131,33 +132,35 @@ export function DataTable({
   });
 
   return (
-    <div className="overflow-hidden shadow-md ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+    <div className="overflow-hidden">
       <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
+        {table.getRowModel().rows?.length > 0 && (
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+        )}
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="cursor-pointer even:bg-gray-50"
+                className="cursor-pointer hover:bg-nextadmin-primary-50/30 border-b border-dashed border-b-slate-300 even:bg-slate-50/50"
                 onClick={() => {
                   window.location.href = `${basePath}/${resource.toLowerCase()}/${
                     row.original[modelIdProperty].value
@@ -165,7 +168,7 @@ export function DataTable({
                 }}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell className="group" key={cell.id}>
+                  <TableCell className="group py-3" key={cell.id}>
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -177,9 +180,7 @@ export function DataTable({
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                <div className="text-center text-gray-500">
-                  {t("list.empty.label", { resource })}
-                </div>
+                <EmptyState resource={resource} />
               </TableCell>
             </TableRow>
           )}

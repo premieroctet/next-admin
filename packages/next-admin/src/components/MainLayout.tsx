@@ -1,5 +1,4 @@
 import { merge } from "lodash";
-import Link from "next/link";
 import { PropsWithChildren } from "react";
 import { ConfigProvider } from "../context/ConfigContext";
 import { I18nProvider } from "../context/I18nContext";
@@ -30,6 +29,7 @@ export const MainLayout = ({
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
+
   return (
     <ConfigProvider basePath={`${localePath}${basePath}`} isAppDir={isAppDir}>
       <I18nProvider translations={mergedTranslations}>
@@ -44,17 +44,8 @@ export const MainLayout = ({
             user={user}
             externalLinks={externalLinks}
           />
-
-          <main className="py-10 lg:pl-72">
-            <div className="px-4 sm:px-12 lg:px-20 space-y-4">
-              <h1>
-                <Link
-                  className="text-neutral-500 hover:text-neutral-700 hover:underline cursor-pointer"
-                  href={basePath}
-                >
-                  {title}
-                </Link>
-              </h1>
+          <main className="lg:pl-72">
+            <div>
               {message && (
                 <Message message={message.content} type={message.type} />
               )}
