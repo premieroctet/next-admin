@@ -1,26 +1,27 @@
-import { Tabs, Callout } from "nextra/components";
+import { Callout, Tabs } from "nextra/components";
 
 # Getting Started
 
 ## Installation
 
-###### yarn
-
-```bash
+<Tabs items={["yarn", "npm", "pnpm"]}>
+  <Tabs.Tab>
+    ```bash
 yarn add @premieroctet/next-admin prisma-json-schema-generator
-```
+    ```
 
-###### npm
-
-```bash
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
 npm install -S @premieroctet/next-admin prisma-json-schema-generator
-```
-
-###### pnpm
-
-```bash
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
 pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
-```
+    ```
+  </Tabs.Tab>
+</Tabs>
 
 ## SuperJson configuration
 
@@ -28,23 +29,24 @@ SuperJson is required to avoid errors related to invalid serialisation propertie
 
 ### With Babel
 
-###### yarn
-
-```bash
+<Tabs items={["yarn", "npm", "pnpm"]}>
+  <Tabs.Tab>
+    ```bash
 yarn add -D babel-plugin-superjson-next superjson@^1
-```
+    ```
 
-###### npm
-
-```bash
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
 npm install --save-dev babel-plugin-superjson-next superjson@^1
-```
-
-###### pnpm
-
-```bash
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
 pnpm install -D babel-plugin-superjson-next superjson@^1
-```
+    ```
+  </Tabs.Tab>
+</Tabs>
 
 Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
 
@@ -57,23 +59,24 @@ Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
 
 ## With SWC (Experimental)
 
-###### yarn
-
-```bash
+<Tabs items={["yarn", "npm", "pnpm"]}>
+  <Tabs.Tab>
+    ```bash
 yarn add -E -D next-superjson-plugin@0.6.1 superjson
-```
+    ```
 
-###### npm
-
-```bash
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
 npm install --save-dev -E next-superjson-plugin@0.6.1 superjson
-```
-
-###### pnpm
-
-```bash
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
 pnpm install -E -D next-superjson-plugin@0.6.1 superjson
-```
+    ```
+  </Tabs.Tab>
+</Tabs>
 
 Add the `next-superjson-plugin` plugin to your `next.config.js` file:
 
