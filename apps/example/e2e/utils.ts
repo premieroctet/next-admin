@@ -99,12 +99,12 @@ export const fillForm = async (
     case "Post":
       await page.fill('input[id="title"]', dataTest.Post.title);
       await page.getByLabel("author*").click();
-      /* Search for realtionship test */
+      /* Search for relationship test */
       await page.fill(
         'input[id="author-search"]',
-        dataTest.Post.author.slice(0, 4)
+        dataTest.Post.author.slice(0, 6)
       );
-      await page.waitForTimeout(1000);
+      await page.waitForTimeout(2000);
       await page.getByText(dataTest.Post.author).click();
       break;
     case "Category":
