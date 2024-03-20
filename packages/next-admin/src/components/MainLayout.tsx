@@ -22,6 +22,7 @@ export const MainLayout = ({
   isAppDir,
   locale,
   translations,
+  title = "Admin",
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
@@ -43,7 +44,7 @@ export const MainLayout = ({
                   className="text-neutral-500 hover:text-neutral-700 hover:underline cursor-pointer"
                   href={basePath}
                 >
-                  Admin
+                  {title}
                 </Link>
               </h1>
               {message && (

@@ -168,6 +168,12 @@ export type ModelOptions<T extends ModelName> = {
 
 export type NextAdminOptions = {
   basePath: string;
+  /**
+   * Global admin title
+   *
+   * @default "Admin"
+   */
+  title?: string;
   model?: ModelOptions<ModelName>;
   pages?: Record<string, { title: string }>;
 };
@@ -293,6 +299,12 @@ export type AdminComponentProps = {
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
   translations?: Translations;
+  /**
+   * Global admin title
+   *
+   * @default "Admin"
+   */
+  title?: string;
 };
 
 export type MainLayoutProps = Pick<
@@ -307,6 +319,7 @@ export type MainLayoutProps = Pick<
   | "isAppDir"
   | "translations"
   | "locale"
+  | "title"
 >;
 
 export type CustomUIProps = {
