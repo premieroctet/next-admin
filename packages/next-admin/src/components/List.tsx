@@ -12,6 +12,7 @@ import {
   ListDataItem,
   ListFieldsOptions,
   ModelAction,
+  ModelIcon,
   ModelName,
   NextAdminOptions,
 } from "../types";
@@ -28,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
+import ResourceIcon from "./common/ResourceIcon";
 
 export type ListProps = {
   resource: ModelName;
@@ -38,6 +40,7 @@ export type ListProps = {
   title: string;
   actions?: ModelAction[];
   deleteAction?: ModelAction["action"];
+  icon?: ModelIcon;
 };
 
 function List({
@@ -49,6 +52,7 @@ function List({
   resourcesIdProperty,
   title,
   deleteAction,
+  icon,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
@@ -152,8 +156,8 @@ function List({
   return (
     <>
       <div className="mt-4">
-        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
-          {title}
+        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4 flex items-center gap-2">
+          {!!icon && <ResourceIcon icon={icon} className="h-8 w-8" />} {title}
         </h1>
       </div>
       <div className="mt-4 flow-root">
