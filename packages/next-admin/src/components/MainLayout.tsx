@@ -23,6 +23,7 @@ export const MainLayout = ({
   locale,
   translations,
   title = "Admin",
+  sidebar,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
@@ -35,6 +36,7 @@ export const MainLayout = ({
             resource={resource}
             resourcesTitles={resourcesTitles}
             customPages={customPages}
+            configuration={sidebar}
           />
 
           <main className="py-10 lg:pl-72">

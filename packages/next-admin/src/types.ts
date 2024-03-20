@@ -166,6 +166,15 @@ export type ModelOptions<T extends ModelName> = {
   };
 };
 
+export type SidebarGroup = {
+  title: string;
+  models: ModelName[];
+};
+
+export type SidebarConfiguration = {
+  groups: SidebarGroup[];
+};
+
 export type NextAdminOptions = {
   basePath: string;
   /**
@@ -176,6 +185,7 @@ export type NextAdminOptions = {
   title?: string;
   model?: ModelOptions<ModelName>;
   pages?: Record<string, { title: string }>;
+  sidebar?: SidebarConfiguration;
 };
 
 /** Type for Schema */
@@ -305,6 +315,7 @@ export type AdminComponentProps = {
    * @default "Admin"
    */
   title?: string;
+  sidebar?: SidebarConfiguration;
 };
 
 export type MainLayoutProps = Pick<
@@ -320,6 +331,7 @@ export type MainLayoutProps = Pick<
   | "translations"
   | "locale"
   | "title"
+  | "sidebar"
 >;
 
 export type CustomUIProps = {

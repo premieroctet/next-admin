@@ -5,7 +5,7 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 
-import { AdminComponentProps, ModelName } from "../types";
+import { AdminComponentProps, ModelName, SidebarConfiguration } from "../types";
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 
@@ -14,6 +14,7 @@ export type MenuProps = {
   resources?: ModelName[];
   resourcesTitles?: Record<ModelName, string | undefined>;
   customPages?: AdminComponentProps["customPages"];
+  configuration?: SidebarConfiguration;
 };
 
 export default function Menu({
@@ -21,21 +22,11 @@ export default function Menu({
   resource: currentResource,
   resourcesTitles,
   customPages,
+  configuration,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
   const { pathname } = useRouterInternal();
-  const navigation: Array<{
-    name: string;
-    href: string;
-    current: boolean;
-    icon?: React.ElementType;
-  }> =
-    resources?.map((resource) => ({
-      name: resourcesTitles?.[resource] || resource,
-      href: `${basePath}/${resource.toLowerCase()}`,
-      current: resource === currentResource,
-    })) || [];
 
   const customPagesNavigation = customPages?.map((page) => ({
     name: page.title,
@@ -46,6 +37,11 @@ export default function Menu({
      */
     current: pathname.endsWith(`${basePath}${page.path}`),
   }));
+
+  const ungroupedModels = resources?.filter(
+    (resource) =>
+      !configuration?.groups?.some((group) => group.models.includes(resource))
+  );
 
   const renderNavigationItem = (item: {
     name: string;
@@ -76,6 +72,53 @@ export default function Menu({
         )}
         {item.name}
       </a>
+    );
+  };
+
+  const getItemProps = (model: ModelName) => {
+    return {
+      name: resourcesTitles?.[model] || model,
+      href: `${basePath}/${model.toLowerCase()}`,
+      current: model === currentResource,
+    };
+  };
+
+  const renderNavigation = () => {
+    return (
+      <nav className="flex flex-1 flex-col">
+        <ul role="list" className="flex flex-1 flex-col gap-y-4">
+          {configuration?.groups?.map((group) => (
+            <li key={group.title}>
+              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                {group.title}
+              </div>
+              <ul role="list" className="-ml-2 flex flex-col gap-y-1 mt-1">
+                {group.models.map((model) => {
+                  const item = getItemProps(model);
+                  return <li key={model}>{renderNavigationItem(item)}</li>;
+                })}
+              </ul>
+            </li>
+          ))}
+          <li>
+            <ul className="-ml-2 flex flex-col gap-y-1">
+              {ungroupedModels?.map((model) => {
+                const item = getItemProps(model);
+                return <li key={model}>{renderNavigationItem(item)}</li>;
+              })}
+            </ul>
+          </li>
+          {customPagesNavigation?.length && (
+            <li>
+              <ul role="list" className="-ml-2 flex flex-col gap-y-1">
+                {customPagesNavigation?.map((item) => (
+                  <li key={item.name}>{renderNavigationItem(item)}</li>
+                ))}
+              </ul>
+            </li>
+          )}
+        </ul>
+      </nav>
     );
   };
 
@@ -140,24 +183,7 @@ export default function Menu({
                       <HomeIcon className="h-6 w-6 text-nextadmin-primary--500" />
                     </Link>
                   </div>
-                  <nav className="flex flex-1 flex-col">
-                    <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                      <li>
-                        <ul role="list" className="-mx-2 space-y-1">
-                          {navigation.map((item) => (
-                            <li key={item.name}>
-                              {renderNavigationItem(item)}
-                            </li>
-                          ))}
-                          {customPagesNavigation?.map((item) => (
-                            <li key={item.name}>
-                              {renderNavigationItem(item)}
-                            </li>
-                          ))}
-                        </ul>
-                      </li>
-                    </ul>
-                  </nav>
+                  {renderNavigation()}
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -174,20 +200,7 @@ export default function Menu({
               <HomeIcon className="h-6 w-6 text-nextadmin-primary-600" />
             </Link>
           </div>
-          <nav className="flex flex-1 flex-col">
-            <ul role="list" className="flex flex-1 flex-col gap-y-7">
-              <li>
-                <ul role="list" className="-mx-2 space-y-1">
-                  {navigation.map((item) => (
-                    <li key={item.name}>{renderNavigationItem(item)}</li>
-                  ))}
-                  {customPagesNavigation?.map((item) => (
-                    <li key={item.name}>{renderNavigationItem(item)}</li>
-                  ))}
-                </ul>
-              </li>
-            </ul>
-          </nav>
+          {renderNavigation()}
         </div>
       </div>
 
