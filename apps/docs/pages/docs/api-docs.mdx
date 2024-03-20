@@ -302,6 +302,16 @@ The `actions` property is an array of objects that allows you to define a set of
 | `successMessage` | a message that will be displayed when the action is successful                                                                             | undefined     |
 | `errorMessage`   | a message that will be displayed when the action fails                                                                                     | undefined     |
 
+#### `sidebar` property
+
+The `sidebar` property allows you to customise the aspect of the sidebar menu. It is an object that can take the following properties:
+
+| Name              | Description                                                                                         | Default value |
+| ----------------- | --------------------------------------------------------------------------------------------------- | ------------- |
+| `groups`          | an array of objects that creates groups for specific resources. It takes the following properties : |               |
+| `groups[].title`  | the name of the group                                                                               |               |
+| `groups[].models` | the model names to display in the group                                                             |               |
+
 Here is an example of using `NextAdminOptions` for the following schema :
 
 ```prisma

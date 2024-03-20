@@ -33,6 +33,7 @@ export function NextAdmin({
   translations,
   locale,
   title,
+  sidebar,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -112,6 +113,7 @@ export function NextAdmin({
         translations={translations}
         locale={locale}
         title={title}
+        sidebar={sidebar}
       >
         {renderMainComponent()}
       </MainLayout>

@@ -137,4 +137,16 @@ export const options: NextAdminOptions = {
       title: "Custom page",
     },
   },
+  sidebar: {
+    groups: [
+      {
+        title: "Users",
+        models: ["User"],
+      },
+      {
+        title: "Categories",
+        models: ["Category"],
+      },
+    ],
+  },
 };
