@@ -34,6 +34,7 @@ export function NextAdmin({
   locale,
   title,
   sidebar,
+  resourcesIcons,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -48,6 +49,7 @@ export function NextAdmin({
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
   const resourceTitle = resourcesTitles?.[resource!] ?? resource;
+  const resourceIcon = resourcesIcons?.[resource!];
 
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
@@ -62,6 +64,7 @@ export function NextAdmin({
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
           deleteAction={deleteAction}
+          icon={resourceIcon}
         />
       );
     }
@@ -83,6 +86,7 @@ export function NextAdmin({
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}
+          icon={resourceIcon}
         />
       );
     }
@@ -114,6 +118,7 @@ export function NextAdmin({
         locale={locale}
         title={title}
         sidebar={sidebar}
+        resourcesIcons={resourcesIcons}
       >
         {renderMainComponent()}
       </MainLayout>

@@ -6,6 +6,7 @@ import {
   AdminComponentProps,
   EditOptions,
   MainLayoutProps,
+  ModelIcon,
   ModelName,
   NextAdminOptions,
   SubmitFormResult,
@@ -82,6 +83,7 @@ export async function getPropsFromParams({
     message,
     title,
     sidebar,
+    resourcesIcons,
   } = getMainLayoutProps({ options, params, searchParams, isAppDir });
 
   const resourcesIdProperty = resources!.reduce(
@@ -119,6 +121,7 @@ export async function getPropsFromParams({
     options: clientOptions,
     title,
     sidebar,
+    resourcesIcons,
   };
 
   if (!params) return defaultProps;
@@ -241,6 +244,7 @@ export const getMainLayoutProps = ({
   const customPages = Object.keys(options.pages ?? {}).map((path) => ({
     title: options.pages![path as keyof typeof options.pages].title,
     path: path,
+    icon: options.pages![path as keyof typeof options.pages].icon,
   }));
 
   let message = undefined;
@@ -261,6 +265,17 @@ export const getMainLayoutProps = ({
     {} as { [key in Prisma.ModelName]: string }
   );
 
+  const resourcesIcons = resources.reduce(
+    (acc, resource) => {
+      if (!options.model?.[resource as keyof typeof options.model]?.icon)
+        return acc;
+      acc[resource as Prisma.ModelName] =
+        options.model?.[resource as keyof typeof options.model]?.icon!;
+      return acc;
+    },
+    {} as { [key in Prisma.ModelName]: ModelIcon }
+  );
+
   return {
     resources,
     resource,
@@ -272,5 +287,6 @@ export const getMainLayoutProps = ({
     isAppDir,
     title: options.title ?? "Admin",
     sidebar: options.sidebar,
+    resourcesIcons,
   };
 };

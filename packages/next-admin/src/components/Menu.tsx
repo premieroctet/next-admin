@@ -5,9 +5,15 @@ import { clsx } from "clsx";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 
-import { AdminComponentProps, ModelName, SidebarConfiguration } from "../types";
+import {
+  AdminComponentProps,
+  ModelIcon,
+  ModelName,
+  SidebarConfiguration,
+} from "../types";
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
+import ResourceIcon from "./common/ResourceIcon";
 
 export type MenuProps = {
   resource?: ModelName;
@@ -15,6 +21,7 @@ export type MenuProps = {
   resourcesTitles?: Record<ModelName, string | undefined>;
   customPages?: AdminComponentProps["customPages"];
   configuration?: SidebarConfiguration;
+  resourcesIcons: AdminComponentProps["resourcesIcons"];
 };
 
 export default function Menu({
@@ -23,6 +30,7 @@ export default function Menu({
   resourcesTitles,
   customPages,
   configuration,
+  resourcesIcons,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
@@ -36,6 +44,7 @@ export default function Menu({
      * need to check if the pathname just ends with the page path
      */
     current: pathname.endsWith(`${basePath}${page.path}`),
+    icon: page.icon,
   }));
 
   const ungroupedModels = resources?.filter(
@@ -47,7 +56,7 @@ export default function Menu({
     name: string;
     href: string;
     current: boolean;
-    icon?: React.ElementType;
+    icon?: ModelIcon;
   }) => {
     return (
       <a
@@ -59,12 +68,13 @@ export default function Menu({
           "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
         )}
       >
-        {item.icon && (
-          <item.icon
+        {!!item.icon && (
+          <ResourceIcon
+            icon={item.icon}
             className={clsx(
               item.current
                 ? "text-nextadmin-primary-600"
-                : "text-gray-400 group-hover:text-nextadmin-primary-600",
+                : "text-gray-700 group-hover:text-nextadmin-primary-600",
               "h-6 w-6 shrink-0"
             )}
             aria-hidden="true"
@@ -80,6 +90,7 @@ export default function Menu({
       name: resourcesTitles?.[model] || model,
       href: `${basePath}/${model.toLowerCase()}`,
       current: model === currentResource,
+      icon: resourcesIcons?.[model],
     };
   };
 

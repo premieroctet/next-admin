@@ -2,6 +2,7 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ChangeEvent, ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
+import * as OutlineIcons from "@heroicons/react/24/outline";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -155,6 +156,8 @@ export type ModelAction = {
   errorMessage?: string;
 };
 
+export type ModelIcon = keyof typeof OutlineIcons;
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     toString?: (item: Model<P>) => string;
@@ -163,6 +166,7 @@ export type ModelOptions<T extends ModelName> = {
     title?: string;
     aliases?: Partial<Record<Field<P>, string>>;
     actions?: ModelAction[];
+    icon?: ModelIcon;
   };
 };
 
@@ -184,7 +188,7 @@ export type NextAdminOptions = {
    */
   title?: string;
   model?: ModelOptions<ModelName>;
-  pages?: Record<string, { title: string }>;
+  pages?: Record<string, { title: string; icon?: ModelIcon }>;
   sidebar?: SidebarConfiguration;
 };
 
@@ -299,13 +303,14 @@ export type AdminComponentProps = {
    */
   options?: NextAdminOptions;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
+  resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   resourcesIdProperty?: Record<ModelName, string>;
   /**
    * App router only
    */
   pageComponent?: React.ComponentType;
-  customPages?: Array<{ title: string; path: string }>;
+  customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
   translations?: Translations;
@@ -332,6 +337,7 @@ export type MainLayoutProps = Pick<
   | "locale"
   | "title"
   | "sidebar"
+  | "resourcesIcons"
 >;
 
 export type CustomUIProps = {

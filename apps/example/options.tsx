@@ -7,7 +7,8 @@ export const options: NextAdminOptions = {
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
-      title: "👥 Users",
+      title: "Users",
+      icon: "UsersIcon",
       aliases: {
         id: "ID",
       },
@@ -102,7 +103,8 @@ export const options: NextAdminOptions = {
     },
     Post: {
       toString: (post) => `${post.title}`,
-      title: "📝 Posts",
+      title: "Posts",
+      icon: "NewspaperIcon",
       list: {
         display: ["id", "title", "published", "author", "categories", "rate"],
         search: ["title", "content"],
@@ -136,7 +138,8 @@ export const options: NextAdminOptions = {
       },
     },
     Category: {
-      title: "📚 Categories",
+      title: "Categories",
+      icon: "InboxStackIcon",
       toString: (category) => `${category.name}`,
       list: {
         display: ["name", "posts"],
@@ -150,6 +153,7 @@ export const options: NextAdminOptions = {
   pages: {
     "/custom": {
       title: "Custom page",
+      icon: "AdjustmentsHorizontalIcon",
     },
   },
   sidebar: {

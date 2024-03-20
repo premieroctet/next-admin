@@ -20,6 +20,7 @@ import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   Field,
   ModelAction,
+  ModelIcon,
   ModelName,
   NextAdminOptions,
   SubmitFormResult,
@@ -36,6 +37,7 @@ import RichTextField from "./inputs/RichText/RichTextField";
 import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
 import Button from "./radix/Button";
+import ResourceIcon from "./common/ResourceIcon";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -61,6 +63,7 @@ export type FormProps = {
   options?: Required<NextAdminOptions>["model"][ModelName];
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   actions?: ModelAction[];
+  icon?: ModelIcon;
 };
 
 const fields: CustomForm["props"]["fields"] = {
@@ -87,6 +90,7 @@ const Form = ({
   title,
   customInputs,
   actions,
+  icon,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
   const { edit, id, ...schemas } = getSchemas(data, schema, dmmfSchema);
@@ -334,8 +338,8 @@ const Form = ({
   return (
     <div className="relative">
       <div className="sm:flex sm:items-center justify-between">
-        <h1 className="text-base font-semibold leading-6 text-gray-900">
-          {title}
+        <h1 className="text-base font-semibold leading-6 text-gray-900 flex items-center gap-2">
+          {!!icon && <ResourceIcon icon={icon} className="h-5 w-5" />} {title}
         </h1>
         {!!actions && actions.length > 0 && !!id && (
           <ActionsDropdown
