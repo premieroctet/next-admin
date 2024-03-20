@@ -99,7 +99,15 @@ export const orderSchema =
       const properties = schema.definitions[modelName].properties;
       const propertiesOrdered = {} as Record<string, any>;
       display.forEach((property) => {
-        propertiesOrdered[property] = properties[property];
+        if (typeof property === "string") {
+          propertiesOrdered[property] = properties[property];
+        } else {
+          propertiesOrdered[property.id] = {
+            type: "null",
+            title: property.title,
+            description: property.description,
+          };
+        }
       });
       schema.definitions[modelName].properties = propertiesOrdered;
     }
@@ -680,8 +688,32 @@ export const transformSchema = <M extends ModelName>(
     removeHiddenProperties(resource, edit),
     changeFormatInSchema(resource, edit),
     fillRelationInSchema(prisma, resource, searchParams, options),
+    fillDescriptionInSchema(resource, edit),
     orderSchema(resource, options)
   );
+
+export const fillDescriptionInSchema = <M extends ModelName>(
+  resource: M,
+  editOptions: EditOptions<M>
+) => {
+  return (schema: Schema) => {
+    const modelName = resource;
+    const model = models.find((model) => model.name === modelName);
+    if (!model) return schema;
+    model.fields.forEach((dmmfProperty) => {
+      const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
+      const fieldValue =
+        schema.definitions[modelName].properties[
+          dmmfPropertyName as Field<typeof modelName>
+        ];
+      if (fieldValue && editOptions?.fields?.[dmmfPropertyName]?.helperText) {
+        fieldValue.description =
+          editOptions?.fields?.[dmmfPropertyName]?.helperText;
+      }
+    });
+    return schema;
+  };
+};
 
 export const changeFormatInSchema =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>

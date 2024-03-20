@@ -11,6 +11,7 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
+import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import React, { ChangeEvent, cloneElement, useMemo, useState } from "react";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
@@ -28,6 +29,7 @@ import {
 import { getSchemas } from "../utils/jsonSchema";
 import ActionsDropdown from "./ActionsDropdown";
 import ArrayField from "./inputs/ArrayField";
+import NullField from "./inputs/NullField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
@@ -38,6 +40,13 @@ import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
 import Button from "./radix/Button";
 import ResourceIcon from "./common/ResourceIcon";
+import {
+  TooltipContent,
+  TooltipPortal,
+  TooltipProvider,
+  TooltipRoot,
+  TooltipTrigger,
+} from "./radix/Tooltip";
 
 // Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
@@ -68,6 +77,7 @@ export type FormProps = {
 
 const fields: CustomForm["props"]["fields"] = {
   ArrayField,
+  NullField,
 };
 
 const widgets: CustomForm["props"]["widgets"] = {
@@ -215,27 +225,51 @@ const Form = ({
           description,
           errors,
           children,
+          schema,
         } = props;
         const labelAlias =
           options?.aliases?.[id as Field<typeof resource>] || label;
         let styleField = options?.edit?.styles?.[id as Field<typeof resource>];
+
+        const tooltip =
+          options?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
         const sanitizedClassNames = classNames
           ?.split(",")
           .filter((className) => className !== "null")
           .join(" ");
         return (
           <div style={style} className={clsx(sanitizedClassNames, styleField)}>
-            <label
-              className={clsx(
-                "block text-sm font-medium leading-6 text-gray-900 capitalize"
-              )}
-              htmlFor={id}
-            >
-              {labelAlias}
-              {required ? "*" : null}
-            </label>
-            {description}
+            {schema.type !== "null" && (
+              <label
+                className={clsx(
+                  "flex items-center text-sm font-medium leading-6 text-gray-900 capitalize gap-2"
+                )}
+                htmlFor={id}
+              >
+                {labelAlias}
+                {required ? "*" : null}
+                {!!tooltip && (
+                  <TooltipProvider>
+                    <TooltipRoot>
+                      <TooltipTrigger asChild>
+                        <InformationCircleIcon className="w-4 h-4 text-gray-500" />
+                      </TooltipTrigger>
+                      <TooltipPortal>
+                        <TooltipContent
+                          side="right"
+                          className="px-2 py-1"
+                          sideOffset={4}
+                        >
+                          {tooltip}
+                        </TooltipContent>
+                      </TooltipPortal>
+                    </TooltipRoot>
+                  </TooltipProvider>
+                )}
+              </label>
+            )}
             {children}
+            {description}
             {errors}
             {help}
           </div>
@@ -329,6 +363,11 @@ const Form = ({
               return <React.Fragment key={idx}>{error}</React.Fragment>;
             })}
           </div>
+        ) : null;
+      },
+      DescriptionFieldTemplate: ({ description, schema }) => {
+        return description && schema.type !== "null" ? (
+          <span className="text-sm text-gray-500">{description}</span>
         ) : null;
       },
     }),

@@ -234,12 +234,12 @@ This property determines how your data is displayed in the [List View](/docs/glo
 
 This property determines how your data is displayed in the [edit view](/docs/glossary#edit-view)
 
-| Name                     | Description                                                                                                                | Default value                   |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `display`                | an array of fields that are displayed in the form                                                                          | all scalar fields are displayed |
-| `styles`                 | an object containing the styles of the form                                                                                | undefined                       |
-| `fields`                 | an object containing the model fields as keys, and customization values                                                    | undefined                       |
-| `submissionErrorMessage` | a message displayed if an error occurs during the form submission, after the form validation and before any call to prisma | Submission error                |
+| Name                     | Description                                                                                                                                       | Default value                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `display`                | an array of fields that are displayed in the form. It can also be an object that will be displayed in the form of a notice. See [notice](#notice) | all scalar fields are displayed |
+| `styles`                 | an object containing the styles of the form                                                                                                       | undefined                       |
+| `fields`                 | an object containing the model fields as keys, and customization values                                                                           | undefined                       |
+| `submissionErrorMessage` | a message displayed if an error occurs during the form submission, after the form validation and before any call to prisma                        | Submission error                |
 
 ##### `styles` property
 
@@ -283,6 +283,8 @@ For the `edit` property, it can take the following:
 | `handler.upload`             | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
 | `handler.uploadErrorMessage` | an optional string displayed in the input field as an error message in case of a failure during the upload handler                                                           |
 | `optionFormatter`            | only for realtion fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                          |
+| `tooltip`                    | a tooltip content to show for the field                                                                                                                                      |
+| `helperText`                 | a helper text that is displayed underneath the input                                                                                                                         |
 
 ### `pages`
 
@@ -405,3 +407,13 @@ This is the type of the props that are passed to the custom input component:
 The `NextAdmin` context is an object containing the following properties:
 
 - `locale`: the locale used by the calling page. (refers to the `accept-language` header).
+
+## Notice
+
+The edit page's form can display notice alerts. To do so, you can pass objects in the `display` array of the `edit` property of a model. This object takes the following properties :
+
+| Name        | Description                                                                                                   |
+| ----------- | ------------------------------------------------------------------------------------------------------------- |
+| title       | The title of the notice. This is mandatory                                                                    |
+| id          | A unique identifier for the notice that can be used to style it with the `styles` property. This is mandatory |
+| description | The description of the notice. This is optional                                                               |
