@@ -80,6 +80,7 @@ export async function getPropsFromParams({
     customPages,
     error,
     message,
+    title,
   } = getMainLayoutProps({ options, params, searchParams, isAppDir });
 
   const resourcesIdProperty = resources!.reduce(
@@ -115,6 +116,7 @@ export async function getPropsFromParams({
     resourcesIdProperty,
     deleteAction,
     options: clientOptions,
+    title,
   };
 
   if (!params) return defaultProps;
@@ -266,5 +268,6 @@ export const getMainLayoutProps = ({
     message,
     resourcesTitles,
     isAppDir,
+    title: options.title ?? "Admin",
   };
 };

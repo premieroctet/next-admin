@@ -32,6 +32,7 @@ export function NextAdmin({
   deleteAction,
   translations,
   locale,
+  title,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -95,7 +96,7 @@ export function NextAdmin({
     <>
       <NextNProgress color="#6366f1" showSpinner={false} />
       <Head>
-        <title>Admin</title>
+        <title>{title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -110,6 +111,7 @@ export function NextAdmin({
         isAppDir={isAppDir}
         translations={translations}
         locale={locale}
+        title={title}
       >
         {renderMainComponent()}
       </MainLayout>
