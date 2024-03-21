@@ -194,6 +194,7 @@ export default function Menu({
           href={link.url}
           className="flex flex-row items-center justify-between gap-2 text-sm text-gray-700 hover:text-nextadmin-primary-600 hover:bg-gray-50 p-4 font-medium"
           target="_blank"
+          rel="noopener"
         >
           {link.label}
           <ArrowTopRightOnSquareIcon className="w-5 h-5" />
