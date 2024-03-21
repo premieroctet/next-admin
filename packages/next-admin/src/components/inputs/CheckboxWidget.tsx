@@ -1,4 +1,5 @@
 import { WidgetProps } from "@rjsf/utils";
+import { SwitchRoot, SwitchThumb } from "../radix/Switch";
 
 const CheckboxWidget = ({
   options,
@@ -15,13 +16,9 @@ const CheckboxWidget = ({
           name={props.name}
           className="absolute -z-10 inset-0 w-full h-full opacity-0"
         />
-        <input
-          id={props.id}
-          checked={value}
-          onChange={(event) => onChange(event.target.checked)}
-          type="checkbox"
-          className="focus:ring-nextadmin-primary-500 h-4 w-4 text-nextadmin-primary-600 border-gray-300 rounded"
-        />
+        <SwitchRoot checked={value} onCheckedChange={onChange}>
+          <SwitchThumb />
+        </SwitchRoot>
       </div>
     </div>
   );
