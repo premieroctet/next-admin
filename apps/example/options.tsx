@@ -176,4 +176,10 @@ export const options: NextAdminOptions = {
       },
     ],
   },
+  externalLinks: [
+    {
+      label: "Documentation",
+      url: "https://next-admin.js.org",
+    },
+  ],
 };
