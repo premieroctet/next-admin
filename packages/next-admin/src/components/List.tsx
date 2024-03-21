@@ -24,7 +24,6 @@ import MainHeader from "./MainHeader";
 import { Pagination } from "./Pagination";
 import TableHead from "./TableHead";
 import TableRowsIndicator from "./TableRowsIndicator";
-import ResourceIcon from "./common/ResourceIcon";
 import {
   Select,
   SelectContent,
@@ -162,11 +161,11 @@ function List({
           { label: title, href: location.pathname, current: true },
         ]}
       />
-      {!!icon && <ResourceIcon icon={icon} className="h-8 w-8" />} {title}
       <Divider />
       <div className="mt-4 flow-root px-4">
         <ListHeader
           title={title}
+          icon={icon}
           resource={resource}
           search={(query.search as string) || ""}
           onSearchChange={onSearchChange}
@@ -186,6 +185,7 @@ function List({
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
             onDelete={async (id) => deleteItems([id] as string[] | number[])}
+            icon={icon}
           />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">

@@ -10,7 +10,7 @@ import {
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import { Field, ListData, ListDataItem, ModelName } from "../types";
+import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
 import EmptyState from "./EmptyState";
 import { Checkbox } from "./common/Checkbox";
 import Button from "./radix/Button";
@@ -31,6 +31,7 @@ interface DataTableProps {
   rowSelection: RowSelectionState;
   setRowSelection: OnChangeFn<RowSelectionState>;
   onDelete?: (id: string | number) => void;
+  icon?: ModelIcon;
 }
 
 export function DataTable({
@@ -41,6 +42,7 @@ export function DataTable({
   rowSelection,
   setRowSelection,
   onDelete,
+  icon,
 }: DataTableProps) {
   const { router } = useRouterInternal();
   const { basePath } = useConfig();
@@ -180,7 +182,7 @@ export function DataTable({
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                <EmptyState resource={resource} />
+                <EmptyState resource={resource} icon={icon} />
               </TableCell>
             </TableRow>
           )}

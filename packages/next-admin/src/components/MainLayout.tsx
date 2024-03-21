@@ -21,9 +21,9 @@ export const MainLayout = ({
   isAppDir,
   locale,
   translations,
-  title = "Admin",
   sidebar,
   resourcesIcons,
+  title,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
@@ -33,6 +33,7 @@ export const MainLayout = ({
       <I18nProvider translations={mergedTranslations}>
         <div className="w-full">
           <Menu
+            title={title}
             resources={resources}
             resource={resource}
             resourcesTitles={resourcesTitles}

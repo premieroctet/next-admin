@@ -5,7 +5,11 @@ import { useConfig } from "../context/ConfigContext";
 export default function MainHeader({
   breadcrumbItems,
 }: {
-  breadcrumbItems: { href: string; label: string; current?: boolean }[];
+  breadcrumbItems: {
+    href: string;
+    label: string;
+    current?: boolean;
+  }[];
 }) {
   const { basePath } = useConfig();
 
