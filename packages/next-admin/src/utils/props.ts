@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { cloneDeep } from "lodash";
 import qs from "querystring";
+import "../styles.css";
 import {
   ActionParams,
   AdminComponentProps,
@@ -87,10 +88,13 @@ export async function getPropsFromParams({
     externalLinks,
   } = getMainLayoutProps({ options, params, searchParams, isAppDir });
 
-  const resourcesIdProperty = resources!.reduce((acc, resource) => {
-    acc[resource] = getModelIdProperty(resource);
-    return acc;
-  }, {} as Record<ModelName, string>);
+  const resourcesIdProperty = resources!.reduce(
+    (acc, resource) => {
+      acc[resource] = getModelIdProperty(resource);
+      return acc;
+    },
+    {} as Record<ModelName, string>
+  );
 
   if (isAppDir && !action) {
     throw new Error("action is required when using App router");
@@ -254,20 +258,26 @@ export const getMainLayoutProps = ({
       : null;
   } catch {}
 
-  const resourcesTitles = resources.reduce((acc, resource) => {
-    acc[resource as Prisma.ModelName] =
-      options.model?.[resource as keyof typeof options.model]?.title ??
-      resource;
-    return acc;
-  }, {} as { [key in Prisma.ModelName]: string });
-
-  const resourcesIcons = resources.reduce((acc, resource) => {
-    if (!options.model?.[resource as keyof typeof options.model]?.icon)
+  const resourcesTitles = resources.reduce(
+    (acc, resource) => {
+      acc[resource as Prisma.ModelName] =
+        options.model?.[resource as keyof typeof options.model]?.title ??
+        resource;
       return acc;
-    acc[resource as Prisma.ModelName] =
-      options.model?.[resource as keyof typeof options.model]?.icon!;
-    return acc;
-  }, {} as { [key in Prisma.ModelName]: ModelIcon });
+    },
+    {} as { [key in Prisma.ModelName]: string }
+  );
+
+  const resourcesIcons = resources.reduce(
+    (acc, resource) => {
+      if (!options.model?.[resource as keyof typeof options.model]?.icon)
+        return acc;
+      acc[resource as Prisma.ModelName] =
+        options.model?.[resource as keyof typeof options.model]?.icon!;
+      return acc;
+    },
+    {} as { [key in Prisma.ModelName]: ModelIcon }
+  );
 
   return {
     resources,

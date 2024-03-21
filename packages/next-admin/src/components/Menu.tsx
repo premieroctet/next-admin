@@ -3,7 +3,6 @@ import { Dialog, Transition } from "@headlessui/react";
 import {
   ArrowTopRightOnSquareIcon,
   Bars3Icon,
-  HomeIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
@@ -19,6 +18,7 @@ import {
   ModelName,
   SidebarConfiguration,
 } from "../types";
+import Divider from "./Divider";
 import ResourceIcon from "./common/ResourceIcon";
 import Button from "./radix/Button";
 import {
@@ -40,13 +40,7 @@ export type MenuProps = {
   resourcesIcons: AdminComponentProps["resourcesIcons"];
   user?: AdminComponentProps["user"];
   externalLinks?: AdminComponentProps["externalLinks"];
-};
-
-type NavigationElement = {
-  name: string;
-  href: string;
-  current: boolean;
-  icon?: React.ElementType;
+  title?: string;
 };
 
 export default function Menu({
@@ -58,6 +52,7 @@ export default function Menu({
   resourcesIcons,
   user,
   externalLinks,
+  title,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
@@ -90,9 +85,9 @@ export default function Menu({
         href={item.href}
         className={clsx(
           item.current
-            ? "bg-gray-50 text-nextadmin-primary-600"
-            : "text-gray-700 hover:text-nextadmin-primary-600 hover:bg-gray-50",
-          "group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold"
+            ? "bg-nextadmin-primary-50 text-nextadmin-primary-700"
+            : "text-slate-500 hover:bg-slate-100",
+          "group flex gap-x-2 rounded-lg py-2 px-3 text-sm leading-6 transition-colors items-center"
         )}
       >
         {!!item.icon && (
@@ -101,8 +96,8 @@ export default function Menu({
             className={clsx(
               item.current
                 ? "text-nextadmin-primary-600"
-                : "text-gray-700 group-hover:text-nextadmin-primary-600",
-              "h-6 w-6 shrink-0"
+                : "text-slate-500 group-hover:text-nextadmin-primary-600",
+              "h-5 w-5 shrink-0"
             )}
             aria-hidden="true"
           />
@@ -141,7 +136,7 @@ export default function Menu({
     }
 
     return (
-      <div className="flex px-2 py-3 leading-6 text-sm font-semibold text-gray-700 items-center justify-between">
+      <div className="flex px-2 py-3 leading-6 text-sm font-semibold text-slate-500 items-center justify-between">
         <div className="flex gap-3 items-center">
           {user.data.picture ? (
             <img
@@ -150,7 +145,7 @@ export default function Menu({
               alt="User picture"
             />
           ) : (
-            <div className="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 uppercase">
+            <div className="h-8 w-8 flex items-center justify-center rounded-full bg-nextadmin-primary-100 text-nextadmin-primary-600 uppercase">
               {getInitials()}
             </div>
           )}
@@ -160,7 +155,7 @@ export default function Menu({
         <Dropdown>
           <DropdownTrigger asChild>
             <Button variant="ghost" size="sm" className="!px-2 py-2">
-              <Cog6ToothIcon className="w-6 h-6 text-gray-700" />
+              <Cog6ToothIcon className="w-6 h-6 text-slate-500" />
             </Button>
           </DropdownTrigger>
           <DropdownBody>
@@ -194,58 +189,79 @@ export default function Menu({
       return null;
     }
 
-    return externalLinks.map((link) => {
-      return (
-        <Link
-          key={link.url}
-          href={link.url}
-          className="flex flex-row items-center justify-between gap-2 text-sm text-gray-700 hover:text-nextadmin-primary-600 hover:bg-gray-50 p-4 font-medium"
-          target="_blank"
-          rel="noopener"
-        >
-          {link.label}
-          <ArrowTopRightOnSquareIcon className="w-5 h-5" />
-        </Link>
-      );
-    });
+    return externalLinks.map((link) => (
+      <Link
+        key={link.url}
+        href={link.url}
+        className="flex flex-row items-center justify-between gap-2 text-sm text-slate-500 hover:text-nextadmin-primary-600 hover:bg-slate-100 p-3 font-medium rounded-lg"
+        target="_blank"
+        rel="noopener"
+      >
+        {link.label}
+        <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+      </Link>
+    ));
   };
 
   const renderNavigation = () => {
     return (
-      <nav className="flex flex-1 flex-col">
-        <ul role="list" className="flex flex-1 flex-col gap-y-4">
-          {configuration?.groups?.map((group) => (
-            <li key={group.title}>
-              <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                {group.title}
+      <>
+        <div className="flex grow flex-col overflow-y-auto bg-slate-50 pb-2 border-r border-r-slate-200">
+          <div className="flex h-16 items-center px-2">
+            <Link
+              href={basePath}
+              className="flex gap-2 items-center overflow-hidden"
+            >
+              <div className="text-md whitespace-nowrap text-ellipsis overflow-hidden font-semibold">
+                {title}
               </div>
-              <ul role="list" className="-ml-2 flex flex-col gap-y-1 mt-1">
-                {group.models.map((model) => {
-                  const item = getItemProps(model);
-                  return <li key={model}>{renderNavigationItem(item)}</li>;
-                })}
-              </ul>
-            </li>
-          ))}
-          <li>
-            <ul className="-ml-2 flex flex-col gap-y-1">
-              {ungroupedModels?.map((model) => {
-                const item = getItemProps(model);
-                return <li key={model}>{renderNavigationItem(item)}</li>;
-              })}
+            </Link>
+          </div>
+          <Divider />
+          <nav className="flex flex-1 flex-col mt-4 gap-y-6 px-4">
+            <ul role="list" className="flex flex-1 flex-col gap-y-4">
+              {configuration?.groups?.map((group) => (
+                <li key={group.title}>
+                  <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">
+                    {group.title}
+                  </div>
+                  <ul role="list" className="-ml-2 flex flex-col gap-y-1 mt-1">
+                    {group.models.map((model) => {
+                      const item = getItemProps(model);
+                      return <li key={model}>{renderNavigationItem(item)}</li>;
+                    })}
+                  </ul>
+                </li>
+              ))}
+              <Divider />
+              <li>
+                <ul className="-ml-2 flex flex-col gap-y-1">
+                  {ungroupedModels?.map((model) => {
+                    const item = getItemProps(model);
+                    return <li key={model}>{renderNavigationItem(item)}</li>;
+                  })}
+                </ul>
+              </li>
+              {customPagesNavigation?.length && (
+                <>
+                  <Divider />
+                  <li>
+                    <ul role="list" className="-ml-2 flex flex-col gap-y-1">
+                      {customPagesNavigation?.map((item) => (
+                        <li key={item.name}>{renderNavigationItem(item)}</li>
+                      ))}
+                    </ul>
+                  </li>
+                </>
+              )}
             </ul>
-          </li>
-          {customPagesNavigation?.length && (
-            <li>
-              <ul role="list" className="-ml-2 flex flex-col gap-y-1">
-                {customPagesNavigation?.map((item) => (
-                  <li key={item.name}>{renderNavigationItem(item)}</li>
-                ))}
-              </ul>
-            </li>
-          )}
-        </ul>
-      </nav>
+            <div className="flex flex-col">
+              {renderExternalLinks()}
+              {renderUser()}
+            </div>
+          </nav>
+        </div>
+      </>
     );
   };
 
@@ -304,19 +320,8 @@ export default function Menu({
                   </div>
                 </Transition.Child>
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col justify-between bg-white">
-                  <div className="flex flex-col gap-y-5 overflow-y-auto px-6 pb-2">
-                    <div className="flex h-16 shrink-0 items-center">
-                      <Link href={basePath}>
-                        <HomeIcon className="h-6 w-6 text-nextadmin-primary--500" />
-                      </Link>
-                    </div>
-                    {renderNavigation()}
-                  </div>
-                  <div className="flex flex-col">
-                    {renderExternalLinks()}
-                    {renderUser()}
-                  </div>
+                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white">
+                  {renderNavigation()}
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -327,19 +332,8 @@ export default function Menu({
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col justify-between border-r border-gray-200 bg-white">
-          <div className="flex flex-col gap-y-5 overflow-y-auto px-6">
-            <div className="flex h-16 shrink-0 items-center">
-              <Link href={basePath}>
-                <HomeIcon className="h-6 w-6 text-nextadmin-primary-600" />
-              </Link>
-            </div>
-            {renderNavigation()}
-          </div>
-          <div className="flex flex-col">
-            {renderExternalLinks()}
-            {renderUser()}
-          </div>
+        <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
+          {renderNavigation()}
         </div>
       </div>
 
@@ -353,7 +347,7 @@ export default function Menu({
           <Bars3Icon className="h-6 w-6" aria-hidden="true" />
         </button>
         <div className="flex-1 text-sm font-semibold leading-6 text-slate-900">
-          Dashboard
+          {title}
         </div>
       </div>
     </>

@@ -1,5 +1,8 @@
 import { Transition } from "@headlessui/react";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import {
+  ChevronDownIcon,
+  EllipsisVerticalIcon,
+} from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import { Fragment, useState } from "react";
 import { useI18n } from "../context/I18nContext";
@@ -42,9 +45,20 @@ const ActionsDropdown = ({
         data-testid="actions-dropdown"
       >
         <button type="button">
-          {t("actions.label")}{" "}
-          {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
-          <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+          <div className="flex gap-1">
+            <span className="hidden md:block">
+              {t("actions.label")}{" "}
+              {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
+            </span>
+            <ChevronDownIcon
+              className="h-5 w-5 hidden md:block"
+              aria-hidden="true"
+            />
+            <EllipsisVerticalIcon
+              className="h-5 w-5 md:hidden block"
+              aria-hidden="true"
+            />
+          </div>
         </button>
       </DropdownTrigger>
       <DropdownBody forceMount>

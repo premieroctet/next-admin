@@ -18,13 +18,10 @@ import {
 } from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
-import Divider from "./Divider";
 import ListHeader from "./ListHeader";
-import MainHeader from "./MainHeader";
 import { Pagination } from "./Pagination";
 import TableHead from "./TableHead";
 import TableRowsIndicator from "./TableRowsIndicator";
-import ResourceIcon from "./common/ResourceIcon";
 import {
   Select,
   SelectContent,
@@ -67,6 +64,7 @@ function List({
   const { deleteItems } = useDeleteAction(resource, deleteAction);
 
   let onSearchChange;
+
   if (!(options?.list?.search && options?.list?.search?.length === 0)) {
     onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
       startTransition(() => {
@@ -157,16 +155,10 @@ function List({
 
   return (
     <>
-      <MainHeader
-        breadcrumbItems={[
-          { label: title, href: location.pathname, current: true },
-        ]}
-      />
-      {!!icon && <ResourceIcon icon={icon} className="h-8 w-8" />} {title}
-      <Divider />
-      <div className="mt-4 flow-root px-4">
+      <div className="flow-root">
         <ListHeader
           title={title}
+          icon={icon}
           resource={resource}
           search={(query.search as string) || ""}
           onSearchChange={onSearchChange}
@@ -175,9 +167,9 @@ function List({
           actions={actions}
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
+          totalCount={total}
         />
-        <Divider />
-        <div className="max-w-full align-middle">
+        <div className="max-w-full align-middle p-4 sm:p-8">
           <DataTable
             resource={resource}
             data={data}
@@ -186,6 +178,7 @@ function List({
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
             onDelete={async (id) => deleteItems([id] as string[] | number[])}
+            icon={icon}
           />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">
@@ -211,7 +204,7 @@ function List({
                     });
                   }}
                 >
-                  <SelectTrigger className="max-w-[100px]">
+                  <SelectTrigger className="max-w-[100px] bg-white">
                     <SelectValue placeholder={pageSize} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">

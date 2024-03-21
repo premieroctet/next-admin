@@ -33,7 +33,6 @@ export default async function AdminPage({
     <NextAdmin
       {...props}
       locale={params.locale as string}
-      dashboard={Dashboard}
       user={{
         data: {
           name: "Example User",

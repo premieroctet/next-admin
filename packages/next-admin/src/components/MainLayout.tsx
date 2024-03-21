@@ -21,11 +21,11 @@ export const MainLayout = ({
   isAppDir,
   locale,
   translations,
-  title = "Admin",
   sidebar,
   resourcesIcons,
   user,
   externalLinks,
+  title,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
@@ -33,8 +33,9 @@ export const MainLayout = ({
   return (
     <ConfigProvider basePath={`${localePath}${basePath}`} isAppDir={isAppDir}>
       <I18nProvider translations={mergedTranslations}>
-        <div className="w-full">
+        <div>
           <Menu
+            title={title}
             resources={resources}
             resource={resource}
             resourcesTitles={resourcesTitles}
@@ -45,13 +46,11 @@ export const MainLayout = ({
             externalLinks={externalLinks}
           />
           <main className="lg:pl-72">
-            <div>
-              {message && (
-                <Message message={message.content} type={message.type} />
-              )}
-              {error && <Message message={error} type="error" />}
-              {children}
-            </div>
+            {message && (
+              <Message message={message.content} type={message.type} />
+            )}
+            {error && <Message message={error} type="error" />}
+            {children}
           </main>
         </div>
       </I18nProvider>
