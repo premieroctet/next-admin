@@ -1,6 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import React, { ComponentProps, ElementRef, forwardRef } from "react";
 import clsx from "clsx";
+import { ComponentProps, ElementRef, forwardRef } from "react";
 
 export const Dropdown = DropdownMenu.Root;
 
@@ -39,7 +39,7 @@ export const DropdownContent = forwardRef<
   return (
     <DropdownMenu.Content
       className={clsx(
-        "bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none",
+        "bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none z-50",
         className
       )}
       ref={ref}

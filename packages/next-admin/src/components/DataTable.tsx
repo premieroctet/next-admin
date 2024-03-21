@@ -7,13 +7,21 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import { Field, ListData, ListDataItem, ModelName } from "../types";
+import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
 import EmptyState from "./EmptyState";
 import { Checkbox } from "./common/Checkbox";
 import Button from "./radix/Button";
+import {
+  Dropdown,
+  DropdownBody,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+} from "./radix/Dropdown";
 import {
   Table,
   TableBody,
@@ -31,6 +39,7 @@ interface DataTableProps {
   rowSelection: RowSelectionState;
   setRowSelection: OnChangeFn<RowSelectionState>;
   onDelete?: (id: string | number) => void;
+  icon?: ModelIcon;
 }
 
 export function DataTable({
@@ -41,6 +50,7 @@ export function DataTable({
   rowSelection,
   setRowSelection,
   onDelete,
+  icon,
 }: DataTableProps) {
   const { router } = useRouterInternal();
   const { basePath } = useConfig();
@@ -102,16 +112,35 @@ export function DataTable({
       const idProperty = resourcesIdProperty[resource];
 
       return (
-        <Button
-          size="sm"
-          variant="destructiveOutline"
-          onClick={(evt) => {
-            evt.stopPropagation();
-            onDelete?.(row.original[idProperty].value as string | number);
-          }}
-        >
-          {t("list.row.actions.delete.label")}
-        </Button>
+        <Dropdown>
+          <DropdownTrigger asChild>
+            <Button variant="ghost" size="sm" className="!px-2 py-2">
+              <EllipsisVerticalIcon className="w-6 h-6 text-gray-700" />
+            </Button>
+          </DropdownTrigger>
+          <DropdownBody>
+            <DropdownContent
+              side="left"
+              sideOffset={5}
+              className="z-50 px-1 py-2"
+            >
+              <DropdownItem asChild>
+                <Button
+                  variant="destructiveOutline"
+                  className="h-6 px-1"
+                  onClick={(evt) => {
+                    evt.stopPropagation();
+                    onDelete?.(
+                      row.original[idProperty].value as string | number
+                    );
+                  }}
+                >
+                  {t("list.row.actions.delete.label")}
+                </Button>
+              </DropdownItem>
+            </DropdownContent>
+          </DropdownBody>
+        </Dropdown>
       );
     },
   };
@@ -132,7 +161,7 @@ export function DataTable({
   });
 
   return (
-    <div className="overflow-hidden">
+    <div className="overflow-hidden bg-white rounded-lg border">
       <Table>
         {table.getRowModel().rows?.length > 0 && (
           <TableHeader>
@@ -160,7 +189,9 @@ export function DataTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="cursor-pointer hover:bg-nextadmin-primary-50/30 border-b border-dashed border-b-slate-300 even:bg-slate-50/50"
+                className={`cursor-pointer hover:bg-nextadmin-primary-50/40 border-b border-dashed border-b-slate-300 ${
+                  row.getIsSelected() && "bg-nextadmin-primary-50/40"
+                }`}
                 onClick={() => {
                   window.location.href = `${basePath}/${resource.toLowerCase()}/${
                     row.original[modelIdProperty].value
@@ -168,7 +199,12 @@ export function DataTable({
                 }}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell className="group py-3" key={cell.id}>
+                  <TableCell
+                    className={`group py-3 ${
+                      cell.column.id === "__nextadmin-actions" && "text-right"
+                    }`}
+                    key={cell.id}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -180,7 +216,7 @@ export function DataTable({
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                <EmptyState resource={resource} />
+                <EmptyState resource={resource} icon={icon} />
               </TableCell>
             </TableRow>
           )}

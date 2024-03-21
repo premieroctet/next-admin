@@ -106,6 +106,11 @@ export function NextAdmin({
         <title>{title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
+        <style jsx global>{`
+          body {
+            background: #000;
+          }
+        `}</style>
       </Head>
       <MainLayout
         resource={resource}

@@ -8,8 +8,9 @@ import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { ModelAction, ModelName } from "../types";
+import { ModelAction, ModelIcon, ModelName } from "../types";
 import ActionsDropdown from "./ActionsDropdown";
+import Breadcrumb from "./Breadcrumb";
 import { buttonVariants } from "./radix/Button";
 
 type Props = {
@@ -22,6 +23,8 @@ type Props = {
   getSelectedRowsIds: () => string[] | number[];
   onDelete: () => Promise<void>;
   title: string;
+  icon?: ModelIcon;
+  totalCount?: number;
 };
 
 export default function ListHeader({
@@ -34,6 +37,8 @@ export default function ListHeader({
   getSelectedRowsIds,
   onDelete,
   title,
+  icon,
+  totalCount,
 }: Props) {
   const { basePath } = useConfig();
   const { t } = useI18n();
@@ -56,23 +61,24 @@ export default function ListHeader({
 
   return (
     <>
-      <div className="flex justify-between sm:items-center mb-6 flex-col sm:flex-row items-start gap-4">
-        <h1 className="font-semibold leading-7 text-slate-800 sm:truncate text-3xl sm:tracking-tight py-3">
-          {title}
-        </h1>
+      <div className="h-auto md:h-16 py-4 md:py-0 flex justify-between sm:items-center flex-col sm:flex-row items-start gap-3 px-4 sticky top-0 z-10 bg-white border-b border-b-slate-200 shadow-sm">
+        <Breadcrumb
+          breadcrumbItems={[
+            { label: title, href: location.pathname, current: true, icon },
+          ]}
+        />
         <div className="flex items-center justify-between gap-x-4 w-full sm:w-auto">
+          {(totalCount || 0 > 1 || (search && totalCount) || 0 > 1) && (
+            <span className="text-gray-400 text-sm">
+              {search
+                ? t("list.header.search.result_filtered", { count: totalCount })
+                : t("list.header.search.result", {
+                    count: totalCount,
+                  })}
+            </span>
+          )}
           {onSearchChange && (
-            <div className="flex justify-end items-center gap-2 bg-slate-100 border-gray-300 px-3 py-1 rounded-xl">
-              <label htmlFor="search">
-                {isPending ? (
-                  <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
-                ) : (
-                  <MagnifyingGlassIcon
-                    className="h-6 w-6 text-gray-400"
-                    aria-hidden="true"
-                  />
-                )}
-              </label>
+            <div className="flex justify-end items-center gap-2 bg-slate-100 border-gray-300 px-3 py-1 rounded-md">
               <input
                 id="search"
                 name="search"
@@ -84,6 +90,16 @@ export default function ListHeader({
                   "list.header.search.placeholder"
                 )} ${title?.toLowerCase()}`}
               />
+              <label htmlFor="search">
+                {isPending ? (
+                  <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
+                ) : (
+                  <MagnifyingGlassIcon
+                    className="h-6 w-6 text-gray-400"
+                    aria-hidden="true"
+                  />
+                )}
+              </label>
             </div>
           )}
           {Boolean(selectedRowsCount) && (

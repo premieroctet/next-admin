@@ -73,7 +73,7 @@ export function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-end space-x-2">
+    <div className="flex items-center justify-end space-x-2 bg-white">
       <nav
         className="isolate inline-flex -space-x-px rounded-md shadow-sm"
         aria-label="Pagination"
