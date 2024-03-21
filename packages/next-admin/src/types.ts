@@ -191,6 +191,11 @@ export type SidebarConfiguration = {
   groups: SidebarGroup[];
 };
 
+export type ExternalLink = {
+  label: string;
+  url: string;
+};
+
 export type NextAdminOptions = {
   basePath: string;
   /**
@@ -202,6 +207,7 @@ export type NextAdminOptions = {
   model?: ModelOptions<ModelName>;
   pages?: Record<string, { title: string; icon?: ModelIcon }>;
   sidebar?: SidebarConfiguration;
+  externalLinks?: ExternalLink[];
 };
 
 /** Type for Schema */
@@ -344,6 +350,7 @@ export type AdminComponentProps = {
   title?: string;
   sidebar?: SidebarConfiguration;
   user?: AdminUser;
+  externalLinks?: ExternalLink[];
 };
 
 export type MainLayoutProps = Pick<
@@ -362,6 +369,7 @@ export type MainLayoutProps = Pick<
   | "sidebar"
   | "resourcesIcons"
   | "user"
+  | "externalLinks"
 >;
 
 export type CustomUIProps = {

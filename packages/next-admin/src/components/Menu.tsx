@@ -1,6 +1,11 @@
 "use client";
 import { Dialog, Transition } from "@headlessui/react";
-import { Bars3Icon, HomeIcon, XMarkIcon } from "@heroicons/react/24/outline";
+import {
+  ArrowTopRightOnSquareIcon,
+  Bars3Icon,
+  HomeIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
 import Link from "next/link";
 import { Fragment, useState } from "react";
@@ -34,6 +39,7 @@ export type MenuProps = {
   configuration?: SidebarConfiguration;
   resourcesIcons: AdminComponentProps["resourcesIcons"];
   user?: AdminComponentProps["user"];
+  externalLinks?: AdminComponentProps["externalLinks"];
 };
 
 export default function Menu({
@@ -44,6 +50,7 @@ export default function Menu({
   configuration,
   resourcesIcons,
   user,
+  externalLinks,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
@@ -175,6 +182,27 @@ export default function Menu({
     );
   };
 
+  const renderExternalLinks = () => {
+    if (!externalLinks) {
+      return null;
+    }
+
+    return externalLinks.map((link) => {
+      return (
+        <Link
+          key={link.url}
+          href={link.url}
+          className="flex flex-row items-center justify-between gap-2 text-sm text-gray-700 hover:text-nextadmin-primary-600 hover:bg-gray-50 p-4 font-medium"
+          target="_blank"
+          rel="noopener"
+        >
+          {link.label}
+          <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+        </Link>
+      );
+    });
+  };
+
   const renderNavigation = () => {
     return (
       <nav className="flex flex-1 flex-col">
@@ -278,7 +306,10 @@ export default function Menu({
                     </div>
                     {renderNavigation()}
                   </div>
-                  {renderUser()}
+                  <div className="flex flex-col">
+                    {renderExternalLinks()}
+                    {renderUser()}
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -298,7 +329,10 @@ export default function Menu({
             </div>
             {renderNavigation()}
           </div>
-          {renderUser()}
+          <div className="flex flex-col">
+            {renderExternalLinks()}
+            {renderUser()}
+          </div>
         </div>
       </div>
 

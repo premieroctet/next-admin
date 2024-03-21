@@ -317,6 +317,15 @@ The `sidebar` property allows you to customise the aspect of the sidebar menu. I
 | `groups[].title`  | the name of the group                                                                               |               |
 | `groups[].models` | the model names to display in the group                                                             |               |
 
+#### `externalLinks` property
+
+The `externalLinks` property allows you to add external links to the sidebar menu. It is an array of objects that can take the following properties:
+
+| Name    | Description                                                       |
+| ------- | ----------------------------------------------------------------- |
+| `label` | the label of the link displayed on the sidebar. This is mandatory |
+| `url`   | the URL of the link. This is mandatory                            |
+
 Here is an example of using `NextAdminOptions` for the following schema :
 
 ```prisma
@@ -395,13 +404,13 @@ const adminRouter = await nextAdminRouter(prisma, schema, options);
 
 This is the type of the props that are passed to the custom input component:
 
-| Name      | Description                                                                                                                 |
-| --------- | --------------------------------------------------------------------------------------------------------------------------- |
-| name      | the field name                                                                                                              |
-| value     | the field value                                                                                                             |
-| onChange  | a function taking a [ChangeEvent](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) as a parameter |
-| readonly  | boolean indicating if the field is editable or not                                                                          |
-| rawErrors | array of strings containing the field errors                                                                                |
+| Name        | Description                                                                                                                 |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `name`      | the field name                                                                                                              |
+| `value`     | the field value                                                                                                             |
+| `onChange`  | a function taking a [ChangeEvent](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) as a parameter |
+| `readonly`  | boolean indicating if the field is editable or not                                                                          |
+| `rawErrors` | array of strings containing the field errors                                                                                |
 
 ## NextAdmin Context
 
@@ -413,18 +422,18 @@ The `NextAdmin` context is an object containing the following properties:
 
 The edit page's form can display notice alerts. To do so, you can pass objects in the `display` array of the `edit` property of a model. This object takes the following properties :
 
-| Name        | Description                                                                                                   |
-| ----------- | ------------------------------------------------------------------------------------------------------------- |
-| title       | The title of the notice. This is mandatory                                                                    |
-| id          | A unique identifier for the notice that can be used to style it with the `styles` property. This is mandatory |
-| description | The description of the notice. This is optional                                                               |
+| Name          | Description                                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------------------------------- |
+| `title`       | The title of the notice. This is mandatory                                                                    |
+| `id`          | A unique identifier for the notice that can be used to style it with the `styles` property. This is mandatory |
+| `description` | The description of the notice. This is optional                                                               |
 
 ## User properties
 
 The `user` property is an object that can take the following properties:
 
-| Name         | Description                                                          |
-| ------------ | -------------------------------------------------------------------- |
-| data.name    | the name of the user displayed in the sidebar menu. This is required |
-| data.picture | the URL of the user's avatar displayed in the sidebar menu           |
-| logoutUrl    | an URL or path to logout the user. This is required.                 |
+| Name           | Description                                                          |
+| -------------- | -------------------------------------------------------------------- |
+| `data.name`    | the name of the user displayed in the sidebar menu. This is required |
+| `data.picture` | the URL of the user's avatar displayed in the sidebar menu           |
+| `logoutUrl`    | an URL or path to logout the user. This is required.                 |
