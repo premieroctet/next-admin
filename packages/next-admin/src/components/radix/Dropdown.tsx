@@ -67,3 +67,33 @@ export const DropdownItem = forwardRef<
 });
 
 DropdownItem.displayName = "DropdownItem";
+
+export const DropdownLabel = forwardRef<
+  ElementRef<typeof DropdownMenu.Label>,
+  ComponentProps<typeof DropdownMenu.Label>
+>(({ className, ...props }, ref) => {
+  return (
+    <DropdownMenu.Label
+      className={clsx("group text-sm font-medium text-gray-900", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
+
+DropdownLabel.displayName = "DropdownLabel";
+
+export const DropdownSeparator = forwardRef<
+  ElementRef<typeof DropdownMenu.Separator>,
+  ComponentProps<typeof DropdownMenu.Separator>
+>(({ className, ...props }, ref) => {
+  return (
+    <DropdownMenu.Separator
+      className={clsx("h-px bg-gray-200 m-1", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
+
+DropdownSeparator.displayName = "DropdownSeparator";

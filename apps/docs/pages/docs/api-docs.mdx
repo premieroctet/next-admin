@@ -146,6 +146,7 @@ import { Tabs } from "nextra/components";
 - `options` used to customize the UI, like field formatters for example. Do not use with App router.
 - `dashboard` used to customize the rendered dashboard
 - `translations` used to customize some of the texts displayed in the UI. See [i18n](/docs/i18n) for more details.
+- `user` used to add some user information at the bottom of the menu. See [user properties](#user-properties) for more details.
 
 > ⚠️ : Do not override these `AdminComponentProps` props, they are used internally by Next Admin.
 
@@ -417,3 +418,13 @@ The edit page's form can display notice alerts. To do so, you can pass objects i
 | title       | The title of the notice. This is mandatory                                                                    |
 | id          | A unique identifier for the notice that can be used to style it with the `styles` property. This is mandatory |
 | description | The description of the notice. This is optional                                                               |
+
+## User properties
+
+The `user` property is an object that can take the following properties:
+
+| Name         | Description                                                          |
+| ------------ | -------------------------------------------------------------------- |
+| data.name    | the name of the user displayed in the sidebar menu. This is required |
+| data.picture | the URL of the user's avatar displayed in the sidebar menu           |
+| logoutUrl    | an URL or path to logout the user. This is required.                 |

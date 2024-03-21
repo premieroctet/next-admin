@@ -34,6 +34,12 @@ export default async function AdminPage({
       {...props}
       locale={params.locale as string}
       dashboard={Dashboard}
+      user={{
+        data: {
+          name: "Example User",
+        },
+        logoutUrl: "/",
+      }}
     />
   );
 }

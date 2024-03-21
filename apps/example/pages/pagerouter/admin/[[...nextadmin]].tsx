@@ -9,7 +9,19 @@ import "../../../styles.css";
 const pageOptions = options;
 
 export default function Admin(props: AdminComponentProps) {
-  return <NextAdmin {...props} dashboard={Dashboard} options={pageOptions} />;
+  return (
+    <NextAdmin
+      {...props}
+      dashboard={Dashboard}
+      options={pageOptions}
+      user={{
+        data: {
+          name: "Example User",
+        },
+        logoutUrl: "/",
+      }}
+    />
+  );
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
