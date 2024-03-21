@@ -240,15 +240,28 @@ export const serializeHtml = (node: Node) => {
   }
 };
 
-export const deserialize = (string: string, format: RichTextFormat) => {
+export const deserialize = (
+  string: string | undefined | null,
+  format: RichTextFormat
+) => {
+  const defaultValue = [{ type: "paragraph", children: [{ text: "" }] }];
+
+  if (!string) {
+    return defaultValue;
+  }
+
   if (format === "html") {
+    if (typeof window === "undefined") {
+      return defaultValue;
+    }
+
     const dom = new DOMParser().parseFromString(string, "text/html");
     return deserializeHtml(dom.body);
   } else {
     try {
       return JSON.parse(string);
     } catch {
-      return [{ type: "paragraph", children: [{ text: string }] }];
+      return defaultValue;
     }
   }
 };
@@ -284,9 +297,13 @@ export const deserializeHtml = (
       break;
   }
 
-  const children: Node[] = Array.from(el.childNodes)
+  let children: Node[] = Array.from(el.childNodes)
     .map((node) => deserializeHtml(node as HTMLElement, nodeAttributes))
     .flat();
+
+  if (children.length === 0) {
+    children = [{ text: "" }];
+  }
 
   switch (el.nodeName) {
     case "P":
