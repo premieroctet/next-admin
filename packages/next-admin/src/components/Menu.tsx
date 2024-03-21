@@ -14,6 +14,17 @@ import {
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import ResourceIcon from "./common/ResourceIcon";
+import {
+  Dropdown,
+  DropdownBody,
+  DropdownContent,
+  DropdownItem,
+  DropdownLabel,
+  DropdownSeparator,
+  DropdownTrigger,
+} from "./radix/Dropdown";
+import Button from "./radix/Button";
+import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
 
 export type MenuProps = {
   resource?: ModelName;
@@ -22,6 +33,7 @@ export type MenuProps = {
   customPages?: AdminComponentProps["customPages"];
   configuration?: SidebarConfiguration;
   resourcesIcons: AdminComponentProps["resourcesIcons"];
+  user?: AdminComponentProps["user"];
 };
 
 export default function Menu({
@@ -31,6 +43,7 @@ export default function Menu({
   customPages,
   configuration,
   resourcesIcons,
+  user,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
@@ -92,6 +105,74 @@ export default function Menu({
       current: model === currentResource,
       icon: resourcesIcons?.[model],
     };
+  };
+
+  const getInitials = () => {
+    const username = user?.data.name;
+
+    if (username) {
+      const [firstName, lastName] = username.split(" ");
+
+      if (firstName && lastName) {
+        return `${firstName.charAt(0)}${lastName.charAt(0)}`;
+      }
+
+      return username.charAt(0);
+    }
+  };
+
+  const renderUser = () => {
+    if (!user) {
+      return null;
+    }
+
+    return (
+      <div className="flex px-2 py-3 leading-6 text-sm font-semibold text-gray-700 items-center justify-between">
+        <div className="flex gap-3 items-center">
+          {user.data.picture ? (
+            <img
+              className="h-8 w-8 rounded-full"
+              src={user.data.picture}
+              alt="User picture"
+            />
+          ) : (
+            <div className="h-8 w-8 flex items-center justify-center rounded-full bg-gray-200 text-gray-600 uppercase">
+              {getInitials()}
+            </div>
+          )}
+          <span className="sr-only">Logged in as</span>
+          <span aria-hidden="true">{user.data.name}</span>
+        </div>
+        <Dropdown>
+          <DropdownTrigger asChild>
+            <Button variant="ghost" size="sm" className="!px-2 py-2">
+              <Cog6ToothIcon className="w-6 h-6 text-gray-700" />
+            </Button>
+          </DropdownTrigger>
+          <DropdownBody>
+            <DropdownContent
+              side="top"
+              sideOffset={5}
+              className="z-50 px-1 py-2"
+            >
+              <DropdownLabel className="py-1 px-4 font-normal">
+                {user.data.name}
+              </DropdownLabel>
+              <DropdownSeparator />
+              <DropdownItem asChild>
+                <Link
+                  href={user.logoutUrl}
+                  className="flex items-center gap-2 hover:text-nextadmin-primary-600 hover:bg-gray-50 py-1 px-4 rounded font-medium"
+                >
+                  <PowerIcon className="w-4 h-4" />
+                  <span>Logout</span>
+                </Link>
+              </DropdownItem>
+            </DropdownContent>
+          </DropdownBody>
+        </Dropdown>
+      </div>
+    );
   };
 
   const renderNavigation = () => {
@@ -188,13 +269,16 @@ export default function Menu({
                   </div>
                 </Transition.Child>
                 {/* Sidebar component, swap this element with another sidebar if you like */}
-                <div className="flex grow flex-col gap-y-5 overflow-y-auto bg-white px-6 pb-2">
-                  <div className="flex h-16 shrink-0 items-center">
-                    <Link href={basePath}>
-                      <HomeIcon className="h-6 w-6 text-nextadmin-primary--500" />
-                    </Link>
+                <div className="flex grow flex-col justify-between bg-white">
+                  <div className="flex flex-col gap-y-5 overflow-y-auto px-6 pb-2">
+                    <div className="flex h-16 shrink-0 items-center">
+                      <Link href={basePath}>
+                        <HomeIcon className="h-6 w-6 text-nextadmin-primary--500" />
+                      </Link>
+                    </div>
+                    {renderNavigation()}
                   </div>
-                  {renderNavigation()}
+                  {renderUser()}
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -205,13 +289,16 @@ export default function Menu({
       {/* Static sidebar for desktop */}
       <div className="hidden lg:fixed lg:inset-y-0 lg:z-50 lg:flex lg:w-72 lg:flex-col">
         {/* Sidebar component, swap this element with another sidebar if you like */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">
-          <div className="flex h-16 shrink-0 items-center">
-            <Link href={basePath}>
-              <HomeIcon className="h-6 w-6 text-nextadmin-primary-600" />
-            </Link>
+        <div className="flex grow flex-col justify-between border-r border-gray-200 bg-white">
+          <div className="flex flex-col gap-y-5 overflow-y-auto px-6">
+            <div className="flex h-16 shrink-0 items-center">
+              <Link href={basePath}>
+                <HomeIcon className="h-6 w-6 text-nextadmin-primary-600" />
+              </Link>
+            </div>
+            {renderNavigation()}
           </div>
-          {renderNavigation()}
+          {renderUser()}
         </div>
       </div>
 

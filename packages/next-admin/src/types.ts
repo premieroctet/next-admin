@@ -290,6 +290,16 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
       }
   );
 
+export type UserData = {
+  name: string;
+  picture?: string;
+};
+
+export type AdminUser = {
+  data: UserData;
+  logoutUrl: string;
+};
+
 export type AdminComponentProps = {
   basePath: string;
   schema?: Schema;
@@ -333,6 +343,7 @@ export type AdminComponentProps = {
    */
   title?: string;
   sidebar?: SidebarConfiguration;
+  user?: AdminUser;
 };
 
 export type MainLayoutProps = Pick<
@@ -350,6 +361,7 @@ export type MainLayoutProps = Pick<
   | "title"
   | "sidebar"
   | "resourcesIcons"
+  | "user"
 >;
 
 export type CustomUIProps = {

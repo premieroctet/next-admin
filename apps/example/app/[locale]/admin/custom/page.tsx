@@ -12,7 +12,15 @@ const CustomPage = async () => {
   const totalCategories = await prisma.category.count();
 
   return (
-    <MainLayout {...mainLayoutProps}>
+    <MainLayout
+      {...mainLayoutProps}
+      user={{
+        data: {
+          name: "Example User",
+        },
+        logoutUrl: "/",
+      }}
+    >
       <div>
         <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
           Custom page

@@ -35,6 +35,7 @@ export function NextAdmin({
   title,
   sidebar,
   resourcesIcons,
+  user,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -119,6 +120,7 @@ export function NextAdmin({
         title={title}
         sidebar={sidebar}
         resourcesIcons={resourcesIcons}
+        user={user}
       >
         {renderMainComponent()}
       </MainLayout>
