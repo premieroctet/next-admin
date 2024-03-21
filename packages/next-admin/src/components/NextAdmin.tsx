@@ -94,7 +94,7 @@ export function NextAdmin({
 
     if (resources) {
       if (dashboard && typeof dashboard === "function") return dashboard();
-      return dashboard || <Dashboard />;
+      return dashboard || <Dashboard resources={resources} />;
     }
   };
 
