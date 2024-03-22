@@ -115,6 +115,7 @@ export default function ListHeader({
           <Link
             href={`${basePath}/${resource}/new`}
             role="button"
+            data-testid="add-new-button"
             className={buttonVariants({
               variant: "default",
               size: "sm",

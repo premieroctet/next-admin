@@ -44,7 +44,7 @@ export const createItem = async (
   page: Page
 ): Promise<string> => {
   await page.goto(`${process.env.BASE_URL}/${model}`);
-  await page.getByRole("button", { name: "Add", exact: true }).click();
+  await page.getByTestId("add-new-button").click();
   await page.waitForURL(`${process.env.BASE_URL}/${model}/new`);
 
   await fillForm(model, page, dataTest);

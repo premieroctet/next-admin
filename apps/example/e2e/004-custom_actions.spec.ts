@@ -1,4 +1,4 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 
 test.describe("User's custom actions", () => {
   test("Submit email", async ({ page }) => {
@@ -38,6 +38,7 @@ test.describe("User's custom actions", () => {
       .getByTestId("actions-dropdown-content")
       .getByText("Delete")
       .click();
+
     await page.waitForURL((url) => !!url.searchParams.get("message"));
     await expect(page.getByText("Deleted successfully")).toBeVisible();
     await expect(page.locator("table tbody tr")).toHaveCount(3);
