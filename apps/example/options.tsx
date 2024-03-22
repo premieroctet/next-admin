@@ -161,7 +161,7 @@ export const options: NextAdminOptions = {
   pages: {
     "/custom": {
       title: "Custom page",
-      icon: "AdjustmentsHorizontalIcon",
+      icon: "PresentationChartBarIcon",
     },
   },
   sidebar: {

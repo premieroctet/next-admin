@@ -1,11 +1,20 @@
 import { MainLayout } from "@premieroctet/next-admin";
 import { getMainLayoutProps } from "@premieroctet/next-admin/dist/mainLayout";
-import { Divider, Text, Title } from "@tremor/react";
-import Image from "next/image";
 import { options } from "../../../../options";
+import { prisma } from "../../../../prisma";
 
-const CustomPage = () => {
+const CustomPage = async () => {
   const mainLayoutProps = getMainLayoutProps({ options, isAppDir: true });
+
+  const totalUsers = await prisma.user.count();
+  const totalPosts = await prisma.post.count();
+  const totalCategories = await prisma.category.count();
+
+  const stats = [
+    { name: "Total Users", stat: totalUsers },
+    { name: "Total Posts", stat: totalPosts },
+    { name: "Total Categories", stat: totalCategories },
+  ];
 
   return (
     <MainLayout
@@ -17,76 +26,27 @@ const CustomPage = () => {
         logoutUrl: "/",
       }}
     >
-      <div className="flex flex-col gap-5 p-10">
-        <div className="flex justify-start items-center">
-          <div className="mr-10 w-2/3 gap-2 flex flex-col">
-            <h1 className="text-gray-800 text-2xl font-semibold">
-              Next Admin - Custom page
-            </h1>
-            <Text className="text-gray-600">
-              Next Admin is a tool for creating a dashboard for your Next.js
-              application.
-            </Text>
-            <Text className="text-gray-600">
-              You can use it to manage your database using{" "}
-              <a
-                href="https://prisma.io"
-                className="text-blue-500 hover:underline"
-              >
-                Prisma ORM
-              </a>{" "}
-              and provide a simple admin interface for your users.
-            </Text>
-          </div>
-        </div>
-        <Divider />
-        <div className="flex justify-start items-center pt-10">
-          <div className="mr-10 w-1/2 gap-2 flex flex-col">
-            <Image
-              src="/assets/model.png"
-              width={700}
-              height={700}
-              alt="schema image"
-              className="rounded-md shadow-2xl"
-            />
-          </div>
-          <div className="mr-10 w-1/2 gap-2 flex flex-col">
-            <Title className="text-4xl font-bold text-gray-800">
-              Demonstration
-            </Title>
-            <Text className="text-gray-600">
-              This dashboard is a demonstration of the capabilities of Next
-              Admin.
-            </Text>
-            <Text className="text-gray-600">
-              You can find different examples of relation management, search,
-              and more. This demo is using the schema below.
-            </Text>
-          </div>
-        </div>
-        <Divider />
-        <div className="flex justify-start items-center pt-10">
-          <div className="mr-10 w-1/2 gap-2 flex flex-col">
-            <Title className="text-4xl font-bold text-gray-800">
-              Customizable
-            </Title>
-            <Text className="text-gray-600">
-              You can easily customize the dashboard to suit your needs. Even
-              this page is customizable.
-            </Text>
-            <Text className="text-gray-600">
-              Every part of the CRUD is customizable. You can choose which
-              fields to display, which fields to edit, and more.
-            </Text>
-          </div>
-          <div className="mr-10 w-1/2 gap-2 flex flex-col">
-            <Image
-              src="/assets/code.png"
-              width={500}
-              height={500}
-              alt="code image"
-              className="rounded-md shadow-2xl"
-            />
+      <div className="p-10">
+        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
+          Dashboard
+        </h1>
+        <div className="mt-2">
+          <div>
+            <dl className="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+              {stats.map((item) => (
+                <div
+                  key={item.name}
+                  className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6"
+                >
+                  <dt className="truncate text-sm font-medium text-gray-500">
+                    {item.name}
+                  </dt>
+                  <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
+                    {item.stat}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
       </div>

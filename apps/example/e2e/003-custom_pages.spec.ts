@@ -8,7 +8,7 @@ test.describe("Custom pages", () => {
 
     await expect(
       page.locator("h1", {
-        hasText: "Next Admin - Custom page",
+        hasText: "Dashboard",
       })
     ).toBeVisible();
 
