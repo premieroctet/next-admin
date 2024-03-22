@@ -405,7 +405,7 @@ const Form = ({
     { label: title, href: `${basePath}/${resource.toLowerCase()}`, icon },
     {
       label: edit ? `Edit` : "Create",
-      href: location.pathname,
+      href: `${basePath}/${resource.toLowerCase()}/${id}`,
       current: !edit,
     },
   ];
@@ -413,7 +413,7 @@ const Form = ({
   if (edit && id) {
     breadcrumItems.push({
       label: id.toString(),
-      href: location.pathname,
+      href: `${basePath}/${resource.toLowerCase()}/${id}`,
       current: true,
     });
   }

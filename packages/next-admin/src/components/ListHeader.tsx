@@ -66,7 +66,12 @@ export default function ListHeader({
       <div className="h-auto md:h-16 py-4 md:py-0 flex justify-between sm:items-center flex-col sm:flex-row items-start gap-3 px-4 sticky top-0 z-10 bg-white border-b border-b-slate-200 shadow-sm">
         <Breadcrumb
           breadcrumbItems={[
-            { label: title, href: location.pathname, current: true, icon },
+            {
+              label: title,
+              href: `${basePath}/${resource.toLowerCase()}`,
+              current: true,
+              icon,
+            },
           ]}
         />
         <div className="flex items-center justify-between gap-x-4 w-full sm:w-auto">
