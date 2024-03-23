@@ -1,4 +1,6 @@
 "use client";
+
+import { useEffect } from "react";
 import { useConfig } from "../context/ConfigContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { ModelName } from "../types";
@@ -11,9 +13,11 @@ const Dashboard = ({ resources }: DashboardProps) => {
   const { basePath } = useConfig();
   const { router } = useRouterInternal();
 
-  router.replace({
-    pathname: `${basePath}/${resources[0]}`,
-  });
+  useEffect(() => {
+    router.replace({
+      pathname: `${basePath}/${resources[0]}`,
+    });
+  }, [router, basePath, resources]);
 
   return null;
 };
