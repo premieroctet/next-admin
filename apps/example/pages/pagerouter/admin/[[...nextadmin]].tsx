@@ -14,7 +14,7 @@ export default function Admin(props: AdminComponentProps) {
       options={pageOptions}
       user={{
         data: {
-          name: "Example User",
+          name: "John Doe",
         },
         logoutUrl: "/",
       }}

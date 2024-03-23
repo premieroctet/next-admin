@@ -34,7 +34,7 @@ export default async function AdminPage({
       locale={params.locale as string}
       user={{
         data: {
-          name: "Example User",
+          name: "John Doe",
         },
         logoutUrl: "/",
       }}

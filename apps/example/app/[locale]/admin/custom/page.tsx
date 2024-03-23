@@ -21,7 +21,7 @@ const CustomPage = async () => {
       {...mainLayoutProps}
       user={{
         data: {
-          name: "Example User",
+          name: "John Doe",
         },
         logoutUrl: "/",
       }}
