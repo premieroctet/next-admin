@@ -13,7 +13,7 @@ import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
 import EmptyState from "./EmptyState";
-import { Checkbox } from "./common/Checkbox";
+import Checkbox from "./radix/Checkbox";
 import Button from "./radix/Button";
 import {
   Dropdown,

@@ -22,6 +22,7 @@
     "@headlessui/react": "^1.7.13",
     "@heroicons/react": "^2.0.18",
     "@picocss/pico": "^1.5.7",
+    "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-select": "^1.2.2",
     "@radix-ui/react-switch": "^1.0.3",
