@@ -257,7 +257,7 @@ export default function Menu({
                   </li>
                 </>
               )}
-              {customPagesNavigation?.length && (
+              {!!customPagesNavigation?.length && (
                 <>
                   <Divider />
                   <li>
