@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.5.2
+
+### Patch Changes
+
+- 8ee0209: fix: custom pages in menu
+
 ## 3.5.1
 
 ### Patch Changes
