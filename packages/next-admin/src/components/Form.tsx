@@ -16,7 +16,13 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import React, { ChangeEvent, cloneElement, useMemo, useState } from "react";
+import React, {
+  ChangeEvent,
+  cloneElement,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
 import { useI18n } from "../context/I18nContext";
@@ -52,18 +58,7 @@ import {
   TooltipTrigger,
 } from "./radix/Tooltip";
 
-// Override Form functions to not prevent the submit
-class CustomForm extends RjsfForm {
-  onSubmit = (e: any) => {
-    if (
-      e.nativeEvent.submitter.value === "delete" &&
-      !confirm("Are you sure to delete this ?")
-    ) {
-      e.preventDefault();
-      return false;
-    }
-  };
-}
+class CustomForm extends RjsfForm {}
 
 export type FormProps = {
   data: any;
@@ -111,6 +106,7 @@ const Form = ({
   const { basePath } = useConfig();
   const { router } = useRouterInternal();
   const { t } = useI18n();
+  const formRef = useRef<CustomForm>(null);
 
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
@@ -125,11 +121,28 @@ const Form = ({
         <div>
           {edit && (
             <Button
-              type="submit"
-              name="__admin_action"
-              value="delete"
               variant="destructiveOutline"
               className="flex gap-2"
+              tabIndex={-1}
+              onClick={(e) => {
+                if (!confirm("Are you sure to delete this ?")) {
+                  e.preventDefault();
+                  return;
+                }
+
+                const deletionInput = document.createElement("input");
+                deletionInput.type = "hidden";
+                deletionInput.name = "__admin_action";
+                deletionInput.value = "delete";
+
+                e.currentTarget.form?.appendChild(deletionInput);
+
+                e.currentTarget.form?.dispatchEvent(
+                  new CustomEvent("submit", { cancelable: true })
+                );
+                e.currentTarget.form?.requestSubmit();
+              }}
+              type="button"
             >
               <TrashIcon className="h-4 w-4" />
               {t("form.button.delete.label")}
@@ -141,6 +154,14 @@ const Form = ({
             {...buttonProps}
             variant={"ghost"}
             className="hidden sm:block"
+            tabIndex={-1}
+            onClick={(e) => {
+              e.currentTarget.form?.dispatchEvent(
+                new CustomEvent("submit", { cancelable: true })
+              );
+              e.currentTarget.form?.requestSubmit();
+            }}
+            type="button"
           >
             {t("form.button.save_edit.label")}
           </Button>
@@ -149,6 +170,7 @@ const Form = ({
             name="__admin_redirect"
             value="list"
             className="flex gap-2"
+            type="submit"
           >
             <CheckCircleIcon className="h-6 w-6" />
             {t("form.button.save.label")}
@@ -458,6 +480,7 @@ const Form = ({
                   widgets={widgets}
                   onSubmit={(e) => console.log("onSubmit", e)}
                   onError={(e) => console.log("onError", e)}
+                  ref={formRef}
                 />
               )}
             </FormContext.Consumer>

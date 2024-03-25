@@ -56,15 +56,12 @@ export function DataTable({
   const { basePath } = useConfig();
   const { t } = useI18n();
 
-  const columnsVisibility = columns.reduce(
-    (acc, column) => {
-      // @ts-expect-error
-      const key = column.accessorKey as Field<typeof resource>;
-      acc[key] = Object.keys(data[0]).includes(key);
-      return acc;
-    },
-    {} as Record<Field<typeof resource>, boolean>
-  );
+  const columnsVisibility = columns.reduce((acc, column) => {
+    // @ts-expect-error
+    const key = column.accessorKey as Field<typeof resource>;
+    acc[key] = Object.keys(data[0]).includes(key);
+    return acc;
+  }, {} as Record<Field<typeof resource>, boolean>);
 
   const modelIdProperty = resourcesIdProperty[resource];
   const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
@@ -189,8 +186,10 @@ export function DataTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className={`cursor-pointer hover:bg-nextadmin-primary-50/40 border-b border-dashed border-b-slate-300 ${
-                  row.getIsSelected() && "bg-nextadmin-primary-50/40"
+                className={`cursor-pointer hover:bg-nextadmin-primary-50/40 border-b border-b-slate-300  ${
+                  row.getIsSelected()
+                    ? "bg-nextadmin-primary-50/40"
+                    : "even:bg-gray-50"
                 }`}
                 onClick={() => {
                   window.location.href = `${basePath}/${resource.toLowerCase()}/${
