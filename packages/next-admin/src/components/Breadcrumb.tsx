@@ -41,16 +41,13 @@ export default function Breadcrumb({
 
               <Link
                 href={page.href}
-                className={`ml-2 text-sm font-medium hover:text-slate-700 flex gap-2 ${
+                className={`ml-2 text-sm font-medium hover:text-nextadmin-primary-700 flex gap-2 ${
                   page.current ? "text-nextadmin-primary-500" : "text-slate-500"
                 }`}
                 aria-current={page.current ? "page" : undefined}
               >
                 {!!page.icon && (
-                  <ResourceIcon
-                    icon={page.icon}
-                    className="h-5 w-5 opacity-40"
-                  />
+                  <ResourceIcon icon={page.icon} className="h-5 w-5 " />
                 )}
                 {page.label}
               </Link>
