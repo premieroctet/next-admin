@@ -1,10 +1,10 @@
-import Image from "next/image";
 import { Divider, Text, Title } from "@tremor/react";
+import Image from "next/image";
 
 const Dashboard = () => {
   return (
-    <div className="flex flex-col gap-5">
-      <div className="flex justify-start items-center pt-10">
+    <div className="flex flex-col gap-5 p-10">
+      <div className="flex justify-start items-center">
         <div className="mr-10 w-2/3 gap-2 flex flex-col">
           <Title className="text-gray-800">Next Admin</Title>
           <Text className="text-gray-600">

@@ -1,4 +1,9 @@
 "use client";
+import {
+  CheckCircleIcon,
+  InformationCircleIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import { Prisma } from "@prisma/client";
 import RjsfForm from "@rjsf/core";
 import {
@@ -11,8 +16,13 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import { InformationCircleIcon } from "@heroicons/react/24/outline";
-import React, { ChangeEvent, cloneElement, useMemo, useState } from "react";
+import React, {
+  ChangeEvent,
+  cloneElement,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
 import { useI18n } from "../context/I18nContext";
@@ -28,18 +38,18 @@ import {
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
 import ActionsDropdown from "./ActionsDropdown";
+import Breadcrumb from "./Breadcrumb";
 import ArrayField from "./inputs/ArrayField";
-import NullField from "./inputs/NullField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
 import JsonField from "./inputs/JsonField";
+import NullField from "./inputs/NullField";
 import RichTextField from "./inputs/RichText/RichTextField";
 import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
 import Button from "./radix/Button";
-import ResourceIcon from "./common/ResourceIcon";
 import {
   TooltipContent,
   TooltipPortal,
@@ -48,17 +58,8 @@ import {
   TooltipTrigger,
 } from "./radix/Tooltip";
 
-// Override Form functions to not prevent the submit
 class CustomForm extends RjsfForm {
-  onSubmit = (e: any) => {
-    if (
-      e.nativeEvent.submitter.value === "delete" &&
-      !confirm("Are you sure to delete this ?")
-    ) {
-      e.preventDefault();
-      return false;
-    }
-  };
+  onSubmit = (e: any) => {};
 }
 
 export type FormProps = {
@@ -107,33 +108,80 @@ const Form = ({
   const { basePath } = useConfig();
   const { router } = useRouterInternal();
   const { t } = useI18n();
+  const formRef = useRef<CustomForm>(null);
+
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
     const { norender, props: buttonProps } = getSubmitButtonOptions(uiSchema);
+
     if (norender) {
       return null;
     }
 
     return (
       <div className="flex space-x-2 mt-4 justify-between">
+        <div>
+          {edit && (
+            <Button
+              variant="destructiveOutline"
+              className="flex gap-2"
+              tabIndex={-1}
+              onClick={(e) => {
+                if (!confirm("Are you sure to delete this ?")) {
+                  e.preventDefault();
+                  return;
+                }
+
+                const deletionInput = document.createElement("input");
+                deletionInput.type = "hidden";
+                deletionInput.name = "__admin_action";
+                deletionInput.value = "delete";
+
+                e.currentTarget.form?.appendChild(deletionInput);
+
+                e.currentTarget.form?.dispatchEvent(
+                  new CustomEvent("submit", { cancelable: true })
+                );
+                e.currentTarget.form?.requestSubmit();
+              }}
+              type="button"
+            >
+              <TrashIcon className="h-4 w-4" />
+              {t("form.button.delete.label")}
+            </Button>
+          )}
+        </div>
         <div className="flex space-x-2">
-          <Button {...buttonProps} name="__admin_redirect" value="list">
-            {t("form.button.save.label")}
-          </Button>
-          <Button {...buttonProps} variant={"ghost"}>
+          <Button
+            {...buttonProps}
+            variant={"ghost"}
+            className="hidden sm:block"
+            tabIndex={-1}
+            onClick={(e) => {
+              e.currentTarget.form?.dispatchEvent(
+                new CustomEvent("submit", { cancelable: true })
+              );
+              e.currentTarget.form?.requestSubmit();
+            }}
+            type="button"
+          >
             {t("form.button.save_edit.label")}
           </Button>
-        </div>
-        {edit && (
           <Button
+            {...buttonProps}
+            className="flex gap-2"
             type="submit"
-            name="__admin_action"
-            value="delete"
-            variant="destructive"
+            {...(edit
+              ? {
+                  name: "__admin_redirect",
+                  value: "list",
+                }
+              : {})}
           >
-            {t("form.button.delete.label")}
+            <CheckCircleIcon className="h-6 w-6" />
+            {t("form.button.save.label")}
           </Button>
-        )}
+        </div>
       </div>
     );
   };
@@ -160,6 +208,8 @@ const Form = ({
         setValidation(undefined);
       }
 
+      console.log("SUBMIT RESULT", result);
+
       if (result?.deleted) {
         return router.replace({
           pathname: `${basePath}/${resource.toLowerCase()}`,
@@ -171,6 +221,7 @@ const Form = ({
           },
         });
       }
+
       if (result?.created) {
         const pathname = result?.redirect
           ? `${basePath}/${resource.toLowerCase()}`
@@ -227,18 +278,24 @@ const Form = ({
           children,
           schema,
         } = props;
+
         const labelAlias =
           options?.aliases?.[id as Field<typeof resource>] || label;
         let styleField = options?.edit?.styles?.[id as Field<typeof resource>];
 
         const tooltip =
           options?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
+
         const sanitizedClassNames = classNames
           ?.split(",")
           .filter((className) => className !== "null")
           .join(" ");
+
         return (
-          <div style={style} className={clsx(sanitizedClassNames, styleField)}>
+          <div
+            style={style}
+            className={clsx(sanitizedClassNames, styleField, "py-2 first:pt-0")}
+          >
             {schema.type !== "null" && (
               <label
                 className={clsx(
@@ -343,7 +400,7 @@ const Form = ({
             {...props}
             value={props.value ?? ""}
             className={clsx(
-              "block w-full transition-all duration-300 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-nextadmin-primary-600 sm:text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed",
+              "block w-full transition-all duration-300 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-nextadmin-primary-600 text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed",
               { "ring-red-600": rawErrors }
             )}
           />
@@ -374,12 +431,27 @@ const Form = ({
     [customInputs]
   );
 
+  const breadcrumItems = [
+    { label: title, href: `${basePath}/${resource.toLowerCase()}`, icon },
+    {
+      label: edit ? `Edit` : "Create",
+      href: `${basePath}/${resource.toLowerCase()}/${id}`,
+      current: !edit,
+    },
+  ];
+
+  if (edit && id) {
+    breadcrumItems.push({
+      label: id.toString(),
+      href: `${basePath}/${resource.toLowerCase()}/${id}`,
+      current: true,
+    });
+  }
+
   return (
     <div className="relative">
-      <div className="sm:flex sm:items-center justify-between">
-        <h1 className="text-base font-semibold leading-6 text-gray-900 flex items-center gap-2">
-          {!!icon && <ResourceIcon icon={icon} className="h-5 w-5" />} {title}
-        </h1>
+      <div className="flex h-16 justify-between items-center flex-row gap-3 px-4 sticky top-0 z-10 bg-white border-b border-b-slate-200 shadow-sm">
+        <Breadcrumb breadcrumbItems={breadcrumItems} />
         {!!actions && actions.length > 0 && !!id && (
           <ActionsDropdown
             actions={actions}
@@ -389,35 +461,40 @@ const Form = ({
           />
         )}
       </div>
-      <FormProvider initialValue={data}>
-        <FormContext.Consumer>
-          {({ formData, setFormData }) => (
-            <CustomForm
-              // @ts-expect-error
-              action={action ? onSubmit : ""}
-              {...(!action ? { method: "post" } : {})}
-              onChange={(e) => {
-                setFormData(e.formData);
-              }}
-              idPrefix=""
-              idSeparator=""
-              enctype={!action ? "multipart/form-data" : undefined}
-              {...schemas}
-              formData={formData}
-              validator={validator}
-              extraErrors={extraErrors}
-              fields={fields}
-              templates={{
-                ...templates,
-                ButtonTemplates: { SubmitButton: submitButton },
-              }}
-              widgets={widgets}
-              onSubmit={(e) => console.log("onSubmit", e)}
-              onError={(e) => console.log("onError", e)}
-            />
-          )}
-        </FormContext.Consumer>
-      </FormProvider>
+      <div className="max-w-full align-middle p-4 sm:p-8">
+        <div className="bg-white max-w-screen-md rounded-lg border p-4 sm:p-8">
+          <FormProvider initialValue={data}>
+            <FormContext.Consumer>
+              {({ formData, setFormData }) => (
+                <CustomForm
+                  // @ts-expect-error
+                  action={action ? onSubmit : ""}
+                  {...(!action ? { method: "post" } : {})}
+                  onChange={(e) => {
+                    setFormData(e.formData);
+                  }}
+                  idPrefix=""
+                  idSeparator=""
+                  enctype={!action ? "multipart/form-data" : undefined}
+                  {...schemas}
+                  formData={formData}
+                  validator={validator}
+                  extraErrors={extraErrors}
+                  fields={fields}
+                  templates={{
+                    ...templates,
+                    ButtonTemplates: { SubmitButton: submitButton },
+                  }}
+                  widgets={widgets}
+                  onSubmit={(e) => console.log("onSubmit", e)}
+                  onError={(e) => console.log("onError", e)}
+                  ref={formRef}
+                />
+              )}
+            </FormContext.Consumer>
+          </FormProvider>
+        </div>
+      </div>
     </div>
   );
 };

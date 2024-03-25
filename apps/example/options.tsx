@@ -3,7 +3,7 @@ import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
-  title: "Next Admin Example (App dir)",
+  title: "⚡️ My Admin",
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
@@ -15,6 +15,7 @@ export const options: NextAdminOptions = {
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email", "role"],
+        copy: ["email"],
         fields: {
           role: {
             formatter: (role) => {
@@ -161,7 +162,7 @@ export const options: NextAdminOptions = {
   pages: {
     "/custom": {
       title: "Custom page",
-      icon: "AdjustmentsHorizontalIcon",
+      icon: "PresentationChartBarIcon",
     },
   },
   sidebar: {

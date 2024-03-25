@@ -1,8 +1,8 @@
+import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { JSONSchema7 } from "json-schema";
 import { ChangeEvent, ReactNode } from "react";
 import { PropertyValidationError } from "./exceptions/ValidationError";
-import * as OutlineIcons from "@heroicons/react/24/outline";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -142,6 +142,7 @@ export type FormatOptions<T> = T extends string
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
   search?: Field<T>[];
+  copy?: Field<T>[];
   fields?: ListFieldsOptions<T>;
 };
 

@@ -7,6 +7,7 @@ import { useConfig } from "../context/ConfigContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
+  Field,
   ListData,
   ListDataFieldValue,
   ListDataItem,
@@ -29,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
-import ResourceIcon from "./common/ResourceIcon";
 
 export type ListProps = {
   resource: ModelName;
@@ -65,6 +65,7 @@ function List({
   const { deleteItems } = useDeleteAction(resource, deleteAction);
 
   let onSearchChange;
+
   if (!(options?.list?.search && options?.list?.search?.length === 0)) {
     onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
       startTransition(() => {
@@ -128,6 +129,9 @@ function List({
                 <Cell
                   cell={cellData}
                   formatter={!isAppDir ? dataFormatter : undefined}
+                  copyable={options?.list?.copy?.includes(
+                    property as Field<ModelName>
+                  )}
                 />
               );
             },
@@ -155,13 +159,10 @@ function List({
 
   return (
     <>
-      <div className="mt-4">
-        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4 flex items-center gap-2">
-          {!!icon && <ResourceIcon icon={icon} className="h-8 w-8" />} {title}
-        </h1>
-      </div>
-      <div className="mt-4 flow-root">
+      <div className="flow-root">
         <ListHeader
+          title={title}
+          icon={icon}
           resource={resource}
           search={(query.search as string) || ""}
           onSearchChange={onSearchChange}
@@ -170,8 +171,9 @@ function List({
           actions={actions}
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
+          totalCount={total}
         />
-        <div className="max-w-full mt-2 py-2 align-middle">
+        <div className="max-w-full align-middle p-4 sm:p-8">
           <DataTable
             resource={resource}
             data={data}
@@ -180,6 +182,7 @@ function List({
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
             onDelete={async (id) => deleteItems([id] as string[] | number[])}
+            icon={icon}
           />
           {data.length ? (
             <div className="flex-1 flex items-center space-x-2 py-4">
@@ -205,20 +208,32 @@ function List({
                     });
                   }}
                 >
-                  <SelectTrigger className="max-w-[100px]">
+                  <SelectTrigger className="max-w-[100px] bg-white">
                     <SelectValue placeholder={pageSize} />
                   </SelectTrigger>
                   <SelectContent className="bg-white">
-                    <SelectItem className="cursor-pointer" value={"10"}>
+                    <SelectItem
+                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
+                      value={"10"}
+                    >
                       10
                     </SelectItem>
-                    <SelectItem className="cursor-pointer" value={"20"}>
+                    <SelectItem
+                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
+                      value={"20"}
+                    >
                       20
                     </SelectItem>
-                    <SelectItem className="cursor-pointer" value={"50"}>
+                    <SelectItem
+                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
+                      value={"50"}
+                    >
                       50
                     </SelectItem>
-                    <SelectItem className="cursor-pointer" value={"100"}>
+                    <SelectItem
+                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
+                      value={"100"}
+                    >
                       100
                     </SelectItem>
                   </SelectContent>

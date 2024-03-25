@@ -1,6 +1,6 @@
 import { Page, expect } from "@playwright/test";
-import { PrismaClient } from "@prisma/client";
 import { ModelName } from "@premieroctet/next-admin";
+import { PrismaClient } from "@prisma/client";
 import { models } from "./001-crud.spec";
 
 export const prisma = new PrismaClient();
@@ -44,15 +44,20 @@ export const createItem = async (
   page: Page
 ): Promise<string> => {
   await page.goto(`${process.env.BASE_URL}/${model}`);
-  await page.getByRole("button", { name: "Add" }).click();
+  await page.getByTestId("add-new-button").click();
   await page.waitForURL(`${process.env.BASE_URL}/${model}/new`);
+
   await fillForm(model, page, dataTest);
-  await page.click('button:has-text("Save and continue editing")');
+
+  await page.click('button[type="submit"]');
   await page.waitForURL((url) => !url.pathname.endsWith("/new"));
+
   const url = new URL(page.url());
   const id = url.pathname.split("/").pop();
+
   expect(Number(id)).not.toBeNaN();
   expect(page.getByText("Created successfully")).toBeDefined();
+
   return id!;
 };
 
@@ -161,7 +166,7 @@ const getRows = async (page: Page) => {
 export const search = async (page: Page) => {
   await page.goto(`${process.env.BASE_URL}/User`);
   await page.fill('input[name="search"]', "user0@nextadmin.io");
-  await page.waitForTimeout(600);
+  await page.waitForURL((url) => !!url.searchParams.get("search"));
   const table = await page.$("table");
   const tbody = await table?.$("tbody");
   const rows = await tbody?.$$("tr");

@@ -1,5 +1,4 @@
 import Head from "next/head";
-import NextNProgress from "nextjs-toploader";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getCustomInputs } from "../utils/options";
@@ -7,6 +6,7 @@ import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
+import PageLoader from "./PageLoader";
 
 // Components
 export function NextAdmin({
@@ -101,7 +101,7 @@ export function NextAdmin({
 
   return (
     <>
-      <NextNProgress color="#6366f1" showSpinner={false} />
+      <PageLoader />
       <Head>
         <title>{title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />

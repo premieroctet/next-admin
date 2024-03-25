@@ -1,11 +1,10 @@
-import { NextAdmin } from "@premieroctet/next-admin";
-import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
-import { getMessages } from "next-intl/server";
 import { deleteItem, submitFormAction } from "@/actions/nextadmin";
-import Dashboard from "@/components/Dashboard";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import schema from "@/prisma/json-schema/json-schema.json";
+import { NextAdmin } from "@premieroctet/next-admin";
+import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
+import { getMessages } from "next-intl/server";
 
 export default async function AdminPage({
   params,
@@ -33,10 +32,9 @@ export default async function AdminPage({
     <NextAdmin
       {...props}
       locale={params.locale as string}
-      dashboard={Dashboard}
       user={{
         data: {
-          name: "Example User",
+          name: "John Doe",
         },
         logoutUrl: "/",
       }}

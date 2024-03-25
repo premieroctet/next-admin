@@ -7,12 +7,21 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import { Field, ListData, ListDataItem, ModelName } from "../types";
-import { Checkbox } from "./common/Checkbox";
+import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
+import EmptyState from "./EmptyState";
+import Checkbox from "./radix/Checkbox";
 import Button from "./radix/Button";
+import {
+  Dropdown,
+  DropdownBody,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+} from "./radix/Dropdown";
 import {
   Table,
   TableBody,
@@ -30,6 +39,7 @@ interface DataTableProps {
   rowSelection: RowSelectionState;
   setRowSelection: OnChangeFn<RowSelectionState>;
   onDelete?: (id: string | number) => void;
+  icon?: ModelIcon;
 }
 
 export function DataTable({
@@ -40,20 +50,18 @@ export function DataTable({
   rowSelection,
   setRowSelection,
   onDelete,
+  icon,
 }: DataTableProps) {
   const { router } = useRouterInternal();
   const { basePath } = useConfig();
   const { t } = useI18n();
 
-  const columnsVisibility = columns.reduce(
-    (acc, column) => {
-      // @ts-expect-error
-      const key = column.accessorKey as Field<typeof resource>;
-      acc[key] = Object.keys(data[0]).includes(key);
-      return acc;
-    },
-    {} as Record<Field<typeof resource>, boolean>
-  );
+  const columnsVisibility = columns.reduce((acc, column) => {
+    // @ts-expect-error
+    const key = column.accessorKey as Field<typeof resource>;
+    acc[key] = Object.keys(data[0]).includes(key);
+    return acc;
+  }, {} as Record<Field<typeof resource>, boolean>);
 
   const modelIdProperty = resourcesIdProperty[resource];
   const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
@@ -101,16 +109,35 @@ export function DataTable({
       const idProperty = resourcesIdProperty[resource];
 
       return (
-        <Button
-          size="sm"
-          variant="destructiveOutline"
-          onClick={(evt) => {
-            evt.stopPropagation();
-            onDelete?.(row.original[idProperty].value as string | number);
-          }}
-        >
-          {t("list.row.actions.delete.label")}
-        </Button>
+        <Dropdown>
+          <DropdownTrigger asChild>
+            <Button variant="ghost" size="sm" className="!px-2 py-2">
+              <EllipsisVerticalIcon className="w-6 h-6 text-gray-700" />
+            </Button>
+          </DropdownTrigger>
+          <DropdownBody>
+            <DropdownContent
+              side="left"
+              sideOffset={5}
+              className="z-50 px-1 py-2"
+            >
+              <DropdownItem asChild>
+                <Button
+                  variant="destructiveOutline"
+                  className="h-6 px-1"
+                  onClick={(evt) => {
+                    evt.stopPropagation();
+                    onDelete?.(
+                      row.original[idProperty].value as string | number
+                    );
+                  }}
+                >
+                  {t("list.row.actions.delete.label")}
+                </Button>
+              </DropdownItem>
+            </DropdownContent>
+          </DropdownBody>
+        </Dropdown>
       );
     },
   };
@@ -131,33 +158,39 @@ export function DataTable({
   });
 
   return (
-    <div className="overflow-hidden shadow-md ring-1 ring-black ring-opacity-5 sm:rounded-lg">
+    <div className="overflow-hidden bg-white rounded-lg border">
       <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
+        {table.getRowModel().rows?.length > 0 && (
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableHeader>
+        )}
         <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className="cursor-pointer even:bg-gray-50"
+                className={`cursor-pointer hover:bg-nextadmin-primary-50/40 border-b border-b-slate-300  ${
+                  row.getIsSelected()
+                    ? "bg-nextadmin-primary-50/40"
+                    : "even:bg-gray-50"
+                }`}
                 onClick={() => {
                   window.location.href = `${basePath}/${resource.toLowerCase()}/${
                     row.original[modelIdProperty].value
@@ -165,7 +198,12 @@ export function DataTable({
                 }}
               >
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell className="group" key={cell.id}>
+                  <TableCell
+                    className={`group py-3 ${
+                      cell.column.id === "__nextadmin-actions" && "text-right"
+                    }`}
+                    key={cell.id}
+                  >
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
@@ -177,9 +215,7 @@ export function DataTable({
                 colSpan={table.getAllColumns().length}
                 className="h-24 text-center"
               >
-                <div className="text-center text-gray-500">
-                  {t("list.empty.label", { resource })}
-                </div>
+                <EmptyState resource={resource} icon={icon} />
               </TableCell>
             </TableRow>
           )}

@@ -1,5 +1,12 @@
+import { Transition } from "@headlessui/react";
+import {
+  ChevronDownIcon,
+  EllipsisVerticalIcon,
+} from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import { Fragment, useState } from "react";
+import { useI18n } from "../context/I18nContext";
+import { useAction } from "../hooks/useAction";
 import { ModelAction, ModelName } from "../types";
 import {
   Dropdown,
@@ -8,10 +15,6 @@ import {
   DropdownItem,
   DropdownTrigger,
 } from "./radix/Dropdown";
-import { useAction } from "../hooks/useAction";
-import { useI18n } from "../context/I18nContext";
-import { Fragment, useState } from "react";
-import { Transition } from "@headlessui/react";
 
 type Props = {
   actions: ModelAction[];
@@ -42,9 +45,20 @@ const ActionsDropdown = ({
         data-testid="actions-dropdown"
       >
         <button type="button">
-          {t("actions.label")}{" "}
-          {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
-          <ChevronDownIcon className="h-5 w-5" aria-hidden="true" />
+          <div className="flex gap-1">
+            <span className="hidden md:block">
+              {t("actions.label")}{" "}
+              {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
+            </span>
+            <ChevronDownIcon
+              className="h-5 w-5 hidden md:block"
+              aria-hidden="true"
+            />
+            <EllipsisVerticalIcon
+              className="h-5 w-5 md:hidden block"
+              aria-hidden="true"
+            />
+          </div>
         </button>
       </DropdownTrigger>
       <DropdownBody forceMount>
@@ -65,8 +79,9 @@ const ActionsDropdown = ({
               return (
                 <DropdownItem
                   key={action.title}
-                  className={clsx("rounded-md py-1 px-2", {
-                    "text-red-600": action.style === "destructive",
+                  className={clsx("rounded-md py-1 px-2 cursor-pointer", {
+                    "text-red-700": action.style === "destructive",
+                    "hover:bg-red-50": action.style === "destructive",
                   })}
                   onClick={() => onActionClick(action)}
                 >

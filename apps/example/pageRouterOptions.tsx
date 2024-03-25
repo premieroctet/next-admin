@@ -4,7 +4,7 @@ import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   basePath: "/pagerouter/admin",
-  title: "Next Admin Example (Pages dir)",
+  title: "⚡️ My Admin",
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,

@@ -1,6 +1,5 @@
 import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
 import { GetServerSideProps, GetServerSidePropsResult } from "next";
-import Dashboard from "../../../components/Dashboard";
 import { options } from "../../../pageRouterOptions";
 import { prisma } from "../../../prisma";
 import schema from "../../../prisma/json-schema/json-schema.json";
@@ -12,11 +11,10 @@ export default function Admin(props: AdminComponentProps) {
   return (
     <NextAdmin
       {...props}
-      dashboard={Dashboard}
       options={pageOptions}
       user={{
         data: {
-          name: "Example User",
+          name: "John Doe",
         },
         logoutUrl: "/",
       }}
