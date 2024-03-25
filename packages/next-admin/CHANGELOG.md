@@ -1,5 +1,19 @@
 # @premieroctet/next-admin
 
+## 3.5.0
+
+### Minor Changes
+
+- c09c70c: feat: revamp design
+- 3fa5cd7: feat: add tooltip, helper text and notice
+- 9aec4d0: feat: configure global title
+- 03bdc6d: feat: add icons for resources in sidebar and titles
+- 2325ddd: feat: add option for external links in sidebar
+- 289539d: feat: update checkbox ui, fix rich text editor
+- e8b0225: feat: add user informations & logout
+- df2efce: feat: add groups configuration in sidebar
+- f6ba512: feat: redirect to first resource if dashboard doesnt exist
+
 ## 3.4.0
 
 ### Minor Changes
