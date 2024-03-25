@@ -136,25 +136,34 @@ export default function Menu({
     }
 
     return (
-      <div className="flex px-2 py-3 leading-6 text-sm font-semibold text-slate-500 items-center justify-between">
-        <div className="flex gap-3 items-center">
+      <div className="flex flex-1 gap-1 px-2 py-3 leading-6 text-sm font-semibold text-slate-500 items-center">
+        <div className="flex flex-1 gap-3 items-center min-w-0">
           {user.data.picture ? (
             <img
-              className="h-8 w-8 rounded-full"
+              className="h-8 w-8 rounded-full flex flex-shrink-0"
               src={user.data.picture}
               alt="User picture"
             />
           ) : (
-            <div className="h-8 w-8 flex items-center justify-center rounded-full bg-nextadmin-primary-100 text-nextadmin-primary-600 uppercase">
+            <div className="h-8 w-8 flex flex-shrink-0 items-center justify-center rounded-full bg-nextadmin-primary-100 text-nextadmin-primary-600 uppercase">
               {getInitials()}
             </div>
           )}
           <span className="sr-only">Logged in as</span>
-          <span aria-hidden="true">{user.data.name}</span>
+          <span
+            aria-hidden="true"
+            className="whitespace-nowrap text-ellipsis overflow-hidden flex-shrink"
+          >
+            {user.data.name}
+          </span>
         </div>
         <Dropdown>
           <DropdownTrigger asChild>
-            <Button variant="ghost" size="sm" className="!px-2 py-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="order-2 flex-grow-1 flex-shrink-0 basis-auto !px-2 py-2"
+            >
               <Cog6ToothIcon className="w-6 h-6 text-slate-500" />
             </Button>
           </DropdownTrigger>
@@ -233,15 +242,21 @@ export default function Menu({
                   </ul>
                 </li>
               ))}
-              <Divider />
-              <li>
-                <ul className="-ml-2 flex flex-col gap-y-1">
-                  {ungroupedModels?.map((model) => {
-                    const item = getItemProps(model);
-                    return <li key={model}>{renderNavigationItem(item)}</li>;
-                  })}
-                </ul>
-              </li>
+              {!!ungroupedModels?.length && (
+                <>
+                  {!!configuration?.groups.length && <Divider />}
+                  <li>
+                    <ul className="-ml-2 flex flex-col gap-y-1">
+                      {ungroupedModels?.map((model) => {
+                        const item = getItemProps(model);
+                        return (
+                          <li key={model}>{renderNavigationItem(item)}</li>
+                        );
+                      })}
+                    </ul>
+                  </li>
+                </>
+              )}
               {customPagesNavigation?.length && (
                 <>
                   <Divider />
