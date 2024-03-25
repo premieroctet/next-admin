@@ -186,7 +186,7 @@ export const sort = async (page: Page) => {
   await page.waitForTimeout(300);
   rows = await getRows(page);
   firstRow = await rows?.[0]?.innerText();
-  expect(firstRow).toContain("user0@nextadmin.io");
+  expect(firstRow).toContain("user9@nextadmin.io");
 };
 
 export const pagination = async (page: Page) => {
