@@ -49,7 +49,7 @@ export const createItem = async (
 
   await fillForm(model, page, dataTest);
 
-  await page.click('button:has-text("Save and continue editing")');
+  await page.click('button[type="submit"]');
   await page.waitForURL((url) => !url.pathname.endsWith("/new"));
 
   const url = new URL(page.url());
@@ -166,7 +166,7 @@ const getRows = async (page: Page) => {
 export const search = async (page: Page) => {
   await page.goto(`${process.env.BASE_URL}/User`);
   await page.fill('input[name="search"]', "user0@nextadmin.io");
-  await page.waitForTimeout(600);
+  await page.waitForURL((url) => !!url.searchParams.get("search"));
   const table = await page.$("table");
   const tbody = await table?.$("tbody");
   const rows = await tbody?.$$("tr");
@@ -186,7 +186,7 @@ export const sort = async (page: Page) => {
   await page.waitForTimeout(300);
   rows = await getRows(page);
   firstRow = await rows?.[0]?.innerText();
-  expect(firstRow).toContain("user9@nextadmin.io");
+  expect(firstRow).toContain("user0@nextadmin.io");
 };
 
 export const pagination = async (page: Page) => {

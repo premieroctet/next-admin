@@ -58,7 +58,9 @@ import {
   TooltipTrigger,
 } from "./radix/Tooltip";
 
-class CustomForm extends RjsfForm {}
+class CustomForm extends RjsfForm {
+  onSubmit = (e: any) => {};
+}
 
 export type FormProps = {
   data: any;
@@ -167,10 +169,14 @@ const Form = ({
           </Button>
           <Button
             {...buttonProps}
-            name="__admin_redirect"
-            value="list"
             className="flex gap-2"
             type="submit"
+            {...(edit
+              ? {
+                  name: "__admin_redirect",
+                  value: "list",
+                }
+              : {})}
           >
             <CheckCircleIcon className="h-6 w-6" />
             {t("form.button.save.label")}
@@ -201,6 +207,8 @@ const Form = ({
       } else {
         setValidation(undefined);
       }
+
+      console.log("SUBMIT RESULT", result);
 
       if (result?.deleted) {
         return router.replace({
