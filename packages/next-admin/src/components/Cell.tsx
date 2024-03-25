@@ -9,9 +9,10 @@ import { useConfig } from "../context/ConfigContext";
 type Props = {
   cell: ListDataFieldValue;
   formatter?: (cell: any) => ReactNode;
+  copyable?: boolean;
 };
 
-export default function Cell({ cell, formatter }: Props) {
+export default function Cell({ cell, formatter, copyable }: Props) {
   const { basePath } = useConfig();
 
   let cellValue = cell?.__nextadmin_formatted;
@@ -38,7 +39,7 @@ export default function Cell({ cell, formatter }: Props) {
             className="hover:underline cursor-pointer text-nextadmin-primary-700 hover:text-nextadmin-primary-900 font-semibold flex items-center gap-1"
           >
             {cellValue}
-            <Clipboard value={cell.value.url} />
+            {copyable && <Clipboard value={cell.value.url} />}
           </Link>
         );
       } else if (cell.type === "count") {
@@ -51,21 +52,21 @@ export default function Cell({ cell, formatter }: Props) {
         return (
           <div className="whitespace-nowrap max-w-[20ch] overflow-hidden text-ellipsis text-neutral-600 flex items-center gap-1">
             <p>{cellValue}</p>
-            <Clipboard value={cellValue?.toString() ?? ""} />
+            {copyable && <Clipboard value={cellValue?.toString() ?? ""} />}
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "string") {
         return (
           <div className="whitespace-nowrap overflow-hidden text-ellipsis text-neutral-600 flex items-center gap-1">
             <p>{cellValue}</p>
-            <Clipboard value={cellValue?.toString() ?? ""} />
+            {copyable && <Clipboard value={cellValue?.toString() ?? ""} />}
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "number") {
         return (
           <div className="whitespace-nowrap max-w-[20ch] overflow-hidden text-ellipsis text-neutral-600 flex items-center gap-1">
             <p>{cellValue}</p>
-            <Clipboard value={cellValue?.toString() ?? ""} />
+            {copyable && <Clipboard value={cellValue?.toString() ?? ""} />}
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "boolean") {
@@ -87,7 +88,7 @@ export default function Cell({ cell, formatter }: Props) {
     return (
       <div className="flex items-center gap-1">
         {JSON.stringify(cellValue)}
-        <Clipboard value={JSON.stringify(cellValue)} />
+        {copyable && <Clipboard value={JSON.stringify(cellValue)} />}
       </div>
     );
   }

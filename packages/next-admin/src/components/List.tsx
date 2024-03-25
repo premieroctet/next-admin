@@ -7,6 +7,7 @@ import { useConfig } from "../context/ConfigContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
+  Field,
   ListData,
   ListDataFieldValue,
   ListDataItem,
@@ -128,6 +129,9 @@ function List({
                 <Cell
                   cell={cellData}
                   formatter={!isAppDir ? dataFormatter : undefined}
+                  copyable={options?.list?.copy?.includes(
+                    property as Field<ModelName>
+                  )}
                 />
               );
             },
