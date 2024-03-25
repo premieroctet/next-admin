@@ -22,8 +22,6 @@ const Checkbox = ({
     return checked;
   }, [indeterminate, checked]);
 
-  console.log({ status, indeterminate });
-
   return (
     <RadixCheckbox.Root
       checked={status}
