@@ -6,7 +6,7 @@ test.describe("User's custom actions", () => {
     await page.goto(`${process.env.BASE_URL}/user`);
     await expect(page.getByTestId("actions-dropdown")).not.toBeVisible();
 
-    const checkboxes = page.locator('table input[type="checkbox"]');
+    const checkboxes = page.locator('table button[role="checkbox"]');
     await checkboxes.first().check();
     await checkboxes.nth(2).check();
 
@@ -24,7 +24,7 @@ test.describe("User's custom actions", () => {
     await page.goto(`${process.env.BASE_URL}/user?page=3`);
     await expect(page.getByTestId("actions-dropdown")).not.toBeVisible();
 
-    const checkboxes = page.locator('table input[type="checkbox"]');
+    const checkboxes = page.locator('table button[role="checkbox"]');
     await checkboxes.nth(4).check();
     await checkboxes.last().check();
 
