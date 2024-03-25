@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.5.1
+
+### Patch Changes
+
+- 15482d4: fix: ui fixes on Menu component
+
 ## 3.5.0
 
 ### Minor Changes
