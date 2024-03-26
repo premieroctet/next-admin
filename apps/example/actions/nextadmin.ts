@@ -6,6 +6,7 @@ import {
 } from "@premieroctet/next-admin/dist/actions";
 import { prisma } from "../prisma";
 import { options } from "../options";
+import { setTimeout } from "timers/promises";
 
 export const submitFormAction = async (
   params: ActionParams,
@@ -19,7 +20,7 @@ export const submitEmail = async (
   ids: number[] | string[]
 ) => {
   console.log("Sending email to " + ids.length + " users");
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await setTimeout(1000);
 };
 
 export const deleteItem = async (

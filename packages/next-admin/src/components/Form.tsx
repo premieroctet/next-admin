@@ -22,6 +22,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useTransition,
 } from "react";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
@@ -110,6 +111,7 @@ const Form = ({
   const { router } = useRouterInternal();
   const { t } = useI18n();
   const formRef = useRef<CustomForm>(null);
+  const [isPending, startTransition] = useTransition();
 
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
@@ -146,6 +148,7 @@ const Form = ({
                 e.currentTarget.form?.requestSubmit();
               }}
               type="button"
+              loading={isPending}
             >
               <TrashIcon className="h-4 w-4" />
               {t("form.button.delete.label")}
@@ -165,6 +168,7 @@ const Form = ({
               e.currentTarget.form?.requestSubmit();
             }}
             type="button"
+            loading={isPending}
           >
             {t("form.button.save_edit.label")}
           </Button>
@@ -178,6 +182,7 @@ const Form = ({
                   value: "list",
                 }
               : {})}
+            loading={isPending}
           >
             <CheckCircleIcon className="h-6 w-6" />
             {t("form.button.save.label")}
@@ -208,8 +213,6 @@ const Form = ({
       } else {
         setValidation(undefined);
       }
-
-      console.log("SUBMIT RESULT", result);
 
       if (result?.deleted) {
         return router.replace({
@@ -262,6 +265,12 @@ const Form = ({
         });
       }
     }
+  };
+
+  const onSubmitAction = (formData: FormData) => {
+    startTransition(() => {
+      onSubmit(formData);
+    });
   };
 
   const templates: CustomForm["props"]["templates"] = useMemo(
@@ -469,7 +478,7 @@ const Form = ({
               {({ formData, setFormData }) => (
                 <CustomForm
                   // @ts-expect-error
-                  action={action ? onSubmit : ""}
+                  action={action ? onSubmitAction : ""}
                   {...(!action ? { method: "post" } : {})}
                   onChange={(e) => {
                     setFormData(e.formData);
@@ -482,6 +491,7 @@ const Form = ({
                   validator={validator}
                   extraErrors={extraErrors}
                   fields={fields}
+                  formContext={{ isPending }}
                   templates={{
                     ...templates,
                     ButtonTemplates: { SubmitButton: submitButton },
