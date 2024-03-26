@@ -1,6 +1,6 @@
 import { Page, expect } from "@playwright/test";
-import { PrismaClient } from "@prisma/client";
 import { ModelName } from "@premieroctet/next-admin";
+import { PrismaClient } from "@prisma/client";
 import { models } from "./001-crud.spec";
 
 export const prisma = new PrismaClient();
@@ -43,22 +43,27 @@ export const createItem = async (
   model: ModelName,
   page: Page
 ): Promise<string> => {
-  await page.goto(`${process.env.BASE_URL}/${model}`);
-  await page.getByRole("button", { name: "Add" }).click();
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/new`);
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}`);
+  await page.getByTestId("add-new-button").click();
+  await page.waitForURL(`${process.env.BASE_URL}/${model.toLowerCase()}/new`);
+
   await fillForm(model, page, dataTest);
-  await page.click('button:has-text("Save and continue editing")');
+
+  await page.click('button[type="submit"]');
   await page.waitForURL((url) => !url.pathname.endsWith("/new"));
+
   const url = new URL(page.url());
   const id = url.pathname.split("/").pop();
+
   expect(Number(id)).not.toBeNaN();
   expect(page.getByText("Created successfully")).toBeDefined();
+
   return id!;
 };
 
 export const deleteItem = async (model: ModelName, page: Page, id: string) => {
   page.on("dialog", async (dialog) => dialog.accept());
-  await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}/${id}`);
   await page.click('button:has-text("Delete")');
   await page.waitForURL((url) =>
     url.pathname.endsWith(`/${model.toLowerCase()}`)
@@ -66,17 +71,17 @@ export const deleteItem = async (model: ModelName, page: Page, id: string) => {
 };
 
 export const readItem = async (model: ModelName, page: Page, id: string) => {
-  await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}/${id}`);
+  await page.waitForURL(`${process.env.BASE_URL}/${model.toLowerCase()}/*`);
   await readForm(model, page, dataTest);
 };
 
 export const updateItem = async (model: ModelName, page: Page, id: string) => {
-  await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}/${id}`);
+  await page.waitForURL(`${process.env.BASE_URL}/${model.toLowerCase()}/*`);
   await fillForm(model, page, dataTestUpdate);
   await page.click('button:has-text("Save and continue editing")');
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
+  await page.waitForURL(`${process.env.BASE_URL}/${model.toLowerCase()}/*`);
   await readForm(model, page, dataTestUpdate);
   expect(page.getByText("Updated successfully")).toBeDefined();
 };
@@ -159,9 +164,9 @@ const getRows = async (page: Page) => {
 };
 
 export const search = async (page: Page) => {
-  await page.goto(`${process.env.BASE_URL}/User`);
+  await page.goto(`${process.env.BASE_URL}/user`);
   await page.fill('input[name="search"]', "user0@nextadmin.io");
-  await page.waitForTimeout(600);
+  await page.waitForURL((url) => !!url.searchParams.get("search"));
   const table = await page.$("table");
   const tbody = await table?.$("tbody");
   const rows = await tbody?.$$("tr");
@@ -170,7 +175,7 @@ export const search = async (page: Page) => {
 };
 
 export const sort = async (page: Page) => {
-  await page.goto(`${process.env.BASE_URL}/User`);
+  await page.goto(`${process.env.BASE_URL}/user`);
   await page.click('th:has-text("email")>button');
   await page.waitForTimeout(300);
   let rows = await getRows(page);
@@ -185,7 +190,7 @@ export const sort = async (page: Page) => {
 };
 
 export const pagination = async (page: Page) => {
-  await page.goto(`${process.env.BASE_URL}/User`);
+  await page.goto(`${process.env.BASE_URL}/user`);
   await paginationPerPage(page, 10);
 };
 

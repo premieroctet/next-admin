@@ -3,16 +3,19 @@ import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   basePath: "/admin",
+  title: "⚡️ My Admin",
   model: {
     User: {
-      toString: (author) => `${author.name} (${author.email})`,
-      title: "👥 Users",
+      toString: (user) => `${user.name} (${user.email})`,
+      title: "Users",
+      icon: "UsersIcon",
       aliases: {
         id: "ID",
       },
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email", "role"],
+        copy: ["email"],
         fields: {
           role: {
             formatter: (role) => {
@@ -32,6 +35,11 @@ export const options: NextAdminOptions = {
         display: [
           "id",
           "name",
+          {
+            title: "Email is mandatory",
+            id: "email-notice",
+            description: "You must add an email from now on",
+          } as const,
           "email",
           "posts",
           "role",
@@ -41,18 +49,21 @@ export const options: NextAdminOptions = {
         ],
         styles: {
           _form: "grid-cols-3 gap-2 md:grid-cols-4",
-          id: "col-span-2",
+          id: "col-span-2 row-start-1",
           name: "col-span-2 row-start-2",
-          email: "col-span-2 row-start-3",
-          posts: "col-span-2 row-start-4",
-          role: "col-span-2 row-start-4",
-          birthDate: "col-span-3 row-start-5",
-          avatar: "col-span-4 row-start-6",
-          metadata: "col-span-4 row-start-7",
+          "email-notice": "col-span-4 row-start-3",
+          email: "col-span-2 row-start-4",
+          posts: "col-span-2 row-start-5",
+          role: "col-span-2 row-start-6",
+          birthDate: "col-span-3 row-start-7",
+          avatar: "col-span-4 row-start-8",
+          metadata: "col-span-4 row-start-9",
         },
         fields: {
           email: {
             validate: (email) => email.includes("@") || "form.user.email.error",
+            helperText: "Must be a valid email address",
+            tooltip: "Make sure to include the @",
           },
           birthDate: {
             input: <DatePicker />,
@@ -101,7 +112,8 @@ export const options: NextAdminOptions = {
     },
     Post: {
       toString: (post) => `${post.title}`,
-      title: "📝 Posts",
+      title: "Posts",
+      icon: "NewspaperIcon",
       list: {
         display: ["id", "title", "published", "author", "categories", "rate"],
         search: ["title", "content"],
@@ -135,7 +147,8 @@ export const options: NextAdminOptions = {
       },
     },
     Category: {
-      title: "📚 Categories",
+      title: "Categories",
+      icon: "InboxStackIcon",
       toString: (category) => `${category.name}`,
       list: {
         display: ["name", "posts"],
@@ -149,6 +162,25 @@ export const options: NextAdminOptions = {
   pages: {
     "/custom": {
       title: "Custom page",
+      icon: "PresentationChartBarIcon",
     },
   },
+  sidebar: {
+    groups: [
+      {
+        title: "Users",
+        models: ["User"],
+      },
+      {
+        title: "Categories",
+        models: ["Category"],
+      },
+    ],
+  },
+  externalLinks: [
+    {
+      label: "Documentation",
+      url: "https://next-admin.js.org",
+    },
+  ],
 };

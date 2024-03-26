@@ -1,5 +1,37 @@
 # @premieroctet/next-admin
 
+## 3.5.3
+
+### Patch Changes
+
+- 2735171: fix: fix checkboxes appearance + firefox issue
+
+## 3.5.2
+
+### Patch Changes
+
+- 8ee0209: fix: custom pages in menu
+
+## 3.5.1
+
+### Patch Changes
+
+- 15482d4: fix: ui fixes on Menu component
+
+## 3.5.0
+
+### Minor Changes
+
+- c09c70c: feat: revamp design
+- 3fa5cd7: feat: add tooltip, helper text and notice
+- 9aec4d0: feat: configure global title
+- 03bdc6d: feat: add icons for resources in sidebar and titles
+- 2325ddd: feat: add option for external links in sidebar
+- 289539d: feat: update checkbox ui, fix rich text editor
+- e8b0225: feat: add user informations & logout
+- df2efce: feat: add groups configuration in sidebar
+- f6ba512: feat: redirect to first resource if dashboard doesnt exist
+
 ## 3.4.0
 
 ### Minor Changes

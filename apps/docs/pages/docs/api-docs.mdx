@@ -147,6 +147,7 @@ import { Tabs } from "nextra/components";
 - `options` used to customize the UI, like field formatters for example. Do not use with App router.
 - `dashboard` used to customize the rendered dashboard
 - `translations` used to customize some of the texts displayed in the UI. See [i18n](/docs/i18n) for more details.
+- `user` used to add some user information at the bottom of the menu. See [user properties](#user-properties) for more details.
 
 > ⚠️ : Do not override these `AdminComponentProps` props, they are used internally by Next Admin.
 
@@ -207,14 +208,15 @@ It takes as **_key_** a model name of your schema as **_value_** an object to cu
 
 By default if no models are defined, they will all be displayed in the admin. If you want more control, you have to define each model individually as empty objects or with the following properties:
 
-| Name       | Description                                                                      | Default value |
-| ---------- | -------------------------------------------------------------------------------- | ------------- |
-| `toString` | a function that is used to display your record in related list                   | `id` field    |
-| `aliases`  | an object containing the aliases of the model fields as keys, and the field name | undefined     |
-| `title`    | a string used to display the model name in the sidebar and in the section title  | Model name    |
-| `list`     | an object containing the [list options](#list-property)                          | undefined     |
-| `edit`     | an object containing the [edit options](#edit-property)                          | undefined     |
-| `actions`  | an array of [actions](#actions-property)                                         | undefined     |
+| Name       | Description                                                                                         | Default value |
+| ---------- | --------------------------------------------------------------------------------------------------- | ------------- |
+| `toString` | a function that is used to display your record in related list                                      | `id` field    |
+| `aliases`  | an object containing the aliases of the model fields as keys, and the field name                    | undefined     |
+| `title`    | a string used to display the model name in the sidebar and in the section title                     | Model name    |
+| `list`     | an object containing the [list options](#list-property)                                             | undefined     |
+| `edit`     | an object containing the [edit options](#edit-property)                                             | undefined     |
+| `actions`  | an array of [actions](#actions-property)                                                            | undefined     |
+| `icon`     | the [outline HeroIcon name](https://heroicons.com/outline) displayed in the sidebar and pages title | undefined     |
 
 You can customize the following for each model:
 
@@ -227,6 +229,7 @@ This property determines how your data is displayed in the [List View](/docs/glo
 | `search`  | an array of searchable fields                                                                          | undefined - all scalar fields are searchable |
 | `display` | an array of fields that are displayed in the list                                                      | undefined - all scalar fields are displayed  |
 | `fields`  | an object containing the model fields as keys, and customization values, see [below](#fields-property) | undefined                                    |
+| `copy`    | an array of fields that are copyable into the clipboard                                                | undefined - no field is copyable by default  |
 
 > Note that the `search` property is only available for `scalar` fields.
 
@@ -234,12 +237,12 @@ This property determines how your data is displayed in the [List View](/docs/glo
 
 This property determines how your data is displayed in the [edit view](/docs/glossary#edit-view)
 
-| Name                     | Description                                                                                                                | Default value                   |
-| ------------------------ | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
-| `display`                | an array of fields that are displayed in the form                                                                          | all scalar fields are displayed |
-| `styles`                 | an object containing the styles of the form                                                                                | undefined                       |
-| `fields`                 | an object containing the model fields as keys, and customization values                                                    | undefined                       |
-| `submissionErrorMessage` | a message displayed if an error occurs during the form submission, after the form validation and before any call to prisma | Submission error                |
+| Name                     | Description                                                                                                                                       | Default value                   |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------- |
+| `display`                | an array of fields that are displayed in the form. It can also be an object that will be displayed in the form of a notice. See [notice](#notice) | all scalar fields are displayed |
+| `styles`                 | an object containing the styles of the form                                                                                                       | undefined                       |
+| `fields`                 | an object containing the model fields as keys, and customization values                                                                           | undefined                       |
+| `submissionErrorMessage` | a message displayed if an error occurs during the form submission, after the form validation and before any call to prisma                        | Submission error                |
 
 ##### `styles` property
 
@@ -283,14 +286,17 @@ For the `edit` property, it can take the following:
 | `handler.upload`             | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
 | `handler.uploadErrorMessage` | an optional string displayed in the input field as an error message in case of a failure during the upload handler                                                           |
 | `optionFormatter`            | only for realtion fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                          |
+| `tooltip`                    | a tooltip content to show for the field                                                                                                                                      |
+| `helperText`                 | a helper text that is displayed underneath the input                                                                                                                         |
 
 ### `pages`
 
 `pages` is an object that allows you to add your own sub pages as a sidebar menu entry. It is an object where the key is the path (without the base path) and the value is an object with the following properties:
 
-| Name    | Description                                    |
-| ------- | ---------------------------------------------- |
-| `title` | the title of the page displayed on the sidebar |
+| Name    | Description                                                                                     |
+| ------- | ----------------------------------------------------------------------------------------------- |
+| `title` | the title of the page displayed on the sidebar                                                  |
+| `icon`  | the [outline HeroIcon name](https://heroicons.com/outline) of the page displayed on the sidebar |
 
 #### `actions` property
 
@@ -302,6 +308,25 @@ The `actions` property is an array of objects that allows you to define a set of
 | `action`         | an async function that will be triggered when selecting the action in the dropdown. For App Router, it must be defined as a server action. | undefined     |
 | `successMessage` | a message that will be displayed when the action is successful                                                                             | undefined     |
 | `errorMessage`   | a message that will be displayed when the action fails                                                                                     | undefined     |
+
+#### `sidebar` property
+
+The `sidebar` property allows you to customise the aspect of the sidebar menu. It is an object that can take the following properties:
+
+| Name              | Description                                                                                         | Default value |
+| ----------------- | --------------------------------------------------------------------------------------------------- | ------------- |
+| `groups`          | an array of objects that creates groups for specific resources. It takes the following properties : |               |
+| `groups[].title`  | the name of the group                                                                               |               |
+| `groups[].models` | the model names to display in the group                                                             |               |
+
+#### `externalLinks` property
+
+The `externalLinks` property allows you to add external links to the sidebar menu. It is an array of objects that can take the following properties:
+
+| Name    | Description                                                       |
+| ------- | ----------------------------------------------------------------- |
+| `label` | the label of the link displayed on the sidebar. This is mandatory |
+| `url`   | the URL of the link. This is mandatory                            |
 
 Here is an example of using `NextAdminOptions` for the following schema :
 
@@ -381,16 +406,36 @@ const adminRouter = await nextAdminRouter(prisma, schema, options);
 
 This is the type of the props that are passed to the custom input component:
 
-| Name      | Description                                                                                                                 |
-| --------- | --------------------------------------------------------------------------------------------------------------------------- |
-| name      | the field name                                                                                                              |
-| value     | the field value                                                                                                             |
-| onChange  | a function taking a [ChangeEvent](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) as a parameter |
-| readonly  | boolean indicating if the field is editable or not                                                                          |
-| rawErrors | array of strings containing the field errors                                                                                |
+| Name        | Description                                                                                                                 |
+| ----------- | --------------------------------------------------------------------------------------------------------------------------- |
+| `name`      | the field name                                                                                                              |
+| `value`     | the field value                                                                                                             |
+| `onChange`  | a function taking a [ChangeEvent](https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event) as a parameter |
+| `readonly`  | boolean indicating if the field is editable or not                                                                          |
+| `rawErrors` | array of strings containing the field errors                                                                                |
 
 ## NextAdmin Context
 
 The `NextAdmin` context is an object containing the following properties:
 
 - `locale`: the locale used by the calling page. (refers to the `accept-language` header).
+
+## Notice
+
+The edit page's form can display notice alerts. To do so, you can pass objects in the `display` array of the `edit` property of a model. This object takes the following properties :
+
+| Name          | Description                                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------------------------------- |
+| `title`       | The title of the notice. This is mandatory                                                                    |
+| `id`          | A unique identifier for the notice that can be used to style it with the `styles` property. This is mandatory |
+| `description` | The description of the notice. This is optional                                                               |
+
+## User properties
+
+The `user` property is an object that can take the following properties:
+
+| Name           | Description                                                          |
+| -------------- | -------------------------------------------------------------------- |
+| `data.name`    | the name of the user displayed in the sidebar menu. This is required |
+| `data.picture` | the URL of the user's avatar displayed in the sidebar menu           |
+| `logoutUrl`    | an URL or path to logout the user. This is required.                 |

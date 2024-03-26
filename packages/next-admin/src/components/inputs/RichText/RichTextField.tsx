@@ -22,8 +22,8 @@ const RichTextField = ({ schema, onChange, ...props }: RichTextFieldProps) => {
   const { value } = props;
   const format = schema?.format?.split("-")[1] as RichTextFormat;
   const deserializedValue = deserialize(value, format);
-  let initialValue: Descendant[] = deserializedValue;
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
+  let initialValue: Descendant[] = deserializedValue;
 
   const handleChange = (value: any) => {
     const isAstChange = editor.operations.some(

@@ -6,6 +6,7 @@ import {
   AdminComponentProps,
   EditOptions,
   MainLayoutProps,
+  ModelIcon,
   ModelName,
   NextAdminOptions,
   SubmitFormResult,
@@ -90,15 +91,16 @@ export async function getPropsFromParams({
     customPages,
     error,
     message,
+    title,
+    sidebar,
+    resourcesIcons,
+    externalLinks,
   } = getMainLayoutProps({ options, params, searchParams, isAppDir });
 
-  const resourcesIdProperty = resources!.reduce(
-    (acc, resource) => {
-      acc[resource] = getModelIdProperty(resource);
-      return acc;
-    },
-    {} as Record<ModelName, string>
-  );
+  const resourcesIdProperty = resources!.reduce((acc, resource) => {
+    acc[resource] = getModelIdProperty(resource);
+    return acc;
+  }, {} as Record<ModelName, string>);
 
   if (isAppDir && !action) {
     throw new Error("action is required when using App router");
@@ -137,6 +139,10 @@ export async function getPropsFromParams({
           searchPaginatedResourceAction
         )
       : undefined,
+    title,
+    sidebar,
+    resourcesIcons,
+    externalLinks,
   };
 
   if (!params) return defaultProps;
@@ -257,6 +263,7 @@ export const getMainLayoutProps = ({
   const customPages = Object.keys(options.pages ?? {}).map((path) => ({
     title: options.pages![path as keyof typeof options.pages].title,
     path: path,
+    icon: options.pages![path as keyof typeof options.pages].icon,
   }));
 
   let message = undefined;
@@ -267,15 +274,20 @@ export const getMainLayoutProps = ({
       : null;
   } catch {}
 
-  const resourcesTitles = resources.reduce(
-    (acc, resource) => {
-      acc[resource as Prisma.ModelName] =
-        options.model?.[resource as keyof typeof options.model]?.title ??
-        resource;
+  const resourcesTitles = resources.reduce((acc, resource) => {
+    acc[resource as Prisma.ModelName] =
+      options.model?.[resource as keyof typeof options.model]?.title ??
+      resource;
+    return acc;
+  }, {} as { [key in Prisma.ModelName]: string });
+
+  const resourcesIcons = resources.reduce((acc, resource) => {
+    if (!options.model?.[resource as keyof typeof options.model]?.icon)
       return acc;
-    },
-    {} as { [key in Prisma.ModelName]: string }
-  );
+    acc[resource as Prisma.ModelName] =
+      options.model?.[resource as keyof typeof options.model]?.icon!;
+    return acc;
+  }, {} as { [key in Prisma.ModelName]: ModelIcon });
 
   return {
     resources,
@@ -286,5 +298,9 @@ export const getMainLayoutProps = ({
     message,
     resourcesTitles,
     isAppDir,
+    title: options.title ?? "Admin",
+    sidebar: options.sidebar,
+    resourcesIcons,
+    externalLinks: options.externalLinks,
   };
 };

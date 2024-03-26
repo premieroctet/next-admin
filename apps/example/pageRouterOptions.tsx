@@ -4,10 +4,12 @@ import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   basePath: "/pagerouter/admin",
+  title: "⚡️ My Admin",
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
-      title: "Users 👥",
+      title: "Users",
+      icon: "UsersIcon",
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
@@ -89,7 +91,8 @@ export const options: NextAdminOptions = {
     },
     Post: {
       toString: (post) => `${post.title}`,
-      title: "Posts 📝",
+      title: "Posts",
+      icon: "NewspaperIcon",
       list: {
         display: [
           "id",
@@ -120,7 +123,8 @@ export const options: NextAdminOptions = {
       },
     },
     Category: {
-      title: "Categories 📚",
+      title: "Categories",
+      icon: "InboxStackIcon",
       toString: (category) => `${category.name}`,
       list: {
         display: ["name", "posts"],
@@ -134,6 +138,19 @@ export const options: NextAdminOptions = {
   pages: {
     "/custom": {
       title: "Custom page",
+      icon: "AdjustmentsHorizontalIcon",
     },
+  },
+  sidebar: {
+    groups: [
+      {
+        title: "Users",
+        models: ["User"],
+      },
+      {
+        title: "Categories",
+        models: ["Category"],
+      },
+    ],
   },
 };

@@ -1,3 +1,4 @@
+import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
 import type { ChangeEvent, ReactNode } from "react";
@@ -21,7 +22,7 @@ export type Payload = Prisma.TypeMap["model"][ModelName]["payload"];
 
 export type ModelFromPayload<
   P extends Payload,
-  T extends object | number = object,
+  T extends object | number = object
 > = {
   [Property in keyof P["scalars"]]: P["scalars"][Property];
 } & {
@@ -32,40 +33,46 @@ export type ModelFromPayload<
       ? S
       : T
     : never | P["objects"][Property] extends { scalars: infer S }[]
-      ? T extends object
-        ? S[]
-        : T[]
-      : never | P["objects"][Property] extends { scalars: infer S } | null
-        ? T extends object
-          ? S | null
-          : T | null
-        : never;
+    ? T extends object
+      ? S[]
+      : T[]
+    : never | P["objects"][Property] extends { scalars: infer S } | null
+    ? T extends object
+      ? S | null
+      : T | null
+    : never;
 };
 
 export type Model<
   M extends ModelName,
-  T extends object | number = object,
+  T extends object | number = object
 > = ModelFromPayload<Prisma.TypeMap["model"][M]["payload"], T>;
 
 export type PropertyPayload<
   M extends ModelName,
-  P extends keyof ObjectField<M>,
+  P extends keyof ObjectField<M>
 > = Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends Array<infer T>
   ? T
   : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends
-        | infer T
-        | null
-    ? T
-    : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
+      | infer T
+      | null
+  ? T
+  : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
 
 export type ModelFromProperty<
   M extends ModelName,
-  P extends keyof ObjectField<M>,
+  P extends keyof ObjectField<M>
 > = PropertyPayload<M, P> extends Payload
   ? ModelFromPayload<PropertyPayload<M, P>>
   : never;
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
+
+export type NoticeField = {
+  readonly id: string;
+  title: string;
+  description?: string;
+};
 
 export type Field<P extends ModelName> = keyof Model<P>;
 
@@ -90,6 +97,8 @@ export type EditFieldsOptions<T extends ModelName> = {
     format?: FormatOptions<ModelWithoutRelationships<T>[P]>;
     handler?: Handler<T, P, Model<T>[P]>;
     input?: React.ReactElement;
+    helperText?: string;
+    tooltip?: string;
   } & (P extends keyof ObjectField<T>
     ? {
         optionFormatter?: (item: ModelFromProperty<T, P>) => string;
@@ -100,7 +109,7 @@ export type EditFieldsOptions<T extends ModelName> = {
 export type Handler<
   M extends ModelName,
   P extends Field<M>,
-  T extends Model<M>[P],
+  T extends Model<M>[P]
 > = {
   get?: (input: T) => any;
   upload?: (file: Buffer) => Promise<string>;
@@ -126,22 +135,27 @@ export type FormatOptions<T> = T extends string
       | `richtext-${RichTextFormat}`
       | "json"
   : never | T extends Date
-    ? "date" | "date-time" | "time"
-    : never | T extends number
-      ? "updown" | "range"
-      : never;
+  ? "date" | "date-time" | "time"
+  : never | T extends number
+  ? "updown" | "range"
+  : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
   search?: Field<T>[];
+  copy?: Field<T>[];
   fields?: ListFieldsOptions<T>;
 };
 
 export type EditOptions<T extends ModelName> = {
-  display?: Field<T>[];
+  display?: Array<Field<T> | NoticeField>;
   styles?: {
     _form?: string;
-  } & Partial<Record<Field<T>, string>>;
+  } & Partial<
+    {
+      [Key in Field<T>]: string;
+    } & Record<string, string>
+  >;
   fields?: EditFieldsOptions<T>;
   submissionErrorMessage?: string;
 };
@@ -156,6 +170,8 @@ export type ModelAction = {
   errorMessage?: string;
 };
 
+export type ModelIcon = keyof typeof OutlineIcons;
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     toString?: (item: Model<P>) => string;
@@ -164,13 +180,36 @@ export type ModelOptions<T extends ModelName> = {
     title?: string;
     aliases?: Partial<Record<Field<P>, string>>;
     actions?: ModelAction[];
+    icon?: ModelIcon;
   };
+};
+
+export type SidebarGroup = {
+  title: string;
+  models: ModelName[];
+};
+
+export type SidebarConfiguration = {
+  groups: SidebarGroup[];
+};
+
+export type ExternalLink = {
+  label: string;
+  url: string;
 };
 
 export type NextAdminOptions = {
   basePath: string;
+  /**
+   * Global admin title
+   *
+   * @default "Admin"
+   */
+  title?: string;
   model?: ModelOptions<ModelName>;
-  pages?: Record<string, { title: string }>;
+  pages?: Record<string, { title: string; icon?: ModelIcon }>;
+  sidebar?: SidebarConfiguration;
+  externalLinks?: ExternalLink[];
 };
 
 /** Type for Schema */
@@ -259,6 +298,16 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
       }
   );
 
+export type UserData = {
+  name: string;
+  picture?: string;
+};
+
+export type AdminUser = {
+  data: UserData;
+  logoutUrl: string;
+};
+
 export type AdminComponentProps = {
   basePath: string;
   schema?: Schema;
@@ -284,13 +333,14 @@ export type AdminComponentProps = {
    */
   options?: NextAdminOptions;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
+  resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   resourcesIdProperty?: Record<ModelName, string>;
   /**
    * App router only
    */
   pageComponent?: React.ComponentType;
-  customPages?: Array<{ title: string; path: string }>;
+  customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
   translations?: Translations;
@@ -301,6 +351,15 @@ export type AdminComponentProps = {
     total: number;
     error: string | null;
   }>;
+  /**
+   * Global admin title
+   *
+   * @default "Admin"
+   */
+  title?: string;
+  sidebar?: SidebarConfiguration;
+  user?: AdminUser;
+  externalLinks?: ExternalLink[];
 };
 
 export type MainLayoutProps = Pick<
@@ -315,6 +374,11 @@ export type MainLayoutProps = Pick<
   | "isAppDir"
   | "translations"
   | "locale"
+  | "title"
+  | "sidebar"
+  | "resourcesIcons"
+  | "user"
+  | "externalLinks"
 >;
 
 export type CustomUIProps = {

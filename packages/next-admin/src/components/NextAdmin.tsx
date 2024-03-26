@@ -1,5 +1,4 @@
 import Head from "next/head";
-import NextNProgress from "nextjs-toploader";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getCustomInputs } from "../utils/options";
@@ -7,6 +6,7 @@ import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
+import PageLoader from "./PageLoader";
 
 // Components
 export function NextAdmin({
@@ -33,6 +33,11 @@ export function NextAdmin({
   translations,
   locale,
   searchPaginatedResourceAction,
+  title,
+  sidebar,
+  resourcesIcons,
+  user,
+  externalLinks,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -47,6 +52,7 @@ export function NextAdmin({
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
   const resourceTitle = resourcesTitles?.[resource!] ?? resource;
+  const resourceIcon = resourcesIcons?.[resource!];
 
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
@@ -61,6 +67,7 @@ export function NextAdmin({
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
           deleteAction={deleteAction}
+          icon={resourceIcon}
         />
       );
     }
@@ -83,21 +90,22 @@ export function NextAdmin({
           customInputs={customInputs}
           actions={actions}
           searchPaginatedResourceAction={searchPaginatedResourceAction}
+          icon={resourceIcon}
         />
       );
     }
 
     if (resources) {
       if (dashboard && typeof dashboard === "function") return dashboard();
-      return dashboard || <Dashboard />;
+      return dashboard || <Dashboard resources={resources} />;
     }
   };
 
   return (
     <>
-      <NextNProgress color="#6366f1" showSpinner={false} />
+      <PageLoader />
       <Head>
-        <title>Admin</title>
+        <title>{title}</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
@@ -112,6 +120,11 @@ export function NextAdmin({
         isAppDir={isAppDir}
         translations={translations}
         locale={locale}
+        title={title}
+        sidebar={sidebar}
+        resourcesIcons={resourcesIcons}
+        user={user}
+        externalLinks={externalLinks}
       >
         {renderMainComponent()}
       </MainLayout>

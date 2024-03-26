@@ -21,7 +21,7 @@ import {
   getResources,
   parseFormData,
 } from "./utils/server";
-import { uncapitalize } from "./utils/tools";
+import { slugify, uncapitalize } from "./utils/tools";
 import { validate } from "./utils/validator";
 
 // Router
@@ -67,14 +67,8 @@ export const nextAdminRouter = async (
       })
       .post(`${options.basePath}/api/options`, async (req, res) => {
         const body = await getBody(req);
-        const {
-          originModel,
-          property,
-          model,
-          query,
-          page,
-          perPage,
-        } = JSON.parse(body) as any
+        const { originModel, property, model, query, page, perPage } =
+          JSON.parse(body) as any;
 
         const data = await optionsFromResource({
           prisma,
@@ -170,8 +164,9 @@ export const nextAdminRouter = async (
             };
             return {
               redirect: {
-                destination: `${options.basePath
-                  }/${resource.toLowerCase()}?message=${JSON.stringify(message)}`,
+                destination: `${options.basePath}/${slugify(
+                  resource
+                )}?message=${JSON.stringify(message)}`,
                 permanent: false,
               },
             };
@@ -224,10 +219,9 @@ export const nextAdminRouter = async (
             if (redirect) {
               return {
                 redirect: {
-                  destination: `${options.basePath
-                    }/${resource.toLowerCase()}?message=${JSON.stringify(
-                      message
-                    )}`,
+                  destination: `${options.basePath}/${slugify(
+                    resource
+                  )}?message=${JSON.stringify(message)}`,
                   permanent: false,
                 },
               };
@@ -248,9 +242,10 @@ export const nextAdminRouter = async (
           });
 
           const pathname = redirect
-            ? `${options.basePath}/${resource.toLowerCase()}`
-            : `${options.basePath}/${resource.toLowerCase()}/${createdData[modelIdProperty]
-            }`;
+            ? `${options.basePath}/${slugify(resource)}`
+            : `${options.basePath}/${slugify(resource)}/${
+                createdData[modelIdProperty]
+              }`;
           return {
             redirect: {
               destination: `${pathname}?message=${JSON.stringify({

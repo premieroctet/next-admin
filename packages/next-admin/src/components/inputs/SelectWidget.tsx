@@ -11,6 +11,7 @@ import { useForm } from "../../context/FormContext";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import { Enumeration } from "../../types";
 import { Selector } from "./Selector";
+import { slugify } from "../../utils/tools";
 
 const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
   const formContext = useForm();
@@ -36,7 +37,7 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="relative flex justify-between w-full px-3 py-2 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm sm:text-sm cursor-default">
+      <div className="relative flex justify-between w-full px-3 py-2 text-sm placeholder-gray-500 border border-gray-300 rounded-md shadow-sm cursor-default">
         <input
           type="hidden"
           value={value?.value || ""}
@@ -53,7 +54,9 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
         <div className="flex space-x-3">
           {hasValue && props.schema.relation && (
             <Link
-              href={`${basePath}/${props.schema.relation}/${value?.value}`}
+              href={`${basePath}/${slugify(props.schema.relation)}/${
+                value?.value
+              }`}
               className="flex items-center"
             >
               <ArrowTopRightOnSquareIcon className="w-5 h-5 text-gray-400 cursor-pointer" />

@@ -1,14 +1,20 @@
-import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { PlusIcon } from "@heroicons/react/24/solid";
+"use client";
+
+import {
+  MagnifyingGlassIcon,
+  PlusSmallIcon,
+} from "@heroicons/react/24/outline";
 import { RowSelectionState } from "@tanstack/react-table";
 import Link from "next/link";
 import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { ModelAction, ModelName } from "../types";
+import { ModelAction, ModelIcon, ModelName } from "../types";
 import ActionsDropdown from "./ActionsDropdown";
+import Breadcrumb from "./Breadcrumb";
 import { buttonVariants } from "./radix/Button";
+import { slugify } from "../utils/tools";
 
 type Props = {
   resource: ModelName;
@@ -19,6 +25,9 @@ type Props = {
   selectedRows: RowSelectionState;
   getSelectedRowsIds: () => string[] | number[];
   onDelete: () => Promise<void>;
+  title: string;
+  icon?: ModelIcon;
+  totalCount?: number;
 };
 
 export default function ListHeader({
@@ -30,6 +39,9 @@ export default function ListHeader({
   selectedRows,
   getSelectedRowsIds,
   onDelete,
+  title,
+  icon,
+  totalCount,
 }: Props) {
   const { basePath } = useConfig();
   const { t } = useI18n();
@@ -51,50 +63,75 @@ export default function ListHeader({
   }, [actionsProp, onDelete, t]);
 
   return (
-    <div className="flex justify-between items-end">
-      <div>
-        {onSearchChange && (
-          <div className="mt-4 flex justify-end items-center gap-2">
-            {isPending ? (
-              <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
-            ) : (
-              <MagnifyingGlassIcon
-                className="h-6 w-6 text-gray-400"
-                aria-hidden="true"
+    <>
+      <div className="h-auto md:h-16 py-4 md:py-0 flex justify-between sm:items-center flex-col sm:flex-row items-start gap-3 px-4 sticky top-0 z-10 bg-white border-b border-b-slate-200 shadow-sm">
+        <Breadcrumb
+          breadcrumbItems={[
+            {
+              label: title,
+              href: `${basePath}/${slugify(resource)}`,
+              current: true,
+              icon,
+            },
+          ]}
+        />
+        <div className="flex items-center justify-between gap-x-4 w-full sm:w-auto">
+          {(totalCount || 0 > 1 || (search && totalCount) || 0 > 1) && (
+            <span className="text-gray-400 text-sm hidden sm:block">
+              {search
+                ? t("list.header.search.result_filtered", { count: totalCount })
+                : t("list.header.search.result", {
+                    count: totalCount,
+                  })}
+            </span>
+          )}
+          {onSearchChange && (
+            <div className="flex justify-end items-center gap-2 bg-slate-100 border-gray-300 px-3 py-1 rounded-md">
+              <input
+                id="search"
+                name="search"
+                onInput={onSearchChange}
+                defaultValue={search}
+                type="search"
+                className="bg-transparent py-1.5 rounded-md text-sm focus:outline-none focus:ring-0 focus:ring-offset-0"
+                placeholder={`${t(
+                  "list.header.search.placeholder"
+                )} ${title?.toLowerCase()}`}
               />
-            )}
-            <input
-              name="search"
-              onInput={onSearchChange}
-              defaultValue={search}
-              type="search"
-              className="transition-all px-3 py-1.5 border border-gray-300 rounded-md shadow-sm focus:ring-nextadmin-primary-500 focus:border-nextadmin-primary-500 sm:text-sm focus-visible:outline focus-visible:outline-nextadmin-primary-500 focus-visible:ring-0 focus-visible:ring-nextadmin-primary-500"
-              placeholder={t("list.header.search.placeholder")}
+              <label htmlFor="search">
+                {isPending ? (
+                  <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
+                ) : (
+                  <MagnifyingGlassIcon
+                    className="h-6 w-6 text-gray-400"
+                    aria-hidden="true"
+                  />
+                )}
+              </label>
+            </div>
+          )}
+          {Boolean(selectedRowsCount) && (
+            <ActionsDropdown
+              actions={actions}
+              resource={resource}
+              selectedIds={getSelectedRowsIds()}
+              selectedCount={selectedRowsCount}
             />
-          </div>
-        )}
+          )}
+          <Link
+            href={`${basePath}/${slugify(resource)}/new`}
+            role="button"
+            data-testid="add-new-button"
+            className={buttonVariants({
+              variant: "default",
+              size: "sm",
+            })}
+          >
+            <span>{t("list.header.add.label")}</span>
+            <PlusSmallIcon className="h-5 w-5 ml-2" aria-hidden="true" />
+          </Link>
+        </div>
       </div>
-      <div className="flex items-center gap-x-4">
-        {!!selectedRowsCount && (
-          <ActionsDropdown
-            actions={actions}
-            resource={resource}
-            selectedIds={getSelectedRowsIds()}
-            selectedCount={selectedRowsCount}
-          />
-        )}
-        <Link
-          href={`${basePath}/${resource}/new`}
-          role="button"
-          className={buttonVariants({
-            variant: "default",
-            size: "sm",
-          })}
-        >
-          <span>{t("list.header.add.label")}</span>
-          <PlusIcon className="h-5 w-5 ml-2" aria-hidden="true" />
-        </Link>
-      </div>
-    </div>
+    </>
   );
 }

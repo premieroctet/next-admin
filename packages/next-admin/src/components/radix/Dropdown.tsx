@@ -1,6 +1,6 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import React, { ComponentProps, ElementRef, forwardRef } from "react";
 import clsx from "clsx";
+import { ComponentProps, ElementRef, forwardRef } from "react";
 
 export const Dropdown = DropdownMenu.Root;
 
@@ -39,7 +39,7 @@ export const DropdownContent = forwardRef<
   return (
     <DropdownMenu.Content
       className={clsx(
-        "bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none",
+        "bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none z-50",
         className
       )}
       ref={ref}
@@ -67,3 +67,33 @@ export const DropdownItem = forwardRef<
 });
 
 DropdownItem.displayName = "DropdownItem";
+
+export const DropdownLabel = forwardRef<
+  ElementRef<typeof DropdownMenu.Label>,
+  ComponentProps<typeof DropdownMenu.Label>
+>(({ className, ...props }, ref) => {
+  return (
+    <DropdownMenu.Label
+      className={clsx("group text-sm font-medium text-gray-900", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
+
+DropdownLabel.displayName = "DropdownLabel";
+
+export const DropdownSeparator = forwardRef<
+  ElementRef<typeof DropdownMenu.Separator>,
+  ComponentProps<typeof DropdownMenu.Separator>
+>(({ className, ...props }, ref) => {
+  return (
+    <DropdownMenu.Separator
+      className={clsx("h-px bg-gray-200 m-1", className)}
+      ref={ref}
+      {...props}
+    />
+  );
+});
+
+DropdownSeparator.displayName = "DropdownSeparator";
