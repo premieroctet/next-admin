@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 3.5.3
+
+### Patch Changes
+
+- 2735171: fix: fix checkboxes appearance + firefox issue
+
 ## 3.5.2
 
 ### Patch Changes
