@@ -50,3 +50,7 @@ export const extractSerializable = <T>(obj: T): T => {
     return undefined as unknown as T;
   }
 };
+
+export const slugify = (str: string) => {
+  return str.toLowerCase();
+};

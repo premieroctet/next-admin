@@ -5,6 +5,7 @@ import { useI18n } from "../context/I18nContext";
 import { ModelIcon } from "../types";
 import ResourceIcon from "./common/ResourceIcon";
 import { buttonVariants } from "./radix/Button";
+import { slugify } from "../utils/tools";
 
 const EmptyState = ({
   resource,
@@ -30,7 +31,7 @@ const EmptyState = ({
       </p>
       <div className="mt-6">
         <Link
-          href={`${basePath}/${resource}/new`}
+          href={`${basePath}/${slugify(resource)}/new`}
           role="button"
           className={buttonVariants({
             variant: "default",

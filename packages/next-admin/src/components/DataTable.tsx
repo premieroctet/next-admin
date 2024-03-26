@@ -30,6 +30,7 @@ import {
   TableHeader,
   TableRow,
 } from "./radix/Table";
+import { slugify } from "../utils/tools";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
@@ -192,7 +193,7 @@ export function DataTable({
                     : "even:bg-gray-50"
                 }`}
                 onClick={() => {
-                  window.location.href = `${basePath}/${resource.toLowerCase()}/${
+                  window.location.href = `${basePath}/${slugify(resource)}/${
                     row.original[modelIdProperty].value
                   }`;
                 }}
