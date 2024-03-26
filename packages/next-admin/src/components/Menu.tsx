@@ -30,6 +30,7 @@ import {
   DropdownSeparator,
   DropdownTrigger,
 } from "./radix/Dropdown";
+import { slugify } from "../utils/tools";
 
 export type MenuProps = {
   resource?: ModelName;
@@ -110,7 +111,7 @@ export default function Menu({
   const getItemProps = (model: ModelName) => {
     return {
       name: resourcesTitles?.[model] || model,
-      href: `${basePath}/${model.toLowerCase()}`,
+      href: `${basePath}/${slugify(model)}`,
       current: model === currentResource,
       icon: resourcesIcons?.[model],
     };

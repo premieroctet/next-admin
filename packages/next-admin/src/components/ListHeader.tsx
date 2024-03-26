@@ -14,6 +14,7 @@ import { ModelAction, ModelIcon, ModelName } from "../types";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
 import { buttonVariants } from "./radix/Button";
+import { slugify } from "../utils/tools";
 
 type Props = {
   resource: ModelName;
@@ -68,7 +69,7 @@ export default function ListHeader({
           breadcrumbItems={[
             {
               label: title,
-              href: `${basePath}/${resource.toLowerCase()}`,
+              href: `${basePath}/${slugify(resource)}`,
               current: true,
               icon,
             },
@@ -118,7 +119,7 @@ export default function ListHeader({
             />
           )}
           <Link
-            href={`${basePath}/${resource}/new`}
+            href={`${basePath}/${slugify(resource)}/new`}
             role="button"
             data-testid="add-new-button"
             className={buttonVariants({

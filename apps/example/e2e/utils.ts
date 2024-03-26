@@ -43,9 +43,9 @@ export const createItem = async (
   model: ModelName,
   page: Page
 ): Promise<string> => {
-  await page.goto(`${process.env.BASE_URL}/${model}`);
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}`);
   await page.getByTestId("add-new-button").click();
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/new`);
+  await page.waitForURL(`${process.env.BASE_URL}/${model.toLowerCase()}/new`);
 
   await fillForm(model, page, dataTest);
 
@@ -63,7 +63,7 @@ export const createItem = async (
 
 export const deleteItem = async (model: ModelName, page: Page, id: string) => {
   page.on("dialog", async (dialog) => dialog.accept());
-  await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}/${id}`);
   await page.click('button:has-text("Delete")');
   await page.waitForURL((url) =>
     url.pathname.endsWith(`/${model.toLowerCase()}`)
@@ -71,17 +71,17 @@ export const deleteItem = async (model: ModelName, page: Page, id: string) => {
 };
 
 export const readItem = async (model: ModelName, page: Page, id: string) => {
-  await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}/${id}`);
+  await page.waitForURL(`${process.env.BASE_URL}/${model.toLowerCase()}/*`);
   await readForm(model, page, dataTest);
 };
 
 export const updateItem = async (model: ModelName, page: Page, id: string) => {
-  await page.goto(`${process.env.BASE_URL}/${model}/${id}`);
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}/${id}`);
+  await page.waitForURL(`${process.env.BASE_URL}/${model.toLowerCase()}/*`);
   await fillForm(model, page, dataTestUpdate);
   await page.click('button:has-text("Save and continue editing")');
-  await page.waitForURL(`${process.env.BASE_URL}/${model}/*`);
+  await page.waitForURL(`${process.env.BASE_URL}/${model.toLowerCase()}/*`);
   await readForm(model, page, dataTestUpdate);
   expect(page.getByText("Updated successfully")).toBeDefined();
 };
@@ -164,7 +164,7 @@ const getRows = async (page: Page) => {
 };
 
 export const search = async (page: Page) => {
-  await page.goto(`${process.env.BASE_URL}/User`);
+  await page.goto(`${process.env.BASE_URL}/user`);
   await page.fill('input[name="search"]', "user0@nextadmin.io");
   await page.waitForURL((url) => !!url.searchParams.get("search"));
   const table = await page.$("table");
@@ -175,7 +175,7 @@ export const search = async (page: Page) => {
 };
 
 export const sort = async (page: Page) => {
-  await page.goto(`${process.env.BASE_URL}/User`);
+  await page.goto(`${process.env.BASE_URL}/user`);
   await page.click('th:has-text("email")>button');
   await page.waitForTimeout(300);
   let rows = await getRows(page);
@@ -190,7 +190,7 @@ export const sort = async (page: Page) => {
 };
 
 export const pagination = async (page: Page) => {
-  await page.goto(`${process.env.BASE_URL}/User`);
+  await page.goto(`${process.env.BASE_URL}/user`);
   await paginationPerPage(page, 10);
 };
 

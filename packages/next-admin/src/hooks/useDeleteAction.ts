@@ -1,5 +1,6 @@
 import { useConfig } from "../context/ConfigContext";
 import { ModelAction, ModelName } from "../types";
+import { slugify } from "../utils/tools";
 import { useRouterInternal } from "./useRouterInternal";
 
 export const useDeleteAction = (
@@ -21,13 +22,10 @@ export const useDeleteAction = (
         if (isAppDir) {
           await action?.(resource, ids);
         } else {
-          const response = await fetch(
-            `${basePath}/${resource.toLowerCase()}`,
-            {
-              method: "DELETE",
-              body: JSON.stringify(ids),
-            }
-          );
+          const response = await fetch(`${basePath}/${slugify(resource)}`, {
+            method: "DELETE",
+            body: JSON.stringify(ids),
+          });
 
           if (!response.ok) {
             throw new Error();

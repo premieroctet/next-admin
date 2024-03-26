@@ -57,6 +57,7 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
+import { slugify } from "../utils/tools";
 
 class CustomForm extends RjsfForm {
   onSubmit = (e: any) => {};
@@ -212,7 +213,7 @@ const Form = ({
 
       if (result?.deleted) {
         return router.replace({
-          pathname: `${basePath}/${resource.toLowerCase()}`,
+          pathname: `${basePath}/${slugify(resource)}`,
           query: {
             message: JSON.stringify({
               type: "success",
@@ -224,8 +225,8 @@ const Form = ({
 
       if (result?.created) {
         const pathname = result?.redirect
-          ? `${basePath}/${resource.toLowerCase()}`
-          : `${basePath}/${resource.toLowerCase()}/${result.createdId}`;
+          ? `${basePath}/${slugify(resource)}`
+          : `${basePath}/${slugify(resource)}/${result.createdId}`;
         return router.replace({
           pathname,
           query: {
@@ -239,7 +240,7 @@ const Form = ({
 
       if (result?.updated) {
         const pathname = result?.redirect
-          ? `${basePath}/${resource.toLowerCase()}`
+          ? `${basePath}/${slugify(resource)}`
           : location.pathname;
         return router.replace({
           pathname,
@@ -432,10 +433,10 @@ const Form = ({
   );
 
   const breadcrumItems = [
-    { label: title, href: `${basePath}/${resource.toLowerCase()}`, icon },
+    { label: title, href: `${basePath}/${slugify(resource)}`, icon },
     {
       label: edit ? `Edit` : "Create",
-      href: `${basePath}/${resource.toLowerCase()}/${id}`,
+      href: `${basePath}/${slugify(resource)}/${id}`,
       current: !edit,
     },
   ];
@@ -443,7 +444,7 @@ const Form = ({
   if (edit && id) {
     breadcrumItems.push({
       label: id.toString(),
-      href: `${basePath}/${resource.toLowerCase()}/${id}`,
+      href: `${basePath}/${slugify(resource)}/${id}`,
       current: true,
     });
   }
