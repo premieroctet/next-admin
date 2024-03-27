@@ -1,5 +1,18 @@
 # @premieroctet/next-admin
 
+## 3.6.0
+
+### Minor Changes
+
+- ddf9c8f: - Remove search on formatted fields in selector
+  - Add new `searchPaginatedResourceAction` option that is required for App Router to do research in Select fields other than enums
+
+### Patch Changes
+
+- b784778: fix: slugify all resources in urls
+- c050494: feat: add loading state on form
+- 02518f0: fix: label margin with input
+
 ## 3.5.3
 
 ### Patch Changes
