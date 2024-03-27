@@ -20,4 +20,5 @@ export const defaultTranslations: Translations = {
   "form.widgets.file_upload.label": "Choose a file",
   "form.widgets.file_upload.drag_and_drop": "or drag and drop",
   "form.widgets.file_upload.delete": "Delete",
+  "selector.loading": "Loading...",
 };

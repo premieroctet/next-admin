@@ -6,6 +6,7 @@ import {
 import { createRouter } from "next-connect";
 
 import { EditFieldsOptions, NextAdminOptions } from "./types";
+import { optionsFromResource } from "./utils/prisma";
 import { getPropsFromParams } from "./utils/props";
 import {
   formatSearchFields,
@@ -48,7 +49,7 @@ export const nextAdminRouter = async (
           };
         }
       })
-      .get(async (req) => {
+      .get(async (req, res) => {
         const params = getParamsFromUrl(req.url!, options.basePath);
 
         const requestOptions = formatSearchFields(req.url!);
@@ -63,6 +64,30 @@ export const nextAdminRouter = async (
         });
 
         return { props };
+      })
+      .post(`${options.basePath}/api/options`, async (req, res) => {
+        const body = await getBody(req);
+        const { originModel, property, model, query, page, perPage } =
+          JSON.parse(body) as any;
+
+        const data = await optionsFromResource({
+          prisma,
+          originResource: originModel,
+          property: property,
+          resource: model,
+          options,
+          context: {},
+          searchParams: new URLSearchParams({
+            search: query,
+            page: page.toString(),
+            itemsPerPage: perPage.toString(),
+          }),
+          appDir: false,
+        });
+
+        res.setHeader("Content-Type", "application/json");
+        res.write(JSON.stringify(data));
+        res.end();
       })
       .post(async (req, res) => {
         const params = getParamsFromUrl(req.url!, options.basePath);

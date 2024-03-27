@@ -23,13 +23,6 @@ const MultiSelectWidget = (props: any) => {
       !formData?.find((item: Enumeration) => item.value === option.value)
   );
 
-  useEffect(() => {
-    if (formContext.relationState?.[name]?.open) {
-      // @ts-expect-error
-      containerRef.current?.querySelector(`#${name}-search`)?.focus();
-    }
-  }, []);
-
   return (
     <div className="relative" ref={containerRef}>
       <div className="relative">
@@ -59,8 +52,8 @@ const MultiSelectWidget = (props: any) => {
       </div>
       <Selector
         open={!!formContext.relationState?.[name]?.open!}
-        options={optionsLeft}
         name={name}
+        options={optionsLeft?.length ? optionsLeft : undefined}
         onChange={(option: Enumeration) => {
           onChange([...(formData || []), option]);
         }}

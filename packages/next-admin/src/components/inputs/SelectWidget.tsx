@@ -30,12 +30,6 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
     formContext.setOpen(false, name);
   };
 
-  useEffect(() => {
-    if (formContext.relationState?.[name]?.open) {
-      // @ts-expect-error
-      containerRef.current?.querySelector(`#${name}-search`)?.focus();
-    }
-  }, []);
 
   const hasValue = useMemo(() => {
     return Object.keys(value || {}).length > 0;
@@ -80,7 +74,7 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
       </div>
       <Selector
         open={!!formContext.relationState?.[name]?.open!}
-        options={enumOptions}
+        options={enumOptions?.length ? enumOptions : undefined}
         name={props.name}
         onChange={handleChange}
       />

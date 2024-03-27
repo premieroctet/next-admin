@@ -259,7 +259,11 @@ export const deserialize = (
     return deserializeHtml(dom.body);
   } else {
     try {
-      return JSON.parse(string);
+      return (
+        JSON.parse(string) || [
+          { type: "paragraph", children: [{ text: string || "" }] },
+        ]
+      );
     } catch {
       return defaultValue;
     }

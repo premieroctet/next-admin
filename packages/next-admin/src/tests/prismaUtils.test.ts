@@ -1,7 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
-import { getMappedDataList, isSatisfyingSearch } from "../utils/prisma";
+import { getMappedDataList, optionsFromResource } from "../utils/prisma";
 import { options, prismaMock } from "./singleton";
-import { Prisma } from "@prisma/client";
 
 describe("getMappedDataList", () => {
   it("should return the data list, total and error", async () => {
@@ -30,13 +29,15 @@ describe("getMappedDataList", () => {
 
     prismaMock.post.count.mockResolvedValueOnce(2);
 
-    const result = await getMappedDataList(
-      prismaMock,
-      "Post",
+    const result = await getMappedDataList({
+      prisma: prismaMock,
+      resource: "Post",
       options,
-      new URLSearchParams(),
-      {}
-    );
+      searchParams: new URLSearchParams(),
+      context: {},
+      appDir: false,
+    });
+
     expect(result).toEqual({
       data: postData,
       total: postData.length,
@@ -45,44 +46,51 @@ describe("getMappedDataList", () => {
   });
 });
 
-describe("isSatisfyingSearch", () => {
-  const fieldsFiltered =
-    Prisma.dmmf.datamodel.models
-      .find((model) => model.name === "Post")
-      ?.fields.filter(({ name }) => ["title", "content"].includes(name)) ?? [];
+describe("optionsFromResource", () => {
+  it("should return the data list as an enumeration", async () => {
+    const postData = [
+      {
+        id: 1,
+        title: "Post 1",
+        content: "Content 1",
+        published: true,
+        author: 1,
+        authorId: 1,
+        rate: new Decimal(5),
+      },
+      {
+        id: 2,
+        title: "Post 2",
+        content: "Content 2",
+        published: true,
+        author: 1,
+        authorId: 1,
+        rate: new Decimal(5),
+      },
+    ];
 
-  it("should return true if the search is satisfying", () => {
-    const search = "test";
-    const data = {
-      id: 1,
-      title: "Test",
-      content: "Test",
-      published: true,
-    };
+    prismaMock.post.findMany.mockResolvedValueOnce(postData);
 
-    expect(isSatisfyingSearch(data, fieldsFiltered, search)).toBe(true);
-  });
+    prismaMock.post.count.mockResolvedValueOnce(2);
 
-  it("should return false if the search is not satisfying", () => {
-    const search = "not matching";
-    const data = {
-      id: 1,
-      title: "Test",
-      content: "Test",
-      published: true,
-    };
-    expect(isSatisfyingSearch(data, fieldsFiltered, search)).toBe(false);
-  });
+    const result = await optionsFromResource({
+      prisma: prismaMock,
+      originResource: "User",
+      property: "posts",
+      resource: "Post",
+      options,
+      searchParams: new URLSearchParams(),
+      context: {},
+      appDir: false,
+    });
 
-  it("should return true if the search matches the _formatted field", () => {
-    const search = "formatted test";
-    const data = {
-      id: 1,
-      title: "Test",
-      content: "Test",
-      published: true,
-      _formatted: "formatted test",
-    };
-    expect(isSatisfyingSearch(data, fieldsFiltered, search, true)).toBe(true);
+    expect(result).toEqual({
+      data: postData.map((post) => ({
+        label: post.title,
+        value: post.id,
+      })),
+      total: postData.length,
+      error: null,
+    });
   });
 });

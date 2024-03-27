@@ -1,4 +1,8 @@
-import { deleteItem, submitFormAction } from "@/actions/nextadmin";
+import {
+  deleteItem,
+  submitFormAction,
+  searchResource,
+} from "@/actions/nextadmin";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import schema from "@/prisma/json-schema/json-schema.json";
@@ -26,6 +30,7 @@ export default async function AdminPage({
         (messages) => messages.admin as Record<string, string>
       ),
     locale: params.locale as string,
+    searchPaginatedResourceAction: searchResource,
   });
 
   return (

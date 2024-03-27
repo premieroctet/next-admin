@@ -27,6 +27,9 @@
         "label": "Aucun(e) {{resource}} trouvée"
       }
     },
+    "selector": {
+      "loading": "Chargement"
+    },
     "form": {
       "button": {
         "delete": {

@@ -1,8 +1,9 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { JSONSchema7 } from "json-schema";
-import { ChangeEvent, ReactNode } from "react";
-import { PropertyValidationError } from "./exceptions/ValidationError";
+import type { JSONSchema7 } from "json-schema";
+import type { ChangeEvent, ReactNode } from "react";
+import type { PropertyValidationError } from "./exceptions/ValidationError";
+import type { SearchPaginatedResourceParams } from "./actions";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -343,6 +344,13 @@ export type AdminComponentProps = {
   actions?: ModelAction[];
   deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
   translations?: Translations;
+  searchPaginatedResourceAction?: (
+    params: SearchPaginatedResourceParams
+  ) => Promise<{
+    data: Enumeration[];
+    total: number;
+    error: string | null;
+  }>;
   /**
    * Global admin title
    *

@@ -32,6 +32,7 @@ export function NextAdmin({
   deleteAction,
   translations,
   locale,
+  searchPaginatedResourceAction,
   title,
   sidebar,
   resourcesIcons,
@@ -88,6 +89,7 @@ export function NextAdmin({
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}
+          searchPaginatedResourceAction={searchPaginatedResourceAction}
           icon={resourceIcon}
         />
       );

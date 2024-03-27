@@ -30,6 +30,7 @@ import { useI18n } from "../context/I18nContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
+  AdminComponentProps,
   Field,
   ModelAction,
   ModelIcon,
@@ -75,6 +76,7 @@ export type FormProps = {
   options?: Required<NextAdminOptions>["model"][ModelName];
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   actions?: ModelAction[];
+  searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
   icon?: ModelIcon;
 };
 
@@ -103,6 +105,7 @@ const Form = ({
   title,
   customInputs,
   actions,
+  searchPaginatedResourceAction,
   icon,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
@@ -473,7 +476,12 @@ const Form = ({
       </div>
       <div className="max-w-full align-middle p-4 sm:p-8">
         <div className="bg-white max-w-screen-md rounded-lg border p-4 sm:p-8">
-          <FormProvider initialValue={data}>
+          <FormProvider
+            initialValue={data}
+            searchPaginatedResourceAction={searchPaginatedResourceAction}
+            dmmfSchema={dmmfSchema}
+            resource={resource}
+          >
             <FormContext.Consumer>
               {({ formData, setFormData }) => (
                 <CustomForm
