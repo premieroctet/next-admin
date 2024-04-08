@@ -59,7 +59,7 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import { slugify } from "../utils/tools";
+import { formatLabel, slugify } from "../utils/tools";
 
 class CustomForm extends RjsfForm {
   onSubmit = (e: any) => {};
@@ -293,7 +293,8 @@ const Form = ({
         } = props;
 
         const labelAlias =
-          options?.aliases?.[id as Field<typeof resource>] || label;
+          options?.aliases?.[id as Field<typeof resource>] ||
+          formatLabel(label);
         let styleField = options?.edit?.styles?.[id as Field<typeof resource>];
 
         const tooltip =
@@ -312,7 +313,7 @@ const Form = ({
             {schema.type !== "null" && (
               <label
                 className={clsx(
-                  "flex items-center text-sm font-medium leading-6 text-gray-900 capitalize gap-2 mb-2"
+                  "flex items-center text-sm font-medium leading-6 text-gray-900 gap-2 mb-2"
                 )}
                 htmlFor={id}
               >
