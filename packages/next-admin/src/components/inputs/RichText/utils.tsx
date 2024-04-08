@@ -189,7 +189,7 @@ export const renderElement = (props: RenderElementProps) => {
 
 export const serialize = (nodes: Node[], format: RichTextFormat) => {
   if (format === "html") {
-    return nodes.map((n) => serializeHtml(n)).join("<br />");
+    return nodes.map((n) => serializeHtml(n)).join("");
   } else {
     return JSON.stringify(nodes);
   }
@@ -198,6 +198,10 @@ export const serialize = (nodes: Node[], format: RichTextFormat) => {
 export const serializeHtml = (node: Node) => {
   if (Text.isText(node)) {
     let string = node.text;
+    if (!string) {
+      return `<br />`;
+    }
+
     if (node.bold) {
       string = `<strong>${string}</strong>`;
     }
@@ -214,10 +218,14 @@ export const serializeHtml = (node: Node) => {
     if (node.strikethrough) {
       string = `<s>${string}</s>`;
     }
-    return `<span>${string}</span>`;
+    return string;
   }
 
   const children: string = node.children.map((n) => serializeHtml(n)).join("");
+
+  if (children === "<br />") {
+    return children;
+  }
 
   // @ts-expect-error
   switch (node.type) {
@@ -259,13 +267,9 @@ export const deserialize = (
     return deserializeHtml(dom.body);
   } else {
     try {
-      return (
-        JSON.parse(string) || [
-          { type: "paragraph", children: [{ text: string || "" }] },
-        ]
-      );
+      return JSON.parse(string);
     } catch {
-      return defaultValue;
+      return "";
     }
   }
 };
