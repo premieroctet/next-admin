@@ -54,3 +54,12 @@ export const extractSerializable = <T>(obj: T): T => {
 export const slugify = (str: string) => {
   return str.toLowerCase();
 };
+
+export const formatLabel = (label: string) => {
+  let spacedLabel = label
+    .replace(/_/g, " ")
+    .replace(/([A-Z])/g, " $1")
+    .trim();
+
+  return capitalize(spacedLabel.toLowerCase());
+};
