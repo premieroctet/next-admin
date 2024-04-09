@@ -91,7 +91,8 @@ function List({
                 <TableHead
                   sortDirection={sortDirection}
                   sortColumn={sortColumn}
-                  property={propertyAlias}
+                  property={property}
+                  propertyName={propertyAlias}
                   key={property}
                   onClick={() => {
                     router?.push({
@@ -208,34 +209,18 @@ function List({
                     });
                   }}
                 >
-                  <SelectTrigger className="max-w-[100px] bg-white">
-                    <SelectValue placeholder={pageSize} />
+                  <SelectTrigger className="max-w-[100px] bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle">
+                    <SelectValue asChild>
+                      <span className="pointer-events-none text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted">
+                        {pageSize}
+                      </span>
+                    </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem
-                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
-                      value={"10"}
-                    >
-                      10
-                    </SelectItem>
-                    <SelectItem
-                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
-                      value={"20"}
-                    >
-                      20
-                    </SelectItem>
-                    <SelectItem
-                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
-                      value={"50"}
-                    >
-                      50
-                    </SelectItem>
-                    <SelectItem
-                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
-                      value={"100"}
-                    >
-                      100
-                    </SelectItem>
+                  <SelectContent>
+                    <SelectItem value={"10"}>10</SelectItem>
+                    <SelectItem value={"20"}>20</SelectItem>
+                    <SelectItem value={"50"}>50</SelectItem>
+                    <SelectItem value={"100"}>100</SelectItem>
                   </SelectContent>
                 </Select>
 

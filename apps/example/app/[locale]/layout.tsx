@@ -20,7 +20,9 @@ export default function Layout({
 
   return (
     <html lang={locale}>
-      <body>{children}</body>
+      <body className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default">
+        {children}
+      </body>
     </html>
   );
 }

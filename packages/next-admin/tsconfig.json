@@ -5,12 +5,15 @@
     "./src/index.tsx",
     "./src/router.tsx",
     "./src/actions/index.ts",
-    "./src/mainLayout.tsx"
+    "./src/mainLayout.tsx",
+    "./src/plugin.ts",
+    "./src/preset.ts"
   ],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
     "lib": ["dom"],
     "outDir": "dist",
-    "target": "ES2017"
+    "target": "ES2017",
+    "rootDir": "./src"
   }
 }

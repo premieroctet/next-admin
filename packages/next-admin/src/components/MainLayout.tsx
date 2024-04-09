@@ -1,5 +1,6 @@
 import { merge } from "lodash";
 import { PropsWithChildren } from "react";
+import { ColorSchemeProvider } from "../context/ColorSchemeContext";
 import { ConfigProvider } from "../context/ConfigContext";
 import { I18nProvider } from "../context/I18nContext";
 import { defaultTranslations } from "../i18n";
@@ -33,26 +34,28 @@ export const MainLayout = ({
   return (
     <ConfigProvider basePath={`${localePath}${basePath}`} isAppDir={isAppDir}>
       <I18nProvider translations={mergedTranslations}>
-        <div>
-          <Menu
-            title={title}
-            resources={resources}
-            resource={resource}
-            resourcesTitles={resourcesTitles}
-            customPages={customPages}
-            configuration={sidebar}
-            resourcesIcons={resourcesIcons}
-            user={user}
-            externalLinks={externalLinks}
-          />
-          <main className="lg:pl-72">
-            {message && (
-              <Message message={message.content} type={message.type} />
-            )}
-            {error && <Message message={error} type="error" />}
-            {children}
-          </main>
-        </div>
+        <ColorSchemeProvider>
+          <div className="next-admin__root">
+            <Menu
+              title={title}
+              resources={resources}
+              resource={resource}
+              resourcesTitles={resourcesTitles}
+              customPages={customPages}
+              configuration={sidebar}
+              resourcesIcons={resourcesIcons}
+              user={user}
+              externalLinks={externalLinks}
+            />
+            <main className="lg:pl-72">
+              {message && (
+                <Message message={message.content} type={message.type} />
+              )}
+              {error && <Message message={error} type="error" />}
+              {children}
+            </main>
+          </div>
+        </ColorSchemeProvider>
       </I18nProvider>
     </ConfigProvider>
   );

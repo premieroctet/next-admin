@@ -86,8 +86,8 @@ export default function Menu({
         href={item.href}
         className={clsx(
           item.current
-            ? "bg-nextadmin-primary-50 text-nextadmin-primary-700"
-            : "text-slate-500 hover:bg-slate-100",
+            ? "bg-nextadmin-menu-muted dark:bg-dark-nextadmin-menu-muted dark:text-dark-nextadmin-menu-emphasis text-nextadmin-menu-emphasis"
+            : "text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color dark:hover:bg-dark-nextadmin-menu-muted hover:bg-nextadmin-menu-muted hover:text-nextadmin-menu-emphasis",
           "group flex gap-x-2 rounded-lg py-2 px-3 text-sm leading-6 transition-colors items-center"
         )}
       >
@@ -96,8 +96,8 @@ export default function Menu({
             icon={item.icon}
             className={clsx(
               item.current
-                ? "text-nextadmin-primary-600"
-                : "text-slate-500 group-hover:text-nextadmin-primary-600",
+                ? "text-nextadmin-menu-emphasis dark:text-dark-nextadmin-menu-emphasis"
+                : "text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color group-hover:text-nextadmin-menu-emphasis dark:group-hover:text-dark-nextadmin-menu-emphasis",
               "h-5 w-5 shrink-0"
             )}
             aria-hidden="true"
@@ -137,7 +137,7 @@ export default function Menu({
     }
 
     return (
-      <div className="flex flex-1 gap-1 px-2 py-3 leading-6 text-sm font-semibold text-slate-500 items-center">
+      <div className="flex flex-1 gap-1 px-2 py-3 leading-6 text-sm font-semibold text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color items-center">
         <div className="flex flex-1 gap-3 items-center min-w-0">
           {user.data.picture ? (
             <img
@@ -146,7 +146,7 @@ export default function Menu({
               alt="User picture"
             />
           ) : (
-            <div className="h-8 w-8 flex flex-shrink-0 items-center justify-center rounded-full bg-nextadmin-primary-100 text-nextadmin-primary-600 uppercase">
+            <div className="h-8 w-8 flex flex-shrink-0 items-center justify-center rounded-full bg-nextadmin-menu-color/20 dark:bg-dark-nextadmin-menu-color/95 text-nextadminmenu-emphasis dark:text-dark-nextadmin-menu-muted uppercase">
               {getInitials()}
             </div>
           )}
@@ -165,23 +165,19 @@ export default function Menu({
               size="sm"
               className="order-2 flex-grow-1 flex-shrink-0 basis-auto !px-2 py-2"
             >
-              <Cog6ToothIcon className="w-6 h-6 text-slate-500" />
+              <Cog6ToothIcon className="w-6 h-6" />
             </Button>
           </DropdownTrigger>
           <DropdownBody>
-            <DropdownContent
-              side="top"
-              sideOffset={5}
-              className="z-50 px-1 py-2"
-            >
-              <DropdownLabel className="py-1 px-4 font-normal">
+            <DropdownContent side="top" sideOffset={5} className="px-1 py-2">
+              <DropdownLabel className="py-1 px-4 font-normal text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted">
                 {user.data.name}
               </DropdownLabel>
               <DropdownSeparator />
               <DropdownItem asChild>
                 <Link
                   href={user.logoutUrl}
-                  className="flex items-center gap-2 hover:text-nextadmin-primary-600 hover:bg-gray-50 py-1 px-4 rounded font-medium"
+                  className="flex items-center gap-2 text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted py-1 px-4 rounded font-medium"
                 >
                   <PowerIcon className="w-4 h-4" />
                   <span>Logout</span>
@@ -203,7 +199,7 @@ export default function Menu({
       <Link
         key={link.url}
         href={link.url}
-        className="flex flex-row items-center justify-between gap-2 text-sm text-slate-500 hover:text-nextadmin-primary-600 hover:bg-slate-100 p-3 font-medium rounded-lg"
+        className="flex flex-row items-center justify-between gap-2 text-sm transition-colors text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted p-3 font-medium rounded-lg"
         target="_blank"
         rel="noopener"
       >
@@ -216,13 +212,13 @@ export default function Menu({
   const renderNavigation = () => {
     return (
       <>
-        <div className="flex grow flex-col overflow-y-auto bg-slate-50 pb-2 border-r border-r-slate-200">
-          <div className="flex h-16 items-center px-2">
+        <div className="flex grow flex-col overflow-y-auto bg-nextadmin-menu-background dark:bg-dark-nextadmin-menu-background pb-2 border-r border-r-nextadmin-border-default dark:border-r-dark-nextadmin-border-default">
+          <div className="flex h-[63px] items-center px-2">
             <Link
               href={basePath}
               className="flex gap-2 items-center overflow-hidden"
             >
-              <div className="text-md whitespace-nowrap text-ellipsis overflow-hidden font-semibold">
+              <div className="text-md whitespace-nowrap text-ellipsis overflow-hidden font-semibold dark:text-dark-nextadmin-brand-inverted">
                 {title}
               </div>
             </Link>
@@ -232,7 +228,7 @@ export default function Menu({
             <ul role="list" className="flex flex-1 flex-col gap-y-4">
               {configuration?.groups?.map((group) => (
                 <li key={group.title}>
-                  <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">
+                  <div className="text-xs text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color uppercase tracking-wider mb-2">
                     {group.title}
                   </div>
                   <ul role="list" className="-ml-2 flex flex-col gap-y-1 mt-1">

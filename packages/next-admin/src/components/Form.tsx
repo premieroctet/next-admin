@@ -313,7 +313,7 @@ const Form = ({
             {schema.type !== "null" && (
               <label
                 className={clsx(
-                  "flex items-center text-sm font-medium leading-6 text-gray-900 gap-2 mb-2"
+                  "flex items-center text-sm font-medium leading-6 text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted gap-2 mb-2"
                 )}
                 htmlFor={id}
               >
@@ -414,8 +414,8 @@ const Form = ({
             {...props}
             value={props.value ?? ""}
             className={clsx(
-              "block w-full transition-all duration-300 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-nextadmin-primary-600 text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed",
-              { "ring-red-600": rawErrors }
+              "block w-full transition-all duration-300 rounded-md border-0 py-1.5 dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted shadow-sm ring-1 ring-inset ring-nextadmin-border-default placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:cursor-not-allowed",
+              { "ring-red-600 dark:ring-red-400": rawErrors }
             )}
           />
         );
@@ -425,7 +425,7 @@ const Form = ({
       },
       FieldErrorTemplate: ({ errors }) => {
         return errors ? (
-          <div className="text-sm text-red-600 mt-1">
+          <div className="text-sm text-red-600 dark:text-red-400 mt-1">
             {errors.map((error, idx) => {
               if (typeof error === "string") {
                 return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
@@ -438,7 +438,9 @@ const Form = ({
       },
       DescriptionFieldTemplate: ({ description, schema }) => {
         return description && schema.type !== "null" ? (
-          <span className="text-sm text-gray-500">{description}</span>
+          <span className="text-sm text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis">
+            {description}
+          </span>
         ) : null;
       },
     }),
@@ -464,7 +466,7 @@ const Form = ({
 
   return (
     <div className="relative">
-      <div className="flex h-16 justify-between items-center flex-row gap-3 px-4 sticky top-0 z-10 bg-white border-b border-b-slate-200 shadow-sm">
+      <div className="flex h-16 justify-between items-center flex-row gap-3 px-4 sticky top-0 z-10 bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-next-admin-border-default border-b border-b-next-admin-border-default shadow-sm">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
         {!!actions && actions.length > 0 && !!id && (
           <ActionsDropdown
@@ -476,7 +478,7 @@ const Form = ({
         )}
       </div>
       <div className="max-w-full align-middle p-4 sm:p-8">
-        <div className="bg-white max-w-screen-md rounded-lg border p-4 sm:p-8">
+        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis max-w-screen-md rounded-lg border border-nextadmin-border-default dark:border-dark-nextadmin-border-default p-4 sm:p-8">
           <FormProvider
             initialValue={data}
             searchPaginatedResourceAction={searchPaginatedResourceAction}

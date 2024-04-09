@@ -104,7 +104,7 @@ const FileWidget = (props: WidgetProps) => {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={fileImage!} alt="file" className="h-32" />
                 ) : (
-                  <DocumentIcon className="h-12 w-12 text-gray-400" />
+                  <DocumentIcon className="h-12 w-12 text-nextadmin-content-default dark:text-dark-nextadmin-content-default" />
                 )}
               </a>
               {!!fileName && (

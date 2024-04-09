@@ -10,7 +10,6 @@ import {
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
 import EmptyState from "./EmptyState";
 import Checkbox from "./radix/Checkbox";
@@ -53,16 +52,18 @@ export function DataTable({
   onDelete,
   icon,
 }: DataTableProps) {
-  const { router } = useRouterInternal();
   const { basePath } = useConfig();
   const { t } = useI18n();
 
-  const columnsVisibility = columns.reduce((acc, column) => {
-    // @ts-expect-error
-    const key = column.accessorKey as Field<typeof resource>;
-    acc[key] = Object.keys(data[0]).includes(key);
-    return acc;
-  }, {} as Record<Field<typeof resource>, boolean>);
+  const columnsVisibility = columns.reduce(
+    (acc, column) => {
+      // @ts-expect-error
+      const key = column.accessorKey as Field<typeof resource>;
+      acc[key] = Object.keys(data[0]).includes(key);
+      return acc;
+    },
+    {} as Record<Field<typeof resource>, boolean>
+  );
 
   const modelIdProperty = resourcesIdProperty[resource];
   const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
@@ -113,7 +114,7 @@ export function DataTable({
         <Dropdown>
           <DropdownTrigger asChild>
             <Button variant="ghost" size="sm" className="!px-2 py-2">
-              <EllipsisVerticalIcon className="w-6 h-6 text-gray-700" />
+              <EllipsisVerticalIcon className="w-6 h-6 text-nextadmin-content-default dark:text-dark-nextadmin-content-default" />
             </Button>
           </DropdownTrigger>
           <DropdownBody>
@@ -159,12 +160,15 @@ export function DataTable({
   });
 
   return (
-    <div className="overflow-hidden bg-white rounded-lg border">
+    <div className="overflow-hidden bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default rounded-lg border">
       <Table>
         {table.getRowModel().rows?.length > 0 && (
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow
+                key={headerGroup.id}
+                className="border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default"
+              >
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
@@ -187,10 +191,10 @@ export function DataTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className={`cursor-pointer hover:bg-nextadmin-primary-50/40 border-b border-b-slate-300  ${
+                className={`cursor-pointer hover:bg-nextadmin-background-muted dark:hover:bg-dark-nextadmin-background-muted/75 border-b border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default ${
                   row.getIsSelected()
-                    ? "bg-nextadmin-primary-50/40"
-                    : "even:bg-gray-50"
+                    ? "bg-nextadmin-background-emphasis/40 dark:bg-dark-nextadmin-background-subtle"
+                    : "even:bg-nextadmin-background-subtle dark:even:bg-dark-nextadmin-background-subtle/60"
                 }`}
                 onClick={() => {
                   window.location.href = `${basePath}/${slugify(resource)}/${

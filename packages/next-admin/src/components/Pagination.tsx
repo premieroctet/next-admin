@@ -73,7 +73,7 @@ export function Pagination({
   };
 
   return (
-    <div className="flex items-center justify-end space-x-2 bg-white">
+    <div className="flex items-center justify-end space-x-2 bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle rounded-md">
       <nav
         className="isolate inline-flex -space-x-px rounded-md shadow-sm"
         aria-label="Pagination"
@@ -83,7 +83,7 @@ export function Pagination({
           onClick={() => {
             onPageChange(currentPageIndex - 1);
           }}
-          className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:text-gray-300 disabled:ring-gray-100 disabled:cursor-not-allowed"
+          className="relative inline-flex items-center rounded-l-md px-2 py-2 text-nextadmin-content-default dark:text-dark-nextadmin-content-default ring-1 ring-inset ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong/50 hover:bg-nextadmin-background-subtle dark:hover:bg-dark-nextadmin-background-muted focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="sr-only">Previous</span>
           <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
@@ -103,8 +103,8 @@ export function Pagination({
             }}
             className={
               pageNumber === currentPageIndex + 1
-                ? "relative z-10 inline-flex items-center bg-nextadmin-primary-600 px-4 py-2 text-sm font-semibold text-white focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-nextadmin-primary-600"
-                : "relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex"
+                ? "relative z-10 inline-flex items-center bg-nextadmin-brand-default dark:bg-dark-nextadmin-background-muted dark:ring-1 dark:ring-inset ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong/50 px-4 py-2 text-sm font-semibold text-nextadmin-brand-inverted dark:text-dark-nextadmin-brand-inverted focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
+                : "relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong/5 hover:bg-gray-50 dark:hover:bg-slate-500 dark:text-white focus:z-20 focus:outline-offset-0 md:inline-flex"
             }
           >
             {pageNumber}
@@ -115,7 +115,7 @@ export function Pagination({
           onClick={() => {
             onPageChange(currentPageIndex + 1);
           }}
-          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:text-gray-300 disabled:ring-gray-100 disabled:cursor-not-allowed"
+          className="relative inline-flex items-center rounded-r-md px-2 py-2 text-nextadmin-content-default dark:text-dark-nextadmin-content-default ring-1 ring-inset ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong/50 hover:bg-nextadmin-background-subtle dark:hover:bg-dark-nextadmin-background-muted focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <span className="sr-only">Next</span>
           <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />

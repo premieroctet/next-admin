@@ -2,8 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer base {
-  body {
+/* @layer base {
+  .next-admin__root {
     @apply bg-slate-50/50;
+    @apply dark:bg-slate-900;
   }
-}
+} */

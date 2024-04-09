@@ -39,7 +39,7 @@ export const DropdownContent = forwardRef<
   return (
     <DropdownMenu.Content
       className={clsx(
-        "bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none z-50",
+        "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle shadow-lg rounded-md ring-1 ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong ring-opacity-5 focus:outline-none z-50",
         className
       )}
       ref={ref}
@@ -57,7 +57,7 @@ export const DropdownItem = forwardRef<
   return (
     <DropdownMenu.Item
       className={clsx(
-        "group text-sm text-gray-700 hover:bg-gray-100",
+        "group text-sm text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted hover:bg-nextadmin-background-muted",
         className
       )}
       ref={ref}

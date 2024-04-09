@@ -35,7 +35,7 @@ const Checkbox = ({
         });
       }}
       className={clsx(
-        'flex justify-center items-center h-4 w-4 rounded border border-gray-200 bg-white text-white data-[state="checked"]:bg-nextadmin-primary-500 data-[state="checked"]:border-nextadmin-primary-500 data-[state="indeterminate"]:bg-nextadmin-primary-500 data-[state="indeterminate"]:border-nextadmin-primary-500',
+        'flex justify-center items-center h-4 w-4 rounded border border-gray-200 bg-white dark:bg-slate-500 dark:border-gray-400 text-white data-[state="checked"]:!bg-nextadmin-primary-500 data-[state="checked"]:border-nextadmin-primary-500 data-[state="indeterminate"]:!bg-nextadmin-primary-500 data-[state="indeterminate"]:border-nextadmin-primary-500',
         {
           "ring-1 ring-offset-1 ring-nextadmin-primary-600": status === true,
         },

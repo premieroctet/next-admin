@@ -19,7 +19,9 @@ export const options: NextAdminOptions = {
         fields: {
           role: {
             formatter: (role) => {
-              return <strong>{role.toString()}</strong>;
+              return (
+                <strong className="dark:text-white">{role.toString()}</strong>
+              );
             },
           },
           birthDate: {

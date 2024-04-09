@@ -41,7 +41,7 @@ const ActionsDropdown = ({
     <Dropdown onOpenChange={setIsOpen}>
       <DropdownTrigger
         asChild
-        className="flex items-center gap-x-2 text-sm text-gray-700 rounded-md border border-input bg-transparent px-3 py-2"
+        className="flex items-center gap-x-2 text-sm text-nextadmin-content-inverted dark:text-dark-nextadmin-brand-inverted rounded-md border border-nextadmin-border-default dark:border-dark-nextadmin-border-default bg-transparent dark:bg-dark-nextadmin-background-subtle px-3 py-2"
         data-testid="actions-dropdown"
       >
         <button type="button">
@@ -80,7 +80,8 @@ const ActionsDropdown = ({
                 <DropdownItem
                   key={action.title}
                   className={clsx("rounded-md py-1 px-2 cursor-pointer", {
-                    "text-red-700": action.style === "destructive",
+                    "text-red-700 dark:text-red-400":
+                      action.style === "destructive",
                     "hover:bg-red-50": action.style === "destructive",
                   })}
                   onClick={() => onActionClick(action)}

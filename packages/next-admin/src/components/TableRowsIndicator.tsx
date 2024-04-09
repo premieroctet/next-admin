@@ -18,7 +18,7 @@ export default function TableRowsIndicator({
   const end = Math.min(pageSize * (pageIndex + 1), totalRows);
   return (
     <div>
-      <p className="text-sm text-neutral-400 font-light">
+      <p className="text-sm text-nextadmin-content-default dark:text-dark-nextadmin-content-default font-light">
         {t("list.footer.indicator.showing")}{" "}
         <span className="font-medium">{start}</span>{" "}
         {t("list.footer.indicator.to")}{" "}

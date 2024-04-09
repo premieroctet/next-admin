@@ -21,12 +21,12 @@ const EmptyState = ({
     <div className="text-center py-10">
       <ResourceIcon
         icon={icon ?? "RectangleGroupIcon"}
-        className="mx-auto h-20 w-20 text-slate-300 stroke-1"
+        className="mx-auto h-20 w-20 text-nextadmin-content-default dark:text-dark-nextadmin-content-default stroke-1"
       />
-      <h3 className="mt-2 font-semibold text-slate-800 text-lg">
+      <h3 className="mt-2 font-semibold text-nextadmin-content-inverted dark:text-dark-nextadmin-content-default  text-lg">
         {t("list.empty.label", { resource: resource.toLowerCase() })}
       </h3>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="mt-1 text-sm text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis ">
         {t("list.empty.caption", { resource: resource.toLowerCase() })}
       </p>
       <div className="mt-6">
