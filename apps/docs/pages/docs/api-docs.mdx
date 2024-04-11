@@ -328,6 +328,14 @@ The `externalLinks` property allows you to add external links to the sidebar men
 | `label` | the label of the link displayed on the sidebar. This is mandatory |
 | `url`   | the URL of the link. This is mandatory                            |
 
+### `defaultColorScheme` property
+
+The `defaultColorScheme` property defines a default color palette between `light`, `dark` and `system`, but allows the user to modify it. Default to `system`.
+
+### `forceColorScheme` property
+
+Identical to `defaultColorScheme` but does not allow the user to change it.
+
 Here is an example of using `NextAdminOptions` for the following schema :
 
 ```prisma

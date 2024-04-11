@@ -30,7 +30,6 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
     formContext.setOpen(false, name);
   };
 
-
   const hasValue = useMemo(() => {
     return Object.keys(value || {}).length > 0;
   }, [value]);
@@ -54,9 +53,9 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
         <div className="flex space-x-3">
           {hasValue && props.schema.relation && (
             <Link
-              href={`${basePath}/${slugify(props.schema.relation)}/${
-                value?.value
-              }`}
+              href={`${basePath}/${slugify(
+                props.schema.relation
+              )}/${value?.value}`}
               className="flex items-center"
             >
               <ArrowTopRightOnSquareIcon className="w-5 h-5 text-gray-400 cursor-pointer" />

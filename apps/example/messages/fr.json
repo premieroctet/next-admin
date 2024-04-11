@@ -1,5 +1,10 @@
 {
   "admin": {
+    "theme": {
+      "dark": "Sombre",
+      "light": "Clair",
+      "system": "Système"
+    },
     "list": {
       "header": {
         "add": {

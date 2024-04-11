@@ -37,7 +37,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
 
     return () => {
       searchPage.current = 1;
-    }
+    };
   }, [open]);
 
   const runSearch = async (resetOptions = true) => {
@@ -75,22 +75,20 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
           totalSearchedItems.current = response.total;
         }
       } else {
-        const response = await fetch(
-          `${basePath}/api/options`, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              originModel: resource!,
-              property: name,
-              model,
-              query,
-              page: searchPage.current,
-              perPage,
-            }),
-          }
-        );
+        const response = await fetch(`${basePath}/api/options`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            originModel: resource!,
+            property: name,
+            model,
+            query,
+            page: searchPage.current,
+            perPage,
+          }),
+        });
 
         if (response.ok) {
           const responseJson = await response.json();
@@ -132,7 +130,10 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (allOptions?.length > 0 && allOptions.length >= totalSearchedItems.current) {
+    if (
+      allOptions?.length > 0 &&
+      allOptions.length >= totalSearchedItems.current
+    ) {
       setIsLastRowReached(true);
     }
   }, [allOptions, totalSearchedItems]);
@@ -186,7 +187,8 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
               />
             </div>
           </div>
-          {allOptions && allOptions.length > 0 && (
+          {allOptions &&
+            allOptions.length > 0 &&
             allOptions?.map((option, index: number) => (
               <div
                 key={index}
@@ -197,15 +199,15 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
               >
                 {option.label}
               </div>
-            ))
-          )}
+            ))}
 
           {allOptions && allOptions.length === 0 && !isPending ? (
             <div className="px-3 py-2 text-sm text-gray-700">
               No results found
-            </div>) :
-            (!isLastRowReached && <LoaderRow />)
-          }
+            </div>
+          ) : (
+            !isLastRowReached && <LoaderRow />
+          )}
         </div>
       </Transition.Child>
     </Transition.Root>

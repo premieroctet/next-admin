@@ -2,8 +2,8 @@ import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
 import type { ChangeEvent, ReactNode } from "react";
-import type { PropertyValidationError } from "./exceptions/ValidationError";
 import type { SearchPaginatedResourceParams } from "./actions";
+import type { PropertyValidationError } from "./exceptions/ValidationError";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -22,7 +22,7 @@ export type Payload = Prisma.TypeMap["model"][ModelName]["payload"];
 
 export type ModelFromPayload<
   P extends Payload,
-  T extends object | number = object
+  T extends object | number = object,
 > = {
   [Property in keyof P["scalars"]]: P["scalars"][Property];
 } & {
@@ -33,35 +33,35 @@ export type ModelFromPayload<
       ? S
       : T
     : never | P["objects"][Property] extends { scalars: infer S }[]
-    ? T extends object
-      ? S[]
-      : T[]
-    : never | P["objects"][Property] extends { scalars: infer S } | null
-    ? T extends object
-      ? S | null
-      : T | null
-    : never;
+      ? T extends object
+        ? S[]
+        : T[]
+      : never | P["objects"][Property] extends { scalars: infer S } | null
+        ? T extends object
+          ? S | null
+          : T | null
+        : never;
 };
 
 export type Model<
   M extends ModelName,
-  T extends object | number = object
+  T extends object | number = object,
 > = ModelFromPayload<Prisma.TypeMap["model"][M]["payload"], T>;
 
 export type PropertyPayload<
   M extends ModelName,
-  P extends keyof ObjectField<M>
+  P extends keyof ObjectField<M>,
 > = Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends Array<infer T>
   ? T
   : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends
-      | infer T
-      | null
-  ? T
-  : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
+        | infer T
+        | null
+    ? T
+    : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
 
 export type ModelFromProperty<
   M extends ModelName,
-  P extends keyof ObjectField<M>
+  P extends keyof ObjectField<M>,
 > = PropertyPayload<M, P> extends Payload
   ? ModelFromPayload<PropertyPayload<M, P>>
   : never;
@@ -109,7 +109,7 @@ export type EditFieldsOptions<T extends ModelName> = {
 export type Handler<
   M extends ModelName,
   P extends Field<M>,
-  T extends Model<M>[P]
+  T extends Model<M>[P],
 > = {
   get?: (input: T) => any;
   upload?: (file: Buffer) => Promise<string>;
@@ -135,10 +135,10 @@ export type FormatOptions<T> = T extends string
       | `richtext-${RichTextFormat}`
       | "json"
   : never | T extends Date
-  ? "date" | "date-time" | "time"
-  : never | T extends number
-  ? "updown" | "range"
-  : never;
+    ? "date" | "date-time" | "time"
+    : never | T extends number
+      ? "updown" | "range"
+      : never;
 
 export type ListOptions<T extends ModelName> = {
   display?: Field<T>[];
@@ -210,6 +210,8 @@ export type NextAdminOptions = {
   pages?: Record<string, { title: string; icon?: ModelIcon }>;
   sidebar?: SidebarConfiguration;
   externalLinks?: ExternalLink[];
+  forceColorScheme?: ColorScheme;
+  defaultColorScheme?: ColorScheme;
 };
 
 /** Type for Schema */
@@ -379,6 +381,7 @@ export type MainLayoutProps = Pick<
   | "resourcesIcons"
   | "user"
   | "externalLinks"
+  | "options"
 >;
 
 export type CustomUIProps = {
@@ -437,3 +440,7 @@ export type Translations = {
 } & {
   [key: string]: string;
 };
+
+export const colorSchemes = ["light", "dark", "system"] as const;
+export type ColorScheme = (typeof colorSchemes)[number];
+export type BasicColorScheme = Exclude<ColorScheme, "system">;

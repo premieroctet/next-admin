@@ -185,4 +185,5 @@ export const options: NextAdminOptions = {
       url: "https://next-admin.js.org",
     },
   ],
+  defaultColorScheme: "dark",
 };

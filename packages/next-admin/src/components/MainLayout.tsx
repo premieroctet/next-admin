@@ -27,12 +27,17 @@ export const MainLayout = ({
   user,
   externalLinks,
   title,
+  options,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
 
   return (
-    <ConfigProvider basePath={`${localePath}${basePath}`} isAppDir={isAppDir}>
+    <ConfigProvider
+      options={options}
+      basePath={`${localePath}${basePath}`}
+      isAppDir={isAppDir}
+    >
       <I18nProvider translations={mergedTranslations}>
         <ColorSchemeProvider>
           <div className="next-admin__root">

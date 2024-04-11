@@ -1,14 +1,33 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
+import {
+  ReactNode,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { BasicColorScheme, ColorScheme, colorSchemes } from "../types";
+import { useConfig } from "./ConfigContext";
+
+const basicColorSchemeIcons: Record<BasicColorScheme, JSX.Element> = {
+  light: <SunIcon className="w-4 h-4" />,
+  dark: <MoonIcon className="w-4 h-4" />,
+};
 
 type ColorSchemeContextType = {
-  colorScheme: "dark" | "light" | "system";
-  setColorScheme: (colorScheme: "dark" | "light" | "system") => void;
+  colorScheme: ColorScheme;
+  colorSchemeIcon: ReactNode;
+  setColorScheme: (colorScheme: ColorScheme) => void;
+  toggleColorScheme: () => void;
 };
 
 const ColorSchemeContext = createContext<ColorSchemeContextType>({
   colorScheme: "system",
+  colorSchemeIcon: undefined,
   setColorScheme: () => {},
+  toggleColorScheme: () => {},
 });
 
 type ProviderProps = {
@@ -16,36 +35,59 @@ type ProviderProps = {
 };
 
 export const ColorSchemeProvider = ({ children }: ProviderProps) => {
-  const getSystemColorScheme = () => {
-    if (typeof window === "undefined") return "light";
-
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
-  };
-
-  const [colorScheme, setColorScheme] = useState<"dark" | "light">(
-    getSystemColorScheme()
+  const [colorSchemeIcon, setColorSchemeIcon] = useState<JSX.Element>();
+  const { options } = useConfig();
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(() => {
+    if (options?.forceColorScheme) {
+      return options?.forceColorScheme;
+    }
+    const storedColorScheme = localStorage.getItem(
+      "next-admin-theme"
+    ) as ColorScheme | null;
+    return storedColorScheme && colorSchemes.includes(storedColorScheme)
+      ? storedColorScheme
+      : options?.defaultColorScheme || "system";
+  });
+  const [systemPreference, setSystemPreference] = useState<BasicColorScheme>(
+    () =>
+      window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light"
   );
 
-  const setColorSchemeClass = (colorScheme: "dark" | "light") => {
+  const applyColorScheme = useCallback(() => {
     document.documentElement.classList.remove("dark", "light");
-    document.documentElement.classList.add(colorScheme);
-    setColorScheme(colorScheme);
+    const colorSchemeValue: BasicColorScheme =
+      colorScheme === "system" ? systemPreference : colorScheme;
+    setColorSchemeIcon(basicColorSchemeIcons[colorSchemeValue]);
+    document.documentElement.classList.add(colorSchemeValue);
+  }, [colorScheme, systemPreference]);
+
+  useEffect(() => {
+    localStorage.setItem("next-admin-theme", colorScheme);
+    applyColorScheme();
+  }, [colorScheme, applyColorScheme]);
+
+  useEffect(() => {
+    applyColorScheme();
+  }, [applyColorScheme]);
+
+  const toggleColorScheme = () => {
+    const index = colorSchemes.indexOf(colorScheme);
+    const nextIndex = (index + 1) % colorSchemes.length;
+    setColorScheme(colorSchemes[nextIndex]);
   };
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    setColorSchemeClass(mediaQuery.matches ? "dark" : "light");
+    setSystemPreference(mediaQuery.matches ? "dark" : "light");
 
     const handleChange = (e: MediaQueryListEvent) => {
       const className = e.matches ? "dark" : "light";
-      setColorSchemeClass(className);
+      setSystemPreference(className);
     };
 
     mediaQuery.addEventListener("change", handleChange);
-
     return () => {
       mediaQuery.removeEventListener("change", handleChange);
     };
@@ -55,11 +97,9 @@ export const ColorSchemeProvider = ({ children }: ProviderProps) => {
     <ColorSchemeContext.Provider
       value={{
         colorScheme,
-        setColorScheme: (colorScheme) => {
-          const className =
-            colorScheme === "system" ? getSystemColorScheme() : colorScheme;
-          setColorSchemeClass(className);
-        },
+        colorSchemeIcon,
+        setColorScheme,
+        toggleColorScheme,
       }}
     >
       {children}

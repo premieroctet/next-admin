@@ -10,7 +10,9 @@ import Link from "next/link";
 import { Fragment, useState } from "react";
 
 import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
+import { useColorScheme } from "../context/ColorSchemeContext";
 import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
@@ -18,6 +20,7 @@ import {
   ModelName,
   SidebarConfiguration,
 } from "../types";
+import { slugify } from "../utils/tools";
 import Divider from "./Divider";
 import ResourceIcon from "./common/ResourceIcon";
 import Button from "./radix/Button";
@@ -30,7 +33,6 @@ import {
   DropdownSeparator,
   DropdownTrigger,
 } from "./radix/Dropdown";
-import { slugify } from "../utils/tools";
 
 export type MenuProps = {
   resource?: ModelName;
@@ -58,6 +60,9 @@ export default function Menu({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
   const { pathname } = useRouterInternal();
+  const { colorScheme, colorSchemeIcon, toggleColorScheme } = useColorScheme();
+  const { t } = useI18n();
+  const { options } = useConfig();
 
   const customPagesNavigation = customPages?.map((page) => ({
     name: page.title,
@@ -269,6 +274,17 @@ export default function Menu({
             </ul>
             <div className="flex flex-col">
               {renderExternalLinks()}
+              {!options?.forceColorScheme && (
+                <div
+                  onClick={toggleColorScheme}
+                  className="flex flex-row items-center gap-5 text-sm transition-colors text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted p-3 font-medium rounded-lg cursor-pointer select-none"
+                >
+                  {colorSchemeIcon}
+                  <span className="min-w-[3.5rem]">
+                    {t(`theme.${colorScheme}`)}
+                  </span>
+                </div>
+              )}
               {renderUser()}
             </div>
           </nav>
