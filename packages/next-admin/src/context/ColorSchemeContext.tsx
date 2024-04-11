@@ -12,8 +12,8 @@ import { BasicColorScheme, ColorScheme, colorSchemes } from "../types";
 import { useConfig } from "./ConfigContext";
 
 const basicColorSchemeIcons: Record<BasicColorScheme, JSX.Element> = {
-  light: <SunIcon className="w-4 h-4" />,
-  dark: <MoonIcon className="w-4 h-4" />,
+  light: <SunIcon className="h-4 w-4" />,
+  dark: <MoonIcon className="h-4 w-4" />,
 };
 
 type ColorSchemeContextType = {

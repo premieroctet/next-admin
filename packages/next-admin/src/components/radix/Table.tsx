@@ -54,7 +54,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={clsx(
-      "h-12 px-4 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0",
+      "text-muted-foreground h-12 px-4 text-left align-middle font-medium [&:has([role=checkbox])]:pr-0",
       className
     )}
     {...props}
@@ -69,7 +69,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={clsx(
-      "p-4 align-middle [&:has([role=checkbox])]:pr-0 max-w-sm",
+      "max-w-sm p-4 align-middle [&:has([role=checkbox])]:pr-0",
       className
     )}
     {...props}
@@ -83,7 +83,7 @@ const TableCaption = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <caption
     ref={ref}
-    className={clsx("mt-4 text-sm text-muted-foreground", className)}
+    className={clsx("text-muted-foreground mt-4 text-sm", className)}
     {...props}
   />
 ));

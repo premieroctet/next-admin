@@ -125,7 +125,7 @@ const Form = ({
     }
 
     return (
-      <div className="flex space-x-2 mt-4 justify-between">
+      <div className="mt-4 flex justify-between space-x-2">
         <div>
           {edit && (
             <Button
@@ -313,7 +313,7 @@ const Form = ({
             {schema.type !== "null" && (
               <label
                 className={clsx(
-                  "flex items-center text-sm font-medium leading-6 text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted gap-2 mb-2"
+                  "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted mb-2 flex items-center gap-2 text-sm font-medium leading-6"
                 )}
                 htmlFor={id}
               >
@@ -323,7 +323,7 @@ const Form = ({
                   <TooltipProvider>
                     <TooltipRoot>
                       <TooltipTrigger asChild>
-                        <InformationCircleIcon className="w-4 h-4 text-gray-500" />
+                        <InformationCircleIcon className="h-4 w-4 text-gray-500" />
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent
@@ -414,7 +414,7 @@ const Form = ({
             {...props}
             value={props.value ?? ""}
             className={clsx(
-              "block w-full transition-all duration-300 rounded-md border-0 py-1.5 dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted shadow-sm ring-1 ring-inset ring-nextadmin-border-default placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:cursor-not-allowed",
+              "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6",
               { "ring-red-600 dark:ring-red-400": rawErrors }
             )}
           />
@@ -425,7 +425,7 @@ const Form = ({
       },
       FieldErrorTemplate: ({ errors }) => {
         return errors ? (
-          <div className="text-sm text-red-600 dark:text-red-400 mt-1">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.map((error, idx) => {
               if (typeof error === "string") {
                 return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
@@ -438,7 +438,7 @@ const Form = ({
       },
       DescriptionFieldTemplate: ({ description, schema }) => {
         return description && schema.type !== "null" ? (
-          <span className="text-sm text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis">
+          <span className="text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis text-sm">
             {description}
           </span>
         ) : null;
@@ -466,7 +466,7 @@ const Form = ({
 
   return (
     <div className="relative">
-      <div className="flex h-16 justify-between items-center flex-row gap-3 px-4 sticky top-0 z-10 bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-next-admin-border-default border-b border-b-next-admin-border-default shadow-sm">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex h-16 flex-row items-center justify-between gap-3 border-b px-4 shadow-sm">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
         {!!actions && actions.length > 0 && !!id && (
           <ActionsDropdown
@@ -477,8 +477,8 @@ const Form = ({
           />
         )}
       </div>
-      <div className="max-w-full align-middle p-4 sm:p-8">
-        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis max-w-screen-md rounded-lg border border-nextadmin-border-default dark:border-dark-nextadmin-border-default p-4 sm:p-8">
+      <div className="max-w-full p-4 align-middle sm:p-8">
+        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <FormProvider
             initialValue={data}
             searchPaginatedResourceAction={searchPaginatedResourceAction}

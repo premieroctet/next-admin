@@ -163,7 +163,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
     <Transition.Root show={open} as="div">
       <Transition.Child
         as="div"
-        className="absolute z-10 w-full overflow-auto bg-white rounded-md shadow-2xl max-h-60 ring-1 ring-black ring-opacity-5 mt-2"
+        className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5"
         enter="transition-all ease-linear"
         enterFrom="opacity-0 -translate-y-1"
         enterTo="opacity-100 translate-y-0"
@@ -173,15 +173,15 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
         ref={containerRef}
         onScroll={onScroll}
       >
-        <div className="flex flex-col relative">
-          <div className="block sticky top-0 items-center justify-between px-3 py-2 bg-gray-50 border-b border-gray-200">
+        <div className="relative flex flex-col">
+          <div className="sticky top-0 block items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2">
             <div className="relative flex items-center">
               <input
                 id={`${name}-search`}
                 ref={searchInput}
                 defaultValue={currentQuery.current}
                 type="text"
-                className="transition-all block w-full px-3 py-2 text-base placeholder-gray-500 border border-gray-300 rounded-md shadow-sm appearance-none sm:text-sm"
+                className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-base placeholder-gray-500 shadow-sm transition-all sm:text-sm"
                 placeholder="Search..."
                 onChange={onSearchChange}
               />
@@ -192,7 +192,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
             allOptions?.map((option, index: number) => (
               <div
                 key={index}
-                className="px-3 py-2 text-sm text-gray-700 cursor-pointer hover:bg-gray-100 hover:text-gray-900"
+                className="cursor-pointer px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 onMouseDown={() => {
                   onChange(option);
                 }}

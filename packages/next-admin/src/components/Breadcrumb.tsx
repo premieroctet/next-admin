@@ -34,7 +34,7 @@ export default function Breadcrumb({
           <li key={page.label}>
             <div className="flex items-center">
               <svg
-                className="h-5 w-5 flex-shrink-0 text-next-admin-content-default dark:text-dark-nextadmin-content-default"
+                className="text-next-admin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 aria-hidden="true"
@@ -44,7 +44,7 @@ export default function Breadcrumb({
 
               <Link
                 href={page.href}
-                className={`ml-2 text-sm font-medium hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis flex gap-2 ${
+                className={`hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis ml-2 flex gap-2 text-sm font-medium ${
                   page.current
                     ? "text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle"
                     : "text-nextadmin-content-default dark:text-dark-nextadmin-content-default"

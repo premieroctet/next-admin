@@ -35,16 +35,16 @@ const SortButton = ({ field }: { field: string }) => {
       <button
         type="button"
         onClick={handleClick}
-        className="text-gray-400 hover:text-gray-500 inset-0 absolute w-full h-full"
+        className="absolute inset-0 h-full w-full text-gray-400 hover:text-gray-500"
       ></button>
       {sort === "asc" ? (
         <ArrowSmallUpIcon
-          className="h-5 w-5 text-nextadmin-primary-500"
+          className="text-nextadmin-primary-500 h-5 w-5"
           aria-hidden="true"
         />
       ) : sort === "desc" ? (
         <ArrowSmallDownIcon
-          className="h-5 w-5 text-nextadmin-primary-500"
+          className="text-nextadmin-primary-500 h-5 w-5"
           aria-hidden="true"
         />
       ) : null}

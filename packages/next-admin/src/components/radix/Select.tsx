@@ -16,14 +16,14 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={clsx(
-      "flex h-10 w-full items-center justify-between rounded-md border border-nextadmin-border-default dark:border-dark-nextadmin-border-strong px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+      "border-nextadmin-border-default dark:border-dark-nextadmin-border-strong ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}
   >
     {children}
     <SelectPrimitive.Icon asChild>
-      <ChevronDownIcon className="h-4 w-4 text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:opacity-100" />
+      <ChevronDownIcon className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted h-4 w-4 dark:opacity-100" />
     </SelectPrimitive.Icon>
   </SelectPrimitive.Trigger>
 ));
@@ -37,7 +37,7 @@ const SelectContent = React.forwardRef<
     <SelectPrimitive.Content
       ref={ref}
       className={clsx(
-        "relative z-50 min-w-[8rem] overflow-hidden rounded-md border border-nextadmin-border-default dark:border-dark-nextadmin-border-default dark:bg-dark-nextadmin-background-subtle shadow-md animate-in fade-in-80",
+        "border-nextadmin-border-default dark:border-dark-nextadmin-border-default dark:bg-dark-nextadmin-background-subtle animate-in fade-in-80 relative z-50 min-w-[8rem] overflow-hidden rounded-md border shadow-md",
         position === "popper" && "translate-y-1",
         className
       )}
@@ -77,7 +77,7 @@ const SelectItem = React.forwardRef<
   <SelectPrimitive.Item
     ref={ref}
     className={clsx(
-      "relative flex w-full cursor-pointer select-none items-center rounded-md py-1.5 pl-8 pr-2 text-sm text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:bg-nextadmin-background-subtle dark:hover:bg-dark-nextadmin-background-muted outline-none focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:bg-nextadmin-background-subtle dark:hover:bg-dark-nextadmin-background-muted focus:bg-accent focus:text-accent-foreground relative flex w-full cursor-pointer select-none items-center rounded-md py-1.5 pl-8 pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
@@ -97,7 +97,7 @@ const SelectSeparator = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <SelectPrimitive.Separator
     ref={ref}
-    className={clsx("-mx-1 my-1 h-px bg-muted", className)}
+    className={clsx("bg-muted -mx-1 my-1 h-px", className)}
     {...props}
   />
 ));

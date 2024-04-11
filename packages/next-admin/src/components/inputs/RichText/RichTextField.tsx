@@ -91,7 +91,7 @@ const RichTextField = ({ schema, onChange, ...props }: RichTextFieldProps) => {
           spellCheck
           renderElement={renderElement}
           renderLeaf={renderLeaf}
-          className="border border-nextadmin-border-default text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle p-3 rounded-b-md shadow-sm min-h-[200px]"
+          className="border-nextadmin-border-default text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle min-h-[200px] rounded-b-md border p-3 shadow-sm"
           autoFocus
         />
       </EditorContainer>

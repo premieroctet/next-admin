@@ -90,10 +90,10 @@ const FileWidget = (props: WidgetProps) => {
 
   return (
     <div className="relative">
-      <div className="relative flex flex-col items-start py-1 gap-3">
+      <div className="relative flex flex-col items-start gap-3 py-1">
         {fileInfo && (
-          <div className="flex gap-4 items-end">
-            <div className="relative flex flex-col items-center space-x-2 gap-1">
+          <div className="flex items-end gap-4">
+            <div className="relative flex flex-col items-center gap-1 space-x-2">
               <a
                 href={isLink ? props.value : undefined}
                 className="relative"
@@ -104,7 +104,7 @@ const FileWidget = (props: WidgetProps) => {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={fileImage!} alt="file" className="h-32" />
                 ) : (
-                  <DocumentIcon className="h-12 w-12 text-nextadmin-content-default dark:text-dark-nextadmin-content-default" />
+                  <DocumentIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-12 w-12" />
                 )}
               </a>
               {!!fileName && (
@@ -122,7 +122,7 @@ const FileWidget = (props: WidgetProps) => {
                 <input
                   id="delete_file"
                   type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-nextadmin-primary-600 focus:ring-nextadmin-primary-600"
+                  className="text-nextadmin-primary-600 focus:ring-nextadmin-primary-600 h-4 w-4 rounded border-gray-300"
                   onChange={onCheckDelete}
                 />
               </div>
@@ -139,7 +139,7 @@ const FileWidget = (props: WidgetProps) => {
         )}
         <div
           className={clsx(
-            "flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10 w-full",
+            "flex w-full justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10",
             {
               "bg-nextadmin-primary-200/20": isDragging,
             }
@@ -168,7 +168,7 @@ const FileWidget = (props: WidgetProps) => {
             <div className="mt-4 flex text-sm leading-6 text-gray-600">
               <label
                 htmlFor={props.id}
-                className="relative cursor-pointer rounded-md font-semibold text-nextadmin-primary-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-nextadmin-primary-600 focus-within:ring-offset-2 hover:text-nextadmin-primary-500"
+                className="text-nextadmin-primary-600 focus-within:ring-nextadmin-primary-600 hover:text-nextadmin-primary-500 relative cursor-pointer rounded-md font-semibold focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2"
               >
                 <span>{t("form.widgets.file_upload.label")}</span>
                 <input

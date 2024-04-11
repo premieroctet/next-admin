@@ -20,7 +20,7 @@ const DatePicker = ({ value, name, onChange }: Props) => {
         dateFormat="dd/MM/yyyy HH:mm"
         timeFormat="HH:mm"
         wrapperClassName="w-full"
-        className="block w-full transition-all duration-300 rounded-md border-0 py-1.5 dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted shadow-sm ring-1 ring-inset ring-nextadmin-border-default placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:cursor-not-allowed [&>div]:border-none"
+        className="dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6 [&>div]:border-none"
       />
       <input type="hidden" name={name} value={value ?? ""} />
     </>

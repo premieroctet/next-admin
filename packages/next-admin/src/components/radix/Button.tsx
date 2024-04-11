@@ -65,7 +65,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={loading || disabled}
         {...props}
       >
-        {loading && <Spinner className="inline w-4 h-4 mr-2" />}
+        {loading && <Spinner className="mr-2 inline h-4 w-4" />}
         {children}
       </Comp>
     );

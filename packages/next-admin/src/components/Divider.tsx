@@ -1,5 +1,5 @@
 export default function Divider() {
   return (
-    <div className="flex border-b border-b-nextadmin-border-default dark:border-b-nextadmin-border-default" />
+    <div className="border-b-nextadmin-border-default dark:border-b-dark-nextadmin-border-default flex border-b" />
   );
 }

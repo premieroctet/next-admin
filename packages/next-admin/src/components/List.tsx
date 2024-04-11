@@ -174,7 +174,7 @@ function List({
           onDelete={() => deleteItems(getSelectedRowsIds())}
           totalCount={total}
         />
-        <div className="max-w-full align-middle p-4 sm:p-8">
+        <div className="max-w-full p-4 align-middle sm:p-8">
           <DataTable
             resource={resource}
             data={data}
@@ -186,7 +186,7 @@ function List({
             icon={icon}
           />
           {data.length ? (
-            <div className="flex-1 flex items-center space-x-2 py-4">
+            <div className="flex flex-1 items-center space-x-2 py-4">
               <div>
                 <TableRowsIndicator
                   pageIndex={pageIndex}
@@ -195,7 +195,7 @@ function List({
                   pageSize={pageSize}
                 />
               </div>
-              <div className="flex-1 flex items-center justify-end space-x-4">
+              <div className="flex flex-1 items-center justify-end space-x-4">
                 <Select
                   onValueChange={(value) => {
                     if (isNaN(Number(value))) return;
@@ -209,9 +209,9 @@ function List({
                     });
                   }}
                 >
-                  <SelectTrigger className="max-w-[100px] bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle">
+                  <SelectTrigger className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle max-w-[100px]">
                     <SelectValue asChild>
-                      <span className="pointer-events-none text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted">
+                      <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
                         {pageSize}
                       </span>
                     </SelectValue>

@@ -93,7 +93,7 @@ export default function Menu({
           item.current
             ? "bg-nextadmin-menu-muted dark:bg-dark-nextadmin-menu-muted dark:text-dark-nextadmin-menu-emphasis text-nextadmin-menu-emphasis"
             : "text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color dark:hover:bg-dark-nextadmin-menu-muted hover:bg-nextadmin-menu-muted hover:text-nextadmin-menu-emphasis",
-          "group flex gap-x-2 rounded-lg py-2 px-3 text-sm leading-6 transition-colors items-center"
+          "group flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm leading-6 transition-colors"
         )}
       >
         {!!item.icon && (
@@ -142,23 +142,23 @@ export default function Menu({
     }
 
     return (
-      <div className="flex flex-1 gap-1 px-2 py-3 leading-6 text-sm font-semibold text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color items-center">
-        <div className="flex flex-1 gap-3 items-center min-w-0">
+      <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color flex flex-1 items-center gap-1 px-2 py-3 text-sm font-semibold leading-6">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           {user.data.picture ? (
             <img
-              className="h-8 w-8 rounded-full flex flex-shrink-0"
+              className="flex h-8 w-8 flex-shrink-0 rounded-full"
               src={user.data.picture}
               alt="User picture"
             />
           ) : (
-            <div className="h-8 w-8 flex flex-shrink-0 items-center justify-center rounded-full bg-nextadmin-menu-color/20 dark:bg-dark-nextadmin-menu-color/95 text-nextadminmenu-emphasis dark:text-dark-nextadmin-menu-muted uppercase">
+            <div className="bg-nextadmin-menu-color/20 dark:bg-dark-nextadmin-menu-color/95 text-nextadminmenu-emphasis dark:text-dark-nextadmin-menu-muted flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full uppercase">
               {getInitials()}
             </div>
           )}
           <span className="sr-only">Logged in as</span>
           <span
             aria-hidden="true"
-            className="whitespace-nowrap text-ellipsis overflow-hidden flex-shrink"
+            className="flex-shrink overflow-hidden text-ellipsis whitespace-nowrap"
           >
             {user.data.name}
           </span>
@@ -168,23 +168,23 @@ export default function Menu({
             <Button
               variant="ghost"
               size="sm"
-              className="order-2 flex-grow-1 flex-shrink-0 basis-auto !px-2 py-2"
+              className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
             >
-              <Cog6ToothIcon className="w-6 h-6" />
+              <Cog6ToothIcon className="h-6 w-6" />
             </Button>
           </DropdownTrigger>
           <DropdownBody>
             <DropdownContent side="top" sideOffset={5} className="px-1 py-2">
-              <DropdownLabel className="py-1 px-4 font-normal text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted">
+              <DropdownLabel className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted px-4 py-1 font-normal">
                 {user.data.name}
               </DropdownLabel>
               <DropdownSeparator />
               <DropdownItem asChild>
                 <Link
                   href={user.logoutUrl}
-                  className="flex items-center gap-2 text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted py-1 px-4 rounded font-medium"
+                  className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
                 >
-                  <PowerIcon className="w-4 h-4" />
+                  <PowerIcon className="h-4 w-4" />
                   <span>Logout</span>
                 </Link>
               </DropdownItem>
@@ -204,12 +204,12 @@ export default function Menu({
       <Link
         key={link.url}
         href={link.url}
-        className="flex flex-row items-center justify-between gap-2 text-sm transition-colors text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted p-3 font-medium rounded-lg"
+        className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted flex flex-row items-center justify-between gap-2 rounded-lg p-3 text-sm font-medium transition-colors"
         target="_blank"
         rel="noopener"
       >
         {link.label}
-        <ArrowTopRightOnSquareIcon className="w-5 h-5" />
+        <ArrowTopRightOnSquareIcon className="h-5 w-5" />
       </Link>
     ));
   };
@@ -217,26 +217,26 @@ export default function Menu({
   const renderNavigation = () => {
     return (
       <>
-        <div className="flex grow flex-col overflow-y-auto bg-nextadmin-menu-background dark:bg-dark-nextadmin-menu-background pb-2 border-r border-r-nextadmin-border-default dark:border-r-dark-nextadmin-border-default">
+        <div className="bg-nextadmin-menu-background dark:bg-dark-nextadmin-menu-background border-r-nextadmin-border-default dark:border-r-dark-nextadmin-border-default flex grow flex-col overflow-y-auto border-r pb-2">
           <div className="flex h-[63px] items-center px-2">
             <Link
               href={basePath}
-              className="flex gap-2 items-center overflow-hidden"
+              className="flex items-center gap-2 overflow-hidden"
             >
-              <div className="text-md whitespace-nowrap text-ellipsis overflow-hidden font-semibold dark:text-dark-nextadmin-brand-inverted">
+              <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
                 {title}
               </div>
             </Link>
           </div>
           <Divider />
-          <nav className="flex flex-1 flex-col mt-4 gap-y-6 px-4">
+          <nav className="mt-4 flex flex-1 flex-col gap-y-6 px-4">
             <ul role="list" className="flex flex-1 flex-col gap-y-4">
               {configuration?.groups?.map((group) => (
                 <li key={group.title}>
-                  <div className="text-xs text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color uppercase tracking-wider mb-2">
+                  <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color mb-2 text-xs uppercase tracking-wider">
                     {group.title}
                   </div>
-                  <ul role="list" className="-ml-2 flex flex-col gap-y-1 mt-1">
+                  <ul role="list" className="-ml-2 mt-1 flex flex-col gap-y-1">
                     {group.models.map((model) => {
                       const item = getItemProps(model);
                       return <li key={model}>{renderNavigationItem(item)}</li>;
@@ -277,7 +277,7 @@ export default function Menu({
               {!options?.forceColorScheme && (
                 <div
                   onClick={toggleColorScheme}
-                  className="flex flex-row items-center gap-5 text-sm transition-colors text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted p-3 font-medium rounded-lg cursor-pointer select-none"
+                  className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted flex cursor-pointer select-none flex-row items-center gap-5 rounded-lg p-3 text-sm font-medium transition-colors"
                 >
                   {colorSchemeIcon}
                   <span className="min-w-[3.5rem]">
@@ -365,16 +365,19 @@ export default function Menu({
         </div>
       </div>
 
-      <div className="sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden">
+      <div className="dark:bg-dark-nextadmin-background-default sticky top-0 z-40 flex items-center gap-x-6 bg-white px-4 py-4 shadow-sm sm:px-6 lg:hidden">
         <button
           type="button"
           className="-m-2.5 p-2.5 text-slate-700 lg:hidden"
           onClick={() => setSidebarOpen(true)}
         >
           <span className="sr-only">Open sidebar</span>
-          <Bars3Icon className="h-6 w-6" aria-hidden="true" />
+          <Bars3Icon
+            className="dark:text-dark-nextadmin-content-default h-6 w-6"
+            aria-hidden="true"
+          />
         </button>
-        <div className="flex-1 text-sm font-semibold leading-6 text-slate-900">
+        <div className="text-md dark:text-dark-nextadmin-brand-inverted flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm font-semibold leading-6 text-slate-900">
           {title}
         </div>
       </div>

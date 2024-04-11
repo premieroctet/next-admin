@@ -27,7 +27,7 @@ const CustomPage = async () => {
       }}
     >
       <div className="p-10">
-        <h1 className="text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight mb-4">
+        <h1 className="mb-4 text-xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
           Dashboard
         </h1>
         <div className="mt-2">

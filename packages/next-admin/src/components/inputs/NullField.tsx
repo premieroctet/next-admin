@@ -6,7 +6,7 @@ const NullField = ({ schema }: FieldProps) => {
   const { t } = useI18n();
 
   return (
-    <div className="rounded-md bg-blue-50 p-4 w-full">
+    <div className="w-full rounded-md bg-blue-50 p-4">
       <div className="flex">
         <div className="flex-shrink-0">
           <InformationCircleIcon
@@ -19,7 +19,7 @@ const NullField = ({ schema }: FieldProps) => {
             {t(schema.title!)}
           </h3>
           {!!schema.description && (
-            <p className="text-sm text-blue-800 font-light">
+            <p className="text-sm font-light text-blue-800">
               {t(schema.description)}
             </p>
           )}

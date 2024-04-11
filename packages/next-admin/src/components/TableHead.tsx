@@ -33,7 +33,7 @@ export default function TableHead({
     >
       <span
         className={clsx(
-          "whitespace-nowrap font-semibold capitalize text-nextadmin-content-inverted dark:text-dark-nextadmin-content-subtle"
+          "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-subtle whitespace-nowrap font-semibold capitalize"
         )}
       >
         {propertyName}
@@ -41,13 +41,13 @@ export default function TableHead({
       <span className="sr-only">, activate to sort column descending</span>
       {isSorted && sortDirection === "desc" && (
         <ArrowSmallDownIcon
-          className="ml-2 h-5 w-5 text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle"
+          className="text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle ml-2 h-5 w-5"
           aria-hidden="true"
         />
       )}
       {isSorted && sortDirection === "asc" && (
         <ArrowSmallUpIcon
-          className="ml-2 h-5 w-5 text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle"
+          className="text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle ml-2 h-5 w-5"
           aria-hidden="true"
         />
       )}

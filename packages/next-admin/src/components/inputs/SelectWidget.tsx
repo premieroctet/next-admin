@@ -36,17 +36,17 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="relative flex justify-between w-full px-3 py-2 text-sm placeholder-gray-500 border border-gray-300 rounded-md shadow-sm cursor-default">
+      <div className="relative flex w-full cursor-default justify-between rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-500 shadow-sm">
         <input
           type="hidden"
           value={value?.value || ""}
           name={props.name}
-          className="absolute -z-10 inset-0 w-full h-full opacity-0"
+          className="absolute inset-0 -z-10 h-full w-full opacity-0"
         />
         <input
           id={props.id}
           readOnly
-          className="w-full h-full flex-1 appearance-none focus:outline-none cursor-default"
+          className="h-full w-full flex-1 cursor-default appearance-none focus:outline-none"
           value={value?.label || ""}
           onMouseDown={() => formContext.toggleOpen(name)}
         />
@@ -58,15 +58,15 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
               )}/${value?.value}`}
               className="flex items-center"
             >
-              <ArrowTopRightOnSquareIcon className="w-5 h-5 text-gray-400 cursor-pointer" />
+              <ArrowTopRightOnSquareIcon className="h-5 w-5 cursor-pointer text-gray-400" />
             </Link>
           )}
           {hasValue && (
             <div className="flex items-center" onClick={() => onChange({})}>
-              <XMarkIcon className="w-5 h-5 text-gray-400" />
+              <XMarkIcon className="h-5 w-5 text-gray-400" />
             </div>
           )}
-          <div className="flex items-center pointer-events-none">
+          <div className="pointer-events-none flex items-center">
             <DoubleArrow />
           </div>
         </div>

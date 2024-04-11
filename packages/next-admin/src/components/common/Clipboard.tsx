@@ -17,7 +17,7 @@ const Clipboard = ({ value }: Props) => {
   return (
     <Component
       className={clx(
-        "invisible group-hover:visible w-5 transition-colors text-nextadmin-content-default dark:text-dark-nextadmin-content-default cursor-pointer",
+        "text-nextadmin-content-default dark:text-dark-nextadmin-content-default invisible w-5 cursor-pointer transition-colors group-hover:visible",
         copied
           ? "text-green-700 dark:text-green-500"
           : "hover:text-nextadmin-content-emphasis dark:hover:text-dark-nextadmin-content-emphasis"

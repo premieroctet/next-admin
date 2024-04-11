@@ -114,7 +114,7 @@ export function DataTable({
         <Dropdown>
           <DropdownTrigger asChild>
             <Button variant="ghost" size="sm" className="!px-2 py-2">
-              <EllipsisVerticalIcon className="w-6 h-6 text-nextadmin-content-default dark:text-dark-nextadmin-content-default" />
+              <EllipsisVerticalIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-6 w-6" />
             </Button>
           </DropdownTrigger>
           <DropdownBody>
@@ -160,7 +160,7 @@ export function DataTable({
   });
 
   return (
-    <div className="overflow-hidden bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default rounded-lg border">
+    <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default overflow-hidden rounded-lg border">
       <Table>
         {table.getRowModel().rows?.length > 0 && (
           <TableHeader>
@@ -191,7 +191,7 @@ export function DataTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className={`cursor-pointer hover:bg-nextadmin-background-muted dark:hover:bg-dark-nextadmin-background-muted/75 border-b border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default ${
+                className={`hover:bg-nextadmin-background-muted dark:hover:bg-dark-nextadmin-background-muted/75 border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default cursor-pointer border-b ${
                   row.getIsSelected()
                     ? "bg-nextadmin-background-emphasis/40 dark:bg-dark-nextadmin-background-subtle"
                     : "even:bg-nextadmin-background-subtle dark:even:bg-dark-nextadmin-background-subtle/60"

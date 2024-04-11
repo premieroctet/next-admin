@@ -53,7 +53,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         {...props}
         ref={ref}
         className={clsx(
-          "pointer focus:outline-none focus:ring-2 focus:ring-nextadmin-border-default dark:focus:ring-dark-nextadmin-border-strong p-1.5 rounded-md",
+          "pointer focus:ring-nextadmin-border-default dark:focus:ring-dark-nextadmin-border-strong rounded-md p-1.5 focus:outline-none focus:ring-2",
           {
             "bg-nextadmin-background-emphasis hover:bg-nextadmin-background-muted focus:bg-nextadmin-background-muted dark:bg-dark-nextadmin-background-subtle dark:hover:bg-dark-nextadmin-background-muted dark:focus:bg-dark-nextadmin-background-muted":
               active,
@@ -91,7 +91,7 @@ export const Separator = React.forwardRef<HTMLDivElement, BaseProps>(
       {...props}
       ref={ref}
       className={clsx(
-        "border-nextadmin-border-default dark:border-dark-nextadmin-border-default my-1 border-x-[0.5px] rounded-md",
+        "border-nextadmin-border-default dark:border-dark-nextadmin-border-default my-1 rounded-md border-x-[0.5px]",
         className
       )}
     />
@@ -107,7 +107,7 @@ export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
       data-test-id="menu"
       className={clsx(
         //on last child remove border right
-        "flex flex-row gap-1 border-b-0 border-nextadmin-border-default dark:border-dark-nextadmin-border-default border p-1.5 rounded-t-md !last:border-r-0",
+        "border-nextadmin-border-default dark:border-dark-nextadmin-border-default !last:border-r-0 flex flex-row gap-1 rounded-t-md border border-b-0 p-1.5",
         className
       )}
     />

@@ -36,7 +36,7 @@ export default function Cell({ cell, formatter, copyable }: Props) {
           <Link
             onClick={(e) => e.stopPropagation()}
             href={`${basePath}/${cell.value.url}`}
-            className="hover:underline cursor-pointer text-nextadmin-brand-emphasis dark:text-dark-nextadmin-brand-subtle hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis font-semibold flex items-center gap-1"
+            className="text-nextadmin-brand-emphasis dark:text-dark-nextadmin-brand-subtle hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis flex cursor-pointer items-center gap-1 font-semibold hover:underline"
           >
             {cellValue}
             {copyable && <Clipboard value={cell.value.url} />}
@@ -44,27 +44,27 @@ export default function Cell({ cell, formatter, copyable }: Props) {
         );
       } else if (cell.type === "count") {
         return (
-          <div className="inline-flex items-center rounded-md bg-nextadmin-background-subtle dark:bg-dark-nextadmin-background-subtle px-2 py-1 text-xs font-medium text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle ring-1 ring-inset ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong">
+          <div className="bg-nextadmin-background-subtle dark:bg-dark-nextadmin-background-subtle text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong inline-flex items-center rounded-md px-2 py-1 text-xs font-medium ring-1 ring-inset">
             <p>{cellValue}</p>
           </div>
         );
       } else if (cell.type === "date") {
         return (
-          <div className="whitespace-nowrap max-w-[20ch] overflow-hidden text-ellipsis text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle flex items-center gap-1">
+          <div className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle flex max-w-[20ch] items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap">
             <p>{cellValue}</p>
             {copyable && <Clipboard value={cellValue?.toString() ?? ""} />}
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "string") {
         return (
-          <div className="whitespace-nowrap overflow-hidden text-ellipsis text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle flex items-center gap-1">
+          <div className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle flex items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap">
             <p>{cellValue}</p>
             {copyable && <Clipboard value={cellValue?.toString() ?? ""} />}
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "number") {
         return (
-          <div className="whitespace-nowrap max-w-[20ch] overflow-hidden text-ellipsis text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle flex items-center gap-1">
+          <div className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle flex max-w-[20ch] items-center gap-1 overflow-hidden text-ellipsis whitespace-nowrap">
             <p>{cellValue}</p>
             {copyable && <Clipboard value={cellValue?.toString() ?? ""} />}
           </div>
@@ -84,7 +84,7 @@ export default function Cell({ cell, formatter, copyable }: Props) {
     }
 
     return (
-      <div className="flex items-center gap-1 text-nextadmin-brand-subtle dark:text-dark-nextadmin-content-subtle">
+      <div className="text-nextadmin-brand-subtle dark:text-dark-nextadmin-content-subtle flex items-center gap-1">
         {JSON.stringify(cellValue)}
         {copyable && <Clipboard value={JSON.stringify(cellValue)} />}
       </div>
