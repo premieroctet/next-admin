@@ -2,6 +2,6 @@
 module.exports = {
   content: ["./src/**/*.{js,jsx,ts,tsx}"],
   plugins: [],
-  presets: [require("@premieroctet/next-admin/dist/preset")],
+  presets: [require("./src/preset")],
   darkMode: "class",
 };
