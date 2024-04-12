@@ -48,7 +48,6 @@ import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
 import JsonField from "./inputs/JsonField";
 import NullField from "./inputs/NullField";
-import RichTextField from "./inputs/RichText/RichTextField";
 import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
 import Button from "./radix/Button";
@@ -60,6 +59,11 @@ import {
   TooltipTrigger,
 } from "./radix/Tooltip";
 import { formatLabel, slugify } from "../utils/tools";
+import dynamic from "next/dynamic";
+
+const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
+  ssr: false,
+});
 
 class CustomForm extends RjsfForm {
   onSubmit = (e: any) => {};
