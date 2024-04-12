@@ -39,6 +39,7 @@ import {
   SubmitFormResult,
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
+import { formatLabel, slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
 import ArrayField from "./inputs/ArrayField";
@@ -59,7 +60,6 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import { formatLabel, slugify } from "../utils/tools";
 
 class CustomForm extends RjsfForm {
   onSubmit = (e: any) => {};
@@ -414,7 +414,7 @@ const Form = ({
             {...props}
             value={props.value ?? ""}
             className={clsx(
-              "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6",
+              "dark:bg-dark-nextadmin-background-subtle  text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default dark:ring-dark-nextadmin-border-strong block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6",
               { "ring-red-600 dark:ring-red-400": rawErrors }
             )}
           />

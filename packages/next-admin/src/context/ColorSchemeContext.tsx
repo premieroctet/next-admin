@@ -41,18 +41,20 @@ export const ColorSchemeProvider = ({ children }: ProviderProps) => {
     if (options?.forceColorScheme) {
       return options?.forceColorScheme;
     }
-    const storedColorScheme = localStorage.getItem(
-      "next-admin-theme"
-    ) as ColorScheme | null;
-    return storedColorScheme && colorSchemes.includes(storedColorScheme)
-      ? storedColorScheme
-      : options?.defaultColorScheme || "system";
+    let storedColorScheme: ColorScheme | null = null;
+    try {
+      storedColorScheme = localStorage.getItem(
+        "next-admin-theme"
+      ) as ColorScheme | null;
+      return storedColorScheme && colorSchemes.includes(storedColorScheme)
+        ? storedColorScheme
+        : options?.defaultColorScheme || "system";
+    } catch {
+      return options?.defaultColorScheme || "system";
+    }
   });
   const [systemPreference, setSystemPreference] = useState<BasicColorScheme>(
-    () =>
-      window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light"
+    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
   );
 
   const applyColorScheme = useCallback(() => {
