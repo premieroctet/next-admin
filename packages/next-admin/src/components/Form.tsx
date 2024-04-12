@@ -16,6 +16,7 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
+import dynamic from "next/dynamic";
 import React, {
   ChangeEvent,
   cloneElement,
@@ -49,7 +50,6 @@ import DateWidget from "./inputs/DateWidget";
 import FileWidget from "./inputs/FileWidget";
 import JsonField from "./inputs/JsonField";
 import NullField from "./inputs/NullField";
-import RichTextField from "./inputs/RichText/RichTextField";
 import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
 import Button from "./radix/Button";
@@ -60,6 +60,10 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
+
+const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
+  ssr: false,
+});
 
 class CustomForm extends RjsfForm {
   onSubmit = (e: any) => {};

@@ -31,7 +31,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   }, [open, searchInput]);
 
   useEffect(() => {
-    if (open) {
+    if (open && !options) {
       runSearch(true);
     }
 
