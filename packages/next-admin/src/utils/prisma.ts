@@ -79,9 +79,15 @@ export const preparePrismaListRequest = <M extends ModelName>(
   const itemsPerPage =
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
+  const fieldSort = options?.model?.[resource]?.list?.defaultSort;
+
   let orderBy: Order<typeof resource> = {};
-  const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
-  const orderValue = searchParams.get("sortDirection") as Prisma.SortOrder;
+  const sortParam =
+    (searchParams.get("sortColumn") as Field<typeof resource>) ??
+    fieldSort?.field;
+  const orderValue =
+    (searchParams.get("sortDirection") as Prisma.SortOrder) ??
+    fieldSort?.direction;
 
   const modelFieldSortParam = model?.fields.find(
     ({ name }) => name === sortParam

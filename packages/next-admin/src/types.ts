@@ -145,6 +145,10 @@ export type ListOptions<T extends ModelName> = {
   search?: Field<T>[];
   copy?: Field<T>[];
   fields?: ListFieldsOptions<T>;
+  defaultSort?: {
+    field: Field<T>;
+    direction?: Prisma.SortOrder;
+  };
 };
 
 export type EditOptions<T extends ModelName> = {
