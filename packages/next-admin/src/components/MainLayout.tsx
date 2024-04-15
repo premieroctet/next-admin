@@ -39,8 +39,8 @@ export const MainLayout = ({
       isAppDir={isAppDir}
     >
       <I18nProvider translations={mergedTranslations}>
-        <ColorSchemeProvider>
-          <div className="next-admin__root">
+        <ColorSchemeProvider isAppDir={isAppDir}>
+          <div className="next-admin__root h-[100vh]">
             <Menu
               title={title}
               resources={resources}
@@ -52,7 +52,7 @@ export const MainLayout = ({
               user={user}
               externalLinks={externalLinks}
             />
-            <main className="lg:pl-72">
+            <main className="h-full lg:pl-72">
               {message && (
                 <Message message={message.content} type={message.type} />
               )}

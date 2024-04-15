@@ -469,7 +469,7 @@ const Form = ({
   }
 
   return (
-    <div className="relative">
+    <div className="relative h-full">
       <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex h-16 flex-row items-center justify-between gap-3 border-b px-4 shadow-sm">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
         {!!actions && actions.length > 0 && !!id && (
@@ -481,7 +481,7 @@ const Form = ({
           />
         )}
       </div>
-      <div className="max-w-full p-4 align-middle sm:p-8">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <FormProvider
             initialValue={data}

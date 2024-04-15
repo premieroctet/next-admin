@@ -3,12 +3,14 @@ import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
 import {
   ReactNode,
   createContext,
+  memo,
   useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
 import { BasicColorScheme, ColorScheme, colorSchemes } from "../types";
+import { colorSchemeScript } from "../utils/colorSchemeScript";
 import { useConfig } from "./ConfigContext";
 
 const basicColorSchemeIcons: Record<BasicColorScheme, JSX.Element> = {
@@ -32,12 +34,12 @@ const ColorSchemeContext = createContext<ColorSchemeContextType>({
 
 type ProviderProps = {
   children: React.ReactNode;
+  isAppDir?: boolean;
 };
 
-export const ColorSchemeProvider = ({ children }: ProviderProps) => {
-  const [colorSchemeIcon, setColorSchemeIcon] = useState<JSX.Element>();
+export const ColorSchemeProvider = ({ isAppDir, children }: ProviderProps) => {
   const { options } = useConfig();
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(() => {
+  const getInitialColorScheme = (): ColorScheme => {
     if (options?.forceColorScheme) {
       return options?.forceColorScheme;
     }
@@ -52,27 +54,34 @@ export const ColorSchemeProvider = ({ children }: ProviderProps) => {
     } catch {
       return options?.defaultColorScheme || "system";
     }
-  });
-  const [systemPreference, setSystemPreference] = useState<BasicColorScheme>(
-    window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+  };
+
+  const [colorScheme, setColorScheme] = useState<ColorScheme>(
+    getInitialColorScheme()
   );
+  const [colorSchemeIcon, setColorSchemeIcon] = useState<
+    JSX.Element | undefined
+  >(() => {
+    if (colorScheme !== "system") {
+      return basicColorSchemeIcons[colorScheme];
+    }
+  });
+  const [systemPreference, setSystemPreference] = useState<BasicColorScheme>();
 
   const applyColorScheme = useCallback(() => {
     document.documentElement.classList.remove("dark", "light");
-    const colorSchemeValue: BasicColorScheme =
+    const colorSchemeValue: BasicColorScheme | undefined =
       colorScheme === "system" ? systemPreference : colorScheme;
-    setColorSchemeIcon(basicColorSchemeIcons[colorSchemeValue]);
-    document.documentElement.classList.add(colorSchemeValue);
+    colorSchemeValue &&
+      setColorSchemeIcon(basicColorSchemeIcons[colorSchemeValue]);
+    colorSchemeValue &&
+      document.documentElement.classList.add(colorSchemeValue);
   }, [colorScheme, systemPreference]);
 
   useEffect(() => {
     localStorage.setItem("next-admin-theme", colorScheme);
     applyColorScheme();
   }, [colorScheme, applyColorScheme]);
-
-  useEffect(() => {
-    applyColorScheme();
-  }, [applyColorScheme]);
 
   const toggleColorScheme = () => {
     const index = colorSchemes.indexOf(colorScheme);
@@ -104,10 +113,42 @@ export const ColorSchemeProvider = ({ children }: ProviderProps) => {
         toggleColorScheme,
       }}
     >
+      <ColorSchemeScript
+        {...{
+          forceColorScheme: options?.forceColorScheme,
+          defaultColorSchema: options?.defaultColorScheme,
+        }}
+      />
       {children}
     </ColorSchemeContext.Provider>
   );
 };
+
+const ColorSchemeScript = memo(
+  ({
+    forceColorScheme,
+    defaultColorScheme,
+  }: {
+    forceColorScheme?: ColorScheme;
+    defaultColorScheme?: ColorScheme;
+  }) => {
+    console.log(defaultColorScheme);
+    const scriptArgs = JSON.stringify([
+      forceColorScheme,
+      defaultColorScheme,
+    ]).slice(1, -1);
+    return (
+      <script
+        suppressHydrationWarning
+        nonce={typeof window === "undefined" ? "nonce" : ""}
+        dangerouslySetInnerHTML={{
+          __html: `
+          (${colorSchemeScript.toString()})(${scriptArgs});`,
+        }}
+      />
+    );
+  }
+);
 
 export const useColorScheme = () => {
   return useContext(ColorSchemeContext);

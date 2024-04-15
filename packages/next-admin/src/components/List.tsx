@@ -160,7 +160,7 @@ function List({
 
   return (
     <>
-      <div className="flow-root">
+      <div className="flow-root h-full">
         <ListHeader
           title={title}
           icon={icon}
@@ -174,7 +174,7 @@ function List({
           onDelete={() => deleteItems(getSelectedRowsIds())}
           totalCount={total}
         />
-        <div className="max-w-full p-4 align-middle sm:p-8">
+        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
           <DataTable
             resource={resource}
             data={data}
