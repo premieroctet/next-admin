@@ -74,14 +74,14 @@ export async function getPropsFromParams({
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
-    AdminComponentProps,
-    | "pageComponent"
-    | "basePath"
-    | "isAppDir"
-    | "message"
-    | "resources"
-    | "error"
-  >
+      AdminComponentProps,
+      | "pageComponent"
+      | "basePath"
+      | "isAppDir"
+      | "message"
+      | "resources"
+      | "error"
+    >
 > {
   const {
     resource,
@@ -138,9 +138,9 @@ export async function getPropsFromParams({
     options: clientOptions,
     searchPaginatedResourceAction: searchPaginatedResourceAction
       ? createBoundServerAction(
-        { schema, params },
-        searchPaginatedResourceAction
-      )
+          { schema, params },
+          searchPaginatedResourceAction
+        )
       : undefined,
     title,
     sidebar,
@@ -275,7 +275,7 @@ export const getMainLayoutProps = ({
     message = searchParams?.message
       ? JSON.parse(searchParams.message as string)
       : null;
-  } catch { }
+  } catch {}
 
   const resourcesTitles = resources.reduce(
     (acc, resource) => {
@@ -311,6 +311,6 @@ export const getMainLayoutProps = ({
     sidebar: options.sidebar,
     resourcesIcons,
     externalLinks: options.externalLinks,
-    options: extractSerializable(options)
-  }
+    options: extractSerializable(options),
+  };
 };

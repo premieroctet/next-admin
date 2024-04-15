@@ -131,7 +131,6 @@ const ColorSchemeScript = memo(
     forceColorScheme?: ColorScheme;
     defaultColorScheme?: ColorScheme;
   }) => {
-    console.log(defaultColorScheme);
     const scriptArgs = JSON.stringify([
       forceColorScheme,
       defaultColorScheme,

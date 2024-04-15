@@ -327,7 +327,7 @@ const Form = ({
                   <TooltipProvider>
                     <TooltipRoot>
                       <TooltipTrigger asChild>
-                        <InformationCircleIcon className="h-4 w-4 text-nextadmin-content-default dark:text-dark-nextadmin-content-default" />
+                        <InformationCircleIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-4 w-4" />
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent
