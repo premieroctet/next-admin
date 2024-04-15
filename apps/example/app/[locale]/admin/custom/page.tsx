@@ -4,7 +4,7 @@ import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";
 
 const CustomPage = async () => {
-  const mainLayoutProps = getMainLayoutProps({ options, isAppDir: true });
+  const mainLayoutProps = getMainLayoutProps({ options, isAppDir: true, isCustomPage: true });
 
   const totalUsers = await prisma.user.count();
   const totalPosts = await prisma.post.count();

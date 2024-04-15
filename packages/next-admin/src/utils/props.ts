@@ -74,14 +74,14 @@ export async function getPropsFromParams({
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
-      AdminComponentProps,
-      | "pageComponent"
-      | "basePath"
-      | "isAppDir"
-      | "message"
-      | "resources"
-      | "error"
-    >
+    AdminComponentProps,
+    | "pageComponent"
+    | "basePath"
+    | "isAppDir"
+    | "message"
+    | "resources"
+    | "error"
+  >
 > {
   const {
     resource,
@@ -138,9 +138,9 @@ export async function getPropsFromParams({
     options: clientOptions,
     searchPaginatedResourceAction: searchPaginatedResourceAction
       ? createBoundServerAction(
-          { schema, params },
-          searchPaginatedResourceAction
-        )
+        { schema, params },
+        searchPaginatedResourceAction
+      )
       : undefined,
     title,
     sidebar,
@@ -252,6 +252,7 @@ type GetMainLayoutPropsParams = {
   params?: string[];
   searchParams?: { [key: string]: string | string[] | undefined };
   isAppDir?: boolean;
+  isCustomPage?: boolean;
 };
 
 export const getMainLayoutProps = ({
@@ -259,6 +260,7 @@ export const getMainLayoutProps = ({
   params,
   searchParams,
   isAppDir = false,
+  isCustomPage = false
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
@@ -275,7 +277,7 @@ export const getMainLayoutProps = ({
     message = searchParams?.message
       ? JSON.parse(searchParams.message as string)
       : null;
-  } catch {}
+  } catch { }
 
   const resourcesTitles = resources.reduce(
     (acc, resource) => {
@@ -298,7 +300,7 @@ export const getMainLayoutProps = ({
     {} as { [key in Prisma.ModelName]: ModelIcon }
   );
 
-  return {
+  const result: MainLayoutProps = {
     resources,
     resource,
     basePath: options.basePath,
@@ -311,6 +313,10 @@ export const getMainLayoutProps = ({
     sidebar: options.sidebar,
     resourcesIcons,
     externalLinks: options.externalLinks,
-    options,
-  };
+  }
+  if (!isCustomPage) {
+    result.options = options
+  }
+
+  return result;
 };
