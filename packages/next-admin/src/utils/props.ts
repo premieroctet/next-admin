@@ -252,7 +252,6 @@ type GetMainLayoutPropsParams = {
   params?: string[];
   searchParams?: { [key: string]: string | string[] | undefined };
   isAppDir?: boolean;
-  isCustomPage?: boolean;
 };
 
 export const getMainLayoutProps = ({
@@ -260,7 +259,6 @@ export const getMainLayoutProps = ({
   params,
   searchParams,
   isAppDir = false,
-  isCustomPage = false
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
@@ -300,7 +298,7 @@ export const getMainLayoutProps = ({
     {} as { [key in Prisma.ModelName]: ModelIcon }
   );
 
-  const result: MainLayoutProps = {
+  return {
     resources,
     resource,
     basePath: options.basePath,
@@ -313,10 +311,6 @@ export const getMainLayoutProps = ({
     sidebar: options.sidebar,
     resourcesIcons,
     externalLinks: options.externalLinks,
+    options: extractSerializable(options)
   }
-  if (!isCustomPage) {
-    result.options = options
-  }
-
-  return result;
 };
