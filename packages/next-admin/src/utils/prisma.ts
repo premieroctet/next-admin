@@ -27,51 +27,51 @@ export const createWherePredicate = (
 ) => {
   return search
     ? {
-      OR: fieldsFiltered
-        ?.filter((field) => {
-          return field.kind === "scalar" || field.kind === "enum";
-        })
-        .map((field) => {
-          if (field.kind === "enum") {
-            const enumValueForSearchTerm = enumValueForEnumType(
-              field.type,
-              search
-            );
+        OR: fieldsFiltered
+          ?.filter((field) => {
+            return field.kind === "scalar" || field.kind === "enum";
+          })
+          .map((field) => {
+            if (field.kind === "enum") {
+              const enumValueForSearchTerm = enumValueForEnumType(
+                field.type,
+                search
+              );
 
-            if (enumValueForSearchTerm) {
+              if (enumValueForSearchTerm) {
+                return {
+                  [field.name]:
+                    // @ts-expect-error
+                    $Enums[field.type as keyof typeof $Enums][
+                      enumValueForSearchTerm.name
+                    ],
+                };
+              }
+            }
+
+            if (field.type === "String") {
+              // @ts-ignore
+              const mode = Prisma?.QueryMode
+                ? { mode: Prisma.QueryMode.insensitive }
+                : {};
               return {
-                [field.name]:
-                  // @ts-expect-error
-                  $Enums[field.type as keyof typeof $Enums][
-                  enumValueForSearchTerm.name
-                  ],
+                [field.name]: { contains: search, ...mode },
               };
             }
-          }
-
-          if (field.type === "String") {
-            // @ts-ignore
-            const mode = Prisma?.QueryMode
-              ? { mode: Prisma.QueryMode.insensitive }
-              : {};
-            return {
-              [field.name]: { contains: search, ...mode },
-            };
-          }
-          if (field.type === "Int" && !isNaN(Number(search))) {
-            return { [field.name]: Number(search) };
-          }
-          return null;
-        })
-        .filter(Boolean),
-    }
+            if (field.type === "Int" && !isNaN(Number(search))) {
+              return { [field.name]: Number(search) };
+            }
+            return null;
+          })
+          .filter(Boolean),
+      }
     : {};
 };
 
 export const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
-  options?: NextAdminOptions,
+  options?: NextAdminOptions
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
@@ -79,9 +79,15 @@ export const preparePrismaListRequest = <M extends ModelName>(
   const itemsPerPage =
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
+  const fieldSort = options?.model?.[resource]?.list?.defaultSort;
+
   let orderBy: Order<typeof resource> = {};
-  const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
-  const orderValue = searchParams.get("sortDirection") as Prisma.SortOrder;
+  const sortParam =
+    (searchParams.get("sortColumn") as Field<typeof resource>) ??
+    fieldSort?.field;
+  const orderValue =
+    (searchParams.get("sortDirection") as Prisma.SortOrder) ??
+    fieldSort?.direction;
 
   const modelFieldSortParam = model?.fields.find(
     ({ name }) => name === sortParam
@@ -139,9 +145,11 @@ type OptionsFromResourceParams = {
   property: string;
 } & GetMappedDataListParams;
 
-export const optionsFromResource = async (
-  { originResource, property, ...args }: OptionsFromResourceParams
-) => {
+export const optionsFromResource = async ({
+  originResource,
+  property,
+  ...args
+}: OptionsFromResourceParams) => {
   const data = await fetchDataList(args);
   const { data: dataItems, total, error } = data;
   const { resource } = args;
@@ -151,7 +159,7 @@ export const optionsFromResource = async (
     property as Field<typeof originResource>,
     args.resource,
     args.options
-  )
+  );
   const idProperty = getModelIdProperty(resource);
   return {
     data: dataItems.map((item): Enumeration => {
@@ -181,7 +189,7 @@ export const fetchDataList = async ({
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,
-    options,
+    options
   );
   let data: any[] = [];
   let total: number;
@@ -212,7 +220,7 @@ export const fetchDataList = async ({
     total,
     error,
   };
-}
+};
 
 export const getMappedDataList = async ({
   context,
