@@ -16,7 +16,7 @@ export const TooltipContent = forwardRef<
     <Tooltip.Content
       {...props}
       className={clsx(
-        "rounded border border-slate-100 bg-slate-50 text-sm text-gray-500 shadow-xl",
+        "rounded border border-nextadmin-border-default dark:border-dark-nextadmin-border-strong bg-nextadmin-background-subtle dark:bg-dark-nextadmin-background-subtle text-sm text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted shadow-xl",
         className
       )}
       ref={ref}
