@@ -139,9 +139,9 @@ const FileWidget = (props: WidgetProps) => {
         )}
         <div
           className={clsx(
-            "flex w-full justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10",
+            "border-nextadmin-border-default dark:border-dark-nextadmin-border-strong flex w-full justify-center rounded-lg border border-dashed px-6 py-10",
             {
-              "bg-nextadmin-primary-200/20": isDragging,
+              "bg-dark-nextadmin-background-subtle": isDragging,
             }
           )}
           onDrop={(evt) => {
@@ -163,12 +163,13 @@ const FileWidget = (props: WidgetProps) => {
             setIsDragging(false);
           }}
         >
-          <div className="text-center">
-            <CloudArrowUpIcon className="mx-auto h-8 w-8 text-gray-300" />
-            <div className="mt-4 flex text-sm leading-6 text-gray-600">
+          <div className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-center">
+            <CloudArrowUpIcon className="mx-auto h-8 w-8" />
+            <div className="mt-4 flex text-sm leading-6">
               <label
                 htmlFor={props.id}
-                className="text-nextadmin-primary-600 focus-within:ring-nextadmin-primary-600 hover:text-nextadmin-primary-500 relative cursor-pointer rounded-md font-semibold focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2"
+                className="text-nextadmin-primary-600 hover:text-nextadmin-primary-500 relative cursor-pointer rounded-md font-semibold
+                focus-visible:outline-none"
               >
                 <span>{t("form.widgets.file_upload.label")}</span>
                 <input

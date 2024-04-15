@@ -11,9 +11,10 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
+import { slugify } from "../utils/tools";
 import EmptyState from "./EmptyState";
-import Checkbox from "./radix/Checkbox";
 import Button from "./radix/Button";
+import Checkbox from "./radix/Checkbox";
 import {
   Dropdown,
   DropdownBody,
@@ -29,7 +30,6 @@ import {
   TableHeader,
   TableRow,
 } from "./radix/Table";
-import { slugify } from "../utils/tools";
 
 interface DataTableProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
@@ -191,7 +191,7 @@ export function DataTable({
               <TableRow
                 key={row.id}
                 data-state={row.getIsSelected() && "selected"}
-                className={`hover:bg-nextadmin-background-muted dark:hover:bg-dark-nextadmin-background-muted/75 border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default cursor-pointer border-b ${
+                className={`hover:bg-nextadmin-background-muted text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted/75 border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default cursor-pointer border-b ${
                   row.getIsSelected()
                     ? "bg-nextadmin-background-emphasis/40 dark:bg-dark-nextadmin-background-subtle"
                     : "even:bg-nextadmin-background-subtle dark:even:bg-dark-nextadmin-background-subtle/60"

@@ -163,7 +163,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
     <Transition.Root show={open} as="div">
       <Transition.Child
         as="div"
-        className="absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md bg-white shadow-2xl ring-1 ring-black ring-opacity-5"
+        className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md shadow-2xl ring-1"
         enter="transition-all ease-linear"
         enterFrom="opacity-0 -translate-y-1"
         enterTo="opacity-100 translate-y-0"
@@ -174,14 +174,14 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
         onScroll={onScroll}
       >
         <div className="relative flex flex-col">
-          <div className="sticky top-0 block items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2">
+          <div className="dark:bg-dark-nextadmin-background-subtle dark:border-dark-nextadmin-border-strong sticky top-0 block items-center justify-between border-b border-gray-200 bg-gray-50 px-3 py-2">
             <div className="relative flex items-center">
               <input
                 id={`${name}-search`}
                 ref={searchInput}
                 defaultValue={currentQuery.current}
                 type="text"
-                className="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-base placeholder-gray-500 shadow-sm transition-all sm:text-sm"
+                className="dark:bg-dark-nextadmin-background-subtle text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default dark:ring-dark-nextadmin-border-strong block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6"
                 placeholder="Search..."
                 onChange={onSearchChange}
               />
@@ -192,7 +192,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
             allOptions?.map((option, index: number) => (
               <div
                 key={index}
-                className="cursor-pointer px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
+                className="dark:bg-dark-nextadmin-background-subtle dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-brand-default cursor-pointer px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
                 onMouseDown={() => {
                   onChange(option);
                 }}
@@ -202,7 +202,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
             ))}
 
           {allOptions && allOptions.length === 0 && !isPending ? (
-            <div className="px-3 py-2 text-sm text-gray-700">
+            <div className="dark:bg-dark-nextadmin-background-subtle dark:text-dark-nextadmin-content-inverted px-3 py-2 text-sm text-gray-700">
               No results found
             </div>
           ) : (

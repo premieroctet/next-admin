@@ -4,14 +4,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import Link from "next/link";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";
 import { useForm } from "../../context/FormContext";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import { Enumeration } from "../../types";
-import { Selector } from "./Selector";
 import { slugify } from "../../utils/tools";
+import { Selector } from "./Selector";
 
 const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
   const formContext = useForm();
@@ -36,7 +36,7 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="relative flex w-full cursor-default justify-between rounded-md border border-gray-300 px-3 py-2 text-sm placeholder-gray-500 shadow-sm">
+      <div className="ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong dark:bg-dark-nextadmin-background-subtle relative flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1">
         <input
           type="hidden"
           value={value?.value || ""}
@@ -46,7 +46,7 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
         <input
           id={props.id}
           readOnly
-          className="h-full w-full flex-1 cursor-default appearance-none focus:outline-none"
+          className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted h-full w-full flex-1 cursor-default appearance-none bg-transparent focus:outline-none"
           value={value?.label || ""}
           onMouseDown={() => formContext.toggleOpen(name)}
         />
@@ -63,10 +63,13 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
           )}
           {hasValue && (
             <div className="flex items-center" onClick={() => onChange({})}>
-              <XMarkIcon className="h-5 w-5 text-gray-400" />
+              <XMarkIcon className="h-5 w-5 cursor-pointer text-gray-400" />
             </div>
           )}
-          <div className="pointer-events-none flex items-center">
+          <div
+            className="flex cursor-pointer items-center"
+            onMouseDown={() => formContext.toggleOpen(name)}
+          >
             <DoubleArrow />
           </div>
         </div>

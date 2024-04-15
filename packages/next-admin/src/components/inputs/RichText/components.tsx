@@ -107,7 +107,7 @@ export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
       data-test-id="menu"
       className={clsx(
         //on last child remove border right
-        "border-nextadmin-border-default dark:border-dark-nextadmin-border-default !last:border-r-0 flex flex-row gap-1 rounded-t-md border border-b-0 p-1.5",
+        " ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong  !last:border-r-0 flex flex-row gap-1 rounded-t-md border-b-0 p-1.5 ring-1",
         className
       )}
     />
