@@ -34,10 +34,9 @@ const ColorSchemeContext = createContext<ColorSchemeContextType>({
 
 type ProviderProps = {
   children: React.ReactNode;
-  isAppDir?: boolean;
 };
 
-export const ColorSchemeProvider = ({ isAppDir, children }: ProviderProps) => {
+export const ColorSchemeProvider = ({ children }: ProviderProps) => {
   const { options } = useConfig();
   const getInitialColorScheme = (): ColorScheme => {
     if (options?.forceColorScheme) {

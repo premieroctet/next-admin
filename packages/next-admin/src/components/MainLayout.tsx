@@ -39,7 +39,7 @@ export const MainLayout = ({
       isAppDir={isAppDir}
     >
       <I18nProvider translations={mergedTranslations}>
-        <ColorSchemeProvider isAppDir={isAppDir}>
+        <ColorSchemeProvider>
           <div className="next-admin__root h-[100vh]">
             <Menu
               title={title}
