@@ -1,5 +1,14 @@
 # @premieroctet/next-admin
 
+## 3.6.1
+
+### Patch Changes
+
+- 664160d: fix: richtext html field render
+- c899971: feat: add default label formatting
+- 2572ab9: chore: upgrade prisma-json-schema-generator version
+  fix: selector field for Enums
+
 ## 3.6.0
 
 ### Minor Changes
