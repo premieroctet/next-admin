@@ -36,6 +36,20 @@ const nextAdminPreset: PresetsConfig = {
             emphasis: defaultColors.slate[500],
             inverted: defaultColors.gray[700],
           },
+          alert: {
+            info: {
+              background: defaultColors.blue[50],
+              content: defaultColors.blue[800],
+            },
+            success: {
+              background: defaultColors.green[50],
+              content: defaultColors.green[800],
+            },
+            error: {
+              background: defaultColors.red[50],
+              content: defaultColors.red[800],
+            },
+          },
         },
         "dark-nextadmin": {
           primary: defaultColors.indigo,
@@ -67,6 +81,20 @@ const nextAdminPreset: PresetsConfig = {
             subtle: defaultColors.neutral[200],
             emphasis: defaultColors.slate[400],
             inverted: defaultColors.slate[50],
+          },
+          alert: {
+            info: {
+              background: defaultColors.slate[600],
+              content: defaultColors.sky[200],
+            },
+            success: {
+              background: defaultColors.slate[600],
+              content: defaultColors.green[400],
+            },
+            error: {
+              background: defaultColors.slate[600],
+              content: defaultColors.red[400],
+            },
           },
         },
       },
