@@ -1,4 +1,4 @@
-name: E2E & Unit tests
+name: E2E, Lint & Unit tests
 on:
   push:
     branches:
@@ -23,6 +23,8 @@ jobs:
         run: docker-compose up -d
       - name: Install dependencies
         run: yarn install
+      - name: Run linter
+        run: yarn lint
       - name: Install playwright dependencies
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
