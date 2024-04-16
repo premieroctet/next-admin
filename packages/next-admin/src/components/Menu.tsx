@@ -8,16 +8,16 @@ import {
 import { clsx } from "clsx";
 import Link from "next/link";
 import { Fragment, useState } from "react";
+import dynamic from "next/dynamic";
 
 import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
-import { useColorScheme } from "../context/ColorSchemeContext";
 import { useConfig } from "../context/ConfigContext";
-import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
   ModelIcon,
   ModelName,
+  NextAdminOptions,
   SidebarConfiguration,
 } from "../types";
 import { slugify } from "../utils/tools";
@@ -34,6 +34,10 @@ import {
   DropdownTrigger,
 } from "./radix/Dropdown";
 
+const ColorSchemeSwitch = dynamic(() => import("./ColorSchemeSwitch"), {
+  ssr: false,
+});
+
 export type MenuProps = {
   resource?: ModelName;
   resources?: ModelName[];
@@ -44,6 +48,7 @@ export type MenuProps = {
   user?: AdminComponentProps["user"];
   externalLinks?: AdminComponentProps["externalLinks"];
   title?: string;
+  forceColorScheme?: NextAdminOptions["forceColorScheme"];
 };
 
 export default function Menu({
@@ -56,13 +61,11 @@ export default function Menu({
   user,
   externalLinks,
   title,
+  forceColorScheme,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
   const { pathname } = useRouterInternal();
-  const { colorScheme, colorSchemeIcon, toggleColorScheme } = useColorScheme();
-  const { t } = useI18n();
-  const { options } = useConfig();
 
   const customPagesNavigation = customPages?.map((page) => ({
     name: page.title,
@@ -274,17 +277,7 @@ export default function Menu({
             </ul>
             <div className="flex flex-col">
               {renderExternalLinks()}
-              {!options?.forceColorScheme && (
-                <div
-                  onClick={toggleColorScheme}
-                  className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted flex cursor-pointer select-none flex-row items-center gap-5 rounded-lg p-3 text-sm font-medium transition-colors"
-                >
-                  {colorSchemeIcon}
-                  <span className="min-w-[3.5rem]">
-                    {t(`theme.${colorScheme}`)}
-                  </span>
-                </div>
-              )}
+              {!forceColorScheme && <ColorSchemeSwitch />}
               {renderUser()}
             </div>
           </nav>

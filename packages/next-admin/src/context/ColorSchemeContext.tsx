@@ -1,5 +1,9 @@
 "use client";
-import { MoonIcon, SunIcon } from "@heroicons/react/24/outline";
+import {
+  MoonIcon,
+  SunIcon,
+  ComputerDesktopIcon,
+} from "@heroicons/react/24/outline";
 import {
   ReactNode,
   createContext,
@@ -13,10 +17,12 @@ import { BasicColorScheme, ColorScheme, colorSchemes } from "../types";
 import { colorSchemeScript } from "../utils/colorSchemeScript";
 import { useConfig } from "./ConfigContext";
 
-const basicColorSchemeIcons: Record<BasicColorScheme, JSX.Element> = {
-  light: <SunIcon className="h-4 w-4" />,
-  dark: <MoonIcon className="h-4 w-4" />,
-};
+const basicColorSchemeIcons: Record<BasicColorScheme | "system", JSX.Element> =
+  {
+    light: <SunIcon className="h-4 w-4" />,
+    dark: <MoonIcon className="h-4 w-4" />,
+    system: <ComputerDesktopIcon className="h-4 w-4" />,
+  };
 
 type ColorSchemeContextType = {
   colorScheme: ColorScheme;
@@ -61,9 +67,7 @@ export const ColorSchemeProvider = ({ children }: ProviderProps) => {
   const [colorSchemeIcon, setColorSchemeIcon] = useState<
     JSX.Element | undefined
   >(() => {
-    if (colorScheme !== "system") {
-      return basicColorSchemeIcons[colorScheme];
-    }
+    return basicColorSchemeIcons[colorScheme];
   });
   const [systemPreference, setSystemPreference] = useState<BasicColorScheme>();
 
@@ -71,8 +75,7 @@ export const ColorSchemeProvider = ({ children }: ProviderProps) => {
     document.documentElement.classList.remove("dark", "light");
     const colorSchemeValue: BasicColorScheme | undefined =
       colorScheme === "system" ? systemPreference : colorScheme;
-    colorSchemeValue &&
-      setColorSchemeIcon(basicColorSchemeIcons[colorSchemeValue]);
+    colorSchemeValue && setColorSchemeIcon(basicColorSchemeIcons[colorScheme]);
     colorSchemeValue &&
       document.documentElement.classList.add(colorSchemeValue);
   }, [colorScheme, systemPreference]);
