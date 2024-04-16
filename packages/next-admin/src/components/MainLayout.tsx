@@ -51,6 +51,7 @@ export const MainLayout = ({
               resourcesIcons={resourcesIcons}
               user={user}
               externalLinks={externalLinks}
+              forceColorScheme={options?.forceColorScheme}
             />
             <main className="h-full lg:pl-72">
               {message && (
