@@ -182,6 +182,8 @@ export const renderElement = (props: RenderElementProps) => {
           {children}
         </blockquote>
       );
+    case "br":
+      return <>{children}</>;
     default:
       return <p {...attributes}>{children}</p>;
   }
@@ -248,6 +250,29 @@ export const serializeHtml = (node: Node) => {
   }
 };
 
+const ensureRootNodeIsNotTextContent = (el: HTMLElement) => {
+  const firstRootElement = el.firstChild;
+
+  if (firstRootElement?.nodeType === 3) {
+    const content = firstRootElement.textContent;
+    const lineReturnRegex = new RegExp("\\n", "gi");
+    const lineReturnCount = content?.match(lineReturnRegex)?.length ?? 0;
+
+    const newRootNode = document.createElement("p");
+    newRootNode.textContent = content?.replace(/\\n/gi, "") ?? "";
+
+    el.firstChild?.remove();
+
+    for (let i = 0; i < lineReturnCount; i++) {
+      const lineBreakNode = document.createElement("br");
+      el.prepend(lineBreakNode);
+    }
+    el.prepend(newRootNode);
+  }
+
+  return el;
+};
+
 export const deserialize = (
   string: string | undefined | null,
   format: RichTextFormat
@@ -264,7 +289,7 @@ export const deserialize = (
     }
 
     const dom = new DOMParser().parseFromString(string, "text/html");
-    return deserializeHtml(dom.body);
+    return deserializeHtml(ensureRootNodeIsNotTextContent(dom.body));
   } else {
     try {
       return JSON.parse(string);
@@ -319,8 +344,12 @@ export const deserializeHtml = (
         type: "paragraph",
         children,
       };
-    case "BR":
-      return children;
+    case "BR": {
+      return {
+        type: "br",
+        children,
+      };
+    }
     case "H1":
       return {
         type: "heading-one",
