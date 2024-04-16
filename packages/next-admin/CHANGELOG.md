@@ -1,5 +1,25 @@
 # @premieroctet/next-admin
 
+## 4.0.0
+
+### Major Changes
+
+- cd2accd: Create an internal preset tailwind
+
+  # Breaking change
+
+  You cannot import the `styles.css` file from the library. You now need to configure Tailwind in your app. See [docs](https://next-admin.js.org/docs/getting-started)
+
+### Minor Changes
+
+- eae1f85: feat: add default sort option
+
+### Patch Changes
+
+- cd2accd: Add dark mode system
+- f67fa2f: fix: throw error for missing params
+- 6f87ce8: fix: handle plain strings for rich text html
+
 ## 3.6.1
 
 ### Patch Changes
