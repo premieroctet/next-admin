@@ -6,9 +6,8 @@
   "license": "MIT",
   "scripts": {
     "js": "tsc",
-    "css": "tailwindcss -i ./src/styles.css -o ./dist/styles.css",
-    "build": "npm run css && npm run js",
-    "dev": "concurrently \"npm run css -- --watch\" \"npm run js -- --watch\"",
+    "build": "npm run js",
+    "dev": "tsc --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",

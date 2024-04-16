@@ -11,7 +11,7 @@ export const DropdownTrigger = forwardRef<
   return (
     <DropdownMenu.Trigger
       className={clsx(
-        "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+        "focus:ring-ring focus:outline-none focus:ring-2 focus:ring-offset-2",
         className
       )}
       ref={ref}
@@ -39,7 +39,7 @@ export const DropdownContent = forwardRef<
   return (
     <DropdownMenu.Content
       className={clsx(
-        "bg-white shadow-lg rounded-md ring-1 ring-black ring-opacity-5 focus:outline-none z-50",
+        "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong z-50 rounded-md shadow-lg ring-1 ring-opacity-5 focus:outline-none",
         className
       )}
       ref={ref}
@@ -57,7 +57,7 @@ export const DropdownItem = forwardRef<
   return (
     <DropdownMenu.Item
       className={clsx(
-        "group text-sm text-gray-700 hover:bg-gray-100",
+        "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted hover:bg-nextadmin-background-muted group text-sm",
         className
       )}
       ref={ref}
@@ -89,7 +89,7 @@ export const DropdownSeparator = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <DropdownMenu.Separator
-      className={clsx("h-px bg-gray-200 m-1", className)}
+      className={clsx("m-1 h-px bg-gray-200", className)}
       ref={ref}
       {...props}
     />

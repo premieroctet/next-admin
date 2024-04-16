@@ -64,7 +64,7 @@ export default function ListHeader({
 
   return (
     <>
-      <div className="h-auto md:h-16 py-4 md:py-0 flex justify-between sm:items-center flex-col sm:flex-row items-start gap-3 px-4 sticky top-0 z-10 bg-white border-b border-b-slate-200 shadow-sm">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex h-auto flex-col items-start justify-between gap-3 border-b px-4 py-4 shadow-sm sm:flex-row sm:items-center md:h-16 md:py-0">
         <Breadcrumb
           breadcrumbItems={[
             {
@@ -75,9 +75,9 @@ export default function ListHeader({
             },
           ]}
         />
-        <div className="flex items-center justify-between gap-x-4 w-full sm:w-auto">
+        <div className="flex w-full items-center justify-between gap-x-4 sm:w-auto">
           {(totalCount || 0 > 1 || (search && totalCount) || 0 > 1) && (
-            <span className="text-gray-400 text-sm hidden sm:block">
+            <span className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default hidden text-sm sm:block">
               {search
                 ? t("list.header.search.result_filtered", { count: totalCount })
                 : t("list.header.search.result", {
@@ -86,24 +86,24 @@ export default function ListHeader({
             </span>
           )}
           {onSearchChange && (
-            <div className="flex justify-end items-center gap-2 bg-slate-100 border-gray-300 px-3 py-1 rounded-md">
+            <div className="bg-nextadmin-background-subtle dark:bg-dark-nextadmin-background-subtle ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong flex items-center justify-end gap-2 rounded-md px-3 py-1 ring-1 ">
               <input
                 id="search"
                 name="search"
                 onInput={onSearchChange}
                 defaultValue={search}
                 type="search"
-                className="bg-transparent py-1.5 rounded-md text-sm focus:outline-none focus:ring-0 focus:ring-offset-0"
+                className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle rounded-md bg-[transparent] py-1.5 text-sm focus:outline-none focus:ring-0 focus:ring-offset-0"
                 placeholder={`${t(
                   "list.header.search.placeholder"
                 )} ${title?.toLowerCase()}`}
               />
               <label htmlFor="search">
                 {isPending ? (
-                  <Loader className="h-6 w-6 stroke-gray-400 animate-spin" />
+                  <Loader className="stroke-nextadmin-content-default dark:stroke-dark-nextadmin-content-default h-6 w-6 animate-spin dark:stroke-gray-300" />
                 ) : (
                   <MagnifyingGlassIcon
-                    className="h-6 w-6 text-gray-400"
+                    className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-6 w-6"
                     aria-hidden="true"
                   />
                 )}
@@ -128,7 +128,7 @@ export default function ListHeader({
             })}
           >
             <span>{t("list.header.add.label")}</span>
-            <PlusSmallIcon className="h-5 w-5 ml-2" aria-hidden="true" />
+            <PlusSmallIcon className="ml-2 h-5 w-5" aria-hidden="true" />
           </Link>
         </div>
       </div>

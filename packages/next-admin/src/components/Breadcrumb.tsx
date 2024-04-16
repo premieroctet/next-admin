@@ -21,7 +21,10 @@ export default function Breadcrumb({
       <ol role="list" className="flex items-center space-x-2">
         <li>
           <div>
-            <a href={basePath} className="text-gray-400 hover:text-slate-500">
+            <a
+              href={basePath}
+              className="text-nextadmin-menu-default dark:text-dark-nextadmin-menu-color hover:text-nextadmin-content-emphasis dark:hover:text-dark-nextadmin-content-emphasis"
+            >
               <HomeIcon className="h-5 w-5 flex-shrink-0" aria-hidden="true" />
               <span className="sr-only">Home</span>
             </a>
@@ -31,7 +34,7 @@ export default function Breadcrumb({
           <li key={page.label}>
             <div className="flex items-center">
               <svg
-                className="h-5 w-5 flex-shrink-0 text-slate-300"
+                className="text-next-admin-menu-default dark:text-dark-nextadmin-menu-color h-5 w-5 flex-shrink-0"
                 fill="currentColor"
                 viewBox="0 0 20 20"
                 aria-hidden="true"
@@ -41,8 +44,10 @@ export default function Breadcrumb({
 
               <Link
                 href={page.href}
-                className={`ml-2 text-sm font-medium hover:text-nextadmin-primary-700 flex gap-2 ${
-                  page.current ? "text-nextadmin-primary-500" : "text-slate-500"
+                className={`hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis ml-2 flex gap-2 text-sm font-medium ${
+                  page.current
+                    ? "text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle"
+                    : "text-nextadmin-menu-default dark:text-dark-nextadmin-menu-color"
                 }`}
                 aria-current={page.current ? "page" : undefined}
               >

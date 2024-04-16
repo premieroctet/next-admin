@@ -18,15 +18,15 @@ const EmptyState = ({
   const { basePath } = useConfig();
 
   return (
-    <div className="text-center py-10">
+    <div className="py-10 text-center">
       <ResourceIcon
         icon={icon ?? "RectangleGroupIcon"}
-        className="mx-auto h-20 w-20 text-slate-300 stroke-1"
+        className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default mx-auto h-20 w-20 stroke-1"
       />
-      <h3 className="mt-2 font-semibold text-slate-800 text-lg">
+      <h3 className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-default mt-2 text-lg  font-semibold">
         {t("list.empty.label", { resource: resource.toLowerCase() })}
       </h3>
-      <p className="mt-1 text-sm text-slate-500">
+      <p className="text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis mt-1 text-sm ">
         {t("list.empty.caption", { resource: resource.toLowerCase() })}
       </p>
       <div className="mt-6">
@@ -42,7 +42,7 @@ const EmptyState = ({
             {t("list.header.add.label")} {resource.toLowerCase()}
           </span>
 
-          <PlusSmallIcon className="h-5 w-5 ml-2" aria-hidden="true" />
+          <PlusSmallIcon className="ml-2 h-5 w-5" aria-hidden="true" />
         </Link>
       </div>
     </div>

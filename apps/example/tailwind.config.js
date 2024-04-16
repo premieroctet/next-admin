@@ -12,6 +12,7 @@ module.exports = {
     "./options.{js,ts,jsx,tsx}",
     "./pageRouterOptions.{js,ts,jsx,tsx}",
   ],
+  darkMode: "class",
   theme: {
     transparent: "transparent",
     current: "currentColor",
@@ -145,5 +146,5 @@ module.exports = {
     },
   ],
   plugins: [require("@headlessui/tailwindcss")],
-  darkMode: "class",
+  presets: [require("@premieroctet/next-admin/dist/preset")],
 };

@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { cloneDeep } from "lodash";
 import qs from "querystring";
+import type { SearchPaginatedResourceParams } from "../actions";
 import {
   ActionParams,
   AdminComponentProps,
@@ -24,7 +25,6 @@ import {
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
-import type { SearchPaginatedResourceParams } from "../actions";
 
 export type GetPropsFromParamsParams = {
   params?: string[];
@@ -307,5 +307,6 @@ export const getMainLayoutProps = ({
     sidebar: options.sidebar,
     resourcesIcons,
     externalLinks: options.externalLinks,
+    options: extractSerializable(options),
   };
 };

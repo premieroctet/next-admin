@@ -23,6 +23,20 @@ pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
   </Tabs.Tab>
 </Tabs>
 
+Next-Admin relies on [TailwindCSS](https://tailwindcss.com/) for the style. If you do not have it, you can [install TailwindCSS](https://tailwindcss.com/docs/installation) with the following config :
+
+```typescript
+module.exports = {
+  content: [
+    "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
+  ],
+  darkMode: "class",
+  presets: [require("@premieroctet/next-admin/dist/preset")],
+};
+```
+
+You can find more information about theming [here](/docs/theming)
+
 ## SuperJson configuration
 
 SuperJson is required to avoid errors related to invalid serialisation properties that can occur when passing data from server to client.

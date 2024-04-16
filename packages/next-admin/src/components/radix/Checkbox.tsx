@@ -35,17 +35,17 @@ const Checkbox = ({
         });
       }}
       className={clsx(
-        'flex justify-center items-center h-4 w-4 rounded border border-gray-200 bg-white text-white data-[state="checked"]:bg-nextadmin-primary-500 data-[state="checked"]:border-nextadmin-primary-500 data-[state="indeterminate"]:bg-nextadmin-primary-500 data-[state="indeterminate"]:border-nextadmin-primary-500',
+        'data-[state="checked"]:!bg-nextadmin-primary-500 data-[state="checked"]:border-nextadmin-primary-500 data-[state="indeterminate"]:!bg-nextadmin-primary-500 data-[state="indeterminate"]:border-nextadmin-primary-500 flex h-4 w-4 items-center justify-center rounded border border-gray-200 bg-white text-white dark:border-gray-400 dark:bg-slate-500',
         {
-          "ring-1 ring-offset-1 ring-nextadmin-primary-600": status === true,
+          "ring-nextadmin-primary-600 ring-1 ring-offset-1": status === true,
         },
         className
       )}
       {...props}
     >
       <RadixCheckbox.Indicator>
-        {indeterminate && <MinusIcon className="w-4 h-4" />}
-        {status === true && <CheckIcon className="w-4 h-4" />}
+        {indeterminate && <MinusIcon className="h-4 w-4" />}
+        {status === true && <CheckIcon className="h-4 w-4" />}
       </RadixCheckbox.Indicator>
     </RadixCheckbox.Root>
   );

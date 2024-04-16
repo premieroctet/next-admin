@@ -91,7 +91,8 @@ function List({
                 <TableHead
                   sortDirection={sortDirection}
                   sortColumn={sortColumn}
-                  property={propertyAlias}
+                  property={property}
+                  propertyName={propertyAlias}
                   key={property}
                   onClick={() => {
                     router?.push({
@@ -159,7 +160,7 @@ function List({
 
   return (
     <>
-      <div className="flow-root">
+      <div className="flow-root h-full">
         <ListHeader
           title={title}
           icon={icon}
@@ -173,7 +174,7 @@ function List({
           onDelete={() => deleteItems(getSelectedRowsIds())}
           totalCount={total}
         />
-        <div className="max-w-full align-middle p-4 sm:p-8">
+        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
           <DataTable
             resource={resource}
             data={data}
@@ -185,7 +186,7 @@ function List({
             icon={icon}
           />
           {data.length ? (
-            <div className="flex-1 flex items-center space-x-2 py-4">
+            <div className="flex flex-1 items-center space-x-2 py-4">
               <div>
                 <TableRowsIndicator
                   pageIndex={pageIndex}
@@ -194,7 +195,7 @@ function List({
                   pageSize={pageSize}
                 />
               </div>
-              <div className="flex-1 flex items-center justify-end space-x-4">
+              <div className="flex flex-1 items-center justify-end space-x-4">
                 <Select
                   onValueChange={(value) => {
                     if (isNaN(Number(value))) return;
@@ -208,34 +209,18 @@ function List({
                     });
                   }}
                 >
-                  <SelectTrigger className="max-w-[100px] bg-white">
-                    <SelectValue placeholder={pageSize} />
+                  <SelectTrigger className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle max-w-[100px]">
+                    <SelectValue asChild>
+                      <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
+                        {pageSize}
+                      </span>
+                    </SelectValue>
                   </SelectTrigger>
-                  <SelectContent className="bg-white">
-                    <SelectItem
-                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
-                      value={"10"}
-                    >
-                      10
-                    </SelectItem>
-                    <SelectItem
-                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
-                      value={"20"}
-                    >
-                      20
-                    </SelectItem>
-                    <SelectItem
-                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
-                      value={"50"}
-                    >
-                      50
-                    </SelectItem>
-                    <SelectItem
-                      className="cursor-pointer hover:bg-nextadmin-primary-50 rounder-md"
-                      value={"100"}
-                    >
-                      100
-                    </SelectItem>
+                  <SelectContent>
+                    <SelectItem value={"10"}>10</SelectItem>
+                    <SelectItem value={"20"}>20</SelectItem>
+                    <SelectItem value={"50"}>50</SelectItem>
+                    <SelectItem value={"100"}>100</SelectItem>
                   </SelectContent>
                 </Select>
 

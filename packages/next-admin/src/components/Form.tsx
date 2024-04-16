@@ -16,6 +16,7 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
+import dynamic from "next/dynamic";
 import React, {
   ChangeEvent,
   cloneElement,
@@ -39,6 +40,7 @@ import {
   SubmitFormResult,
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
+import { formatLabel, slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
 import ArrayField from "./inputs/ArrayField";
@@ -58,8 +60,6 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import { formatLabel, slugify } from "../utils/tools";
-import dynamic from "next/dynamic";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
@@ -129,7 +129,7 @@ const Form = ({
     }
 
     return (
-      <div className="flex space-x-2 mt-4 justify-between">
+      <div className="mt-4 flex justify-between space-x-2">
         <div>
           {edit && (
             <Button
@@ -317,7 +317,7 @@ const Form = ({
             {schema.type !== "null" && (
               <label
                 className={clsx(
-                  "flex items-center text-sm font-medium leading-6 text-gray-900 gap-2 mb-2"
+                  "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted mb-2 flex items-center gap-2 text-sm font-medium leading-6"
                 )}
                 htmlFor={id}
               >
@@ -327,7 +327,7 @@ const Form = ({
                   <TooltipProvider>
                     <TooltipRoot>
                       <TooltipTrigger asChild>
-                        <InformationCircleIcon className="w-4 h-4 text-gray-500" />
+                        <InformationCircleIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-4 w-4" />
                       </TooltipTrigger>
                       <TooltipPortal>
                         <TooltipContent
@@ -418,8 +418,8 @@ const Form = ({
             {...props}
             value={props.value ?? ""}
             className={clsx(
-              "block w-full transition-all duration-300 rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-1 focus:ring-inset focus:ring-nextadmin-primary-600 text-sm sm:leading-6 px-2 disabled:opacity-50 disabled:bg-gray-200 disabled:cursor-not-allowed",
-              { "ring-red-600": rawErrors }
+              "dark:bg-dark-nextadmin-background-subtle text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default dark:ring-dark-nextadmin-border-strong block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-colors duration-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6",
+              { "ring-red-600 dark:ring-red-400": rawErrors }
             )}
           />
         );
@@ -429,7 +429,7 @@ const Form = ({
       },
       FieldErrorTemplate: ({ errors }) => {
         return errors ? (
-          <div className="text-sm text-red-600 mt-1">
+          <div className="mt-1 text-sm text-red-600 dark:text-red-400">
             {errors.map((error, idx) => {
               if (typeof error === "string") {
                 return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
@@ -442,7 +442,9 @@ const Form = ({
       },
       DescriptionFieldTemplate: ({ description, schema }) => {
         return description && schema.type !== "null" ? (
-          <span className="text-sm text-gray-500">{description}</span>
+          <span className="text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis text-sm">
+            {description}
+          </span>
         ) : null;
       },
     }),
@@ -467,8 +469,8 @@ const Form = ({
   }
 
   return (
-    <div className="relative">
-      <div className="flex h-16 justify-between items-center flex-row gap-3 px-4 sticky top-0 z-10 bg-white border-b border-b-slate-200 shadow-sm">
+    <div className="relative h-full">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex h-16 flex-row items-center justify-between gap-3 border-b px-4 shadow-sm">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
         {!!actions && actions.length > 0 && !!id && (
           <ActionsDropdown
@@ -479,8 +481,8 @@ const Form = ({
           />
         )}
       </div>
-      <div className="max-w-full align-middle p-4 sm:p-8">
-        <div className="bg-white max-w-screen-md rounded-lg border p-4 sm:p-8">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
+        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <FormProvider
             initialValue={data}
             searchPaginatedResourceAction={searchPaginatedResourceAction}

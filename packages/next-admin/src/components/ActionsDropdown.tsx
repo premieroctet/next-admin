@@ -41,7 +41,7 @@ const ActionsDropdown = ({
     <Dropdown onOpenChange={setIsOpen}>
       <DropdownTrigger
         asChild
-        className="flex items-center gap-x-2 text-sm text-gray-700 rounded-md border border-input bg-transparent px-3 py-2"
+        className="text-nextadmin-content-inverted dark:text-dark-nextadmin-brand-inverted border-nextadmin-border-default dark:border-dark-nextadmin-border-default dark:bg-dark-nextadmin-background-subtle flex items-center gap-x-2 rounded-md border bg-transparent px-3 py-2 text-sm"
         data-testid="actions-dropdown"
       >
         <button type="button">
@@ -51,11 +51,11 @@ const ActionsDropdown = ({
               {(selectedCount ?? 0) > 1 ? `(${selectedCount})` : ""}
             </span>
             <ChevronDownIcon
-              className="h-5 w-5 hidden md:block"
+              className="hidden h-5 w-5 md:block"
               aria-hidden="true"
             />
             <EllipsisVerticalIcon
-              className="h-5 w-5 md:hidden block"
+              className="block h-5 w-5 md:hidden"
               aria-hidden="true"
             />
           </div>
@@ -79,8 +79,9 @@ const ActionsDropdown = ({
               return (
                 <DropdownItem
                   key={action.title}
-                  className={clsx("rounded-md py-1 px-2 cursor-pointer", {
-                    "text-red-700": action.style === "destructive",
+                  className={clsx("cursor-pointer rounded-md px-2 py-1", {
+                    "text-red-700 dark:text-red-400":
+                      action.style === "destructive",
                     "hover:bg-red-50": action.style === "destructive",
                   })}
                   onClick={() => onActionClick(action)}

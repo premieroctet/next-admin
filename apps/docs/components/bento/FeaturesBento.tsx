@@ -91,7 +91,7 @@ const items = [
 
 export function FeaturesBento() {
   return (
-    <BentoGrid className="max-w-4xl mx-auto md:auto-rows-[20rem] py-10">
+    <BentoGrid className="mx-auto max-w-4xl py-10 md:auto-rows-[20rem]">
       {items.map((item, i) => (
         <BentoGridItem
           key={i}

@@ -1,42 +1,53 @@
 # Theming
 
-Next Admin comes with a default theme which currently consists of Tailwind's indigo color as a primary color.
+Next Admin comes with a preset that is used to theme the different components of the pages.
 
-To use the default theme, you can import the generated CSS file from Next Admin:
-
-```js
-import "@premieroctet/next-admin/dist/styles.css";
-```
-
-However, you might want to override this primary color. It is possible to do so in your own Tailwind config file:
+You can add the preset to your Tailwind config presets :
 
 ```js
 module.exports = {
   content: [
-    ...yourFiles,
-    "./node_modules/@premieroctet/next-admin/dist/**/*.js",
+    // your own content
+    "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
   ],
+  presets: [require("@premieroctet/next-admin/dist/preset")],
+};
+```
+
+## Dark mode support
+
+The preset sets the `darkMode` option to `class` by default. However, if you wish to adapt to the system's preferences, you can set it to `media` in your own config.
+
+## Theme override
+
+You can override the default theme by extending the color palette in your Tailwind config.
+
+```typescript
+module.exports = {
+  content: [
+    // your own content
+    "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
+  ],
+  plugins: [],
   theme: {
     extend: {
       colors: {
         nextadmin: {
-          primary: {
-            50: "#f3f4f6",
-            100: "#e7e9ed",
-            200: "#c7cdd6",
-            300: "#a7b1bf",
-            400: "#67788f",
-            500: "#27445f",
-            600: "#24405a",
-            700: "#1c334b",
-            800: "#172940",
-            900: "#0f1d2e",
-          },
+          background: {
+            default: '#FEFEFE'
+          }
         },
-      },
-    },
-  },
+        // Dark mode colors
+        "dark-nextadmin": {
+          background: {
+            default: "#2F2F2F"
+          }
+        }
+      }
+    }
+  }
+  presets: [require("@premieroctet/next-admin/dist/preset")],
 };
 ```
 
-You will then need to import your own generated CSS file instead of the Next Admin's one.
+Make sure to respect the same structure as the one provided in the preset.

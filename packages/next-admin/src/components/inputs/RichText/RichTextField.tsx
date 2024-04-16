@@ -5,7 +5,7 @@ import { Editable, Slate, withReact } from "slate-react";
 import * as Icons from "../../../assets/icons/RichTextActions";
 import { RichTextFormat } from "../../../types";
 import { Button, EditorContainer, Separator, Toolbar } from "./components";
-import { renderElement, renderLeaf, serialize, deserialize } from "./utils";
+import { deserialize, renderElement, renderLeaf, serialize } from "./utils";
 
 type RichTextFieldProps = {
   onChange: ChangeEventHandler<HTMLInputElement>;
@@ -91,7 +91,13 @@ const RichTextField = ({ schema, onChange, ...props }: RichTextFieldProps) => {
           spellCheck
           renderElement={renderElement}
           renderLeaf={renderLeaf}
-          className="border border-gray-300 p-3 rounded-b-md shadow-sm min-h-[200px]"
+          className="border-nextadmin-border-default dark:border-dark-nextadmin-border-default bg-nextadmin-background-default text-nextadmin-content-inverted
+          ring-nextadmin-border-default
+          focus:ring-nextadmin-brand-default
+          dark:focus:ring-dark-nextadmin-brand-default
+          dark:ring-dark-nextadmin-border-strong
+          dark:text-dark-nextadmin-content-inverted
+          dark:bg-dark-nextadmin-background-subtle min-h-[200px] rounded-b-md p-3 shadow-sm ring-1 focus:ring-2 focus-visible:outline-none"
           autoFocus
         />
       </EditorContainer>

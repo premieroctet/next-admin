@@ -31,7 +31,14 @@ export type SearchPaginatedResourceParams = {
 
 export const searchPaginatedResource = async (
   { options, prisma }: ActionFullParams,
-  { originModel, property, model, query, page = 1, perPage = 25 }: SearchPaginatedResourceParams
+  {
+    originModel,
+    property,
+    model,
+    query,
+    page = 1,
+    perPage = 25,
+  }: SearchPaginatedResourceParams
 ) => {
   const data = await optionsFromResource({
     prisma,

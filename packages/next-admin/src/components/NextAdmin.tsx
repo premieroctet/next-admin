@@ -125,6 +125,7 @@ export function NextAdmin({
         resourcesIcons={resourcesIcons}
         user={user}
         externalLinks={externalLinks}
+        options={options}
       >
         {renderMainComponent()}
       </MainLayout>

@@ -2,8 +2,8 @@ import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
 import type { ChangeEvent, ReactNode } from "react";
-import type { PropertyValidationError } from "./exceptions/ValidationError";
 import type { SearchPaginatedResourceParams } from "./actions";
+import type { PropertyValidationError } from "./exceptions/ValidationError";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -214,6 +214,8 @@ export type NextAdminOptions = {
   pages?: Record<string, { title: string; icon?: ModelIcon }>;
   sidebar?: SidebarConfiguration;
   externalLinks?: ExternalLink[];
+  forceColorScheme?: ColorScheme;
+  defaultColorScheme?: ColorScheme;
 };
 
 /** Type for Schema */
@@ -383,6 +385,7 @@ export type MainLayoutProps = Pick<
   | "resourcesIcons"
   | "user"
   | "externalLinks"
+  | "options"
 >;
 
 export type CustomUIProps = {
@@ -441,3 +444,7 @@ export type Translations = {
 } & {
   [key: string]: string;
 };
+
+export const colorSchemes = ["light", "dark", "system"] as const;
+export type ColorScheme = (typeof colorSchemes)[number];
+export type BasicColorScheme = Exclude<ColorScheme, "system">;

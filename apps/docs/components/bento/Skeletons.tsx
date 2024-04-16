@@ -34,12 +34,12 @@ export const SkeletonOne = () => {
       initial="initial"
       animate="visible"
       whileHover="hover"
-      className=" flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2"
+      className=" dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex h-full min-h-[6rem] w-full flex-1 flex-col space-y-2"
     >
       {false && (
-        <motion.div className="w-0 h-0 border-l-[30px] border-b-[50px] border-r-[30px] border-l-transparent border-r-transparent border-b-black" />
+        <motion.div className="h-0 w-0 border-b-[50px] border-l-[30px] border-r-[30px] border-b-black border-l-transparent border-r-transparent" />
       )}
-      <motion.div className="dark:text-white/70 text-sm text-stone-600 font-light flex flex-col justify-center h-full">
+      <motion.div className="flex h-full flex-col justify-center text-sm font-light text-stone-600 dark:text-white/70">
         <motion.div variants={variants}>app/</motion.div>
         <motion.div variants={variants} className="ml-3">
           layout.tsx
@@ -49,13 +49,13 @@ export const SkeletonOne = () => {
         </motion.div>
         <motion.div
           variants={variants}
-          className="dark:text-black/80 ml-6 p-1 rounded-lg px-2 bg-gradient-to-r from-green-100/80 to-green-100/10 font-medium"
+          className="ml-6 rounded-lg bg-gradient-to-r from-green-100/80 to-green-100/10 p-1 px-2 font-medium dark:text-black/80"
         >
           [[...nextadmin]]/
         </motion.div>
         <motion.div
           variants={variants}
-          className="dark:text-black/80 ml-14 bg-gradient-to-r from-yellow-100/80 to-yellow-100/10 font-medium px-2 p-1"
+          className="ml-14 bg-gradient-to-r from-yellow-100/80 to-yellow-100/10 p-1 px-2 font-medium dark:text-black/80"
         >
           page.tsx
         </motion.div>
@@ -92,7 +92,7 @@ export const SkeletonTwo = () => {
     <motion.div
       variants={variants}
       className={cn(
-        "bg-white border w-16 h-16 rounded-full flex justify-center items-center shadow-sm",
+        "flex h-16 w-16 items-center justify-center rounded-full border bg-white shadow-sm",
         className
       )}
     >
@@ -105,7 +105,7 @@ export const SkeletonTwo = () => {
       initial="initial"
       animate="animate"
       whileHover="hover"
-      className="min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] h-full flex flex-row -space-x-4 justify-center items-center"
+      className="dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex h-full min-h-[6rem] flex-row items-center justify-center -space-x-4"
     >
       <CircleIcon className="bg-gradient-to-t">
         <PlusIcon className="h-5 w-5 text-neutral-500" />
@@ -133,17 +133,17 @@ export const SkeletonThree = () => {
       initial="initial"
       animate="animate"
       variants={variants}
-      className="dark:text-white/70 flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col text-xs font-mono justify-center text-black/30"
+      className="dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex h-full min-h-[6rem] w-full flex-1 flex-col justify-center font-mono text-xs text-black/30 dark:text-white/70"
     >
       <motion.div>{`datasource db {`}</motion.div>
       <motion.div className="pl-4">{`provider = "postgresql"`}</motion.div>
       <motion.div className="pl-4">{`url = env("DATABASE_URL")`}</motion.div>
       <motion.div>{`}`}</motion.div>
       <motion.div className="mt-3">{`generator jsonSchema {`}</motion.div>
-      <motion.div className="dark:text-black/70 ml-2 pl-2 py-2 my-1 bg-gradient-to-r from-green-100/80 to-green-100/10 text-stone-600 rounded-lg relative">
+      <motion.div className="relative my-1 ml-2 rounded-lg bg-gradient-to-r from-green-100/80 to-green-100/10 py-2 pl-2 text-stone-600 dark:text-black/70">
         {`provider = "prisma-json-schema-generator"`}
         <div>
-          <CheckBadgeIcon className="h-6 w-6 absolute right-0 top-6 text-teal-600" />
+          <CheckBadgeIcon className="absolute right-0 top-6 h-6 w-6 text-teal-600" />
         </div>
       </motion.div>
       <motion.div className="pl-4 ">
@@ -184,28 +184,28 @@ export const SkeletonFour = () => {
     <motion.div
       initial="initial"
       whileHover="animate"
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2 justify-center"
+      className="dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex h-full min-h-[6rem] w-full flex-1 flex-col justify-center space-y-2"
     >
       <motion.div
         variants={variants}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.4] p-2  items-center space-x-2 bg-white dark:bg-black"
+        className="flex flex-row items-center space-x-2 rounded-full border border-neutral-100  bg-white p-2 dark:border-white/[0.4] dark:bg-black"
       >
         <MagnifyingGlassIcon className="h-6 w-6" />
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-700" />
+        <div className="h-4 w-full rounded-full bg-gray-100 dark:bg-neutral-700" />
       </motion.div>
       <motion.div
         variants={variantsSecond}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.4] p-2 items-center space-x-2 w-3/4 ml-auto bg-white dark:bg-black"
+        className="ml-auto flex w-3/4 flex-row items-center space-x-2 rounded-full border border-neutral-100 bg-white p-2 dark:border-white/[0.4] dark:bg-black"
       >
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-700" />
+        <div className="h-4 w-full rounded-full bg-gray-100 dark:bg-neutral-700" />
         <FunnelIcon className="h-6 w-6" />
       </motion.div>
       <motion.div
         variants={variants}
-        className="flex flex-row rounded-full border border-neutral-100 dark:border-white/[0.4] p-2 items-center space-x-2 bg-white dark:bg-black"
+        className="flex flex-row items-center space-x-2 rounded-full border border-neutral-100 bg-white p-2 dark:border-white/[0.4] dark:bg-black"
       >
         <AdjustmentsVerticalIcon className="h-6 w-6" />
-        <div className="w-full bg-gray-100 h-4 rounded-full dark:bg-neutral-700" />
+        <div className="h-4 w-full rounded-full bg-gray-100 dark:bg-neutral-700" />
       </motion.div>
     </motion.div>
   );
@@ -236,14 +236,14 @@ export const SkeletonFive = () => {
       initial="initial"
       animate="animate"
       whileHover="hover"
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2 items-center justify-center"
+      className="dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex h-full min-h-[6rem] w-full flex-1 flex-col items-center justify-center space-y-2"
     >
       <motion.div
         variants={variants}
-        className="dark:text-gray-400 h-24 w-24 flex items-end justify-end p-1 relative rounded-lg text-4xl bg-gradient-to-b from-green-100 to-green-100/10 5 text-green-800"
+        className="5 relative flex h-24 w-24 items-end justify-end rounded-lg bg-gradient-to-b from-green-100 to-green-100/10 p-1 text-4xl text-green-800 dark:text-gray-400"
       >
         TS
-        <ShieldCheckIcon className="w-8 h-8 absolute -bottom-2 left-0 dark:text-gray-500 text-green-700" />
+        <ShieldCheckIcon className="absolute -bottom-2 left-0 h-8 w-8 text-green-700 dark:text-gray-500" />
       </motion.div>
     </motion.div>
   );
@@ -273,7 +273,7 @@ export const SkeletonSix = () => {
       initial="hidden"
       animate="show"
       whileHover="hover"
-      className="flex flex-1 w-full h-full min-h-[6rem] dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex-col space-y-2 items-center justify-center text-stone-400 text-xl font-light"
+      className="dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex h-full min-h-[6rem] w-full flex-1 flex-col items-center justify-center space-y-2 text-xl font-light text-stone-400"
     >
       <motion.div variants={item}>Hello 👋</motion.div>
       <motion.div variants={item}>Bonjour 👋</motion.div>

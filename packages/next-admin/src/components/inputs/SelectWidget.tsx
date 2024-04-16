@@ -4,14 +4,14 @@ import {
 } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import Link from "next/link";
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo, useRef } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";
 import { useForm } from "../../context/FormContext";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import { Enumeration } from "../../types";
-import { Selector } from "./Selector";
 import { slugify } from "../../utils/tools";
+import { Selector } from "./Selector";
 
 const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
   const formContext = useForm();
@@ -30,44 +30,46 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
     formContext.setOpen(false, name);
   };
 
-
   const hasValue = useMemo(() => {
     return Object.keys(value || {}).length > 0;
   }, [value]);
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="relative flex justify-between w-full px-3 py-2 text-sm placeholder-gray-500 border border-gray-300 rounded-md shadow-sm cursor-default">
+      <div className="ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong dark:bg-dark-nextadmin-background-subtle relative flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1">
         <input
           type="hidden"
           value={value?.value || ""}
           name={props.name}
-          className="absolute -z-10 inset-0 w-full h-full opacity-0"
+          className="absolute inset-0 -z-10 h-full w-full opacity-0"
         />
         <input
           id={props.id}
           readOnly
-          className="w-full h-full flex-1 appearance-none focus:outline-none cursor-default"
+          className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted h-full w-full flex-1 cursor-default appearance-none bg-transparent focus:outline-none"
           value={value?.label || ""}
           onMouseDown={() => formContext.toggleOpen(name)}
         />
         <div className="flex space-x-3">
           {hasValue && props.schema.relation && (
             <Link
-              href={`${basePath}/${slugify(props.schema.relation)}/${
-                value?.value
-              }`}
+              href={`${basePath}/${slugify(
+                props.schema.relation
+              )}/${value?.value}`}
               className="flex items-center"
             >
-              <ArrowTopRightOnSquareIcon className="w-5 h-5 text-gray-400 cursor-pointer" />
+              <ArrowTopRightOnSquareIcon className="h-5 w-5 cursor-pointer text-gray-400" />
             </Link>
           )}
           {hasValue && (
             <div className="flex items-center" onClick={() => onChange({})}>
-              <XMarkIcon className="w-5 h-5 text-gray-400" />
+              <XMarkIcon className="h-5 w-5 cursor-pointer text-gray-400" />
             </div>
           )}
-          <div className="flex items-center pointer-events-none">
+          <div
+            className="flex cursor-pointer items-center"
+            onMouseDown={() => formContext.toggleOpen(name)}
+          >
             <DoubleArrow />
           </div>
         </div>

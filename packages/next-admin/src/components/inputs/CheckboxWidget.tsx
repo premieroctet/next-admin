@@ -9,12 +9,12 @@ const CheckboxWidget = ({
 }: WidgetProps) => {
   return (
     <div className="relative flex items-start py-1">
-      <div className="flex items-center h-5">
+      <div className="flex h-5 items-center">
         <input
           type="hidden"
           value={value ? "on" : "off"}
           name={props.name}
-          className="absolute -z-10 inset-0 w-full h-full opacity-0"
+          className="absolute inset-0 -z-10 h-full w-full opacity-0"
         />
         <SwitchRoot checked={value} onCheckedChange={onChange}>
           <SwitchThumb />

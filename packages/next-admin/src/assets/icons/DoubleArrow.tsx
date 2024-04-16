@@ -6,7 +6,7 @@ const DoubleArrow = ({
 }: React.SVGAttributes<SVGElement>) => {
   return (
     <svg
-      className={clsx("w-5 h-5 text-gray-400 cursor-pointer", className)}
+      className={clsx("h-5 w-5 cursor-pointer text-gray-400", className)}
       aria-hidden="true"
       fill="none"
       stroke="currentColor"

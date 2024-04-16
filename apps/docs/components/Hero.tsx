@@ -13,30 +13,30 @@ export const GitHubIcon = () => (
 
 export function Hero() {
   return (
-    <div className="h-[35rem] w-full flex md:items-center md:justify-center bg-transparent antialiased relative overflow-hidden border-b border-dashed dark:border-b-stone-500">
+    <div className="relative flex h-[35rem] w-full overflow-hidden border-b border-dashed bg-transparent antialiased dark:border-b-stone-500 md:items-center md:justify-center">
       <Spotlight
-        className="-top-40 left-0 md:left-60 md:-top-20"
+        className="-top-40 left-0 md:-top-20 md:left-60"
         fill="#82e9a6"
       />
-      <div className=" p-4 max-w-7xl  mx-auto relative z-10  w-full pt-20 md:pt-0">
-        <h1 className="text-4xl md:text-7xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-black/70 to-black/90 dark:text-white bg-opacity-50">
+      <div className=" relative z-10  mx-auto w-full max-w-7xl  p-4 pt-20 md:pt-0">
+        <h1 className="bg-opacity-50 bg-gradient-to-b from-black/70 to-black/90 bg-clip-text text-center text-4xl font-bold text-transparent dark:text-white md:text-7xl">
           Full-featured Admin
           <br /> for Next.js
         </h1>
-        <p className="mt-4 font-normal text-2xl text-black dark:text-white max-w-xl text-center mx-auto">
+        <p className="mx-auto mt-4 max-w-xl text-center text-2xl font-normal text-black dark:text-white">
           Ready-to-go Admin for Next.js and Prisma
         </p>
-        <div className="mt-10 max-w-xl text-center mx-auto flex flex-col sm:flex-row gap-4 justify-center">
+        <div className="mx-auto mt-10 flex max-w-xl flex-col justify-center gap-4 text-center sm:flex-row">
           <Link
             href="/docs"
-            className="bg-black dark:bg-white dark:hover:bg-gray-700 rounded-lg px-6 py-3 text-white dark:text-black text-md font-semibold hover:bg-gray-800 dark:hover:bg-white/80 transition-colors duration-300 ease-in-out"
+            className="text-md rounded-lg bg-black px-6 py-3 font-semibold text-white transition-colors duration-300 ease-in-out hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-700 dark:hover:bg-white/80"
           >
             Documentation
           </Link>
           <Link
             href="https://github.com/premieroctet/next-admin"
             target="_blank"
-            className="dark:text-white dark:fill-white dark:hover:text-black dark:hover:fill-black rounded-lg px-6 py-3 text-black text-md font-semibold hover:bg-gray-100 transition-colors duration-300 ease-in-out border border-gray-300 flex gap-2 justify-center"
+            className="text-md flex justify-center gap-2 rounded-lg border border-gray-300 px-6 py-3 font-semibold text-black transition-colors duration-300 ease-in-out hover:bg-gray-100 dark:fill-white dark:text-white dark:hover:fill-black dark:hover:text-black"
           >
             <GitHubIcon />
             View on GitHub

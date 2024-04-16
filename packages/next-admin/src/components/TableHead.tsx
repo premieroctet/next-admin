@@ -10,12 +10,14 @@ interface Props {
   sortColumn?: string;
   sortDirection?: "asc" | "desc";
   property: string;
+  propertyName: string;
 }
 export default function TableHead({
   onClick,
   sortColumn,
   sortDirection,
   property,
+  propertyName,
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const isSorted = sortColumn === property;
@@ -29,19 +31,23 @@ export default function TableHead({
       }}
       className="inline-flex items-center justify-center text-sm"
     >
-      <span className={clsx("whitespace-nowrap font-semibold capitalize")}>
-        {property}
+      <span
+        className={clsx(
+          "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-subtle whitespace-nowrap font-semibold capitalize"
+        )}
+      >
+        {propertyName}
       </span>
       <span className="sr-only">, activate to sort column descending</span>
       {isSorted && sortDirection === "desc" && (
         <ArrowSmallDownIcon
-          className="ml-2 h-5 w-5 text-nextadmin-primary-500"
+          className="text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle ml-2 h-5 w-5"
           aria-hidden="true"
         />
       )}
       {isSorted && sortDirection === "asc" && (
         <ArrowSmallUpIcon
-          className="ml-2 h-5 w-5 text-nextadmin-primary-500"
+          className="text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle ml-2 h-5 w-5"
           aria-hidden="true"
         />
       )}
