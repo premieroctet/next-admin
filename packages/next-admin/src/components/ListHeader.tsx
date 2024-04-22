@@ -10,11 +10,17 @@ import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { ModelAction, ModelIcon, ModelName } from "../types";
+import {
+  ModelAction,
+  ModelIcon,
+  ModelName,
+  Permission,
+  PermissionType,
+} from "../types";
+import { slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
 import { buttonVariants } from "./radix/Button";
-import { slugify } from "../utils/tools";
 
 type Props = {
   resource: ModelName;
@@ -44,11 +50,17 @@ export default function ListHeader({
   title,
   icon,
   totalCount,
-  canCreate,
-  canDelete,
 }: Props) {
-  const { basePath } = useConfig();
+  const { basePath, options } = useConfig();
   const { t } = useI18n();
+
+  const hasPermission = (permission: PermissionType) =>
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(permission);
+
+  const modelOptions = options?.model?.[resource];
+  const canCreate = hasPermission(Permission.CREATE);
+  const canDelete = hasPermission(Permission.DELETE);
 
   const selectedRowsCount = Object.keys(selectedRows).length;
 

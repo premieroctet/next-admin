@@ -10,7 +10,14 @@ import {
 import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
+import {
+  Field,
+  ListData,
+  ListDataItem,
+  ModelIcon,
+  ModelName,
+  Permission,
+} from "../types";
 import { slugify } from "../utils/tools";
 import EmptyState from "./EmptyState";
 import Button from "./radix/Button";
@@ -52,8 +59,12 @@ export function DataTable({
   onDelete,
   icon,
 }: DataTableProps) {
-  const { basePath } = useConfig();
+  const { basePath, options } = useConfig();
   const { t } = useI18n();
+  const modelOptions = options?.model?.[resource];
+  const canDelete =
+    !modelOptions?.permissions ||
+    modelOptions?.permissions.includes(Permission.DELETE);
 
   const columnsVisibility = columns.reduce(
     (acc, column) => {
@@ -147,7 +158,11 @@ export function DataTable({
   const table = useReactTable({
     data,
     manualSorting: true,
-    columns: [checkboxColumn, ...columns, actionsColumn],
+    columns: [
+      checkboxColumn,
+      ...columns,
+      ...(canDelete ? [actionsColumn] : []),
+    ],
     getCoreRowModel: getCoreRowModel(),
     initialState: {
       columnVisibility: columnsVisibility,

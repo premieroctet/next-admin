@@ -183,6 +183,8 @@ export enum Permission {
   DELETE = "delete",
 }
 
+export type PermissionType = "create" | "edit" | "delete";
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     toString?: (item: Model<P>) => string;
@@ -192,7 +194,7 @@ export type ModelOptions<T extends ModelName> = {
     aliases?: Partial<Record<Field<P>, string>>;
     actions?: ModelAction[];
     icon?: ModelIcon;
-    permissions?: Permission[];
+    permissions?: PermissionType[];
   };
 };
 

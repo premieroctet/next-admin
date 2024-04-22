@@ -15,8 +15,6 @@ import {
   ModelAction,
   ModelIcon,
   ModelName,
-  NextAdminOptions,
-  Permission,
 } from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
@@ -36,30 +34,26 @@ export type ListProps = {
   resource: ModelName;
   data: ListData<ModelName>;
   total: number;
-  options?: Required<NextAdminOptions>["model"][ModelName];
   resourcesIdProperty: Record<ModelName, string>;
   title: string;
   actions?: ModelAction[];
   deleteAction?: ModelAction["action"];
   icon?: ModelIcon;
-  permissions?: Permission[];
 };
 
 function List({
   resource,
   data,
   total,
-  options,
   actions,
   resourcesIdProperty,
   title,
   deleteAction,
   icon,
-  permissions,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
-  const { isAppDir } = useConfig();
+  const { isAppDir, options: globalOptions } = useConfig();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
@@ -68,7 +62,7 @@ function List({
   const { deleteItems } = useDeleteAction(resource, deleteAction);
 
   let onSearchChange;
-
+  const options = globalOptions?.["model"]?.[resource];
   if (!(options?.list?.search && options?.list?.search?.length === 0)) {
     onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
       startTransition(() => {
@@ -176,7 +170,6 @@ function List({
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
           totalCount={total}
-          canCreate={permissions?.includes(Permission.CREATE)}
         />
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
           <DataTable
