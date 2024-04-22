@@ -5,7 +5,7 @@ import { useConfig } from "../context/ConfigContext";
 
 type UseSearchPaginatedResourceParams = {
   resourceName: string;
-  initialOptions?: Enumeration[] | DataEnumeration[];
+  initialOptions?: Enumeration[]
 };
 
 const useSearchPaginatedResource = ({
@@ -18,7 +18,7 @@ const useSearchPaginatedResource = ({
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
   const [allOptions, setAllOptions] = useState<
-    Enumeration[] | DataEnumeration[]
+    Enumeration[]
   >(initialOptions ?? []);
   const [hasNextPage, setHasNextPage] = useState(false);
 
@@ -54,9 +54,7 @@ const useSearchPaginatedResource = ({
               return response.data;
             }
 
-            return [...old, ...response.data] as
-              | Enumeration[]
-              | DataEnumeration[];
+            return [...old, ...response.data]
           });
         }
       } else {

@@ -10,11 +10,13 @@ export type SelectorProps = {
   name: string;
   onChange: (otpion: Enumeration) => void;
   options?: Enumeration[];
+  selectedOptions?: string[];
 };
 
 export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
+  const loaderRowRef = useRef(null)
   const [isLastRowReached, setIsLastRowReached] = useState(false);
   const { allOptions, isPending, runSearch, searchPage, setAllOptions, totalSearchedItems } = useSearchPaginatedResource({ modelName: name, initialOptions: options })
 
@@ -45,7 +47,6 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
       return;
     }
 
-    setAllOptions([]);
     searchPage.current = 1;
     currentQuery.current = e.target.value;
     setIsLastRowReached(false);
@@ -54,13 +55,28 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (
-      allOptions?.length > 0 &&
-      allOptions.length >= totalSearchedItems.current
-    ) {
-      setIsLastRowReached(true);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsLastRowReached(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 1 }
+    );
+
+    const current = loaderRowRef.current;
+    if (current) {
+      observer.observe(current);
     }
-  }, [allOptions, totalSearchedItems]);
+    return () => {
+      if (current) {
+        observer.unobserve(current);
+      }
+    };
+  });
 
   const onScroll = () => {
     // No need to do an infinite scroll for enums
@@ -130,7 +146,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
               No results found
             </div>
           ) : (
-            !isLastRowReached && <LoaderRow />
+            !isLastRowReached && <LoaderRow ref={loaderRowRef} />
           )}
         </div>
       </Transition.Child>

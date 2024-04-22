@@ -366,7 +366,7 @@ export type AdminComponentProps = {
   searchPaginatedResourceAction?: (
     params: SearchPaginatedResourceParams
   ) => Promise<{
-    data: Enumeration[] | DataEnumeration[];
+    data: Enumeration[]
     total: number;
     error: string | null;
   }>;
