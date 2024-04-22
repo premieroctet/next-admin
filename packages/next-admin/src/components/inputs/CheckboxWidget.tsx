@@ -5,6 +5,7 @@ const CheckboxWidget = ({
   options,
   onChange,
   value,
+  disabled,
   ...props
 }: WidgetProps) => {
   return (
@@ -16,7 +17,11 @@ const CheckboxWidget = ({
           name={props.name}
           className="absolute inset-0 -z-10 h-full w-full opacity-0"
         />
-        <SwitchRoot checked={value} onCheckedChange={onChange}>
+        <SwitchRoot
+          checked={value}
+          onCheckedChange={onChange}
+          disabled={disabled}
+        >
           <SwitchThumb />
         </SwitchRoot>
       </div>

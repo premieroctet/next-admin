@@ -9,7 +9,7 @@ export const SwitchRoot = forwardRef<
   return (
     <Switch.Root
       className={clsx(
-        "group relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-transparent",
+        "group relative inline-flex h-5 w-10 shrink-0 cursor-pointer items-center justify-center rounded-full bg-transparent data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50",
         className
       )}
       ref={ref}
@@ -33,6 +33,7 @@ export const SwitchThumb = forwardRef<
     <Switch.Thumb
       className={clsx(
         "border-nextadmin-border-default absolute left-0 inline-block h-5 w-5 translate-x-0.5 rounded-full border bg-white shadow ring-0 transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-5",
+        "data-[disabled]:cursor-not-allowed",
         className
       )}
       ref={ref}

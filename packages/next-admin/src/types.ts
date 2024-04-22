@@ -99,6 +99,7 @@ export type EditFieldsOptions<T extends ModelName> = {
     input?: React.ReactElement;
     helperText?: string;
     tooltip?: string;
+    disabled?: boolean;
   } & (P extends keyof ObjectField<T>
     ? {
         optionFormatter?: (item: ModelFromProperty<T, P>) => string;
@@ -422,6 +423,7 @@ export type CustomInputProps = Partial<{
   onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
   readonly: boolean;
   rawErrors: string[];
+  disabled: boolean;
 }>;
 
 export type TranslationKeys =

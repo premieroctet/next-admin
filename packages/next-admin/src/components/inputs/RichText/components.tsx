@@ -26,6 +26,7 @@ type ButtonProps = PropsWithChildren<
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, format, icon, ...props }, ref) => {
     const editor = useSlate();
+
     let active: boolean;
     let handleMouseDown: (
       event: React.MouseEvent<HTMLButtonElement, MouseEvent>
@@ -60,6 +61,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default hover:bg-gray-100 focus:bg-gray-100":
               !active,
           },
+          "disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         onMouseDown={handleMouseDown}

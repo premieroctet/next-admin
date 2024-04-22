@@ -108,85 +108,104 @@ const FileWidget = (props: WidgetProps) => {
                 )}
               </a>
               {!!fileName && (
-                <span className="ml-2 text-sm font-medium text-gray-700">
+                <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ml-2 text-sm font-medium">
                   {fileName}
                 </span>
               )}
             </div>
-            <div
-              className={clsx("relative flex items-start", {
-                "mb-5": !!fileName,
-              })}
-            >
-              <div className="flex h-6 items-center">
-                <input
-                  id="delete_file"
-                  type="checkbox"
-                  className="text-nextadmin-primary-600 focus:ring-nextadmin-primary-600 h-4 w-4 rounded border-gray-300"
-                  onChange={onCheckDelete}
-                />
+            {!props.disabled && (
+              <div
+                className={clsx("relative flex items-start", {
+                  "mb-5": !!fileName,
+                })}
+              >
+                <div className="flex h-6 items-center">
+                  <input
+                    id="delete_file"
+                    type="checkbox"
+                    className="h-4 w-4 rounded"
+                    onChange={onCheckDelete}
+                  />
+                </div>
+                <div className="ml-2 text-sm leading-6">
+                  <label
+                    htmlFor="delete_file"
+                    className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted font-medium"
+                  >
+                    {t("form.widgets.file_upload.delete")}
+                  </label>
+                </div>
               </div>
-              <div className="ml-2 text-sm leading-6">
+            )}
+          </div>
+        )}
+        {((props.disabled && !fileInfo) || !props.disabled) && (
+          <div
+            className={clsx(
+              "border-nextadmin-border-default dark:border-dark-nextadmin-border-strong flex w-full justify-center rounded-lg border border-dashed px-6 py-10",
+              {
+                "bg-dark-nextadmin-background-subtle": isDragging,
+                "opacity-50": props.disabled,
+              }
+            )}
+            onDrop={(evt) => {
+              if (!props.disabled) {
+                evt.preventDefault();
+                const files = evt.dataTransfer.files;
+
+                setHasChanged(true);
+                handleFileSelect(files[0]);
+                setIsDragging(false);
+              }
+            }}
+            onDragOver={(evt) => {
+              if (!props.disabled) {
+                evt.preventDefault();
+              }
+            }}
+            onDragEnter={(evt) => {
+              if (!props.disabled) {
+                evt.preventDefault();
+                setIsDragging(true);
+              }
+            }}
+            onDragLeave={(evt) => {
+              if (!props.disabled) {
+                evt.preventDefault();
+                setIsDragging(false);
+              }
+            }}
+          >
+            <div className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-center">
+              <CloudArrowUpIcon className="mx-auto h-8 w-8" />
+              <div className="mt-4 flex text-sm leading-6">
                 <label
-                  htmlFor="delete_file"
-                  className="font-medium text-gray-900"
+                  htmlFor={props.id}
+                  className={clsx(
+                    "text-nextadmin-primary-600 hover:text-nextadmin-primary-500 relative cursor-pointer rounded-md font-semibold focus-visible:outline-none",
+                    {
+                      "cursor-not-allowed": props.disabled,
+                    }
+                  )}
                 >
-                  {t("form.widgets.file_upload.delete")}
+                  <span>{t("form.widgets.file_upload.label")}</span>
+                  <input
+                    type="file"
+                    className="sr-only"
+                    ref={inputRef}
+                    id={props.id}
+                    disabled={props.disabled}
+                    name={isDeleting || hasChanged ? props.name : ""}
+                    onChange={handleFileChange}
+                  />
                 </label>
+                <p className="pl-1">
+                  {t("form.widgets.file_upload.drag_and_drop")}
+                </p>
               </div>
             </div>
           </div>
         )}
-        <div
-          className={clsx(
-            "border-nextadmin-border-default dark:border-dark-nextadmin-border-strong flex w-full justify-center rounded-lg border border-dashed px-6 py-10",
-            {
-              "bg-dark-nextadmin-background-subtle": isDragging,
-            }
-          )}
-          onDrop={(evt) => {
-            evt.preventDefault();
-            const files = evt.dataTransfer.files;
-
-            handleFileSelect(files[0]);
-            setIsDragging(false);
-          }}
-          onDragOver={(evt) => {
-            evt.preventDefault();
-          }}
-          onDragEnter={(evt) => {
-            evt.preventDefault();
-            setIsDragging(true);
-          }}
-          onDragLeave={(evt) => {
-            evt.preventDefault();
-            setIsDragging(false);
-          }}
-        >
-          <div className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-center">
-            <CloudArrowUpIcon className="mx-auto h-8 w-8" />
-            <div className="mt-4 flex text-sm leading-6">
-              <label
-                htmlFor={props.id}
-                className="text-nextadmin-primary-600 hover:text-nextadmin-primary-500 relative cursor-pointer rounded-md font-semibold
-                focus-visible:outline-none"
-              >
-                <span>{t("form.widgets.file_upload.label")}</span>
-                <input
-                  type="file"
-                  className="sr-only"
-                  ref={inputRef}
-                  id={props.id}
-                  name={isDeleting || hasChanged ? props.name : ""}
-                  onChange={handleFileChange}
-                />
-              </label>
-              <p className="pl-1">
-                {t("form.widgets.file_upload.drag_and_drop")}
-              </p>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

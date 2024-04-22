@@ -13,7 +13,13 @@ import { Enumeration } from "../../types";
 import { slugify } from "../../utils/tools";
 import { Selector } from "./Selector";
 
-const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
+const SelectWidget = ({
+  options,
+  onChange,
+  value,
+  disabled,
+  ...props
+}: WidgetProps) => {
   const formContext = useForm();
   const name = props.name;
   options as { enumOptions: Enumeration[] };
@@ -46,9 +52,14 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
         <input
           id={props.id}
           readOnly
-          className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted h-full w-full flex-1 cursor-default appearance-none bg-transparent focus:outline-none"
+          className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted h-full w-full flex-1 cursor-default appearance-none bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           value={value?.label || ""}
-          onMouseDown={() => formContext.toggleOpen(name)}
+          disabled={disabled}
+          onMouseDown={() => {
+            if (!disabled) {
+              formContext.toggleOpen(name);
+            }
+          }}
         />
         <div className="flex space-x-3">
           {hasValue && props.schema.relation && (
@@ -61,17 +72,19 @@ const SelectWidget = ({ options, onChange, value, ...props }: WidgetProps) => {
               <ArrowTopRightOnSquareIcon className="h-5 w-5 cursor-pointer text-gray-400" />
             </Link>
           )}
-          {hasValue && (
+          {hasValue && !disabled && (
             <div className="flex items-center" onClick={() => onChange({})}>
               <XMarkIcon className="h-5 w-5 cursor-pointer text-gray-400" />
             </div>
           )}
-          <div
-            className="flex cursor-pointer items-center"
-            onMouseDown={() => formContext.toggleOpen(name)}
-          >
-            <DoubleArrow />
-          </div>
+          {!disabled && (
+            <div
+              className="flex cursor-pointer items-center"
+              onMouseDown={() => formContext.toggleOpen(name)}
+            >
+              <DoubleArrow />
+            </div>
+          )}
         </div>
       </div>
       <Selector
