@@ -16,6 +16,7 @@ import {
   ModelIcon,
   ModelName,
   NextAdminOptions,
+  Permission,
 } from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
@@ -41,6 +42,7 @@ export type ListProps = {
   actions?: ModelAction[];
   deleteAction?: ModelAction["action"];
   icon?: ModelIcon;
+  permissions?: Permission[];
 };
 
 function List({
@@ -53,6 +55,7 @@ function List({
   title,
   deleteAction,
   icon,
+  permissions,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
@@ -173,6 +176,7 @@ function List({
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
           totalCount={total}
+          canCreate={permissions?.includes(Permission.CREATE)}
         />
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
           <DataTable
