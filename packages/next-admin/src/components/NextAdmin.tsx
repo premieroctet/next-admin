@@ -48,10 +48,6 @@ export function NextAdmin({
   const actions =
     actionsProp || (resource ? options?.model?.[resource]?.actions : undefined);
 
-  const modelPermissions = resource
-    ? options?.model?.[resource]?.permissions
-    : undefined;
-
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
@@ -88,7 +84,6 @@ export function NextAdmin({
           resource={resource!}
           validation={validation}
           action={action}
-          options={options?.model && options?.model[resource!]}
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}
