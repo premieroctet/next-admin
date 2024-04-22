@@ -14,8 +14,6 @@ import {
   ModelAction,
   ModelIcon,
   ModelName,
-  NextAdminOptions,
-  Permission,
 } from "../types";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
@@ -37,34 +35,32 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
+import { useConfig } from "../context/ConfigContext";
 
 export type ListProps = {
   resource: ModelName;
   data: ListData<ModelName>;
   total: number;
-  options?: Required<NextAdminOptions>["model"][ModelName];
   resourcesIdProperty: Record<ModelName, string>;
   title: string;
   actions?: ModelAction[];
   deleteAction?: ModelAction["action"];
   icon?: ModelIcon;
-  permissions?: Permission[];
 };
 
 function List({
   resource,
   data,
   total,
-  options,
   actions,
   resourcesIdProperty,
   title,
   deleteAction,
   icon,
-  permissions,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
+  const { isAppDir, options } = useConfig();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
@@ -82,8 +78,8 @@ function List({
   });
 
   let onSearchChange;
-
-  if (!(options?.list?.search && options?.list?.search?.length === 0)) {
+  const modelOptions = options?.["model"]?.[resource];
+  if (!(modelOptions?.list?.search && modelOptions?.list?.search?.length === 0)) {
     onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
       startTransition(() => {
         router?.push({
@@ -203,7 +199,6 @@ function List({
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
           totalCount={total}
-          canCreate={permissions?.includes(Permission.CREATE)}
         />
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
           <DataTable

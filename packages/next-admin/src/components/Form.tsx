@@ -37,7 +37,7 @@ import {
   ModelAction,
   ModelIcon,
   ModelName,
-  NextAdminOptions,
+  Permission,
   SubmitFormResult,
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
@@ -78,7 +78,6 @@ export type FormProps = {
   validation?: PropertyValidationError[];
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   title: string;
-  options?: NextAdminOptions;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   actions?: ModelAction[];
   searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
@@ -107,7 +106,6 @@ const Form = ({
   resource,
   validation: validationProp,
   action,
-  options,
   title,
   customInputs,
   actions,
@@ -115,8 +113,15 @@ const Form = ({
   icon,
   resourcesIdProperty,
 }: FormProps) => {
-  const modelOptions = options?.model?.[resource!];
   const [validation, setValidation] = useState(validationProp);
+  const { basePath, options } = useConfig();
+  const modelOptions = options?.model?.[resource];
+  const canDelete =
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.DELETE);
+  const canEdit =
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.EDIT);
   const disabledFields = modelOptions?.edit?.fields
     ? (Object.entries(modelOptions?.edit?.fields)
         .map(
@@ -139,11 +144,11 @@ const Form = ({
     dmmfSchema,
     disabledFields
   );
-  const { basePath } = useConfig();
   const { router } = useRouterInternal();
   const { t } = useI18n();
   const formRef = useRef<CustomForm>(null);
   const [isPending, startTransition] = useTransition();
+  const allDisabled = edit && !canEdit;
 
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
@@ -156,7 +161,7 @@ const Form = ({
     return (
       <div className="mt-4 flex justify-between space-x-2">
         <div>
-          {edit && (
+          {edit && canDelete && (
             <Button
               variant="destructiveOutline"
               className="flex gap-2"
@@ -187,39 +192,41 @@ const Form = ({
             </Button>
           )}
         </div>
-        <div className="flex space-x-2">
-          <Button
-            {...buttonProps}
-            variant={"ghost"}
-            className="hidden sm:block"
-            tabIndex={-1}
-            onClick={(e) => {
-              e.currentTarget.form?.dispatchEvent(
-                new CustomEvent("submit", { cancelable: true })
-              );
-              e.currentTarget.form?.requestSubmit();
-            }}
-            type="button"
-            loading={isPending}
-          >
-            {t("form.button.save_edit.label")}
-          </Button>
-          <Button
-            {...buttonProps}
-            className="flex gap-2"
-            type="submit"
-            {...(edit
-              ? {
-                  name: "__admin_redirect",
-                  value: "list",
-                }
-              : {})}
-            loading={isPending}
-          >
-            <CheckCircleIcon className="h-6 w-6" />
-            {t("form.button.save.label")}
-          </Button>
-        </div>
+        {(!edit || canEdit) && (
+          <div className="flex space-x-2">
+            <Button
+              {...buttonProps}
+              variant={"ghost"}
+              className="hidden sm:block"
+              tabIndex={-1}
+              onClick={(e) => {
+                e.currentTarget.form?.dispatchEvent(
+                  new CustomEvent("submit", { cancelable: true })
+                );
+                e.currentTarget.form?.requestSubmit();
+              }}
+              type="button"
+              loading={isPending}
+            >
+              {t("form.button.save_edit.label")}
+            </Button>
+            <Button
+              {...buttonProps}
+              className="flex gap-2"
+              type="submit"
+              {...(edit
+                ? {
+                    name: "__admin_redirect",
+                    value: "list",
+                  }
+                : {})}
+              loading={isPending}
+            >
+              <CheckCircleIcon className="h-6 w-6" />
+              {t("form.button.save.label")}
+            </Button>
+          </div>
+        )}
       </div>
     );
   };
@@ -536,6 +543,7 @@ const Form = ({
                   validator={validator}
                   extraErrors={extraErrors}
                   fields={fields}
+                  disabled={allDisabled}
                   formContext={{ isPending }}
                   templates={{
                     ...templates,

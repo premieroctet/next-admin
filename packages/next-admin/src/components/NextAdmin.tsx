@@ -66,13 +66,11 @@ export function NextAdmin({
           resource={resource}
           data={data}
           total={total}
-          options={options?.model && options?.model[resource]}
           title={resourceTitle!}
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
           deleteAction={deleteAction}
           icon={resourceIcon}
-          permissions={modelPermissions}
         />
       );
     }

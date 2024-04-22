@@ -277,6 +277,8 @@ export enum Permission {
   DELETE = "delete",
 }
 
+export type PermissionType = "create" | "edit" | "delete";
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     /**
@@ -307,7 +309,7 @@ export type ModelOptions<T extends ModelName> = {
      * @link https://heroicons.com/outline
      */
     icon?: ModelIcon;
-    permissions?: Permission[];
+    permissions?: PermissionType[];
   };
 };
 
