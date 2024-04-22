@@ -5,8 +5,17 @@ import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import { Enumeration } from "../../types";
 import MultiSelectItem from "./MultiSelectItem";
 import { Selector } from "./Selector";
+import clsx from "clsx";
 
-const MultiSelectWidget = (props: any) => {
+type Props = {
+  options?: Enumeration[];
+  onChange: (data: unknown) => unknown;
+  formData: any;
+  name: string;
+  disabled: boolean;
+};
+
+const MultiSelectWidget = (props: Props) => {
   const formContext = useForm();
   const { formData, onChange, options, name } = props;
   const containerRef = useRef<HTMLDivElement>(null);
@@ -27,8 +36,19 @@ const MultiSelectWidget = (props: any) => {
           value={JSON.stringify(selectedValues)}
         />
         <div
-          className="dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default ring-nextadmin-border-default flex min-h-[38px] w-full cursor-default appearance-none flex-wrap gap-x-1 gap-y-1 rounded-md border-0 border-gray-300 px-2 py-1.5 pr-10 text-sm placeholder-gray-500 shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6"
-          onClick={() => formContext.toggleOpen(name)}
+          className={clsx(
+            "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default ring-nextadmin-border-default flex min-h-[38px] w-full cursor-default appearance-none flex-wrap gap-x-1 gap-y-1 rounded-md border-0 border-gray-300 px-2 py-1.5 pr-10 text-sm placeholder-gray-500 shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 sm:leading-6",
+            {
+              "cursor-not-allowed opacity-50 [&_*]:pointer-events-auto [&_*]:cursor-default":
+                props.disabled,
+            }
+          )}
+          onClick={() => {
+            if (!props.disabled) {
+              formContext.toggleOpen(name);
+            }
+          }}
+          aria-disabled={props.disabled}
         >
           {formData?.map(
             (value: any, index: number) =>
@@ -37,13 +57,16 @@ const MultiSelectWidget = (props: any) => {
                   key={index}
                   label={value.label}
                   onRemoveClick={() => onRemoveClick(value.value)}
+                  deletable={!props.disabled}
                 />
               )
           )}
         </div>
-        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-          <DoubleArrow />
-        </div>
+        {!props.disabled && (
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+            <DoubleArrow />
+          </div>
+        )}
       </div>
       <Selector
         open={!!formContext.relationState?.[name]?.open!}

@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 
 type Props = CustomInputProps;
 
-const DatePicker = ({ value, name, onChange }: Props) => {
+const DatePicker = ({ value, name, onChange, disabled }: Props) => {
   return (
     <>
       <DateTimePicker
@@ -20,6 +20,7 @@ const DatePicker = ({ value, name, onChange }: Props) => {
         dateFormat="dd/MM/yyyy HH:mm"
         timeFormat="HH:mm"
         wrapperClassName="w-full"
+        disabled={disabled}
         className="
         dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong
         text-nextadmin-content-inverted
