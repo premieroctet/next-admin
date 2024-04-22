@@ -92,6 +92,7 @@ const SelectWidget = ({
         options={enumOptions?.length ? enumOptions : undefined}
         name={props.name}
         onChange={handleChange}
+        selectedOptions={hasValue ? [value?.value] : []}
       />
     </div>
   );
