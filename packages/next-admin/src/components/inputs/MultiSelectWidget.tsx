@@ -18,11 +18,6 @@ const MultiSelectWidget = (props: any) => {
 
   const selectedValues = formData?.map((item: any) => item?.value) ?? [];
 
-  const optionsLeft = options?.filter(
-    (option: Enumeration) =>
-      !formData?.find((item: Enumeration) => item.value === option.value)
-  );
-
   return (
     <div className="relative" ref={containerRef}>
       <div className="relative">
@@ -53,10 +48,10 @@ const MultiSelectWidget = (props: any) => {
       <Selector
         open={!!formContext.relationState?.[name]?.open!}
         name={name}
-        options={optionsLeft?.length ? optionsLeft : undefined}
         onChange={(option: Enumeration) => {
           onChange([...(formData || []), option]);
         }}
+        selectedOptions={selectedValues}
       />
     </div>
   );
