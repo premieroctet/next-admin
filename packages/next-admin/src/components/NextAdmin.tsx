@@ -48,6 +48,10 @@ export function NextAdmin({
   const actions =
     actionsProp || (resource ? options?.model?.[resource]?.actions : undefined);
 
+  const modelPermissions = resource
+    ? options?.model?.[resource]?.permissions
+    : undefined;
+
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
@@ -68,6 +72,7 @@ export function NextAdmin({
           actions={actions}
           deleteAction={deleteAction}
           icon={resourceIcon}
+          permissions={modelPermissions}
         />
       );
     }

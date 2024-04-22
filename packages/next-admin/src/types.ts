@@ -271,6 +271,12 @@ export type ModelAction = {
 
 export type ModelIcon = keyof typeof OutlineIcons;
 
+export enum Permission {
+  CREATE = "create",
+  EDIT = "edit",
+  DELETE = "delete",
+}
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     /**
@@ -301,6 +307,7 @@ export type ModelOptions<T extends ModelName> = {
      * @link https://heroicons.com/outline
      */
     icon?: ModelIcon;
+    permissions?: Permission[];
   };
 };
 

@@ -28,6 +28,8 @@ type Props = {
   title: string;
   icon?: ModelIcon;
   totalCount?: number;
+  canCreate?: boolean;
+  canDelete?: boolean;
 };
 
 export default function ListHeader({
@@ -42,6 +44,8 @@ export default function ListHeader({
   title,
   icon,
   totalCount,
+  canCreate,
+  canDelete,
 }: Props) {
   const { basePath } = useConfig();
   const { t } = useI18n();
@@ -49,15 +53,17 @@ export default function ListHeader({
   const selectedRowsCount = Object.keys(selectedRows).length;
 
   const actions = useMemo<ModelAction[]>(() => {
-    const defaultActions: ModelAction[] = [
-      {
-        title: t("actions.delete.label"),
-        style: "destructive",
-        action: async () => {
-          await onDelete();
-        },
-      },
-    ];
+    const defaultActions: ModelAction[] = canDelete
+      ? [
+          {
+            title: t("actions.delete.label"),
+            style: "destructive",
+            action: async () => {
+              await onDelete();
+            },
+          },
+        ]
+      : [];
 
     return [...(actionsProp || []), ...defaultActions];
   }, [actionsProp, onDelete, t]);
@@ -110,7 +116,7 @@ export default function ListHeader({
               </label>
             </div>
           )}
-          {Boolean(selectedRowsCount) && (
+          {Boolean(selectedRowsCount) && !!actions.length && (
             <ActionsDropdown
               actions={actions}
               resource={resource}
@@ -118,18 +124,20 @@ export default function ListHeader({
               selectedCount={selectedRowsCount}
             />
           )}
-          <Link
-            href={`${basePath}/${slugify(resource)}/new`}
-            role="button"
-            data-testid="add-new-button"
-            className={buttonVariants({
-              variant: "default",
-              size: "sm",
-            })}
-          >
-            <span>{t("list.header.add.label")}</span>
-            <PlusSmallIcon className="ml-2 h-5 w-5" aria-hidden="true" />
-          </Link>
+          {canCreate && (
+            <Link
+              href={`${basePath}/${slugify(resource)}/new`}
+              role="button"
+              data-testid="add-new-button"
+              className={buttonVariants({
+                variant: "default",
+                size: "sm",
+              })}
+            >
+              <span>{t("list.header.add.label")}</span>
+              <PlusSmallIcon className="ml-2 h-5 w-5" aria-hidden="true" />
+            </Link>
+          )}
         </div>
       </div>
     </>
