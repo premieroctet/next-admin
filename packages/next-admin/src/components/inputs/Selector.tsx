@@ -11,18 +11,29 @@ export type SelectorProps = {
   name: string;
   onChange: (otpion: Enumeration) => void;
   options?: Enumeration[];
+  selectedOptions?: string[];
 };
 
-export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
+export const Selector = ({
+  open,
+  name,
+  onChange,
+  options,
+  selectedOptions,
+}: SelectorProps) => {
   const { basePath, isAppDir } = useConfig();
   const { searchPaginatedResourceAction, dmmfSchema, resource } = useForm();
   const [isPending, setIsPending] = useState(false);
+  const [fetchedOptions, setFetchedOptions] = useState<Enumeration[]>(
+    options ?? []
+  );
   const [allOptions, setAllOptions] = useState<Enumeration[]>(options ?? []);
   const totalSearchedItems = useRef(0);
   const searchPage = useRef(1);
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
   const [isLastRowReached, setIsLastRowReached] = useState(false);
+  const loaderRowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (open && searchInput.current) {
@@ -39,6 +50,12 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
       searchPage.current = 1;
     };
   }, [open]);
+
+  useEffect(() => {
+    setAllOptions(
+      fetchedOptions.filter((item) => !selectedOptions?.includes(item.value))
+    );
+  }, [selectedOptions, fetchedOptions]);
 
   const runSearch = async (resetOptions = true) => {
     const perPage = 25;
@@ -65,12 +82,12 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
         });
 
         if (response && !response.error) {
-          setAllOptions((old) => {
+          setFetchedOptions((old) => {
             if (resetOptions) {
               return response.data;
+            } else {
+              return [...old, ...response.data];
             }
-
-            return [...old, ...response.data];
           });
           totalSearchedItems.current = response.total;
         }
@@ -94,7 +111,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
           const responseJson = await response.json();
 
           if (!responseJson.error) {
-            setAllOptions((old) => {
+            setFetchedOptions((old) => {
               if (resetOptions) {
                 return responseJson.data;
               }
@@ -117,11 +134,10 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
       const filteredOptions = options.filter((option) =>
         option.label.toLowerCase().includes(query)
       );
-      setAllOptions(filteredOptions);
+      setFetchedOptions(filteredOptions);
       return;
     }
 
-    setAllOptions([]);
     searchPage.current = 1;
     currentQuery.current = e.target.value;
     setIsLastRowReached(false);
@@ -130,13 +146,28 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (
-      allOptions?.length > 0 &&
-      allOptions.length >= totalSearchedItems.current
-    ) {
-      setIsLastRowReached(true);
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsLastRowReached(true);
+            observer.disconnect();
+          }
+        });
+      },
+      { threshold: 1 }
+    );
+
+    const current = loaderRowRef.current;
+    if (current) {
+      observer.observe(current);
     }
-  }, [allOptions, totalSearchedItems]);
+    return () => {
+      if (current) {
+        observer.unobserve(current);
+      }
+    };
+  });
 
   const onScroll = () => {
     // No need to do an infinite scroll for enums
@@ -206,7 +237,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
               No results found
             </div>
           ) : (
-            !isLastRowReached && <LoaderRow />
+            !isLastRowReached && <LoaderRow ref={loaderRowRef} />
           )}
         </div>
       </Transition.Child>
