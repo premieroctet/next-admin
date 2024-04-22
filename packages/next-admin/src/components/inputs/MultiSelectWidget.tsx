@@ -8,7 +8,6 @@ import { Selector } from "./Selector";
 import clsx from "clsx";
 
 type Props = {
-  options?: Enumeration[];
   onChange: (data: unknown) => unknown;
   formData: any;
   name: string;
@@ -17,7 +16,7 @@ type Props = {
 
 const MultiSelectWidget = (props: Props) => {
   const formContext = useForm();
-  const { formData, onChange, options, name } = props;
+  const { formData, onChange, name } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
 
