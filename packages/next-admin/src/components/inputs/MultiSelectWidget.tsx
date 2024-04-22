@@ -3,12 +3,19 @@ import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useForm } from "../../context/FormContext";
 import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import { Enumeration } from "../../types";
-import MultiSelectItem from "./MultiSelectItem";
+import MultiSelectItem from "./MultiSelect/MultiSelectItem";
 import { Selector } from "./Selector";
 
-const MultiSelectWidget = (props: any) => {
+type Props = {
+  onChange: (data: unknown) => unknown;
+  formData: any;
+  name: string;
+  disabled: boolean;
+};
+
+const MultiSelectWidget = (props: Props) => {
   const formContext = useForm();
-  const { formData, onChange, options, name } = props;
+  const { formData, onChange, name } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
 
