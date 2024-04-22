@@ -32,6 +32,7 @@ import { PropertyValidationError } from "../exceptions/ValidationError";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
+  EditFieldsOptions,
   Field,
   ModelAction,
   ModelIcon,
@@ -113,7 +114,28 @@ const Form = ({
   icon,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
-  const { edit, id, ...schemas } = getSchemas(data, schema, dmmfSchema);
+  const disabledFields = options?.edit?.fields
+    ? (Object.entries(options?.edit?.fields)
+        .map(
+          ([name, opts]: [
+            string,
+            EditFieldsOptions<ModelName>[Field<ModelName>],
+          ]) => {
+            if (opts?.disabled) {
+              return name;
+            }
+
+            return undefined;
+          }
+        )
+        .filter(Boolean) as string[])
+    : [];
+  const { edit, id, ...schemas } = getSchemas(
+    data,
+    schema,
+    dmmfSchema,
+    disabledFields
+  );
   const { basePath } = useConfig();
   const { router } = useRouterInternal();
   const { t } = useI18n();
@@ -385,6 +407,7 @@ const Form = ({
             readonly,
             rawErrors,
             name: props.name,
+            disabled: props.disabled,
           });
         }
 
@@ -407,6 +430,7 @@ const Form = ({
               name={props.name}
               value={props.value}
               schema={schema}
+              disabled={props.disabled}
             />
           );
         }

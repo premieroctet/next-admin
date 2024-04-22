@@ -40,7 +40,8 @@ export function getSchemaForResource(schema: any, resource: string) {
 export function getSchemas(
   data: any,
   schema: any,
-  dmmfSchema: Prisma.DMMF.Field[]
+  dmmfSchema: Prisma.DMMF.Field[],
+  disabledFields?: string[]
 ): Schemas & { edit: boolean; id?: string | number } {
   const uiSchema: UiSchema = {};
   let edit = false;
@@ -59,7 +60,8 @@ export function getSchemas(
         dmmfProperty &&
         ((dmmfProperty.hasDefaultValue &&
           typeof dmmfProperty.default === "object") ||
-          dmmfProperty?.isUpdatedAt)
+          dmmfProperty?.isUpdatedAt ||
+          disabledFields?.includes(dmmfProperty.name))
       ) {
         edit
           ? (uiSchema[property] = {
