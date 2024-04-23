@@ -37,7 +37,7 @@ body:
     attributes:
       label: "Next router"
       description: What nex router are you seeing the problem on ?
-      mutliple: true
+      multiple: true
       options:
         - App router
         - Page router
