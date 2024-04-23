@@ -165,7 +165,36 @@ const Form = ({
 
     return (
       <div className="mt-4 flex justify-between space-x-2">
-        <div>
+        {((edit && canEdit) || (!edit && canCreate)) && (
+          <div className="order-2 flex space-x-2">
+            <Button
+              {...buttonProps}
+              className="order-2 flex gap-2"
+              type="submit"
+              {...(edit
+                ? {
+                    name: "__admin_redirect",
+                    value: "list",
+                  }
+                : {})}
+              loading={isPending}
+            >
+              <CheckCircleIcon className="h-6 w-6" />
+              {t("form.button.save.label")}
+            </Button>
+            <Button
+              {...buttonProps}
+              variant={"ghost"}
+              className="order-1 hidden sm:block"
+              tabIndex={-1}
+              type="submit"
+              loading={isPending}
+            >
+              {t("form.button.save_edit.label")}
+            </Button>
+          </div>
+        )}
+        <div className="order-1">
           {edit && canDelete && (
             <Button
               variant="destructiveOutline"
@@ -186,35 +215,6 @@ const Form = ({
             </Button>
           )}
         </div>
-        {((edit && canEdit) || (!edit && canCreate)) && (
-          <div className="flex space-x-2">
-            <Button
-              {...buttonProps}
-              variant={"ghost"}
-              className="hidden sm:block"
-              tabIndex={-1}
-              type="submit"
-              loading={isPending}
-            >
-              {t("form.button.save_edit.label")}
-            </Button>
-            <Button
-              {...buttonProps}
-              className="flex gap-2"
-              type="submit"
-              {...(edit
-                ? {
-                    name: "__admin_redirect",
-                    value: "list",
-                  }
-                : {})}
-              loading={isPending}
-            >
-              <CheckCircleIcon className="h-6 w-6" />
-              {t("form.button.save.label")}
-            </Button>
-          </div>
-        )}
       </div>
     );
   };
