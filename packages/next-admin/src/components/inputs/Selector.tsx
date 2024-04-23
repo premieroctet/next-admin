@@ -1,8 +1,7 @@
 import { Transition } from "@headlessui/react";
 import debounce from "lodash/debounce";
 import { ChangeEvent, createRef, useEffect, useRef, useState } from "react";
-import { useConfig } from "../../context/ConfigContext";
-import { useForm } from "../../context/FormContext";
+import useSearchPaginatedResource from "../../hooks/useSearchPaginatedResource";
 import { Enumeration } from "../../types";
 import LoaderRow from "../LoaderRow";
 
@@ -14,15 +13,10 @@ export type SelectorProps = {
 };
 
 export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
-  const { basePath, isAppDir } = useConfig();
-  const { searchPaginatedResourceAction, dmmfSchema, resource } = useForm();
-  const [isPending, setIsPending] = useState(false);
-  const [allOptions, setAllOptions] = useState<Enumeration[]>(options ?? []);
-  const totalSearchedItems = useRef(0);
-  const searchPage = useRef(1);
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
   const [isLastRowReached, setIsLastRowReached] = useState(false);
+  const { allOptions, isPending, runSearch, searchPage, setAllOptions, totalSearchedItems } = useSearchPaginatedResource({ modelName: name, initialOptions: options })
 
   useEffect(() => {
     if (open && searchInput.current) {
@@ -32,83 +26,13 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
 
   useEffect(() => {
     if (open && !options) {
-      runSearch(true);
+      runSearch(currentQuery.current, true);
     }
 
     return () => {
       searchPage.current = 1;
     };
   }, [open]);
-
-  const runSearch = async (resetOptions = true) => {
-    const perPage = 25;
-    const query = currentQuery.current;
-
-    const fieldFromDmmf = dmmfSchema?.find((model) => model.name === name);
-
-    if (!fieldFromDmmf) {
-      return;
-    }
-
-    const model = fieldFromDmmf.type;
-
-    try {
-      setIsPending(true);
-      if (isAppDir) {
-        const response = await searchPaginatedResourceAction?.({
-          originModel: resource!,
-          property: name,
-          model,
-          query,
-          page: searchPage.current,
-          perPage,
-        });
-
-        if (response && !response.error) {
-          setAllOptions((old) => {
-            if (resetOptions) {
-              return response.data;
-            }
-
-            return [...old, ...response.data];
-          });
-          totalSearchedItems.current = response.total;
-        }
-      } else {
-        const response = await fetch(`${basePath}/api/options`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            originModel: resource!,
-            property: name,
-            model,
-            query,
-            page: searchPage.current,
-            perPage,
-          }),
-        });
-
-        if (response.ok) {
-          const responseJson = await response.json();
-
-          if (!responseJson.error) {
-            setAllOptions((old) => {
-              if (resetOptions) {
-                return responseJson.data;
-              }
-
-              return [...old, ...responseJson.data];
-            });
-            totalSearchedItems.current = responseJson.total;
-          }
-        }
-      }
-    } finally {
-      setIsPending(false);
-    }
-  };
 
   const onSearchChange = debounce(async (e: ChangeEvent<HTMLInputElement>) => {
     // Options are pre-filled for enum, so we do a local search
@@ -125,7 +49,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
     searchPage.current = 1;
     currentQuery.current = e.target.value;
     setIsLastRowReached(false);
-    runSearch(true);
+    runSearch(currentQuery.current, true);
   }, 300);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -155,7 +79,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
       allOptions.length < totalSearchedItems.current
     ) {
       searchPage.current += 1;
-      runSearch(false);
+      runSearch(currentQuery.current, false);
     }
   };
 

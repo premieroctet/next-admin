@@ -1,5 +1,5 @@
 import { FieldProps } from "@rjsf/utils";
-import MultiSelectWidget from "./MultiSelectWidget";
+import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import { JSONSchema7 } from "json-schema";
 import { Enumeration } from "../../types";
 
@@ -13,6 +13,7 @@ const ArrayField = (props: FieldProps) => {
       formData={formData}
       name={name}
       disabled={disabled}
+      schema={schema}
     />
   );
 };

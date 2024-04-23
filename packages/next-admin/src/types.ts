@@ -103,6 +103,7 @@ export type EditFieldsOptions<T extends ModelName> = {
   } & (P extends keyof ObjectField<T>
     ? {
         optionFormatter?: (item: ModelFromProperty<T, P>) => string;
+        display?: "list" | "select";
       }
     : {});
 };

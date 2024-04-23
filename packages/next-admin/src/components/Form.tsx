@@ -78,7 +78,7 @@ export type FormProps = {
   validation?: PropertyValidationError[];
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   title: string;
-  options?: Required<NextAdminOptions>["model"][ModelName];
+  options?: NextAdminOptions;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
   actions?: ModelAction[];
   searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
@@ -113,9 +113,10 @@ const Form = ({
   searchPaginatedResourceAction,
   icon,
 }: FormProps) => {
+  const modelOptions = options?.model?.[resource!];
   const [validation, setValidation] = useState(validationProp);
-  const disabledFields = options?.edit?.fields
-    ? (Object.entries(options?.edit?.fields)
+  const disabledFields = modelOptions?.edit?.fields
+    ? (Object.entries(modelOptions?.edit?.fields)
         .map(
           ([name, opts]: [
             string,
@@ -319,12 +320,13 @@ const Form = ({
         } = props;
 
         const labelAlias =
-          options?.aliases?.[id as Field<typeof resource>] ||
+          modelOptions?.aliases?.[id as Field<typeof resource>] ||
           formatLabel(label);
-        let styleField = options?.edit?.styles?.[id as Field<typeof resource>];
+        let styleField =
+          modelOptions?.edit?.styles?.[id as Field<typeof resource>];
 
         const tooltip =
-          options?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
+          modelOptions?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
 
         const sanitizedClassNames = classNames
           ?.split(",")
@@ -373,7 +375,7 @@ const Form = ({
         );
       },
       ObjectFieldTemplate: (props: ObjectFieldTemplateProps) => {
-        const styleForm = options?.edit?.styles?._form;
+        const styleForm = modelOptions?.edit?.styles?._form;
         return (
           <div className={clsx("grid", styleForm)}>
             {props.properties.map((element) => element.content)}
@@ -512,6 +514,7 @@ const Form = ({
             searchPaginatedResourceAction={searchPaginatedResourceAction}
             dmmfSchema={dmmfSchema}
             resource={resource}
+            options={options}
           >
             <FormContext.Consumer>
               {({ formData, setFormData }) => (
