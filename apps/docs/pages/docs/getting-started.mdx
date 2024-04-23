@@ -144,7 +144,7 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
     import { prisma } from "../../../prisma";
     import schema from "../../../prisma/json-schema/json-schema.json";
     import { submitFormAction } from "../../../actions/nextadmin";
-    import "@/styles.css" // .css file containing tailiwnd rules
+    import "../../../styles.css" // .css file containing tailiwnd rules
 
     export default async function AdminPage({
       params,
@@ -206,7 +206,7 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
     import { NextAdmin, AdminComponentProps } from "@premieroctet/next-admin";
     import schema from "./../../prisma/json-schema/json-schema.json"; // import the json-schema.json file
     import { PrismaClient } from "@prisma/client";
-     import "@/styles.css" // .css file containing tailiwnd rules
+     import "../../../styles.css" // .css file containing tailiwnd rules
 
     const prisma = new PrismaClient();
 
