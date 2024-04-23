@@ -1,5 +1,3 @@
-# Pull Request Template
-
 ## Title
 
 [Provide a succinct and descriptive title for the pull request, e.g., "Improve caching mechanism for API calls"]
