@@ -17,7 +17,6 @@ import {
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
-import { redirect } from "next/navigation";
 import React, {
   ChangeEvent,
   cloneElement,
@@ -152,9 +151,9 @@ const Form = ({
 
   useEffect(() => {
     if (!edit && !canCreate) {
-      redirect("/");
+      router.replace({ pathname: "/" });
     }
-  }, [canCreate, edit]);
+  }, [canCreate, edit, router]);
 
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
@@ -198,7 +197,7 @@ const Form = ({
             </Button>
           )}
         </div>
-        {(!edit || canEdit) && (
+        {((edit && canEdit) || (!edit && canCreate)) && (
           <div className="flex space-x-2">
             <Button
               {...buttonProps}
