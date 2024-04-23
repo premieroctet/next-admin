@@ -533,7 +533,6 @@ const Form = ({
             dmmfSchema={dmmfSchema}
             resource={resource}
             options={options}
-            resourcesIdProperty={resourcesIdProperty}
           >
             <FormContext.Consumer>
               {({ formData, setFormData }) => (

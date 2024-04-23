@@ -35,7 +35,7 @@ const MultiSelectListDialog = ({
     hasNextPage,
   } = useSearchPaginatedResource({
     resourceName: name,
-    initialOptions: initialOptions ?? values,
+    initialOptions
   });
   const currentQuery = useRef("");
   const [selectedValues, setSelectedValues] = useState<

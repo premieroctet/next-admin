@@ -6,9 +6,9 @@ import { useForm } from "../../../context/FormContext";
 import useCloseOnOutsideClick from "../../../hooks/useCloseOnOutsideClick";
 import { Enumeration, Field, ModelName } from "../../../types";
 import { Selector } from "../Selector";
+import MultiSelectDisplayAdminList from "./MultiSelectDisplayAdminList";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectItem from "./MultiSelectItem";
-import MultiSelectDisplayAdminList from "./MultiSelectDisplayAdminList";
 
 type Props = {
   options?: Enumeration[];

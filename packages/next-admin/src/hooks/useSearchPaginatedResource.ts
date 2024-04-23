@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { useForm } from "../context/FormContext";
-import { DataEnumeration, Enumeration, ModelName } from "../types";
 import { useConfig } from "../context/ConfigContext";
+import { useForm } from "../context/FormContext";
+import { Enumeration } from "../types";
 
 type UseSearchPaginatedResourceParams = {
   resourceName: string;
-  initialOptions?: Enumeration[]
+  initialOptions?: Enumeration[];
 };
 
 const useSearchPaginatedResource = ({
@@ -17,9 +17,9 @@ const useSearchPaginatedResource = ({
   const { isAppDir, basePath } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
-  const [allOptions, setAllOptions] = useState<
-    Enumeration[]
-  >(initialOptions ?? []);
+  const [allOptions, setAllOptions] = useState<Enumeration[]>(
+    initialOptions ?? []
+  );
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const runSearch = async (query: string, resetOptions = true) => {
@@ -54,7 +54,7 @@ const useSearchPaginatedResource = ({
               return response.data;
             }
 
-            return [...old, ...response.data]
+            return [...old, ...response.data];
           });
         }
       } else {
