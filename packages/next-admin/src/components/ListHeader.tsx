@@ -10,11 +10,17 @@ import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { ModelAction, ModelIcon, ModelName } from "../types";
+import {
+  ModelAction,
+  ModelIcon,
+  ModelName,
+  Permission,
+  PermissionType,
+} from "../types";
+import { slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
 import { buttonVariants } from "./radix/Button";
-import { slugify } from "../utils/tools";
 
 type Props = {
   resource: ModelName;
@@ -28,6 +34,8 @@ type Props = {
   title: string;
   icon?: ModelIcon;
   totalCount?: number;
+  canCreate?: boolean;
+  canDelete?: boolean;
 };
 
 export default function ListHeader({
@@ -43,21 +51,31 @@ export default function ListHeader({
   icon,
   totalCount,
 }: Props) {
-  const { basePath } = useConfig();
+  const { basePath, options } = useConfig();
   const { t } = useI18n();
+
+  const hasPermission = (permission: PermissionType) =>
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(permission);
+
+  const modelOptions = options?.model?.[resource];
+  const canCreate = hasPermission(Permission.CREATE);
+  const canDelete = hasPermission(Permission.DELETE);
 
   const selectedRowsCount = Object.keys(selectedRows).length;
 
   const actions = useMemo<ModelAction[]>(() => {
-    const defaultActions: ModelAction[] = [
-      {
-        title: t("actions.delete.label"),
-        style: "destructive",
-        action: async () => {
-          await onDelete();
-        },
-      },
-    ];
+    const defaultActions: ModelAction[] = canDelete
+      ? [
+          {
+            title: t("actions.delete.label"),
+            style: "destructive",
+            action: async () => {
+              await onDelete();
+            },
+          },
+        ]
+      : [];
 
     return [...(actionsProp || []), ...defaultActions];
   }, [actionsProp, onDelete, t]);
@@ -110,7 +128,7 @@ export default function ListHeader({
               </label>
             </div>
           )}
-          {Boolean(selectedRowsCount) && (
+          {Boolean(selectedRowsCount) && !!actions.length && (
             <ActionsDropdown
               actions={actions}
               resource={resource}
@@ -118,18 +136,20 @@ export default function ListHeader({
               selectedCount={selectedRowsCount}
             />
           )}
-          <Link
-            href={`${basePath}/${slugify(resource)}/new`}
-            role="button"
-            data-testid="add-new-button"
-            className={buttonVariants({
-              variant: "default",
-              size: "sm",
-            })}
-          >
-            <span>{t("list.header.add.label")}</span>
-            <PlusSmallIcon className="ml-2 h-5 w-5" aria-hidden="true" />
-          </Link>
+          {canCreate && (
+            <Link
+              href={`${basePath}/${slugify(resource)}/new`}
+              role="button"
+              data-testid="add-new-button"
+              className={buttonVariants({
+                variant: "default",
+                size: "sm",
+              })}
+            >
+              <span>{t("list.header.add.label")}</span>
+              <PlusSmallIcon className="ml-2 h-5 w-5" aria-hidden="true" />
+            </Link>
+          )}
         </div>
       </div>
     </>

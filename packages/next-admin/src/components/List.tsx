@@ -15,7 +15,6 @@ import {
   ModelAction,
   ModelIcon,
   ModelName,
-  NextAdminOptions,
 } from "../types";
 import Cell from "./Cell";
 import { DataTable } from "./DataTable";
@@ -35,7 +34,6 @@ export type ListProps = {
   resource: ModelName;
   data: ListData<ModelName>;
   total: number;
-  options?: Required<NextAdminOptions>["model"][ModelName];
   resourcesIdProperty: Record<ModelName, string>;
   title: string;
   actions?: ModelAction[];
@@ -47,7 +45,6 @@ function List({
   resource,
   data,
   total,
-  options,
   actions,
   resourcesIdProperty,
   title,
@@ -56,7 +53,7 @@ function List({
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
-  const { isAppDir } = useConfig();
+  const { isAppDir, options: globalOptions } = useConfig();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
@@ -65,7 +62,7 @@ function List({
   const { deleteItems } = useDeleteAction(resource, deleteAction);
 
   let onSearchChange;
-
+  const options = globalOptions?.["model"]?.[resource];
   if (!(options?.list?.search && options?.list?.search?.length === 0)) {
     onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
       startTransition(() => {

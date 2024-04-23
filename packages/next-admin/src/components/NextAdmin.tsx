@@ -62,7 +62,6 @@ export function NextAdmin({
           resource={resource}
           data={data}
           total={total}
-          options={options?.model && options?.model[resource]}
           title={resourceTitle!}
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
@@ -85,7 +84,6 @@ export function NextAdmin({
           resource={resource!}
           validation={validation}
           action={action}
-          options={options?.model && options?.model[resource!]}
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}

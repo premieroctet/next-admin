@@ -208,15 +208,16 @@ It takes as **_key_** a model name of your schema as **_value_** an object to cu
 
 By default if no models are defined, they will all be displayed in the admin. If you want more control, you have to define each model individually as empty objects or with the following properties:
 
-| Name       | Description                                                                                         | Default value |
-| ---------- | --------------------------------------------------------------------------------------------------- | ------------- |
-| `toString` | a function that is used to display your record in related list                                      | `id` field    |
-| `aliases`  | an object containing the aliases of the model fields as keys, and the field name                    | undefined     |
-| `title`    | a string used to display the model name in the sidebar and in the section title                     | Model name    |
-| `list`     | an object containing the [list options](#list-property)                                             | undefined     |
-| `edit`     | an object containing the [edit options](#edit-property)                                             | undefined     |
-| `actions`  | an array of [actions](#actions-property)                                                            | undefined     |
-| `icon`     | the [outline HeroIcon name](https://heroicons.com/outline) displayed in the sidebar and pages title | undefined     |
+| Name          | Description                                                                                         | Default value                |
+| ------------- | --------------------------------------------------------------------------------------------------- | ---------------------------- |
+| `toString`    | a function that is used to display your record in related list                                      | `id` field                   |
+| `aliases`     | an object containing the aliases of the model fields as keys, and the field name                    | undefined                    |
+| `title`       | a string used to display the model name in the sidebar and in the section title                     | Model name                   |
+| `list`        | an object containing the [list options](#list-property)                                             | undefined                    |
+| `edit`        | an object containing the [edit options](#edit-property)                                             | undefined                    |
+| `actions`     | an array of [actions](#actions-property)                                                            | undefined                    |
+| `icon`        | the [outline HeroIcon name](https://heroicons.com/outline) displayed in the sidebar and pages title | undefined                    |
+| `permissions` | an array to specify restricted permissions on model                                                 | [`create`, `edit`, `delete`] |
 
 You can customize the following for each model:
 
