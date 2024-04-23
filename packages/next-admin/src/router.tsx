@@ -5,7 +5,7 @@ import {
 } from "@prisma/client/runtime/library";
 import { createRouter } from "next-connect";
 
-import { EditFieldsOptions, NextAdminOptions } from "./types";
+import { EditFieldsOptions, NextAdminOptions, Permission } from "./types";
 import { optionsFromResource } from "./utils/prisma";
 import { getPropsFromParams } from "./utils/props";
 import {
@@ -152,6 +152,21 @@ export const nextAdminRouter = async (
 
           // Delete
           if (resourceId !== undefined && action === "delete") {
+            if (
+              options?.model?.[resource]?.permissions &&
+              !options?.model?.[resource]?.permissions?.includes(
+                Permission.DELETE
+              )
+            ) {
+              res.statusCode = 403;
+              return {
+                props: {
+                  ...(await getProps()),
+                  error: "Unable to delete items of this model",
+                },
+              };
+            }
+
             // @ts-expect-error
             await prisma[resource].delete({
               where: {
@@ -203,6 +218,21 @@ export const nextAdminRouter = async (
           }
 
           if (resourceId !== undefined) {
+            if (
+              options?.model?.[resource]?.permissions &&
+              !options?.model?.[resource]?.permissions?.includes(
+                Permission.EDIT
+              )
+            ) {
+              res.statusCode = 403;
+              return {
+                props: {
+                  ...(await getProps()),
+                  error: "Unable to update items of this model",
+                },
+              };
+            }
+
             // @ts-expect-error
             await prisma[resource].update({
               where: {
@@ -236,6 +266,21 @@ export const nextAdminRouter = async (
           }
 
           // Create
+          if (
+            options?.model?.[resource]?.permissions &&
+            options?.model?.[resource]?.permissions?.includes(
+              Permission.CREATE
+            )
+          ) {
+            res.statusCode = 403;
+            return {
+              props: {
+                ...(await getProps()),
+                error: "Unable to create items of this model",
+              },
+            };
+          }
+
           // @ts-expect-error
           const createdData = await prisma[resource].create({
             data: formattedData,

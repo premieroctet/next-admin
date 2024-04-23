@@ -6,17 +6,18 @@ import {
 import {
   ActionFullParams,
   EditFieldsOptions,
+  Permission,
   SubmitFormResult,
 } from "../types";
 import {
   formattedFormData,
   getFormValuesFromFormData,
+  getModelIdProperty,
+  getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
   parseFormData,
-  getPrismaModelForResource,
-  getModelIdProperty,
 } from "../utils/server";
 import { validate } from "../utils/validator";
 
@@ -51,6 +52,15 @@ export const submitForm = async (
   try {
     if (action === "delete") {
       if (resourceId !== undefined) {
+        if (
+          options?.model?.[resource]?.permissions &&
+          !options?.model?.[resource]?.permissions?.includes(Permission.DELETE)
+        ) {
+          return {
+            error: "Unable to delete items of this model",
+          };
+        }
+
         // @ts-expect-error
         await prisma[resource].delete({
           where: {
@@ -93,6 +103,15 @@ export const submitForm = async (
     }
 
     if (resourceId !== undefined) {
+      if (
+        options?.model?.[resource]?.permissions &&
+        !options?.model?.[resource]?.permissions?.includes(Permission.EDIT)
+      ) {
+        return {
+          error: "Unable to update items of this model",
+        };
+      }
+
       // @ts-expect-error
       data = await prisma[resource].update({
         where: {
@@ -105,6 +124,15 @@ export const submitForm = async (
     }
 
     // Create
+    if (
+      options?.model?.[resource]?.permissions &&
+      !options?.model?.[resource]?.permissions?.includes(Permission.CREATE)
+    ) {
+      return {
+        error: "Unable to create items of this model",
+      };
+    }
+
     // @ts-expect-error
     data = await prisma[resource].create({
       data: formattedData,
