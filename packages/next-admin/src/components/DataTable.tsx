@@ -8,15 +8,7 @@ import {
 } from "@tanstack/react-table";
 
 import { useConfig } from "../context/ConfigContext";
-import { useI18n } from "../context/I18nContext";
-import {
-  Field,
-  ListData,
-  ListDataItem,
-  ModelIcon,
-  ModelName,
-  Permission,
-} from "../types";
+import { Field, ListData, ListDataItem, ModelIcon, ModelName, Permission } from "../types";
 import { slugify } from "../utils/tools";
 import EmptyState from "./EmptyState";
 import {
@@ -47,8 +39,7 @@ export function DataTable({
   setRowSelection,
   icon,
 }: DataTableProps) {
-  const { basePath, options } = useConfig();
-
+  const { basePath } = useConfig();
   const columnsVisibility = columns.reduce(
     (acc, column) => {
       // @ts-expect-error
