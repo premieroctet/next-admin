@@ -17,9 +17,11 @@ import {
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
+import { redirect } from "next/navigation";
 import React, {
   ChangeEvent,
   cloneElement,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -122,6 +124,8 @@ const Form = ({
   const canEdit =
     !modelOptions?.permissions ||
     modelOptions?.permissions?.includes(Permission.EDIT);
+  const canCreate =
+    !modelOptions?.permissions || modelOptions?.permissions?.includes(Permission.CREATE);
   const disabledFields = modelOptions?.edit?.fields
     ? (Object.entries(modelOptions?.edit?.fields)
         .map(
@@ -149,6 +153,12 @@ const Form = ({
   const formRef = useRef<CustomForm>(null);
   const [isPending, startTransition] = useTransition();
   const allDisabled = edit && !canEdit;
+
+  useEffect(() => {
+    if (!edit && !canCreate) {
+      redirect("/");
+    }
+  }, [canCreate, edit]);
 
   const submitButton = (props: SubmitButtonProps) => {
     const { uiSchema } = props;
