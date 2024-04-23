@@ -1,28 +1,34 @@
 "use client";
+import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
 import { ChangeEvent, useEffect, useState, useTransition } from "react";
 import { ITEMS_PER_PAGE } from "../config";
-import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
+import useDataColumns from "../hooks/useDataColumns";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
-  Field,
   ListData,
-  ListDataFieldValue,
   ListDataItem,
-  ListFieldsOptions,
   ModelAction,
   ModelIcon,
   ModelName,
   NextAdminOptions,
 } from "../types";
-import Cell from "./Cell";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
 import { Pagination } from "./Pagination";
-import TableHead from "./TableHead";
 import TableRowsIndicator from "./TableRowsIndicator";
+import Button from "./radix/Button";
+import Checkbox from "./radix/Checkbox";
+import {
+  Dropdown,
+  DropdownBody,
+  DropdownContent,
+  DropdownItem,
+  DropdownTrigger,
+} from "./radix/Dropdown";
 import {
   Select,
   SelectContent,
@@ -56,13 +62,21 @@ function List({
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
-  const { isAppDir } = useConfig();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
   const sortColumn = query.sortColumn as string;
   const sortDirection = query.sortDirection as "asc" | "desc";
   const { deleteItems } = useDeleteAction(resource, deleteAction);
+  const { t } = useI18n();
+  const columns = useDataColumns({
+    data,
+    resource,
+    sortable: true,
+    resourcesIdProperty,
+    sortColumn,
+    sortDirection,
+  });
 
   let onSearchChange;
 
@@ -77,68 +91,81 @@ function List({
     }, 300);
   }
 
-  const columns: ColumnDef<ListDataItem<ModelName>>[] =
-    data && data?.length > 0
-      ? (options?.list?.display || Object.keys(data[0])).map((property) => {
-          const propertyAlias =
-            options?.aliases?.[
-              property as keyof ListFieldsOptions<typeof resource>
-            ] || property;
-          return {
-            accessorKey: property,
-            header: () => {
-              return (
-                <TableHead
-                  sortDirection={sortDirection}
-                  sortColumn={sortColumn}
-                  property={property}
-                  propertyName={propertyAlias}
-                  key={property}
-                  onClick={() => {
-                    router?.push({
-                      pathname: location.pathname,
-                      query: {
-                        ...query,
-                        sortColumn: property,
-                        sortDirection:
-                          query.sortDirection === "asc" ? "desc" : "asc",
-                      },
-                    });
+  const checkboxColumn: ColumnDef<ListDataItem<ModelName>> = {
+    id: "__nextadmin-select-row",
+    header: ({ table }) => {
+      if (table.getRowModel().rows.length === 0) {
+        return null;
+      }
+
+      return (
+        <div className="px-1">
+          <Checkbox
+            {...{
+              checked: table.getIsAllRowsSelected(),
+              indeterminate: table.getIsSomeRowsSelected(),
+              onChange: table.getToggleAllRowsSelectedHandler(),
+            }}
+          />
+        </div>
+      );
+    },
+    cell: ({ row }) => {
+      return (
+        <div className="px-1">
+          <Checkbox
+            {...{
+              checked: row.getIsSelected(),
+              indeterminate: row.getIsSomeSelected(),
+              onChange: row.getToggleSelectedHandler(),
+              disabled: !row.getCanSelect(),
+            }}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      );
+    },
+  };
+
+  const actionsColumn: ColumnDef<ListDataItem<ModelName>> = {
+    id: "__nextadmin-actions",
+    header: () => {
+      return null;
+    },
+    cell: ({ row }) => {
+      const idProperty = resourcesIdProperty[resource];
+
+      return (
+        <Dropdown>
+          <DropdownTrigger asChild>
+            <Button variant="ghost" size="sm" className="!px-2 py-2">
+              <EllipsisVerticalIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-6 w-6" />
+            </Button>
+          </DropdownTrigger>
+          <DropdownBody>
+            <DropdownContent
+              side="left"
+              sideOffset={5}
+              className="z-50 px-1 py-2"
+            >
+              <DropdownItem asChild>
+                <Button
+                  variant="destructiveOutline"
+                  className="h-6 px-1"
+                  onClick={(evt) => {
+                    evt.stopPropagation();
+                    deleteItems([row.original[idProperty].value as string]);
                   }}
-                />
-              );
-            },
-            cell: ({ row }) => {
-              const modelData = row.original;
-              const cellData = modelData[
-                property as keyof ListFieldsOptions<ModelName>
-              ] as unknown as ListDataFieldValue;
-
-              const dataFormatter =
-                options?.list?.fields?.[
-                  property as keyof ListFieldsOptions<ModelName>
-                ]?.formatter ||
-                ((cell: any) => {
-                  if (typeof cell === "object") {
-                    return cell[resourcesIdProperty[property as ModelName]];
-                  } else {
-                    return cell;
-                  }
-                });
-
-              return (
-                <Cell
-                  cell={cellData}
-                  formatter={!isAppDir ? dataFormatter : undefined}
-                  copyable={options?.list?.copy?.includes(
-                    property as Field<ModelName>
-                  )}
-                />
-              );
-            },
-          };
-        })
-      : [];
+                >
+                  {t("list.row.actions.delete.label")}
+                </Button>
+              </DropdownItem>
+            </DropdownContent>
+          </DropdownBody>
+        </Dropdown>
+      );
+    },
+  };
 
   useEffect(() => {
     setRowSelection({});
@@ -178,11 +205,10 @@ function List({
           <DataTable
             resource={resource}
             data={data}
-            columns={columns}
+            columns={[checkboxColumn, ...columns, actionsColumn]}
             resourcesIdProperty={resourcesIdProperty}
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
-            onDelete={async (id) => deleteItems([id] as string[] | number[])}
             icon={icon}
           />
           {data.length ? (

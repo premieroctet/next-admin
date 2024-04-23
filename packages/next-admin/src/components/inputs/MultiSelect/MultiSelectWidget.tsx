@@ -1,19 +1,14 @@
+import { RJSFSchema } from "@rjsf/utils";
+import clsx from "clsx";
 import { useRef } from "react";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
 import { useForm } from "../../../context/FormContext";
 import useCloseOnOutsideClick from "../../../hooks/useCloseOnOutsideClick";
 import { Enumeration, Field, ModelName } from "../../../types";
-import MultiSelectItem from "./MultiSelectItem";
 import { Selector } from "../Selector";
-import clsx from "clsx";
-import Button from "../../radix/Button";
-import { XMarkIcon } from "@heroicons/react/24/solid";
-import Link from "next/link";
-import { useConfig } from "../../../context/ConfigContext";
-import { slugify } from "../../../utils/tools";
-import { RJSFSchema } from "@rjsf/utils";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
+import MultiSelectItem from "./MultiSelectItem";
+import MultiSelectDisplayAdminList from "./MultiSelectDisplayAdminList";
 
 type Props = {
   options?: Enumeration[];
@@ -108,6 +103,15 @@ const MultiSelectWidget = (props: Props) => {
           formData={formData}
           schema={schema}
           name={name}
+          onChange={onChange}
+          initialOptions={options}
+        />
+      )}
+      {displayMode === "admin-list" && (
+        <MultiSelectDisplayAdminList
+          formData={formData}
+          name={name}
+          schema={schema}
           onChange={onChange}
         />
       )}

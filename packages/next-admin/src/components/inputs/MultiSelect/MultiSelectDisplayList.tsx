@@ -6,7 +6,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import clsx from "clsx";
 import Link from "next/link";
 import { useConfig } from "../../../context/ConfigContext";
-import { Enumeration } from "../../../types";
+import { Enumeration, ModelName } from "../../../types";
 import { slugify } from "../../../utils/tools";
 import Button from "../../radix/Button";
 import {
@@ -82,9 +82,12 @@ const MultiSelectDisplayList = ({
             initialOptions={initialOptions}
             values={formData}
             onConfirm={(values) => {
-              onChange(values);
+              onChange(values as Enumeration[]);
               setOpen(false);
             }}
+            // @ts-expect-error
+            resourceName={schema.items!.relation as ModelName}
+            display="list"
           />
         </DialogContent>
       </DialogPortal>

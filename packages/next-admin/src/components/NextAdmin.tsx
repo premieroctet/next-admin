@@ -91,6 +91,7 @@ export function NextAdmin({
           actions={actions}
           searchPaginatedResourceAction={searchPaginatedResourceAction}
           icon={resourceIcon}
+          resourcesIdProperty={resourcesIdProperty!}
         />
       );
     }

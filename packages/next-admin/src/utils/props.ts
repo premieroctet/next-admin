@@ -6,6 +6,8 @@ import {
   ActionParams,
   AdminComponentProps,
   EditOptions,
+  Field,
+  ListOptions,
   MainLayoutProps,
   ModelIcon,
   ModelName,
@@ -14,7 +16,11 @@ import {
 } from "../types";
 import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
-import { getMappedDataList, selectPayloadForModel } from "./prisma";
+import {
+  getMappedDataList,
+  mapDataList,
+  selectPayloadForModel,
+} from "./prisma";
 import {
   getModelIdProperty,
   getPrismaModelForResource,
@@ -210,11 +216,66 @@ export async function getPropsFromParams({
 
       if (resourceId !== undefined) {
         const select = selectPayloadForModel(resource, edit, "object");
+
+        Object.entries(select).forEach(([key, value]) => {
+          const fieldTypeDmmf = dmmfSchema?.fields.find(
+            (field) => field.name === key
+          )?.type;
+
+          if (fieldTypeDmmf && dmmfSchema) {
+            const relatedResourceOptions =
+              options.model?.[fieldTypeDmmf as ModelName]?.list;
+
+            if (
+              // @ts-expect-error
+              edit.fields?.[key as Field<ModelName>]?.display === "admin-list"
+            ) {
+              if (!relatedResourceOptions?.display) {
+                throw new Error(
+                  `'admin-list' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
+                );
+              }
+
+              select[key] = {
+                select: selectPayloadForModel(
+                  fieldTypeDmmf as ModelName,
+                  relatedResourceOptions as ListOptions<ModelName>,
+                  "object"
+                ),
+              };
+            }
+          }
+        });
+
         // @ts-expect-error
         let data = await prisma[resource].findUniqueOrThrow({
           select,
           where: { [idProperty]: resourceId },
         });
+
+        Object.entries(data).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            const fieldTypeDmmf = dmmfSchema?.fields.find(
+              (field) => field.name === key
+            )?.type;
+
+            if (fieldTypeDmmf && dmmfSchema) {
+              if (
+                // @ts-expect-error
+                edit.fields?.[key as Field<ModelName>]?.display === "admin-list"
+              ) {
+                data[key] = mapDataList({
+                  context: { locale },
+                  appDir: isAppDir,
+                  fetchData: value,
+                  options,
+                  resource: fieldTypeDmmf as ModelName,
+                });
+              }
+            }
+          }
+        });
+
         data = transformData(data, resource, edit, options);
         return {
           ...defaultProps,

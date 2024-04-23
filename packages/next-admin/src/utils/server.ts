@@ -245,10 +245,25 @@ export const transformData = <M extends ModelName>(
         options
       );
       if (Array.isArray(data[key])) {
-        acc[key] = data[key].map((item: any) => ({
-          label: toStringForRelations(item),
-          value: item[modelRelationIdField],
-        }));
+        acc[key] = data[key].map((item: any) => {
+          if (
+            !!editOptions.fields?.[key as Field<M>] &&
+            "display" in editOptions.fields[key as Field<M>]! &&
+            // @ts-expect-error
+            editOptions.fields[key as keyof ObjectField<M>]!.display ===
+              "admin-list"
+          ) {
+            return {
+              data: item,
+              value: item[modelRelationIdField].value,
+            };
+          }
+
+          return {
+            label: toStringForRelations(item),
+            value: item[modelRelationIdField],
+          };
+        });
       } else {
         acc[key] = data[key]
           ? {
@@ -283,7 +298,7 @@ export const transformData = <M extends ModelName>(
  *
  * @returns data
  * */
-export const findRelationInData = async (
+export const findRelationInData = (
   data: any[],
   dmmfSchema?: Prisma.DMMF.Field[]
 ) => {

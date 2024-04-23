@@ -83,6 +83,7 @@ export type FormProps = {
   actions?: ModelAction[];
   searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
   icon?: ModelIcon;
+  resourcesIdProperty: Record<ModelName, string>;
 };
 
 const fields: CustomForm["props"]["fields"] = {
@@ -112,6 +113,7 @@ const Form = ({
   actions,
   searchPaginatedResourceAction,
   icon,
+  resourcesIdProperty,
 }: FormProps) => {
   const modelOptions = options?.model?.[resource!];
   const [validation, setValidation] = useState(validationProp);
@@ -515,6 +517,7 @@ const Form = ({
             dmmfSchema={dmmfSchema}
             resource={resource}
             options={options}
+            resourcesIdProperty={resourcesIdProperty}
           >
             <FormContext.Consumer>
               {({ formData, setFormData }) => (

@@ -1,6 +1,7 @@
 import { $Enums, Prisma, PrismaClient } from "@prisma/client";
 import { ITEMS_PER_PAGE } from "../config";
 import {
+  DataEnumeration,
   EditOptions,
   Enumeration,
   Field,
@@ -153,6 +154,27 @@ export const optionsFromResource = async ({
   const data = await fetchDataList(args);
   const { data: dataItems, total, error } = data;
   const { resource } = args;
+  const idProperty = getModelIdProperty(resource);
+
+  if (
+    args.options?.model?.[originResource]?.edit?.fields?.[
+      property as Field<typeof originResource>
+      // @ts-expect-error
+    ]?.display === "admin-list"
+  ) {
+    return {
+      data: mapDataList({ ...args, fetchData: dataItems }).map(
+        (item): DataEnumeration => {
+          return {
+            data: item,
+            value: item[idProperty].value,
+          };
+        }
+      ),
+      total,
+      error,
+    };
+  }
 
   const toStringModel = getToStringForRelations(
     originResource,
@@ -160,7 +182,6 @@ export const optionsFromResource = async ({
     args.resource,
     args.options
   );
-  const idProperty = getModelIdProperty(resource);
   return {
     data: dataItems.map((item): Enumeration => {
       return {
@@ -222,15 +243,18 @@ export const fetchDataList = async ({
   };
 };
 
-export const getMappedDataList = async ({
+export const mapDataList = ({
   context,
-  appDir = false,
+  appDir,
+  fetchData,
   ...args
-}: GetMappedDataListParams) => {
-  const { data: fetchData, total, error } = await fetchDataList(args);
+}: Pick<
+  GetMappedDataListParams,
+  "resource" | "options" | "context" | "appDir"
+> & { fetchData: any[] }) => {
   const { resource, options } = args;
   const dmmfSchema = getPrismaModelForResource(resource);
-  const data = await findRelationInData(fetchData, dmmfSchema?.fields);
+  const data = findRelationInData(fetchData, dmmfSchema?.fields);
   const listFields = options.model?.[resource]?.list?.fields ?? {};
 
   data.forEach((item, index) => {
@@ -288,8 +312,18 @@ export const getMappedDataList = async ({
     });
   });
 
+  return data;
+};
+
+export const getMappedDataList = async ({
+  context,
+  appDir = false,
+  ...args
+}: GetMappedDataListParams) => {
+  const { data: fetchData, total, error } = await fetchDataList(args);
+
   return {
-    data,
+    data: mapDataList({ context, appDir, fetchData, ...args }),
     total,
     error,
   };

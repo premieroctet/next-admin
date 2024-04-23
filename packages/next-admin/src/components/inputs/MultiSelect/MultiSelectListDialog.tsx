@@ -2,18 +2,20 @@ import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import debounce from "lodash/debounce";
 import { ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import useSearchPaginatedResource from "../../../hooks/useSearchPaginatedResource";
-import { Enumeration } from "../../../types";
+import { DataEnumeration, Enumeration, ModelName } from "../../../types";
 import { formatLabel } from "../../../utils/tools";
-import Spinner from "../../common/Spinner";
 import Button from "../../radix/Button";
-import Checkbox from "../../radix/Checkbox";
 import { DialogClose, DialogTitle } from "../../radix/Dialog";
+import MultiSelectListDialogDisplayAdminList from "./MultiSelectListDialogDisplayAdminList";
+import MultiSelectListDialogDisplayList from "./MultiSelectListDialogDisplayList";
 
 type Props = {
   name: string;
   initialOptions?: Enumeration[];
-  values?: Enumeration[];
-  onConfirm: (values: Enumeration[]) => void;
+  values?: Enumeration[] | DataEnumeration[];
+  onConfirm: (values: Enumeration[] | DataEnumeration[]) => void;
+  display: "list" | "admin-list";
+  resourceName: ModelName;
 };
 
 const MultiSelectListDialog = ({
@@ -21,6 +23,8 @@ const MultiSelectListDialog = ({
   initialOptions,
   values,
   onConfirm,
+  display,
+  resourceName,
 }: Props) => {
   const {
     runSearch,
@@ -30,11 +34,13 @@ const MultiSelectListDialog = ({
     searchPage,
     hasNextPage,
   } = useSearchPaginatedResource({
-    modelName: name,
+    resourceName: name,
     initialOptions: initialOptions ?? values,
   });
   const currentQuery = useRef("");
-  const [selectedValues, setSelectedValues] = useState(values ?? []);
+  const [selectedValues, setSelectedValues] = useState<
+    DataEnumeration[] | Enumeration[]
+  >(values ?? []);
 
   const onSearchChange = debounce(async (e: ChangeEvent<HTMLInputElement>) => {
     if (initialOptions) {
@@ -51,13 +57,15 @@ const MultiSelectListDialog = ({
     runSearch(currentQuery.current, true);
   }, 300);
 
-  const onCheckValue = (value: Enumeration) => {
+  const onCheckValue = (value: Enumeration | DataEnumeration) => {
     setSelectedValues((old) => {
       const oldValueIdx = old.findIndex((val) => val.value === value.value);
       if (oldValueIdx > -1) {
-        return old.filter((_, idx) => idx !== oldValueIdx);
+        return old.filter((_, idx) => idx !== oldValueIdx) as
+          | DataEnumeration[]
+          | Enumeration[];
       }
-      return [...old, value];
+      return [...old, value] as DataEnumeration[] | Enumeration[];
     });
   };
 
@@ -98,53 +106,35 @@ const MultiSelectListDialog = ({
         placeholder="Search..."
         onChange={onSearchChange}
       />
-      <div className="space-y-2">
-        {!!orderedOptions.length && (
-          <ul className="max-h-[32rem] overflow-y-scroll">
-            {orderedOptions.map((option, index) => {
-              const checked = selectedValues.some(
-                (value) => value.value === option.value
-              );
-
-              return (
-                <li
-                  key={option.value}
-                  className="border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted flex items-center gap-3 border-b-2 px-1 py-2 last:border-b-0"
-                >
-                  <Checkbox
-                    checked={checked}
-                    onCheckedChange={() => {
-                      onCheckValue(option);
-                    }}
-                    id={`${name}-option-${option.value}`}
-                  />
-                  <label htmlFor={`${name}-option-${option.value}`}>
-                    {option.label}
-                  </label>
-                </li>
-              );
-            })}
-          </ul>
-        )}
-        {isPending && (
-          <div className="flex h-10 w-full items-center justify-center">
-            <Spinner />
-          </div>
-        )}
-        {!!allOptions.length && (
-          <div className="flex w-full justify-center">
-            <Button
-              disabled={isPending || !hasNextPage}
-              onClick={() => {
-                searchPage.current += 1;
-                runSearch(currentQuery.current);
-              }}
-            >
-              Show more
-            </Button>
-          </div>
-        )}
-      </div>
+      {display === "list" && (
+        <MultiSelectListDialogDisplayList
+          options={orderedOptions as Enumeration[]}
+          isPending={isPending}
+          canShowMore={!!allOptions.length}
+          onCheckValue={onCheckValue}
+          onShowMore={() => {
+            searchPage.current += 1;
+            runSearch(currentQuery.current);
+          }}
+          selectedValues={selectedValues.map((val) => val.value)}
+          hasNextPage={hasNextPage}
+        />
+      )}
+      {display === "admin-list" && (
+        <MultiSelectListDialogDisplayAdminList
+          options={orderedOptions as DataEnumeration[]}
+          isPending={isPending}
+          canShowMore={!!allOptions.length}
+          onCheckValue={onCheckValue}
+          onShowMore={() => {
+            searchPage.current += 1;
+            runSearch(currentQuery.current);
+          }}
+          selectedValues={selectedValues.map((val) => val.value)}
+          hasNextPage={hasNextPage}
+          resource={resourceName}
+        />
+      )}
     </div>
   );
 };

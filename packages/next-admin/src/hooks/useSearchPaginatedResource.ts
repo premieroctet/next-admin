@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useForm } from "../context/FormContext";
-import { Enumeration, ModelName } from "../types";
+import { DataEnumeration, Enumeration, ModelName } from "../types";
 import { useConfig } from "../context/ConfigContext";
 
 type UseSearchPaginatedResourceParams = {
-  modelName: string;
-  initialOptions?: Enumeration[];
+  resourceName: string;
+  initialOptions?: Enumeration[] | DataEnumeration[];
 };
 
 const useSearchPaginatedResource = ({
-  modelName,
+  resourceName,
   initialOptions,
 }: UseSearchPaginatedResourceParams) => {
   const [isPending, setIsPending] = useState(false);
@@ -17,15 +17,17 @@ const useSearchPaginatedResource = ({
   const { isAppDir, basePath } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
-  const [allOptions, setAllOptions] = useState<Enumeration[]>(
-    initialOptions ?? []
-  );
+  const [allOptions, setAllOptions] = useState<
+    Enumeration[] | DataEnumeration[]
+  >(initialOptions ?? []);
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const runSearch = async (query: string, resetOptions = true) => {
     const perPage = 25;
 
-    const fieldFromDmmf = dmmfSchema?.find((model) => model.name === modelName);
+    const fieldFromDmmf = dmmfSchema?.find(
+      (model) => model.name === resourceName
+    );
 
     if (!fieldFromDmmf) {
       return;
@@ -38,7 +40,7 @@ const useSearchPaginatedResource = ({
       if (isAppDir) {
         const response = await searchPaginatedResourceAction?.({
           originModel: resource!,
-          property: modelName,
+          property: resourceName,
           model,
           query,
           page: searchPage.current,
@@ -52,7 +54,9 @@ const useSearchPaginatedResource = ({
               return response.data;
             }
 
-            return [...old, ...response.data];
+            return [...old, ...response.data] as
+              | Enumeration[]
+              | DataEnumeration[];
           });
         }
       } else {
@@ -63,7 +67,7 @@ const useSearchPaginatedResource = ({
           },
           body: JSON.stringify({
             originModel: resource!,
-            property: name,
+            property: resourceName,
             model,
             query,
             page: searchPage.current,

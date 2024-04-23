@@ -135,7 +135,7 @@ export const options: NextAdminOptions = {
           categories: {
             optionFormatter: (category) =>
               `${category.name} Cat.${category.id}`,
-            display: "list",
+            display: "admin-list",
           },
         },
         display: [
