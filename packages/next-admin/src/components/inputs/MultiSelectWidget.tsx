@@ -8,7 +8,6 @@ import { Selector } from "./Selector";
 import clsx from "clsx";
 
 type Props = {
-  options?: Enumeration[];
   onChange: (data: unknown) => unknown;
   formData: any;
   name: string;
@@ -17,7 +16,7 @@ type Props = {
 
 const MultiSelectWidget = (props: Props) => {
   const formContext = useForm();
-  const { formData, onChange, options, name } = props;
+  const { formData, onChange, name } = props;
   const containerRef = useRef<HTMLDivElement>(null);
   useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
 
@@ -26,11 +25,6 @@ const MultiSelectWidget = (props: Props) => {
   };
 
   const selectedValues = formData?.map((item: any) => item?.value) ?? [];
-
-  const optionsLeft = options?.filter(
-    (option) =>
-      !formData?.find((item: Enumeration) => item.value === option.value)
-  );
 
   return (
     <div className="relative" ref={containerRef}>
@@ -76,10 +70,10 @@ const MultiSelectWidget = (props: Props) => {
       <Selector
         open={!!formContext.relationState?.[name]?.open!}
         name={name}
-        options={optionsLeft?.length ? optionsLeft : undefined}
         onChange={(option: Enumeration) => {
           onChange([...(formData || []), option]);
         }}
+        selectedOptions={selectedValues}
       />
     </div>
   );
