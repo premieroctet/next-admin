@@ -170,26 +170,15 @@ const Form = ({
             <Button
               variant="destructiveOutline"
               className="flex gap-2"
+              name="__admin_action"
+              value="delete"
               tabIndex={-1}
               onClick={(e) => {
                 if (!confirm("Are you sure to delete this ?")) {
                   e.preventDefault();
-                  return;
                 }
-
-                const deletionInput = document.createElement("input");
-                deletionInput.type = "hidden";
-                deletionInput.name = "__admin_action";
-                deletionInput.value = "delete";
-
-                e.currentTarget.form?.appendChild(deletionInput);
-
-                e.currentTarget.form?.dispatchEvent(
-                  new CustomEvent("submit", { cancelable: true })
-                );
-                e.currentTarget.form?.requestSubmit();
               }}
-              type="button"
+              type="submit"
               loading={isPending}
             >
               <TrashIcon className="h-4 w-4" />
@@ -204,13 +193,7 @@ const Form = ({
               variant={"ghost"}
               className="hidden sm:block"
               tabIndex={-1}
-              onClick={(e) => {
-                e.currentTarget.form?.dispatchEvent(
-                  new CustomEvent("submit", { cancelable: true })
-                );
-                e.currentTarget.form?.requestSubmit();
-              }}
-              type="button"
+              type="submit"
               loading={isPending}
             >
               {t("form.button.save_edit.label")}
