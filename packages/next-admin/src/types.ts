@@ -545,8 +545,6 @@ export type MainLayoutProps = Pick<
   | "resourcesTitles"
   | "customPages"
   | "basePath"
-  | "message"
-  | "error"
   | "isAppDir"
   | "translations"
   | "locale"
