@@ -26,7 +26,6 @@ const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
         const messageObject = searchParams.get("message")
           ? JSON.parse(searchParams.get("message")!)
           : null;
-        console.log(messageObject);
         if (messageObject?.type) {
           setType(messageObject.type);
         }
