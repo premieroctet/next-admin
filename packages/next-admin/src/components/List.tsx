@@ -17,6 +17,7 @@ import {
 } from "../types";
 import { DataTable } from "./DataTable";
 import ListHeader from "./ListHeader";
+import Message from "./Message";
 import { Pagination } from "./Pagination";
 import TableRowsIndicator from "./TableRowsIndicator";
 import Button from "./radix/Button";
@@ -200,7 +201,9 @@ function List({
           onDelete={() => deleteItems(getSelectedRowsIds())}
           totalCount={total}
         />
-        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
+
+        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
+          <Message className="-mt-4 mb-4" />
           <DataTable
             resource={resource}
             data={data}

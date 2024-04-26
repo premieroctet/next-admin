@@ -95,13 +95,11 @@ export async function getPropsFromParams({
     resourcesTitles,
     basePath,
     customPages,
-    error,
-    message,
     title,
     sidebar,
     resourcesIcons,
     externalLinks,
-  } = getMainLayoutProps({ options, params, searchParams, isAppDir });
+  } = getMainLayoutProps({ options, params, isAppDir });
 
   const resourcesIdProperty = resources!.reduce(
     (acc, resource) => {
@@ -131,8 +129,6 @@ export async function getPropsFromParams({
     action: action
       ? createBoundServerAction({ schema, params }, action)
       : undefined,
-    message,
-    error,
     customPages,
     resourcesTitles,
     resourcesIdProperty,
@@ -307,14 +303,12 @@ export async function getPropsFromParams({
 type GetMainLayoutPropsParams = {
   options: NextAdminOptions;
   params?: string[];
-  searchParams?: { [key: string]: string | string[] | undefined };
   isAppDir?: boolean;
 };
 
 export const getMainLayoutProps = ({
   options,
   params,
-  searchParams,
   isAppDir = false,
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   const resources = getResources(options);
@@ -325,14 +319,6 @@ export const getMainLayoutProps = ({
     path: path,
     icon: options.pages![path as keyof typeof options.pages].icon,
   }));
-
-  let message = undefined;
-
-  try {
-    message = searchParams?.message
-      ? JSON.parse(searchParams.message as string)
-      : null;
-  } catch {}
 
   const resourcesTitles = resources.reduce(
     (acc, resource) => {
@@ -360,8 +346,6 @@ export const getMainLayoutProps = ({
     resource,
     basePath: options.basePath,
     customPages,
-    error: searchParams?.error as string,
-    message,
     resourcesTitles,
     isAppDir,
     title: options.title ?? "Admin",
