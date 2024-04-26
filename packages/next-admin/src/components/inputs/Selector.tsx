@@ -4,8 +4,6 @@ import { ChangeEvent, createRef, useEffect, useRef, useState } from "react";
 import useSearchPaginatedResource from "../../hooks/useSearchPaginatedResource";
 import { Enumeration } from "../../types";
 import LoaderRow from "../LoaderRow";
-import { useConfig } from "../../context/ConfigContext";
-import { useForm } from "../../context/FormContext";
 
 export type SelectorProps = {
   open: boolean;
@@ -18,9 +16,19 @@ export type SelectorProps = {
 export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
-  const loaderRowRef = useRef(null)
+  const loaderRowRef = useRef(null);
   const [isLastRowReached, setIsLastRowReached] = useState(false);
-  const { allOptions, isPending, runSearch, searchPage, setAllOptions, totalSearchedItems } = useSearchPaginatedResource({ modelName: name, initialOptions: options })
+  const {
+    allOptions,
+    isPending,
+    runSearch,
+    searchPage,
+    setAllOptions,
+    totalSearchedItems,
+  } = useSearchPaginatedResource({
+    resourceName: name,
+    initialOptions: options,
+  });
 
   useEffect(() => {
     if (open && searchInput.current) {

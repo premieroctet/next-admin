@@ -9,7 +9,6 @@ import clsx from "clsx";
 import { JSONSchema7 } from "json-schema";
 
 type Props = {
-  options?: Enumeration[];
   onChange: (data: unknown) => unknown;
   formData: any;
   name: string;
@@ -28,11 +27,6 @@ const MultiSelectWidget = (props: Props) => {
   };
 
   const selectedValues = formData?.map((item: any) => item?.value) ?? [];
-
-  const optionsLeft = options?.filter(
-    (option) =>
-      !formData?.find((item: Enumeration) => item.value === option.value)
-  );
 
   return (
     <div className="relative" ref={containerRef}>

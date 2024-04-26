@@ -6,8 +6,8 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-
 import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
 import { Field, ListData, ListDataItem, ModelIcon, ModelName, Permission } from "../types";
 import { slugify } from "../utils/tools";
 import EmptyState from "./EmptyState";
@@ -40,6 +40,7 @@ export function DataTable({
   icon,
 }: DataTableProps) {
   const { basePath } = useConfig();
+
   const columnsVisibility = columns.reduce(
     (acc, column) => {
       // @ts-expect-error
