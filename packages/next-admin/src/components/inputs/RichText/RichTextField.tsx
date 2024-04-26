@@ -45,7 +45,7 @@ const RichTextField = ({
 
   return (
     <Slate editor={editor} initialValue={initialValue} onChange={handleChange}>
-      <input type="hidden" name={props.name} value={value} />
+      <input type="hidden" name={props.name} value={value ?? ""} />
       <EditorContainer>
         <Toolbar>
           <Button

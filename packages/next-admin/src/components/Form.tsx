@@ -166,59 +166,11 @@ const Form = ({
 
     return (
       <div className="mt-4 flex justify-between space-x-2">
-        <div>
-          {edit && canDelete && (
-            <Button
-              variant="destructiveOutline"
-              className="flex gap-2"
-              tabIndex={-1}
-              onClick={(e) => {
-                if (!confirm("Are you sure to delete this ?")) {
-                  e.preventDefault();
-                  return;
-                }
-
-                const deletionInput = document.createElement("input");
-                deletionInput.type = "hidden";
-                deletionInput.name = "__admin_action";
-                deletionInput.value = "delete";
-
-                e.currentTarget.form?.appendChild(deletionInput);
-
-                e.currentTarget.form?.dispatchEvent(
-                  new CustomEvent("submit", { cancelable: true })
-                );
-                e.currentTarget.form?.requestSubmit();
-              }}
-              type="button"
-              loading={isPending}
-            >
-              <TrashIcon className="h-4 w-4" />
-              {t("form.button.delete.label")}
-            </Button>
-          )}
-        </div>
         {((edit && canEdit) || (!edit && canCreate)) && (
-          <div className="flex space-x-2">
+          <div className="order-2 flex space-x-2">
             <Button
               {...buttonProps}
-              variant={"ghost"}
-              className="hidden sm:block"
-              tabIndex={-1}
-              onClick={(e) => {
-                e.currentTarget.form?.dispatchEvent(
-                  new CustomEvent("submit", { cancelable: true })
-                );
-                e.currentTarget.form?.requestSubmit();
-              }}
-              type="button"
-              loading={isPending}
-            >
-              {t("form.button.save_edit.label")}
-            </Button>
-            <Button
-              {...buttonProps}
-              className="flex gap-2"
+              className="order-2 flex gap-2"
               type="submit"
               {...(edit
                 ? {
@@ -231,8 +183,39 @@ const Form = ({
               <CheckCircleIcon className="h-6 w-6" />
               {t("form.button.save.label")}
             </Button>
+            <Button
+              {...buttonProps}
+              variant={"ghost"}
+              className="order-1 hidden sm:block"
+              tabIndex={-1}
+              type="submit"
+              loading={isPending}
+            >
+              {t("form.button.save_edit.label")}
+            </Button>
           </div>
         )}
+        <div className="order-1">
+          {edit && canDelete && (
+            <Button
+              variant="destructiveOutline"
+              className="flex gap-2"
+              name="__admin_action"
+              value="delete"
+              tabIndex={-1}
+              onClick={(e) => {
+                if (!confirm("Are you sure to delete this ?")) {
+                  e.preventDefault();
+                }
+              }}
+              type="submit"
+              loading={isPending}
+            >
+              <TrashIcon className="h-4 w-4" />
+              {t("form.button.delete.label")}
+            </Button>
+          )}
+        </div>
       </div>
     );
   };
