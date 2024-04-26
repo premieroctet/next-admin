@@ -117,6 +117,7 @@ export const options: NextAdminOptions = {
       toString: (post) => `${post.title}`,
       title: "Posts",
       icon: "NewspaperIcon",
+      permissions: ["edit", "delete", "create"],
       list: {
         display: ["id", "title", "published", "author", "categories", "rate"],
         search: ["title", "content"],
@@ -134,7 +135,6 @@ export const options: NextAdminOptions = {
             format: "richtext-html",
           },
           categories: {
-            
             optionFormatter: (category) =>
               `${category.name} Cat.${category.id}`,
             display: "list",

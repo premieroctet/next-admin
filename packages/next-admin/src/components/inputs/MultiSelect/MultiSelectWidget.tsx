@@ -3,10 +3,11 @@ import clsx from "clsx";
 import { useRef } from "react";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
 import { useForm } from "../../../context/FormContext";
+import { useI18n } from "../../../context/I18nContext";
 import useCloseOnOutsideClick from "../../../hooks/useCloseOnOutsideClick";
 import { Enumeration, Field, ModelName } from "../../../types";
+import Button from "../../radix/Button";
 import { Selector } from "../Selector";
-import MultiSelectDisplayAdminList from "./MultiSelectDisplayAdminList";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectItem from "./MultiSelectItem";
 
@@ -23,6 +24,7 @@ const MultiSelectWidget = (props: Props) => {
   const formContext = useForm();
   const { formData, onChange, options, name, schema } = props;
   const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useI18n();
   useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
   const fieldOptions =
     formContext.options?.model?.[formContext.resource!]?.edit?.fields?.[
@@ -47,75 +49,85 @@ const MultiSelectWidget = (props: Props) => {
 
   return (
     <div className="relative" ref={containerRef}>
+      <input type="hidden" name={name} value={JSON.stringify(selectedValues)} />
+
       {displayMode === "select" && (
-        <>
-          <div className="relative">
-            <input
-              type="hidden"
-              name={name}
-              value={JSON.stringify(selectedValues)}
-            />
-            <div
-              className={clsx(
-                "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default ring-nextadmin-border-default flex min-h-[38px] w-full cursor-default appearance-none flex-wrap gap-x-1 gap-y-1 rounded-md border-0 border-gray-300 px-2 py-1.5 pr-10 text-sm placeholder-gray-500 shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 sm:leading-6",
-                {
-                  "cursor-not-allowed opacity-50 [&_*]:pointer-events-auto [&_*]:cursor-default":
-                    props.disabled,
-                }
-              )}
-              onClick={() => {
-                if (!props.disabled) {
-                  formContext.toggleOpen(name);
-                }
-              }}
-              aria-disabled={props.disabled}
-            >
-              {formData?.map(
-                (value: any, index: number) =>
-                  value && (
-                    <MultiSelectItem
-                      key={index}
-                      label={value.label}
-                      onRemoveClick={() => onRemoveClick(value.value)}
-                      deletable={!props.disabled}
-                    />
-                  )
-              )}
-            </div>
-            {!props.disabled && (
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-                <DoubleArrow />
-              </div>
+        <div className="relative">
+          <div
+            className={clsx(
+              "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default ring-nextadmin-border-default flex min-h-[38px] w-full cursor-default appearance-none flex-wrap gap-x-1 gap-y-1 rounded-md border-0 border-gray-300 px-2 py-1.5 pr-10 text-sm placeholder-gray-500 shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 sm:leading-6",
+              {
+                "cursor-not-allowed opacity-50 [&_*]:pointer-events-auto [&_*]:cursor-default":
+                  props.disabled,
+              }
+            )}
+            onClick={() => {
+              if (!props.disabled) {
+                formContext.toggleOpen(name);
+              }
+            }}
+            aria-disabled={props.disabled}
+          >
+            {formData?.map(
+              (value: any, index: number) =>
+                value && (
+                  <MultiSelectItem
+                    key={index}
+                    label={value.label}
+                    onRemoveClick={() => onRemoveClick(value.value)}
+                    deletable={!props.disabled}
+                  />
+                )
             )}
           </div>
-          <Selector
-            open={!!formContext.relationState?.[name]?.open!}
-            name={name}
-            options={optionsLeft?.length ? optionsLeft : undefined}
-            onChange={(option: Enumeration) => {
-              onChange([...(formData || []), option]);
-            }}
-            selectedOptions={selectedValues}
-          />
-        </>
+          {!props.disabled && (
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+              <DoubleArrow />
+            </div>
+          )}
+        </div>
       )}
       {displayMode === "list" && (
-        <MultiSelectDisplayList
-          formData={formData}
-          schema={schema}
-          name={name}
-          onChange={onChange}
-          initialOptions={options}
-        />
+        <div className="space-y-2">
+          <MultiSelectDisplayList
+            formData={formData}
+            schema={schema}
+            onRemoveClick={onRemoveClick}
+            deletable={!props.disabled}
+          />
+          <Button
+            onClick={() => {
+              if (!props.disabled) {
+                formContext.toggleOpen(name);
+              }
+            }}
+            aria-disabled={props.disabled}
+            type="button"
+            disabled={props.disabled}
+          >
+            {t("form.widgets.multiselect.select")}
+          </Button>
+        </div>
       )}
-      {displayMode === "admin-list" && (
+
+      <Selector
+        open={!!formContext.relationState?.[name]?.open!}
+        name={name}
+        options={optionsLeft?.length ? optionsLeft : undefined}
+        onChange={(option: Enumeration) => {
+          onChange([...(formData || []), option]);
+        }}
+        selectedOptions={selectedValues}
+      />
+
+      {/* {displayMode === "admin-list" && (
         <MultiSelectDisplayAdminList
           formData={formData}
           name={name}
           schema={schema}
           onChange={onChange}
         />
-      )}
+      )} */}
     </div>
   );
 };
