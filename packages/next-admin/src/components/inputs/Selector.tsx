@@ -8,12 +8,18 @@ import LoaderRow from "../LoaderRow";
 export type SelectorProps = {
   open: boolean;
   name: string;
-  onChange: (otpion: Enumeration) => void;
+  onChange: (option: Enumeration) => void;
   options?: Enumeration[];
   selectedOptions?: string[];
 };
 
-export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
+export const Selector = ({
+  open,
+  name,
+  onChange,
+  options,
+  selectedOptions,
+}: SelectorProps) => {
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
   const loaderRowRef = useRef(null);
@@ -28,6 +34,9 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
   } = useSearchPaginatedResource({
     resourceName: name,
     initialOptions: options,
+  });
+  const [optionsLeft, setOptionsLeft] = useState<Enumeration[]>(() => {
+    return allOptions.filter((item) => !selectedOptions?.includes(item.value));
   });
 
   useEffect(() => {
@@ -45,6 +54,12 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
       searchPage.current = 1;
     };
   }, [open]);
+
+  useEffect(() => {
+    setOptionsLeft(
+      allOptions.filter((item) => !selectedOptions?.includes(item.value))
+    );
+  }, [selectedOptions, allOptions]);
 
   const onSearchChange = debounce(async (e: ChangeEvent<HTMLInputElement>) => {
     // Options are pre-filled for enum, so we do a local search
@@ -102,7 +117,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
     if (
       offset === 0 &&
       !isPending &&
-      allOptions.length < totalSearchedItems.current
+      optionsLeft.length < totalSearchedItems.current
     ) {
       searchPage.current += 1;
       runSearch(currentQuery.current, false);
@@ -137,9 +152,9 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
               />
             </div>
           </div>
-          {allOptions &&
-            allOptions.length > 0 &&
-            allOptions?.map((option, index: number) => (
+          {optionsLeft &&
+            optionsLeft.length > 0 &&
+            optionsLeft?.map((option, index: number) => (
               <div
                 key={index}
                 className="dark:bg-dark-nextadmin-background-subtle dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-brand-default cursor-pointer px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
@@ -151,7 +166,7 @@ export const Selector = ({ open, name, onChange, options }: SelectorProps) => {
               </div>
             ))}
 
-          {allOptions && allOptions.length === 0 && !isPending ? (
+          {optionsLeft && optionsLeft.length === 0 && !isPending ? (
             <div className="dark:bg-dark-nextadmin-background-subtle dark:text-dark-nextadmin-content-inverted px-3 py-2 text-sm text-gray-700">
               No results found
             </div>

@@ -51,7 +51,7 @@ const MultiSelectDisplayAdminList = ({
           rowSelection={{}}
         />
         <DialogTrigger asChild className="mt-2">
-          <Button>{t("form.widgets.multiselect.update")}</Button>
+          <Button>{t("form.widgets.multiselect.select")}</Button>
         </DialogTrigger>
         <DialogPortal>
           <DialogOverlay />

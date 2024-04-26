@@ -95,6 +95,7 @@ const MultiSelectWidget = (props: Props) => {
             onChange={(option: Enumeration) => {
               onChange([...(formData || []), option]);
             }}
+            selectedOptions={selectedValues}
           />
         </>
       )}

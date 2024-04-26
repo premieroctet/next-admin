@@ -134,9 +134,10 @@ export const options: NextAdminOptions = {
             format: "richtext-html",
           },
           categories: {
+            
             optionFormatter: (category) =>
               `${category.name} Cat.${category.id}`,
-            display: "admin-list",
+            display: "list",
           },
         },
         display: [
