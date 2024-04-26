@@ -45,6 +45,7 @@ import { getSchemas } from "../utils/jsonSchema";
 import { formatLabel, slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
+import Message from "./Message";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
@@ -520,7 +521,8 @@ const Form = ({
           />
         )}
       </div>
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
+        <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <FormProvider
             initialValue={data}

@@ -113,8 +113,6 @@ export function NextAdmin({
         resourcesTitles={resourcesTitles}
         customPages={customPages}
         basePath={basePath}
-        message={message}
-        error={error}
         isAppDir={isAppDir}
         translations={translations}
         locale={locale}

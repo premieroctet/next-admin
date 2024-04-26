@@ -6,7 +6,6 @@ import { I18nProvider } from "../context/I18nContext";
 import { defaultTranslations } from "../i18n";
 import { MainLayoutProps } from "../types";
 import Menu from "./Menu";
-import Message from "./Message";
 
 type Props = MainLayoutProps;
 
@@ -16,8 +15,6 @@ export const MainLayout = ({
   resourcesTitles,
   customPages,
   basePath,
-  message,
-  error,
   children,
   isAppDir,
   locale,
@@ -53,13 +50,7 @@ export const MainLayout = ({
               externalLinks={externalLinks}
               forceColorScheme={options?.forceColorScheme}
             />
-            <main className="h-full lg:pl-72">
-              {message && (
-                <Message message={message.content} type={message.type} />
-              )}
-              {error && <Message message={error} type="error" />}
-              {children}
-            </main>
+            <main className="h-full lg:pl-72">{children}</main>
           </div>
         </ColorSchemeProvider>
       </I18nProvider>
