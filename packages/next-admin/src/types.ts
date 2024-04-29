@@ -97,6 +97,21 @@ export type ListFieldsOptions<T extends ModelName> = {
   };
 };
 
+export enum LogicalOperator {
+  And = "AND",
+  Or = "OR",
+  Not = "NOT",
+}
+
+export type Filter<T extends ModelName> =
+  Prisma.TypeMap["model"][T]["operations"]["findMany"]["args"]["where"];
+
+export type FilterWrapper<T extends ModelName> = {
+  name: string;
+  active?: boolean;
+  value: Filter<T>;
+};
+
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     /**
@@ -221,6 +236,10 @@ export type ListOptions<T extends ModelName> = {
      */
     direction?: Prisma.SortOrder;
   };
+  /**
+   * define a set of filters that user can choose in list
+   */
+  filters?: FilterWrapper<T>[];
 };
 
 export type EditOptions<T extends ModelName> = {

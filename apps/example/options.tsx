@@ -17,6 +17,17 @@ export const options: NextAdminOptions = {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email", "role"],
         copy: ["email"],
+        filters: [
+          {
+            name: "Poster",
+            active: true,
+            value: {
+              email: {
+                startsWith: "user2"
+              }
+            },
+          },
+        ],
         fields: {
           role: {
             formatter: (role) => {

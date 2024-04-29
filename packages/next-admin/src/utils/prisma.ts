@@ -4,6 +4,7 @@ import {
   EditOptions,
   Enumeration,
   Field,
+  Filter,
   ListOptions,
   ModelName,
   NextAdminContext,
@@ -23,9 +24,10 @@ import { capitalize, isScalar, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
   fieldsFiltered?: Prisma.DMMF.Field[],
-  search?: string
+  search?: string,
+  otherFilters?: Filter<ModelName>[]
 ) => {
-  return search
+  const searchFilter = search
     ? {
         OR: fieldsFiltered
           ?.filter((field) => {
@@ -66,6 +68,10 @@ export const createWherePredicate = (
           .filter(Boolean),
       }
     : {};
+
+    const externalFilters = otherFilters ?? []
+
+  return { AND: [...externalFilters, searchFilter] };
 };
 
 export const preparePrismaListRequest = <M extends ModelName>(
@@ -80,6 +86,9 @@ export const preparePrismaListRequest = <M extends ModelName>(
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
   const fieldSort = options?.model?.[resource]?.list?.defaultSort;
+  const fieldFilters = options?.model?.[resource]?.list?.filters?.map(
+    (filter) => filter.value
+  );
 
   let orderBy: Order<typeof resource> = {};
   const sortParam =
@@ -120,7 +129,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
     select = selectPayloadForModel(resource, undefined, "object");
   }
 
-  where = createWherePredicate(fieldsFiltered, search);
+  where = createWherePredicate(fieldsFiltered, search, fieldFilters);
 
   return {
     select,
