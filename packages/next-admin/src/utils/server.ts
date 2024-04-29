@@ -250,8 +250,7 @@ export const transformData = <M extends ModelName>(
             !!editOptions.fields?.[key as Field<M>] &&
             "display" in editOptions.fields[key as Field<M>]! &&
             // @ts-expect-error
-            editOptions.fields[key as keyof ObjectField<M>]!.display ===
-              "admin-list"
+            editOptions.fields[key as keyof ObjectField<M>]!.display === "table"
           ) {
             return {
               data: item,
@@ -367,7 +366,6 @@ export const findRelationInData = (
       });
     }
   });
-
   return data;
 };
 

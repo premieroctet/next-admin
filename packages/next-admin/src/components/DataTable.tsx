@@ -1,3 +1,4 @@
+import { XMarkIcon } from "@heroicons/react/24/outline";
 import {
   ColumnDef,
   OnChangeFn,
@@ -7,8 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useConfig } from "../context/ConfigContext";
-import { useI18n } from "../context/I18nContext";
-import { Field, ListData, ListDataItem, ModelIcon, ModelName, Permission } from "../types";
+import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
 import { slugify } from "../utils/tools";
 import EmptyState from "./EmptyState";
 import {
@@ -28,6 +28,9 @@ interface DataTableProps {
   rowSelection: RowSelectionState;
   setRowSelection?: OnChangeFn<RowSelectionState>;
   icon?: ModelIcon;
+  editing?: boolean;
+  onRemoveClick?: (value: any) => void;
+  deletable?: boolean;
 }
 
 export function DataTable({
@@ -38,6 +41,8 @@ export function DataTable({
   rowSelection,
   setRowSelection,
   icon,
+  onRemoveClick,
+  deletable = false,
 }: DataTableProps) {
   const { basePath } = useConfig();
 
@@ -45,7 +50,9 @@ export function DataTable({
     (acc, column) => {
       // @ts-expect-error
       const key = column.accessorKey as Field<typeof resource>;
-      acc[key] = Object.keys(data[0]).includes(key);
+      if (data[0]) {
+        acc[key] = Object.keys(data[0]).includes(key);
+      }
       return acc;
     },
     {} as Record<Field<typeof resource>, boolean>
@@ -94,7 +101,7 @@ export function DataTable({
             ))}
           </TableHeader>
         )}
-        <TableBody>
+        <TableBody className="">
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -121,6 +128,19 @@ export function DataTable({
                     {flexRender(cell.column.columnDef.cell, cell.getContext())}
                   </TableCell>
                 ))}
+                {deletable && onRemoveClick && (
+                  <TableCell className="flex justify-end">
+                    <XMarkIcon
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        return onRemoveClick(
+                          row.original[modelIdProperty].value
+                        );
+                      }}
+                      className="h-5 w-5 cursor-pointer text-gray-400"
+                    />
+                  </TableCell>
+                )}
               </TableRow>
             ))
           ) : (

@@ -140,10 +140,12 @@ export type EditFieldsOptions<T extends ModelName> = {
         /**
          * Property to indicate how to display the multi select widget :
          * - `list`: displayed as a list of elements that has a link and a delete button
-         * - `admin-list`: displayed as the table list for a resource. Requires to have display options configured for the related model
+         * - `table`: displayed as the table list for a resource. Requires to have display options configured for the related model
          * - `select`: displayed as a multi select dropdown
+         *
+         * @default "select"
          */
-        display?: "list" | "admin-list" | "select";
+        display?: "list" | "table" | "select";
       }
     : {});
 };
@@ -445,11 +447,7 @@ export type Select<M extends ModelName> = {
 export type Enumeration = {
   label: string;
   value: string;
-};
-
-export type DataEnumeration = {
-  data: any;
-  value: string;
+  data?: any;
 };
 
 export type PrismaListRequest<M extends ModelName> = {
@@ -535,7 +533,7 @@ export type AdminComponentProps = {
   searchPaginatedResourceAction?: (
     params: SearchPaginatedResourceParams
   ) => Promise<{
-    data: Enumeration[]
+    data: Enumeration[];
     total: number;
     error: string | null;
   }>;

@@ -1,7 +1,7 @@
 import { $Enums, Prisma, PrismaClient } from "@prisma/client";
+import _ from "lodash";
 import { ITEMS_PER_PAGE } from "../config";
 import {
-  DataEnumeration,
   EditOptions,
   Enumeration,
   Field,
@@ -155,26 +155,10 @@ export const optionsFromResource = async ({
   const { data: dataItems, total, error } = data;
   const { resource } = args;
   const idProperty = getModelIdProperty(resource);
-
-  if (
-    args.options?.model?.[originResource]?.edit?.fields?.[
-      property as Field<typeof originResource>
-      // @ts-expect-error
-    ]?.display === "admin-list"
-  ) {
-    return {
-      data: mapDataList({ ...args, fetchData: dataItems }).map(
-        (item): DataEnumeration => {
-          return {
-            data: item,
-            value: item[idProperty].value,
-          };
-        }
-      ),
-      total,
-      error,
-    };
-  }
+  const dataTableItems = mapDataList({
+    ...args,
+    fetchData: _.cloneDeep(dataItems),
+  });
 
   const toStringModel = getToStringForRelations(
     originResource,
@@ -184,9 +168,13 @@ export const optionsFromResource = async ({
   );
   return {
     data: dataItems.map((item): Enumeration => {
+      const dataTableItem = dataTableItems.find(
+        (dataTableItem) => dataTableItem[idProperty].value === item[idProperty]
+      );
       return {
         label: toStringModel ? toStringModel(item) : item[idProperty],
         value: item[idProperty],
+        data: dataTableItem,
       };
     }),
     total,
@@ -311,7 +299,6 @@ export const mapDataList = ({
       }
     });
   });
-
   return data;
 };
 

@@ -8,6 +8,7 @@ import useCloseOnOutsideClick from "../../../hooks/useCloseOnOutsideClick";
 import { Enumeration, Field, ModelName } from "../../../types";
 import Button from "../../radix/Button";
 import { Selector } from "../Selector";
+import MultiSelectDisplayAdminList from "./MultiSelectDisplayAdminList";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectItem from "./MultiSelectItem";
 
@@ -50,7 +51,6 @@ const MultiSelectWidget = (props: Props) => {
   return (
     <div className="relative" ref={containerRef}>
       <input type="hidden" name={name} value={JSON.stringify(selectedValues)} />
-
       {displayMode === "select" && (
         <div className="relative">
           <div
@@ -109,6 +109,28 @@ const MultiSelectWidget = (props: Props) => {
           </Button>
         </div>
       )}
+      {displayMode === "table" && (
+        <div className="space-y-2">
+          <MultiSelectDisplayAdminList
+            formData={formData}
+            schema={schema}
+            onRemoveClick={onRemoveClick}
+            deletable={!props.disabled}
+          />
+          <Button
+            onClick={() => {
+              if (!props.disabled) {
+                formContext.toggleOpen(name);
+              }
+            }}
+            aria-disabled={props.disabled}
+            type="button"
+            disabled={props.disabled}
+          >
+            {t("form.widgets.multiselect.select")}
+          </Button>
+        </div>
+      )}
 
       <Selector
         open={!!formContext.relationState?.[name]?.open!}
@@ -119,15 +141,6 @@ const MultiSelectWidget = (props: Props) => {
         }}
         selectedOptions={selectedValues}
       />
-
-      {/* {displayMode === "admin-list" && (
-        <MultiSelectDisplayAdminList
-          formData={formData}
-          name={name}
-          schema={schema}
-          onChange={onChange}
-        />
-      )} */}
     </div>
   );
 };

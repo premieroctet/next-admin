@@ -224,11 +224,11 @@ export async function getPropsFromParams({
 
             if (
               // @ts-expect-error
-              edit.fields?.[key as Field<ModelName>]?.display === "admin-list"
+              edit.fields?.[key as Field<ModelName>]?.display === "table"
             ) {
               if (!relatedResourceOptions?.display) {
                 throw new Error(
-                  `'admin-list' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
+                  `'table' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
                 );
               }
 
@@ -258,7 +258,7 @@ export async function getPropsFromParams({
             if (fieldTypeDmmf && dmmfSchema) {
               if (
                 // @ts-expect-error
-                edit.fields?.[key as Field<ModelName>]?.display === "admin-list"
+                edit.fields?.[key as Field<ModelName>]?.display === "table"
               ) {
                 data[key] = mapDataList({
                   context: { locale },
