@@ -1,5 +1,5 @@
 import { $Enums, Prisma, PrismaClient } from "@prisma/client";
-import _ from "lodash";
+import { cloneDeep } from "lodash";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   EditOptions,
@@ -157,7 +157,7 @@ export const optionsFromResource = async ({
   const idProperty = getModelIdProperty(resource);
   const dataTableItems = mapDataList({
     ...args,
-    fetchData: _.cloneDeep(dataItems),
+    fetchData: cloneDeep(dataItems),
   });
 
   const toStringModel = getToStringForRelations(

@@ -101,7 +101,7 @@ export function DataTable({
             ))}
           </TableHeader>
         )}
-        <TableBody className="">
+        <TableBody>
           {table.getRowModel().rows?.length ? (
             table.getRowModel().rows.map((row) => (
               <TableRow
@@ -137,7 +137,7 @@ export function DataTable({
                           row.original[modelIdProperty].value
                         );
                       }}
-                      className="h-5 w-5 cursor-pointer text-gray-400"
+                      className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer"
                     />
                   </TableCell>
                 )}

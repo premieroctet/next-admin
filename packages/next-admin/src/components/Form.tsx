@@ -125,7 +125,8 @@ const Form = ({
     !modelOptions?.permissions ||
     modelOptions?.permissions?.includes(Permission.EDIT);
   const canCreate =
-    !modelOptions?.permissions || modelOptions?.permissions?.includes(Permission.CREATE);
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.CREATE);
   const disabledFields = modelOptions?.edit?.fields
     ? (Object.entries(modelOptions?.edit?.fields)
         .map(

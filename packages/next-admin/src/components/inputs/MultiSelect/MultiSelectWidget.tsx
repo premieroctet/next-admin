@@ -8,7 +8,7 @@ import useCloseOnOutsideClick from "../../../hooks/useCloseOnOutsideClick";
 import { Enumeration, Field, ModelName } from "../../../types";
 import Button from "../../radix/Button";
 import { Selector } from "../Selector";
-import MultiSelectDisplayAdminList from "./MultiSelectDisplayAdminList";
+import MultiSelectDisplayTable from "./MultiSelectDisplayTable";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectItem from "./MultiSelectItem";
 
@@ -111,7 +111,7 @@ const MultiSelectWidget = (props: Props) => {
       )}
       {displayMode === "table" && (
         <div className="space-y-2">
-          <MultiSelectDisplayAdminList
+          <MultiSelectDisplayTable
             formData={formData}
             schema={schema}
             onRemoveClick={onRemoveClick}

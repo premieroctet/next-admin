@@ -11,7 +11,7 @@ type Props = {
   deletable: boolean;
 };
 
-const MultiSelectDisplayAdminList = ({
+const MultiSelectDisplayTable = ({
   formData,
   schema,
   deletable,
@@ -26,18 +26,20 @@ const MultiSelectDisplayAdminList = ({
     resource: schema.items?.relation,
   });
 
-  return formData?.map((data) => data.data).length > 0 && (
-    <DataTable
-      columns={columns}
-      data={formData?.map((data) => data.data)}
-      // @ts-expect-error
-      resource={schema.items?.relation}
-      resourcesIdProperty={resourcesIdProperty!}
-      rowSelection={{}}
-      deletable={deletable}
-      onRemoveClick={onRemoveClick}
-    />
+  return (
+    formData?.map((data) => data.data).length > 0 && (
+      <DataTable
+        columns={columns}
+        data={formData?.map((data) => data.data)}
+        // @ts-expect-error
+        resource={schema.items?.relation}
+        resourcesIdProperty={resourcesIdProperty!}
+        rowSelection={{}}
+        deletable={deletable}
+        onRemoveClick={onRemoveClick}
+      />
+    )
   );
 };
 
-export default MultiSelectDisplayAdminList;
+export default MultiSelectDisplayTable;
