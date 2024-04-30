@@ -314,7 +314,7 @@ export const findRelationInData = (
         dmmfPropertyRelationToFields!.length > 0
       ) {
         const idProperty = getModelIdProperty(dmmfProperty.type as ModelName);
-        data.map((item) => {
+        data.forEach((item) => {
           if (item[dmmfPropertyName]) {
             item[dmmfPropertyName] = {
               type: "link",
@@ -329,7 +329,7 @@ export const findRelationInData = (
           return item;
         });
       } else {
-        data.map((item) => {
+        data.forEach((item) => {
           if (item[dmmfPropertyName]) {
             item[dmmfPropertyName] = {
               type: "count",
@@ -346,7 +346,7 @@ export const findRelationInData = (
       dmmfPropertyType === "Decimal" ||
       dmmfPropertyType === "BigInt"
     ) {
-      data.map((item) => {
+      data.forEach((item) => {
         if (item[dmmfProperty.name]) {
           if (dmmfPropertyType === "DateTime") {
             item[dmmfProperty.name] = {
