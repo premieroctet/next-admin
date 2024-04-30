@@ -422,7 +422,10 @@ export type Body<F> = {
 };
 
 export type Order<M extends ModelName> = {
-  [P in Field<M>]?: Prisma.SortOrder | { _count: Prisma.SortOrder };
+  [P in Field<M>]?:
+    | Prisma.SortOrder
+    | { _count: Prisma.SortOrder }
+    | { [key: string]: Prisma.SortOrder };
 };
 
 export type Select<M extends ModelName> = {

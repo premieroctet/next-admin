@@ -96,13 +96,19 @@ export const preparePrismaListRequest = <M extends ModelName>(
   if (orderValue in Prisma.SortOrder) {
     if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
       orderBy[sortParam] = orderValue;
-    } else if (
-      modelFieldSortParam?.kind === "object" &&
-      modelFieldSortParam.isList
-    ) {
-      orderBy[modelFieldSortParam.name as Field<M>] = {
-        _count: orderValue,
-      };
+    } else if (modelFieldSortParam?.kind === "object") {
+      if (modelFieldSortParam.isList) {
+        orderBy[modelFieldSortParam.name as Field<M>] = {
+          _count: orderValue,
+        };
+      } else {
+        const resourceIdProperty = getModelIdProperty(
+          modelFieldSortParam.type as ModelName
+        );
+        orderBy[modelFieldSortParam.name as Field<M>] = {
+          [resourceIdProperty]: orderValue,
+        };
+      }
     }
   }
 
