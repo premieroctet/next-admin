@@ -70,7 +70,7 @@ export const createWherePredicate = (
       }
     : {};
 
-    const externalFilters = otherFilters ?? []
+  const externalFilters = otherFilters ?? [];
 
   return { AND: [...externalFilters, searchFilter] };
 };
@@ -78,18 +78,27 @@ export const createWherePredicate = (
 export const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
-  options?: NextAdminOptions
+  options?: NextAdminOptions,
+  skipFilters: boolean = false
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
+  const filtersParams = skipFilters ? [] : JSON.parse(searchParams.get("filters")) as string[];
   const page = Number(searchParams.get("page")) || 1;
   const itemsPerPage =
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
   const fieldSort = options?.model?.[resource]?.list?.defaultSort;
-  const fieldFilters = options?.model?.[resource]?.list?.filters?.map(
-    (filter) => filter.value
-  );
+
+  const fieldFilters = options?.model?.[resource]?.list?.filters
+    ?.filter((filter) => {
+      if (Array.isArray(filtersParams)) {
+        return filtersParams.includes(filter.name);
+      } else {
+        return filter.active;
+      }
+    })
+    ?.map((filter) => filter.value);
 
   let orderBy: Order<typeof resource> = {};
   const sortParam =
@@ -166,7 +175,7 @@ export const optionsFromResource = async ({
   property,
   ...args
 }: OptionsFromResourceParams) => {
-  const data = await fetchDataList(args);
+  const data = await fetchDataList(args, true);
   const { data: dataItems, total, error } = data;
   const { resource } = args;
   const idProperty = getModelIdProperty(resource);
@@ -209,11 +218,12 @@ export const fetchDataList = async ({
   resource,
   options,
   searchParams,
-}: FetchDataListParams) => {
+}: FetchDataListParams, skipFilters: boolean = false) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,
-    options
+    options,
+    skipFilters
   );
   let data: any[] = [];
   let total: number;

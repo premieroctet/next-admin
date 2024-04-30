@@ -107,8 +107,18 @@ export type Filter<T extends ModelName> =
   Prisma.TypeMap["model"][T]["operations"]["findMany"]["args"]["where"];
 
 export type FilterWrapper<T extends ModelName> = {
+  /**
+   * a string to identify filter, must be unique
+   */
   name: string;
+  /**
+   * a boolean to set filter as default active on list page
+   */
   active?: boolean;
+  /**
+   * a Prisma filter, equivalent to `where` clause in Prisma queries
+   * @link https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators
+   */
   value: Filter<T>;
 };
 
@@ -246,7 +256,7 @@ export type ListOptions<T extends ModelName> = {
     direction?: Prisma.SortOrder;
   };
   /**
-   * define a set of filters that user can choose in list
+   * define a set of Prisma filters that user can choose in list
    */
   filters?: FilterWrapper<T>[];
 };
