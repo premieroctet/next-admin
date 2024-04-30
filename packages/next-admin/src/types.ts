@@ -152,6 +152,15 @@ export type EditFieldsOptions<T extends ModelName> = {
          * @returns
          */
         optionFormatter?: (item: ModelFromProperty<T, P>) => string;
+        /**
+         * Property to indicate how to display the multi select widget :
+         * - `list`: displayed as a list of elements that has a link and a delete button
+         * - `table`: displayed as the table list for a resource. Requires to have display options configured for the related model
+         * - `select`: displayed as a multi select dropdown
+         *
+         * @default "select"
+         */
+        display?: "list" | "table" | "select";
       }
     : {});
 };
@@ -441,7 +450,10 @@ export type Body<F> = {
 };
 
 export type Order<M extends ModelName> = {
-  [P in Field<M>]?: Prisma.SortOrder | { _count: Prisma.SortOrder };
+  [P in Field<M>]?:
+    | Prisma.SortOrder
+    | { _count: Prisma.SortOrder }
+    | { [key: string]: Prisma.SortOrder };
 };
 
 export type Select<M extends ModelName> = {
@@ -457,6 +469,7 @@ export type Select<M extends ModelName> = {
 export type Enumeration = {
   label: string;
   value: string;
+  data?: any;
 };
 
 export type PrismaListRequest<M extends ModelName> = {

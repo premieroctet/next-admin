@@ -1,15 +1,14 @@
 import { Transition } from "@headlessui/react";
 import debounce from "lodash/debounce";
 import { ChangeEvent, createRef, useEffect, useRef, useState } from "react";
-import { useConfig } from "../../context/ConfigContext";
-import { useForm } from "../../context/FormContext";
+import useSearchPaginatedResource from "../../hooks/useSearchPaginatedResource";
 import { Enumeration } from "../../types";
 import LoaderRow from "../LoaderRow";
 
 export type SelectorProps = {
   open: boolean;
   name: string;
-  onChange: (otpion: Enumeration) => void;
+  onChange: (option: Enumeration) => void;
   options?: Enumeration[];
   selectedOptions?: string[];
 };
@@ -21,19 +20,24 @@ export const Selector = ({
   options,
   selectedOptions,
 }: SelectorProps) => {
-  const { basePath, isAppDir } = useConfig();
-  const { searchPaginatedResourceAction, dmmfSchema, resource } = useForm();
-  const [isPending, setIsPending] = useState(false);
-  const [fetchedOptions, setFetchedOptions] = useState<Enumeration[]>(
-    options ?? []
-  );
-  const [allOptions, setAllOptions] = useState<Enumeration[]>(options ?? []);
-  const totalSearchedItems = useRef(0);
-  const searchPage = useRef(1);
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
+  const loaderRowRef = useRef(null);
   const [isLastRowReached, setIsLastRowReached] = useState(false);
-  const loaderRowRef = useRef<HTMLDivElement>(null);
+  const {
+    allOptions,
+    isPending,
+    runSearch,
+    searchPage,
+    setAllOptions,
+    totalSearchedItems,
+  } = useSearchPaginatedResource({
+    resourceName: name,
+    initialOptions: options,
+  });
+  const [optionsLeft, setOptionsLeft] = useState<Enumeration[]>(() => {
+    return allOptions.filter((item) => !selectedOptions?.includes(item.value));
+  });
 
   useEffect(() => {
     if (open && searchInput.current) {
@@ -43,7 +47,7 @@ export const Selector = ({
 
   useEffect(() => {
     if (open && !options) {
-      runSearch(true);
+      runSearch(currentQuery.current, true);
     }
 
     return () => {
@@ -52,80 +56,10 @@ export const Selector = ({
   }, [open]);
 
   useEffect(() => {
-    setAllOptions(
-      fetchedOptions.filter((item) => !selectedOptions?.includes(item.value))
+    setOptionsLeft(
+      allOptions.filter((item) => !selectedOptions?.includes(item.value))
     );
-  }, [selectedOptions, fetchedOptions]);
-
-  const runSearch = async (resetOptions = true) => {
-    const perPage = 25;
-    const query = currentQuery.current;
-
-    const fieldFromDmmf = dmmfSchema?.find((model) => model.name === name);
-
-    if (!fieldFromDmmf) {
-      return;
-    }
-
-    const model = fieldFromDmmf.type;
-
-    try {
-      setIsPending(true);
-      if (isAppDir) {
-        const response = await searchPaginatedResourceAction?.({
-          originModel: resource!,
-          property: name,
-          model,
-          query,
-          page: searchPage.current,
-          perPage,
-        });
-
-        if (response && !response.error) {
-          setFetchedOptions((old) => {
-            if (resetOptions) {
-              return response.data;
-            } else {
-              return [...old, ...response.data];
-            }
-          });
-          totalSearchedItems.current = response.total;
-        }
-      } else {
-        const response = await fetch(`${basePath}/api/options`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            originModel: resource!,
-            property: name,
-            model,
-            query,
-            page: searchPage.current,
-            perPage,
-          }),
-        });
-
-        if (response.ok) {
-          const responseJson = await response.json();
-
-          if (!responseJson.error) {
-            setFetchedOptions((old) => {
-              if (resetOptions) {
-                return responseJson.data;
-              }
-
-              return [...old, ...responseJson.data];
-            });
-            totalSearchedItems.current = responseJson.total;
-          }
-        }
-      }
-    } finally {
-      setIsPending(false);
-    }
-  };
+  }, [selectedOptions, allOptions]);
 
   const onSearchChange = debounce(async (e: ChangeEvent<HTMLInputElement>) => {
     // Options are pre-filled for enum, so we do a local search
@@ -134,14 +68,14 @@ export const Selector = ({
       const filteredOptions = options.filter((option) =>
         option.label.toLowerCase().includes(query)
       );
-      setFetchedOptions(filteredOptions);
+      setAllOptions(filteredOptions);
       return;
     }
 
     searchPage.current = 1;
     currentQuery.current = e.target.value;
     setIsLastRowReached(false);
-    runSearch(true);
+    runSearch(currentQuery.current, true);
   }, 300);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -183,10 +117,10 @@ export const Selector = ({
     if (
       offset === 0 &&
       !isPending &&
-      allOptions.length < totalSearchedItems.current
+      optionsLeft.length < totalSearchedItems.current
     ) {
       searchPage.current += 1;
-      runSearch(false);
+      runSearch(currentQuery.current, false);
     }
   };
 
@@ -218,9 +152,9 @@ export const Selector = ({
               />
             </div>
           </div>
-          {allOptions &&
-            allOptions.length > 0 &&
-            allOptions?.map((option, index: number) => (
+          {optionsLeft &&
+            optionsLeft.length > 0 &&
+            optionsLeft?.map((option, index: number) => (
               <div
                 key={index}
                 className="dark:bg-dark-nextadmin-background-subtle dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-brand-default cursor-pointer px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900"
@@ -232,7 +166,7 @@ export const Selector = ({
               </div>
             ))}
 
-          {allOptions && allOptions.length === 0 && !isPending ? (
+          {optionsLeft && optionsLeft.length === 0 && !isPending ? (
             <div className="dark:bg-dark-nextadmin-background-subtle dark:text-dark-nextadmin-content-inverted px-3 py-2 text-sm text-gray-700">
               No results found
             </div>

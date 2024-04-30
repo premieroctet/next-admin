@@ -1,4 +1,5 @@
 import { Decimal } from "@prisma/client/runtime/library";
+import { any } from "jest-mock-extended";
 import { getMappedDataList, optionsFromResource } from "../utils/prisma";
 import { options, prismaMock } from "./singleton";
 
@@ -88,6 +89,7 @@ describe("optionsFromResource", () => {
       data: postData.map((post) => ({
         label: post.title,
         value: post.id,
+        data: any(Object),
       })),
       total: postData.length,
       error: null,

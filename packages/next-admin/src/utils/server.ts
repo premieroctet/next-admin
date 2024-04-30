@@ -245,10 +245,24 @@ export const transformData = <M extends ModelName>(
         options
       );
       if (Array.isArray(data[key])) {
-        acc[key] = data[key].map((item: any) => ({
-          label: toStringForRelations(item),
-          value: item[modelRelationIdField],
-        }));
+        acc[key] = data[key].map((item: any) => {
+          if (
+            !!editOptions.fields?.[key as Field<M>] &&
+            "display" in editOptions.fields[key as Field<M>]! &&
+            // @ts-expect-error
+            editOptions.fields[key as keyof ObjectField<M>]!.display === "table"
+          ) {
+            return {
+              data: item,
+              value: item[modelRelationIdField].value,
+            };
+          }
+
+          return {
+            label: toStringForRelations(item),
+            value: item[modelRelationIdField],
+          };
+        });
       } else {
         acc[key] = data[key]
           ? {
@@ -283,7 +297,7 @@ export const transformData = <M extends ModelName>(
  *
  * @returns data
  * */
-export const findRelationInData = async (
+export const findRelationInData = (
   data: any[],
   dmmfSchema?: Prisma.DMMF.Field[]
 ) => {
@@ -300,7 +314,7 @@ export const findRelationInData = async (
         dmmfPropertyRelationToFields!.length > 0
       ) {
         const idProperty = getModelIdProperty(dmmfProperty.type as ModelName);
-        data.map((item) => {
+        data.forEach((item) => {
           if (item[dmmfPropertyName]) {
             item[dmmfPropertyName] = {
               type: "link",
@@ -315,7 +329,7 @@ export const findRelationInData = async (
           return item;
         });
       } else {
-        data.map((item) => {
+        data.forEach((item) => {
           if (item[dmmfPropertyName]) {
             item[dmmfPropertyName] = {
               type: "count",
@@ -332,7 +346,7 @@ export const findRelationInData = async (
       dmmfPropertyType === "Decimal" ||
       dmmfPropertyType === "BigInt"
     ) {
-      data.map((item) => {
+      data.forEach((item) => {
         if (item[dmmfProperty.name]) {
           if (dmmfPropertyType === "DateTime") {
             item[dmmfProperty.name] = {
@@ -352,7 +366,6 @@ export const findRelationInData = async (
       });
     }
   });
-
   return data;
 };
 
