@@ -241,7 +241,7 @@ export const getMappedDataList = async ({
 
   data.forEach((item, index) => {
     Object.keys(item).forEach((key) => {
-      let itemValue;
+      let itemValue = null;
       const model = capitalize(key) as ModelName;
       const idProperty = getModelIdProperty(model);
       if (typeof item[key] === "object" && item[key] !== null) {
@@ -274,7 +274,7 @@ export const getMappedDataList = async ({
         appDir &&
         key in listFields &&
         listFields[key as keyof typeof listFields]?.formatter &&
-        !!itemValue
+        itemValue !== null
       ) {
         item[key].__nextadmin_formatted = listFields[
           key as keyof typeof listFields

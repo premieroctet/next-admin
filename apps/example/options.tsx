@@ -126,6 +126,11 @@ export const options: NextAdminOptions = {
               return <strong>{author.name}</strong>;
             },
           },
+          published: {
+            formatter: (value: boolean) => {
+              return value ? "Published" : "Unpublished";
+            },
+          },
         },
       },
       edit: {
