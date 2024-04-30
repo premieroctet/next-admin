@@ -1,5 +1,25 @@
 # @premieroctet/next-admin
 
+## 4.1.0
+
+### Minor Changes
+
+- 31685cb: feat: add possibility to disable fields
+- ec6bf9f: Add display for relation fields
+
+### Patch Changes
+
+- 8621043: Allow permissions to model ('create', 'edit', 'delete') (#222)
+- 33dd15b: fix: sort many-to-one relationship in list (#248)
+- 41cdf6e: fix: formatter on boolean fields (#249)
+- 07a076e: - Remove dynamic metadata from appRouter
+  - `suppressHydrationWarning` on html tag in example
+  - Remove manual submission on form
+  - Add empty string as default value for RichTextEditor
+- afe70ec: - Move alert message
+  - Fix reponsive style
+- 0a2f3e8: Fix dropdown - filter with non-selected value only (#236)
+
 ## 4.0.0
 
 ### Major Changes
