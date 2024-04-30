@@ -20,6 +20,7 @@ export const defaultTranslations: Translations = {
   "form.widgets.file_upload.label": "Choose a file",
   "form.widgets.file_upload.drag_and_drop": "or drag and drop",
   "form.widgets.file_upload.delete": "Delete",
+  "form.widgets.multiselect.select": "Select items",
   "selector.loading": "Loading...",
   "theme.dark": "Dark",
   "theme.light": "Light",

@@ -84,6 +84,7 @@ export type FormProps = {
   actions?: ModelAction[];
   searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
   icon?: ModelIcon;
+  resourcesIdProperty: Record<ModelName, string>;
 };
 
 const fields: CustomForm["props"]["fields"] = {
@@ -112,18 +113,22 @@ const Form = ({
   actions,
   searchPaginatedResourceAction,
   icon,
+  resourcesIdProperty,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
-  const { basePath, options: globalOptions } = useConfig();
-  const options = globalOptions?.model?.[resource];
+  const { basePath, options } = useConfig();
+  const modelOptions = options?.model?.[resource];
   const canDelete =
-    !options?.permissions || options?.permissions?.includes(Permission.DELETE);
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.DELETE);
   const canEdit =
-    !options?.permissions || options?.permissions?.includes(Permission.EDIT);
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.EDIT);
   const canCreate =
-    !options?.permissions || options?.permissions?.includes(Permission.CREATE);
-  const disabledFields = options?.edit?.fields
-    ? (Object.entries(options?.edit?.fields)
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.CREATE);
+  const disabledFields = modelOptions?.edit?.fields
+    ? (Object.entries(modelOptions?.edit?.fields)
         .map(
           ([name, opts]: [
             string,
@@ -318,12 +323,13 @@ const Form = ({
         } = props;
 
         const labelAlias =
-          options?.aliases?.[id as Field<typeof resource>] ||
+          modelOptions?.aliases?.[id as Field<typeof resource>] ||
           formatLabel(label);
-        let styleField = options?.edit?.styles?.[id as Field<typeof resource>];
+        let styleField =
+          modelOptions?.edit?.styles?.[id as Field<typeof resource>];
 
         const tooltip =
-          options?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
+          modelOptions?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
 
         const sanitizedClassNames = classNames
           ?.split(",")
@@ -372,7 +378,7 @@ const Form = ({
         );
       },
       ObjectFieldTemplate: (props: ObjectFieldTemplateProps) => {
-        const styleForm = options?.edit?.styles?._form;
+        const styleForm = modelOptions?.edit?.styles?._form;
         return (
           <div className={clsx("grid", styleForm)}>
             {props.properties.map((element) => element.content)}
@@ -512,6 +518,8 @@ const Form = ({
             searchPaginatedResourceAction={searchPaginatedResourceAction}
             dmmfSchema={dmmfSchema}
             resource={resource}
+            options={options}
+            resourcesIdProperty={resourcesIdProperty}
           >
             <FormContext.Consumer>
               {({ formData, setFormData }) => (
