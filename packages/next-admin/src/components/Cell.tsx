@@ -28,7 +28,7 @@ export default function Cell({ cell, formatter, copyable }: Props) {
       return cellValue;
     } else if (typeof cell === "object" && !isReactNode(cellValue)) {
       if (formatter) {
-        cellValue = formatter(cellValue);
+        cellValue = formatter(cell?.value);
       }
 
       if (cell.type === "link") {
