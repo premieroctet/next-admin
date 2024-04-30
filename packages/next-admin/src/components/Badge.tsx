@@ -6,7 +6,7 @@ type BadgeProps = {
   isActive?: boolean;
 } & React.HTMLAttributes<HTMLSpanElement>;
 
-const Badge = ({ name, isActive, ...props }: BadgeProps) => {
+const Badge = ({ isActive, ...props }: BadgeProps) => {
   const [active, setActive] = useState(isActive);
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement>) => {
@@ -26,7 +26,7 @@ const Badge = ({ name, isActive, ...props }: BadgeProps) => {
         props.className
       )}
     >
-      {name}
+      {props.name}
     </span>
   );
 };

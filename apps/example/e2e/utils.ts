@@ -174,6 +174,28 @@ export const search = async (page: Page) => {
   expect(oneRow).toBeTruthy();
 };
 
+export const filter = async (page: Page) => {
+  await page.goto(`${process.env.BASE_URL}/user`);
+  await page.click(`span[name="+1 posts"]`); // Add `+1 posts` filter
+  await page.waitForURL((url) => !!url.searchParams.get("filters"));
+  let table = await page.$("table");
+  let thead = await page.$("thead");
+  let tbody = await table?.$("tbody");
+  let rows = await tbody?.$$("tr");
+  const noRow = rows?.length === 1 && !thead;
+  expect(noRow).toBeTruthy();
+  await page.click(`span[name="+1 posts"]`); // Remove `+1 posts` filter
+
+  await page.click(`span[name="is Admin"]`); // Add `isAdmin` filter
+  await page.waitForURL((url) => !!url.searchParams.get("filters"));
+  table = await page.$("table");
+  tbody = await table?.$("tbody");
+  rows = await tbody?.$$("tr");
+  const oneRow = rows?.length === 1;
+  expect(oneRow).toBeTruthy();
+  await page.click(`span[name="is Admin"]`); // Remove `is Admin` filter
+};
+
 export const sort = async (page: Page) => {
   await page.goto(`${process.env.BASE_URL}/user`);
   await page.click('th:has-text("email")>button');

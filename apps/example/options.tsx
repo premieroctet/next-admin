@@ -19,11 +19,11 @@ export const options: NextAdminOptions = {
         copy: ["email"],
         filters: [
           {
-            name: "is Not Admin",
-            active: true,
+            name: "is Admin",
+            active: false,
             value: {
               role: {
-                not: "ADMIN",
+                equals: "ADMIN",
               },
             },
           },
