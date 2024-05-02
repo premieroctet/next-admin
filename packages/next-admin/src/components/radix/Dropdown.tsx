@@ -11,7 +11,7 @@ export const DropdownTrigger = forwardRef<
   return (
     <DropdownMenu.Trigger
       className={clsx(
-        "focus:ring-ring focus:outline-none focus:ring-2 focus:ring-offset-2",
+        "focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0",
         className
       )}
       ref={ref}
@@ -39,7 +39,7 @@ export const DropdownContent = forwardRef<
   return (
     <DropdownMenu.Content
       className={clsx(
-        "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong z-50 rounded-md shadow-lg ring-1 ring-opacity-5 focus:outline-none",
+        "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle z-50 rounded-md shadow-lg focus:outline-none focus:ring-0",
         className
       )}
       ref={ref}
@@ -57,7 +57,7 @@ export const DropdownItem = forwardRef<
   return (
     <DropdownMenu.Item
       className={clsx(
-        "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted hover:bg-nextadmin-background-muted group text-sm",
+        "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted hover:bg-nextadmin-background-muted group text-sm focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
         className
       )}
       ref={ref}

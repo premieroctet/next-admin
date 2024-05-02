@@ -1,6 +1,6 @@
-import * as React from "react";
-import * as SelectPrimitive from "@radix-ui/react-select";
 import { ChevronDownIcon } from "@heroicons/react/24/outline";
+import * as SelectPrimitive from "@radix-ui/react-select";
+import * as React from "react";
 
 import clsx from "clsx";
 const Select = SelectPrimitive.Root;
@@ -16,7 +16,7 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={clsx(
-      "border-nextadmin-border-default dark:border-dark-nextadmin-border-strong ring-offset-background placeholder:text-muted-foreground focus:ring-ring flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+      "border-nextadmin-border-default dark:border-dark-nextadmin-border-strong ring-nextadmin-primary-500 placeholder:text-muted-foreground focus:ring-ring flex h-10 w-full items-center justify-between rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 disabled:cursor-not-allowed disabled:opacity-50",
       className
     )}
     {...props}
@@ -105,11 +105,11 @@ SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
 
 export {
   Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
   SelectContent,
-  SelectLabel,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectSeparator,
+  SelectTrigger,
+  SelectValue,
 };

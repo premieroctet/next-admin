@@ -1,33 +1,38 @@
 import clsx from "clsx";
 import { useState } from "react";
+import Checkbox from "./radix/Checkbox";
 
 type BadgeProps = {
   name: string;
   isActive?: boolean;
 } & React.HTMLAttributes<HTMLSpanElement>;
 
-const Badge = ({ isActive, ...props }: BadgeProps) => {
+const Badge = ({ isActive, onClick, ...props }: BadgeProps) => {
   const [active, setActive] = useState(isActive);
 
   const handleClick = (e: React.MouseEvent<HTMLSpanElement>) => {
     setActive((active) => !active);
-    props?.onClick?.(e);
+    onClick?.(e);
   };
 
   return (
-    <span
+    <div
       {...props}
-      onClick={handleClick}
       className={clsx(
-        "inline-flex cursor-pointer select-none items-center rounded-md px-3 py-2 text-sm font-medium",
-        active
-          ? "text-nextadmin-brand-inverted dark:text-dark-nextadmin-brand-inverted bg-nextadmin-brand-subtle dark:bg-dark-nextadmin-brand-sublte hover:bg-nextadmin-brand-default hover:dark:bg-dark-nextadmin-brand-emphasis"
-          : "text-nextadmin-brand-subtle hover:ring-nextadmin-brand-default hover:dark:ring-dark-nextadmin-brand-default hover:text-nextadmin-brand-default hover:dark:text-dark-nextadmin-brand-default dark:text-dark-nextadmin-brand-subtle bg-nextadmin-dackground-default dark:bg-dark-nextadmin-background-strong ring-nextadmin-brand-subtle dark:ring-dark-nextadmin-brand-subtle ring-1 ring-inset",
+        "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis text-nextadmin-content-inverted dark:text-dark-nextadmin-content-subtle ring-nextadmin-border-default dark:ring-dark-nextadmin-border-default bg-nextadmin-dackground-default dark:bg-dark-nextadmin-background-strong peer flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1 text-sm font-medium ring-1",
         props.className
       )}
     >
-      {props.name}
-    </span>
+      <Checkbox
+        onClick={handleClick}
+        name={props.name}
+        id={props.name}
+        checked={active}
+      />
+      <label className="cursor-pointer" htmlFor={props.name}>
+        {props.name}
+      </label>
+    </div>
   );
 };
 

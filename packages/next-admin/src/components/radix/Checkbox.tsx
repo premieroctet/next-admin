@@ -1,7 +1,7 @@
-import { ComponentProps, useMemo } from "react";
+import { CheckIcon, MinusIcon } from "@heroicons/react/24/outline";
 import * as RadixCheckbox from "@radix-ui/react-checkbox";
-import { MinusIcon, CheckIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { ComponentProps, useMemo } from "react";
 
 type Props = ComponentProps<typeof RadixCheckbox.Root> & {
   indeterminate?: boolean;
@@ -35,10 +35,11 @@ const Checkbox = ({
         });
       }}
       className={clsx(
-        'data-[state="checked"]:!bg-nextadmin-primary-500 data-[state="checked"]:border-nextadmin-primary-500 data-[state="indeterminate"]:!bg-nextadmin-primary-500 data-[state="indeterminate"]:border-nextadmin-primary-500 flex h-4 w-4 items-center justify-center rounded border border-gray-200 bg-white text-white dark:border-gray-400 dark:bg-slate-500',
-        {
-          "ring-nextadmin-primary-600 ring-1 ring-offset-1": status === true,
-        },
+        "outline-nextadmin-primary-500 flex h-4 w-4 items-center justify-center rounded border text-white focus:outline focus:outline-1 focus:outline-offset-2",
+        (status === true || status === "indeterminate") &&
+          "border-nextadmin-primary-500 bg-nextadmin-primary-500 ",
+        status === false &&
+          "border-nextadmin-border-default dark:border-dark-nextadmin-border-default bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default",
         className
       )}
       {...props}
