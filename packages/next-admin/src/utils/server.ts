@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { PassThrough, Writable } from "stream";
+import { Writable } from "stream";
 import {
   AdminFormData,
   EditFieldsOptions,

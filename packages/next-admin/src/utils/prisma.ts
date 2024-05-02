@@ -83,7 +83,12 @@ export const preparePrismaListRequest = <M extends ModelName>(
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
-  const filtersParams = skipFilters ? [] : JSON.parse(searchParams.get("filters")) as string[];
+  let filtersParams: string[] = [];
+  try {
+    filtersParams = skipFilters
+      ? []
+      : (JSON.parse(searchParams.get("filters")) as string[]);
+  } catch {}
   const page = Number(searchParams.get("page")) || 1;
   const itemsPerPage =
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
@@ -213,12 +218,10 @@ type FetchDataListParams = {
   searchParams: URLSearchParams;
 };
 
-export const fetchDataList = async ({
-  prisma,
-  resource,
-  options,
-  searchParams,
-}: FetchDataListParams, skipFilters: boolean = false) => {
+export const fetchDataList = async (
+  { prisma, resource, options, searchParams }: FetchDataListParams,
+  skipFilters: boolean = false
+) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,

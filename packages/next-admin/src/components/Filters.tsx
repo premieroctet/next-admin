@@ -16,13 +16,17 @@ const Filters = <T extends ModelName>({
   const { router, query } = useRouterInternal();
 
   const fetchUrlFilter = () => {
-    if (query?.filters) {
-      const urlFilter = JSON.parse(query.filters) as string[];
-      return filters?.map((filter) => ({
-        ...filter,
-        active: urlFilter.includes(filter.name),
-      }));
-    } else {
+    try {
+      if (query?.filters) {
+        const urlFilter = JSON.parse(query.filters) as string[];
+        return filters?.map((filter) => ({
+          ...filter,
+          active: urlFilter.includes(filter.name),
+        }));
+      } else {
+        return filters;
+      }
+    } catch {
       return filters;
     }
   };
