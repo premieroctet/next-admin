@@ -207,7 +207,7 @@ function List({
         />
 
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
-          <div className="-mt-4 mb-4 space-y-4">
+          <div className="sm:-mt-4 sm:mb-4 -mt-2 mb-2 space-y-4">
             <Message />
             <Filters filters={filterOptions!} />
           </div>

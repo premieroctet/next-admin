@@ -28,10 +28,14 @@ export const options: NextAdminOptions = {
             },
           },
           {
-            name: "+1 posts",
+            name: "over 18",
             value: {
-              posts: {
-                some: {},
+              birthDate: {
+                lte: (() => {
+                  const date = new Date();
+                  date.setFullYear(date.getFullYear() - 18);
+                  return date;
+                })(),
               },
             },
           },
