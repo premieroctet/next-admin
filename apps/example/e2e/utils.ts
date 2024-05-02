@@ -176,7 +176,7 @@ export const search = async (page: Page) => {
 
 export const filter = async (page: Page) => {
   await page.goto(`${process.env.BASE_URL}/user`);
-  await page.click(`span[name="over 18"]`); // Add `over 18` filter
+  await page.check(`button[id="over 18"]`); // Add `over 18` filter
   await page.waitForURL((url) => !!url.searchParams.get("filters"));
   let table = await page.$("table");
   let thead = await page.$("thead");
@@ -184,16 +184,16 @@ export const filter = async (page: Page) => {
   let rows = await tbody?.$$("tr");
   const noRow = rows?.length === 1 && !thead;
   expect(noRow).toBeTruthy();
-  await page.click(`span[name="over 18"]`); // Remove `over 18` filter
+  await page.uncheck(`button[id="over 18"]`); // Remove `over 18` filter
 
-  await page.click(`span[name="is Admin"]`); // Add `isAdmin` filter
+  await page.check(`button[id="is Admin"]`); // Add `isAdmin` filter
   await page.waitForURL((url) => !!url.searchParams.get("filters"));
   table = await page.$("table");
   tbody = await table?.$("tbody");
   rows = await tbody?.$$("tr");
   const oneRow = rows?.length === 1;
   expect(oneRow).toBeTruthy();
-  await page.click(`span[name="is Admin"]`); // Remove `is Admin` filter
+  await page.uncheck(`button[id="is Admin"]`); // Remove `is Admin` filter
 };
 
 export const sort = async (page: Page) => {
