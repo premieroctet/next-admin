@@ -19,7 +19,7 @@ export const options: NextAdminOptions = {
         copy: ["email"],
         filters: [
           {
-            name: "is Admin",
+            name: "isAdmin",
             active: false,
             value: {
               role: {
@@ -28,7 +28,7 @@ export const options: NextAdminOptions = {
             },
           },
           {
-            name: "over 18",
+            name: "over18",
             value: {
               birthDate: {
                 lte: (() => {
