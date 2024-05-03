@@ -65,10 +65,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={clsx(buttonVariants({ variant, size, className, icon }))}
         ref={ref}
         disabled={loading || disabled}
         {...props}
+        className={clsx(buttonVariants({ variant, size, className, icon }))}
       >
         {loading && <Spinner className="mr-2 inline h-4 w-4" />}
         {children}

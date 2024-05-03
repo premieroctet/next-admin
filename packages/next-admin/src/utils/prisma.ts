@@ -5,6 +5,7 @@ import {
   EditOptions,
   Enumeration,
   Field,
+  Filter,
   ListOptions,
   ModelName,
   NextAdminContext,
@@ -24,9 +25,10 @@ import { capitalize, isScalar, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
   fieldsFiltered?: Prisma.DMMF.Field[],
-  search?: string
+  search?: string,
+  otherFilters?: Filter<ModelName>[]
 ) => {
-  return search
+  const searchFilter = search
     ? {
         OR: fieldsFiltered
           ?.filter((field) => {
@@ -67,20 +69,41 @@ export const createWherePredicate = (
           .filter(Boolean),
       }
     : {};
+
+  const externalFilters = otherFilters ?? [];
+
+  return { AND: [...externalFilters, searchFilter] };
 };
 
 export const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
-  options?: NextAdminOptions
+  options?: NextAdminOptions,
+  skipFilters: boolean = false
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
+  let filtersParams: string[] = [];
+  try {
+    filtersParams = skipFilters
+      ? []
+      : (JSON.parse(searchParams.get("filters")) as string[]);
+  } catch {}
   const page = Number(searchParams.get("page")) || 1;
   const itemsPerPage =
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
   const fieldSort = options?.model?.[resource]?.list?.defaultSort;
+
+  const fieldFilters = options?.model?.[resource]?.list?.filters
+    ?.filter((filter) => {
+      if (Array.isArray(filtersParams)) {
+        return filtersParams.includes(filter.name);
+      } else {
+        return filter.active;
+      }
+    })
+    ?.map((filter) => filter.value);
 
   let orderBy: Order<typeof resource> = {};
   const sortParam =
@@ -127,7 +150,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
     select = selectPayloadForModel(resource, undefined, "object");
   }
 
-  where = createWherePredicate(fieldsFiltered, search);
+  where = createWherePredicate(fieldsFiltered, search, fieldFilters);
 
   return {
     select,
@@ -157,7 +180,7 @@ export const optionsFromResource = async ({
   property,
   ...args
 }: OptionsFromResourceParams) => {
-  const data = await fetchDataList(args);
+  const data = await fetchDataList(args, true);
   const { data: dataItems, total, error } = data;
   const { resource } = args;
   const idProperty = getModelIdProperty(resource);
@@ -195,16 +218,15 @@ type FetchDataListParams = {
   searchParams: URLSearchParams;
 };
 
-export const fetchDataList = async ({
-  prisma,
-  resource,
-  options,
-  searchParams,
-}: FetchDataListParams) => {
+export const fetchDataList = async (
+  { prisma, resource, options, searchParams }: FetchDataListParams,
+  skipFilters: boolean = false
+) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,
-    options
+    options,
+    skipFilters
   );
   let data: any[] = [];
   let total: number;

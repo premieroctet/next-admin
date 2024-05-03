@@ -268,9 +268,7 @@ export const nextAdminRouter = async (
           // Create
           if (
             options?.model?.[resource]?.permissions &&
-            options?.model?.[resource]?.permissions?.includes(
-              Permission.CREATE
-            )
+            options?.model?.[resource]?.permissions?.includes(Permission.CREATE)
           ) {
             res.statusCode = 403;
             return {

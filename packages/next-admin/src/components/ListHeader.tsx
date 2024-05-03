@@ -82,7 +82,7 @@ export default function ListHeader({
 
   return (
     <>
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-14 z-10 flex h-auto flex-col items-start justify-between gap-3 border-b px-4 py-4 shadow-sm lg:top-0 sm:flex-row sm:items-center md:h-16 md:py-0">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-14 z-10 flex h-auto flex-col items-start justify-between gap-3 border-b px-4 py-4 shadow-sm sm:flex-row sm:items-center md:h-16 md:py-0 lg:top-0">
         <Breadcrumb
           breadcrumbItems={[
             {

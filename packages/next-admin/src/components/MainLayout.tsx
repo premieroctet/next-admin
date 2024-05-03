@@ -37,7 +37,7 @@ export const MainLayout = ({
     >
       <I18nProvider translations={mergedTranslations}>
         <ColorSchemeProvider>
-          <div className="next-admin__root h-[100vh]">
+          <div className="next-admin__root h-[100vh] max-w-[100vw]">
             <Menu
               title={title}
               resources={resources}

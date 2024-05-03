@@ -1,5 +1,4 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
-import React from "react";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
@@ -13,6 +12,29 @@ export const options: NextAdminOptions = {
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
+        filters: [
+          {
+            name: "is Admin",
+            active: false,
+            value: {
+              role: {
+                equals: "ADMIN",
+              },
+            },
+          },
+          {
+            name: "over 18",
+            value: {
+              birthDate: {
+                lte: (() => {
+                  const date = new Date();
+                  date.setFullYear(date.getFullYear() - 18);
+                  return date;
+                })(),
+              },
+            },
+          },
+        ],
         fields: {
           role: {
             formatter: (role) => {
