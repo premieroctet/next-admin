@@ -209,7 +209,7 @@ const Form = ({
               value="delete"
               tabIndex={-1}
               onClick={(e) => {
-                if (!confirm("Are you sure to delete this ?")) {
+                if (!confirm(t("form.delete.alert"))) {
                   e.preventDefault();
                 }
               }}

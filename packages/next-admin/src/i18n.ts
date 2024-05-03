@@ -4,6 +4,7 @@ export const defaultTranslations: Translations = {
   "actions.delete.label": "Delete",
   "actions.label": "Action",
   "form.button.delete.label": "Delete",
+  "form.delete.alert": "Are you sure to delete this?",
   "form.button.save.label": "Save",
   "form.button.save_edit.label": "Save and continue editing",
   "list.empty.label": "No {{resource}} found",
@@ -17,6 +18,10 @@ export const defaultTranslations: Translations = {
   "list.header.search.result": "{{count}} items",
   "list.header.search.result_filtered": "{{count}} filtered items",
   "list.row.actions.delete.label": "Delete",
+  "list.row.actions.delete.alert":
+    "Are you sure you want to delete {{count}} row(s)?",
+  "list.row.actions.delete.success": "Deleted successfully",
+  "list.row.actions.delete.error": "An error occured while deleting",
   "form.widgets.file_upload.label": "Choose a file",
   "form.widgets.file_upload.drag_and_drop": "or drag and drop",
   "form.widgets.file_upload.delete": "Delete",
