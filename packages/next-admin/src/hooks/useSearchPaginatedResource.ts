@@ -17,9 +17,9 @@ const useSearchPaginatedResource = ({
   const { isAppDir, basePath } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
-  const [allOptions, setAllOptions] = useState<
-    Enumeration[]
-  >(initialOptions ?? []);
+  const [allOptions, setAllOptions] = useState<Enumeration[]>(
+    initialOptions ?? []
+  );
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const runSearch = async (query: string, resetOptions = true) => {
@@ -54,8 +54,7 @@ const useSearchPaginatedResource = ({
               return response.data;
             }
 
-            return [...old, ...response.data] as
-              | Enumeration[]
+            return [...old, ...response.data] as Enumeration[];
           });
         }
       } else {

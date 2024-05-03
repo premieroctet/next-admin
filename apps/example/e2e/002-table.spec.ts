@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { pagination, search, sort } from "./utils";
+import { filter, pagination, search, sort } from "./utils";
 
 test.describe.serial("table test", () => {
   test(`search (on user)`, async ({ page }) => {
@@ -8,6 +8,10 @@ test.describe.serial("table test", () => {
 
   test(`sort (on user)`, async ({ page }) => {
     await sort(page);
+  });
+
+  test(`filter (on user)`, async ({ page }) => {
+    await filter(page);
   });
 
   test(`pagination (on user)`, async ({ page }) => {

@@ -4,6 +4,7 @@ import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
 import { ChangeEvent, useEffect, useState, useTransition } from "react";
 import { ITEMS_PER_PAGE } from "../config";
+import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import useDataColumns from "../hooks/useDataColumns";
 import { useDeleteAction } from "../hooks/useDeleteAction";
@@ -16,6 +17,7 @@ import {
   ModelName,
 } from "../types";
 import { DataTable } from "./DataTable";
+import Filters from "./Filters";
 import ListHeader from "./ListHeader";
 import Message from "./Message";
 import { Pagination } from "./Pagination";
@@ -36,7 +38,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
-import { useConfig } from "../context/ConfigContext";
 
 export type ListProps = {
   resource: ModelName;
@@ -80,7 +81,10 @@ function List({
 
   let onSearchChange;
   const modelOptions = options?.["model"]?.[resource];
-  if (!(modelOptions?.list?.search && modelOptions?.list?.search?.length === 0)) {
+  const filterOptions = modelOptions?.list?.filters;
+  if (
+    !(modelOptions?.list?.search && modelOptions?.list?.search?.length === 0)
+  ) {
     onSearchChange = debounce((e: ChangeEvent<HTMLInputElement>) => {
       startTransition(() => {
         router?.push({
@@ -203,7 +207,10 @@ function List({
         />
 
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
-          <Message className="-mt-4 mb-4" />
+          <div className="sm:-mt-4 sm:mb-4 -mt-2 mb-2 space-y-4">
+            <Message />
+            <Filters filters={filterOptions!} />
+          </div>
           <DataTable
             resource={resource}
             data={data}

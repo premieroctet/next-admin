@@ -17,6 +17,29 @@ export const options: NextAdminOptions = {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email", "role"],
         copy: ["email"],
+        filters: [
+          {
+            name: "is Admin",
+            active: false,
+            value: {
+              role: {
+                equals: "ADMIN",
+              },
+            },
+          },
+          {
+            name: "over 18",
+            value: {
+              birthDate: {
+                lte: (() => {
+                  const date = new Date();
+                  date.setFullYear(date.getFullYear() - 18);
+                  return date;
+                })(),
+              },
+            },
+          },
+        ],
         fields: {
           role: {
             formatter: (role) => {
