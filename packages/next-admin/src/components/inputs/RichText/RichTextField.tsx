@@ -59,9 +59,10 @@ const RichTextField = ({
       <div className="relative">
         <input
           name={props.name}
-          defaultValue={inputValue}
+          value={inputValue}
           className="absolute inset-0 -z-10 h-full w-full opacity-0"
           required={required}
+          onChange={() => {}}
         />
         <EditorContainer>
           <Toolbar>
