@@ -37,7 +37,7 @@ export const MainLayout = ({
     >
       <I18nProvider translations={mergedTranslations}>
         <ColorSchemeProvider>
-          <div className="next-admin__root h-[100vh] max-w-[100vw]">
+          <div className="next-admin__root">
             <Menu
               title={title}
               resources={resources}
@@ -50,7 +50,7 @@ export const MainLayout = ({
               externalLinks={externalLinks}
               forceColorScheme={options?.forceColorScheme}
             />
-            <main className="h-full lg:pl-72">{children}</main>
+            <main className="lg:pl-72">{children}</main>
           </div>
         </ColorSchemeProvider>
       </I18nProvider>

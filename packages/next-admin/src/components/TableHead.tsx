@@ -38,7 +38,9 @@ export default function TableHead({
       >
         {propertyName}
       </span>
-      <span className="sr-only">, activate to sort column descending</span>
+      <span className="sr-only relative">
+        , activate to sort column descending
+      </span>
       {isSorted && sortDirection === "desc" && (
         <ArrowSmallDownIcon
           className="text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle ml-2 h-5 w-5"
