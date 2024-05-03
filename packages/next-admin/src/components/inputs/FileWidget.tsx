@@ -90,7 +90,7 @@ const FileWidget = (props: WidgetProps) => {
 
   return (
     <div className="relative">
-      <div className="relative flex flex-col items-start gap-3 py-1">
+      <div className="relative hover: flex flex-col items-start gap-3 py-1">
         {fileInfo && (
           <div className="flex items-end gap-4">
             <div className="relative flex flex-col items-center gap-1 space-x-2">
@@ -178,11 +178,11 @@ const FileWidget = (props: WidgetProps) => {
           >
             <div className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-center">
               <CloudArrowUpIcon className="mx-auto h-8 w-8" />
-              <div className="mt-4 flex text-sm leading-6">
+              <div className=" mt-4 flex text-sm leading-6">
                 <label
                   htmlFor={props.id}
                   className={clsx(
-                    "text-nextadmin-primary-600 hover:text-nextadmin-primary-500 relative cursor-pointer rounded-md font-semibold focus-visible:outline-none",
+                    "text-nextadmin-primary-600 hover:text-nextadmin-primary-500 cursor-pointer rounded-md font-semibold focus-visible:outline-none",
                     {
                       "cursor-not-allowed": props.disabled,
                     }
@@ -191,7 +191,7 @@ const FileWidget = (props: WidgetProps) => {
                   <span>{t("form.widgets.file_upload.label")}</span>
                   <input
                     type="file"
-                    className="sr-only"
+                    className="absolute inset-0 cursor-pointer h-full w-full opacity-0"
                     ref={inputRef}
                     id={props.id}
                     disabled={props.disabled}

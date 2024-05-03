@@ -38,6 +38,7 @@ import {
   ModelAction,
   ModelIcon,
   ModelName,
+  ModelOptions,
   Permission,
   SubmitFormResult,
 } from "../types";
@@ -117,7 +118,8 @@ const Form = ({
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
   const { basePath, options } = useConfig();
-  const modelOptions = options?.model?.[resource];
+  const modelOptions: ModelOptions<typeof resource>[typeof resource] =
+    options?.model?.[resource];
   const canDelete =
     !modelOptions?.permissions ||
     modelOptions?.permissions?.includes(Permission.DELETE);
@@ -127,27 +129,11 @@ const Form = ({
   const canCreate =
     !modelOptions?.permissions ||
     modelOptions?.permissions?.includes(Permission.CREATE);
-  const disabledFields = modelOptions?.edit?.fields
-    ? (Object.entries(modelOptions?.edit?.fields)
-        .map(
-          ([name, opts]: [
-            string,
-            EditFieldsOptions<ModelName>[Field<ModelName>],
-          ]) => {
-            if (opts?.disabled) {
-              return name;
-            }
-
-            return undefined;
-          }
-        )
-        .filter(Boolean) as string[])
-    : [];
   const { edit, id, ...schemas } = getSchemas(
     data,
     schema,
     dmmfSchema,
-    disabledFields
+    modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
   );
   const { router } = useRouterInternal();
   const { t } = useI18n();
@@ -396,6 +382,7 @@ const Form = ({
         rawErrors,
         schema,
         registry,
+        required,
         ...props
       }: BaseInputTemplateProps) => {
         const onTextChange = ({
@@ -436,6 +423,7 @@ const Form = ({
               value={props.value}
               schema={schema}
               disabled={props.disabled}
+              required={required}
             />
           );
         }

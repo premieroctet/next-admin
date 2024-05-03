@@ -8,8 +8,8 @@ import useCloseOnOutsideClick from "../../../hooks/useCloseOnOutsideClick";
 import { Enumeration, Field, ModelName } from "../../../types";
 import Button from "../../radix/Button";
 import { Selector } from "../Selector";
-import MultiSelectDisplayTable from "./MultiSelectDisplayTable";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
+import MultiSelectDisplayTable from "./MultiSelectDisplayTable";
 import MultiSelectItem from "./MultiSelectItem";
 
 type Props = {
@@ -18,6 +18,7 @@ type Props = {
   formData: any;
   name: string;
   disabled: boolean;
+  required?: boolean;
   schema: RJSFSchema;
 };
 
@@ -50,7 +51,16 @@ const MultiSelectWidget = (props: Props) => {
 
   return (
     <div className="relative" ref={containerRef}>
-      <input type="hidden" name={name} value={JSON.stringify(selectedValues)} />
+      <select
+        name={name}
+        className="absolute inset-0 -z-10 h-full w-full opacity-0"
+        disabled={props.disabled}
+        required={props.required}
+      >
+        {!(props.required && selectedValues.length === 0) && (
+          <option value={JSON.stringify(selectedValues)} />
+        )}
+      </select>
       {displayMode === "select" && (
         <div className="relative">
           <div

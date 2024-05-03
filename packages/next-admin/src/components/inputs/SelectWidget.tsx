@@ -18,6 +18,7 @@ const SelectWidget = ({
   onChange,
   value,
   disabled,
+  required,
   ...props
 }: WidgetProps) => {
   const formContext = useForm();
@@ -43,17 +44,19 @@ const SelectWidget = ({
   return (
     <div className="relative" ref={containerRef}>
       <div className="ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong dark:bg-dark-nextadmin-background-subtle relative flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1">
-        <input
-          type="hidden"
-          value={value?.value || ""}
-          name={props.name}
+        <select
+          name={name}
           className="absolute inset-0 -z-10 h-full w-full opacity-0"
-        />
+          disabled={props.disabled}
+          required={required}
+        >
+          {!(props.required && value?.value) && <option value={value?.value} />}
+        </select>
         <input
           id={props.id}
           readOnly
           className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted h-full w-full flex-1 cursor-default appearance-none bg-transparent focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-          value={value?.label || ""}
+          value={value?.label ?? ""}
           disabled={disabled}
           onMouseDown={() => {
             if (!disabled) {

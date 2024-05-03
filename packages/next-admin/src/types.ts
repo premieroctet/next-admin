@@ -154,6 +154,10 @@ export type EditFieldsOptions<T extends ModelName> = {
      * a boolean to indicate that the field is read only.
      */
     disabled?: boolean;
+    /**
+     * a boolean to indicate that the field is required
+     */
+    required?: true;
   } & (P extends keyof ObjectField<T>
     ? {
         /**
@@ -633,6 +637,7 @@ export type CustomInputProps = Partial<{
   readonly: boolean;
   rawErrors: string[];
   disabled: boolean;
+  required?: boolean;
 }>;
 
 export type TranslationKeys =

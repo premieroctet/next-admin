@@ -96,6 +96,7 @@ export const options: NextAdminOptions = {
           },
           avatar: {
             format: "file",
+            required: true,
             handler: {
               /*
                * Include your own upload handler here,
@@ -109,6 +110,7 @@ export const options: NextAdminOptions = {
           },
           metadata: {
             format: "json",
+            required: true,
             validate: (value) => {
               try {
                 if (!value) {
@@ -161,6 +163,7 @@ export const options: NextAdminOptions = {
         fields: {
           content: {
             format: "richtext-html",
+            required: true,
           },
           categories: {
             optionFormatter: (category) =>
@@ -189,6 +192,11 @@ export const options: NextAdminOptions = {
       },
       edit: {
         display: ["name", "posts"],
+        fields: {
+          posts: {
+            required: true,
+          },
+        },
       },
     },
   },
