@@ -9,16 +9,22 @@ declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
 };
 
+type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
+
 /** Type for Model */
 
 export type ModelName = Prisma.ModelName;
-
-export type ScalarField<T extends ModelName> =
-  Prisma.TypeMap["model"][T]["payload"]["scalars"];
-export type ObjectField<T extends ModelName> =
-  Prisma.TypeMap["model"][T]["payload"]["objects"];
-
 export type Payload = Prisma.TypeMap["model"][ModelName]["payload"];
+export type ModelPayload<M extends ModelName> =
+  Prisma.TypeMap["model"][M]["payload"];
+
+export type ScalarField<T extends ModelName> = ModelPayload<T>["scalars"];
+export type ObjectField<T extends ModelName> = ModelPayload<T>["objects"];
+export type NonArrayObjectField<T extends ModelName> = OmitNever<{
+  [K in keyof ModelPayload<T>["objects"]]: ModelPayload<T>["objects"][K] extends Array<any>
+    ? never
+    : ModelPayload<T>["objects"][K];
+}>;
 
 export type ModelFromPayload<
   P extends Payload,
@@ -94,7 +100,14 @@ export type ListFieldsOptions<T extends ModelName> = {
         : Model<T>[P],
       context?: NextAdminContext
     ) => ReactNode;
-  };
+  } & (P extends keyof NonArrayObjectField<T>
+    ? {
+        /**
+         * The field to use for relationship sorting, defaults to the id field
+         */
+        sortBy?: keyof ModelFromProperty<T, P>;
+      }
+    : {});
 };
 
 export type EditFieldsOptions<T extends ModelName> = {

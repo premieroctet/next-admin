@@ -103,11 +103,18 @@ export const preparePrismaListRequest = <M extends ModelName>(
           _count: orderValue,
         };
       } else {
-        const resourceIdProperty = getModelIdProperty(
-          modelFieldSortParam.type as ModelName
-        );
+        const modelFieldSortProperty =
+          options?.model?.[resource]?.list?.fields?.[
+            modelFieldSortParam.name as Field<M>
+            // @ts-expect-error
+          ]?.sortBy;
+
+        const resourceSortByField =
+          modelFieldSortProperty ??
+          getModelIdProperty(modelFieldSortParam.type as ModelName);
+
         orderBy[modelFieldSortParam.name as Field<M>] = {
-          [resourceIdProperty]: orderValue,
+          [resourceSortByField]: orderValue,
         };
       }
     }
