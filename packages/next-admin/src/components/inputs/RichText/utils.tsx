@@ -288,7 +288,7 @@ export const deserialize = (
   format: RichTextFormat
 ) => {
   if (!string) {
-    return format === "json" ? DEFAULT_JSON_VALUE : DEFAULT_HTML_VALUE;
+    return DEFAULT_JSON_VALUE;
   }
 
   if (format === "html") {
