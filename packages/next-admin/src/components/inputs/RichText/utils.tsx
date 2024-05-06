@@ -273,28 +273,35 @@ const ensureRootNodeIsNotTextContent = (el: HTMLElement) => {
   return el;
 };
 
+export const DEFAULT_HTML_VALUE = "<br />";
+
+export const DEFAULT_JSON_VALUE = [
+  { type: "paragraph", children: [{ text: "" }] },
+];
+
+export const setDefaultValue = (s: string) => [
+  { type: "paragraph", children: [{ text: s }] },
+];
+
 export const deserialize = (
   string: string | undefined | null,
   format: RichTextFormat
 ) => {
-  const defaultValue = [{ type: "paragraph", children: [{ text: "" }] }];
-
   if (!string) {
-    return defaultValue;
+    return format === "json" ? DEFAULT_JSON_VALUE : DEFAULT_HTML_VALUE;
   }
 
   if (format === "html") {
     if (typeof window === "undefined") {
-      return defaultValue;
+      return DEFAULT_HTML_VALUE;
     }
-
     const dom = new DOMParser().parseFromString(string, "text/html");
     return deserializeHtml(ensureRootNodeIsNotTextContent(dom.body));
   } else {
     try {
       return JSON.parse(string);
     } catch {
-      return "";
+      return setDefaultValue(string);
     }
   }
 };

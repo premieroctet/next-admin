@@ -6,7 +6,14 @@ import { Editable, Slate, withReact } from "slate-react";
 import * as Icons from "../../../assets/icons/RichTextActions";
 import { RichTextFormat } from "../../../types";
 import { Button, EditorContainer, Separator, Toolbar } from "./components";
-import { deserialize, renderElement, renderLeaf, serialize } from "./utils";
+import {
+  DEFAULT_HTML_VALUE,
+  DEFAULT_JSON_VALUE,
+  deserialize,
+  renderElement,
+  renderLeaf,
+  serialize,
+} from "./utils";
 
 type RichTextFieldProps = {
   onChange: ChangeEventHandler<HTMLInputElement>;
@@ -47,8 +54,16 @@ const RichTextField = ({
 
   const inputValue = useMemo(() => {
     if (required) {
-      if (format === "html" && value === "<br />") {
+      if (format === "html" && value === DEFAULT_HTML_VALUE) {
         return "";
+      }
+
+      try {
+        if (format === "json" && value === JSON.stringify(DEFAULT_JSON_VALUE)) {
+          return "";
+        }
+      } catch {
+        return value;
       }
     }
     return value ?? "";
