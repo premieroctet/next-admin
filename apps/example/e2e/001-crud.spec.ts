@@ -44,7 +44,6 @@ test.describe("user validation", () => {
   test(`user create client error`, async ({ page }) => {
     await page.goto(`${process.env.BASE_URL}/User/new`);
     const nameRequired = page.locator('input[id="name"][required]');
-    await page.fill('input[id="email"]', dataTest.User.email);
     const validationMessage = await nameRequired.evaluate(
       (element) => (element as HTMLInputElement).validationMessage
     );
