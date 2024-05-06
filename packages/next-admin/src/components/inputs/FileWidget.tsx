@@ -178,7 +178,7 @@ const FileWidget = (props: WidgetProps) => {
           >
             <div className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-center">
               <CloudArrowUpIcon className="mx-auto h-8 w-8" />
-              <div className=" mt-4 flex text-sm leading-6">
+              <div className="mt-4 flex text-sm leading-6">
                 <label
                   htmlFor={props.id}
                   className={clsx(
