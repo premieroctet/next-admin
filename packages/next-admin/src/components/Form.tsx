@@ -193,6 +193,7 @@ const Form = ({
               className="flex gap-2"
               name="__admin_action"
               value="delete"
+              formNoValidate
               tabIndex={-1}
               onClick={(e) => {
                 if (!confirm(t("form.delete.alert"))) {
@@ -382,7 +383,6 @@ const Form = ({
         rawErrors,
         schema,
         registry,
-        required,
         ...props
       }: BaseInputTemplateProps) => {
         const onTextChange = ({
@@ -423,7 +423,7 @@ const Form = ({
               value={props.value}
               schema={schema}
               disabled={props.disabled}
-              required={required}
+              required={props.required}
             />
           );
         }

@@ -155,7 +155,7 @@ export type EditFieldsOptions<T extends ModelName> = {
      */
     disabled?: boolean;
     /**
-     * a boolean to indicate that the field is required
+     * a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false
      */
     required?: true;
   } & (P extends keyof ObjectField<T>

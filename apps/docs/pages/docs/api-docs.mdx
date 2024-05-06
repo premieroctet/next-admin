@@ -282,7 +282,7 @@ For the `list` property, it can take the following:
 For the `edit` property, it can take the following:
 
 | Name                         | Description                                                                                                                                                                  |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | `validate`                   | a function that takes the field value as a parameter, and that returns a boolean                                                                                             |
 | `format`                     | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                       |
 | `input`                      | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                          |
@@ -295,6 +295,7 @@ For the `edit` property, it can take the following:
 | `helperText`                 | a helper text that is displayed underneath the input                                                                                                                         |
 | `disabled`                   | a boolean to indicate that the field is read only                                                                                                                            |
 | `display`                    | only for relation fields, indicate which display format to use between `list`, `table` or `select`. Default `select`                                                         |
+| `required`                   | a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false                        | undefined |
 
 ##### `filters` property
 

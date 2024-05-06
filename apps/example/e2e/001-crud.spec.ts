@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { createItem, deleteItem, readItem, updateItem } from "./utils";
+import { createItem, dataTest, deleteItem, readItem, updateItem } from "./utils";
 
 export const models = ["User", "Post", "Category"] as const;
 
@@ -26,11 +26,22 @@ models.forEach((model) => {
 });
 
 test.describe("user validation", () => {
-  test(`user create error`, async ({ page }) => {
+  test(`user create server error`, async ({ page }) => {
     await page.goto(`${process.env.BASE_URL}/User/new`);
+    await page.fill('input[id="name"]', dataTest.User.name);
     await page.fill('input[id="email"]', "invalidemail");
     await page.click('button:has-text("Save and continue editing")');
     await page.waitForURL(`${process.env.BASE_URL}/User/new`);
     await test.expect(page.getByText("Invalid email")).toBeVisible();
+  });
+
+  test(`user create client error`, async ({ page }) => {
+    await page.goto(`${process.env.BASE_URL}/User/new`);
+    const nameRequired = page.locator('input[id="name"][required]');
+    await page.fill('input[id="email"]', dataTest.User.email);
+    const validationMessage = await nameRequired.evaluate(
+      (element) => (element as HTMLInputElement).validationMessage
+    );
+    test.expect(validationMessage).not.toBeNull();
   });
 });

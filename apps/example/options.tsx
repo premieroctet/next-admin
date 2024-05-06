@@ -86,6 +86,9 @@ export const options: NextAdminOptions = {
           metadata: "col-span-4 row-start-9",
         },
         fields: {
+          name: {
+            required: true,
+          },
           email: {
             validate: (email) => email.includes("@") || "form.user.email.error",
             helperText: "Must be a valid email address",
@@ -110,7 +113,6 @@ export const options: NextAdminOptions = {
           },
           metadata: {
             format: "json",
-            required: true,
             validate: (value) => {
               try {
                 if (!value) {
@@ -163,7 +165,6 @@ export const options: NextAdminOptions = {
         fields: {
           content: {
             format: "richtext-html",
-            required: true,
           },
           categories: {
             optionFormatter: (category) =>
@@ -192,11 +193,6 @@ export const options: NextAdminOptions = {
       },
       edit: {
         display: ["name", "posts"],
-        fields: {
-          posts: {
-            required: true,
-          },
-        },
       },
     },
   },
