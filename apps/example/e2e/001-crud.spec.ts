@@ -1,5 +1,11 @@
 import { test } from "@playwright/test";
-import { createItem, dataTest, deleteItem, readItem, updateItem } from "./utils";
+import {
+  createItem,
+  dataTest,
+  deleteItem,
+  readItem,
+  updateItem,
+} from "./utils";
 
 export const models = ["User", "Post", "Category"] as const;
 

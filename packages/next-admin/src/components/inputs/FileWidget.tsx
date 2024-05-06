@@ -90,7 +90,7 @@ const FileWidget = (props: WidgetProps) => {
 
   return (
     <div className="relative">
-      <div className="relative hover: flex flex-col items-start gap-3 py-1">
+      <div className="hover: relative flex flex-col items-start gap-3 py-1">
         {fileInfo && (
           <div className="flex items-end gap-4">
             <div className="relative flex flex-col items-center gap-1 space-x-2">
@@ -191,7 +191,7 @@ const FileWidget = (props: WidgetProps) => {
                   <span>{t("form.widgets.file_upload.label")}</span>
                   <input
                     type="file"
-                    className="absolute inset-0 cursor-pointer h-full w-full opacity-0"
+                    className="absolute inset-0 h-full w-full cursor-pointer opacity-0"
                     ref={inputRef}
                     id={props.id}
                     disabled={props.disabled}
