@@ -509,7 +509,6 @@ export const formattedFormData = async <M extends ModelName>(
             ) &&
             formData[dmmfPropertyName] instanceof File
           ) {
-            console.log("HERE, i'm call'in handler");
             const uploadHandler =
               editOptions?.[dmmfPropertyName]?.handler?.upload;
             const uploadErrorMessage =
@@ -542,12 +541,6 @@ export const formattedFormData = async <M extends ModelName>(
               }
             }
           } else {
-            console.log(
-              "Forget handler",
-              dmmfPropertyName,
-              dmmfPropertyType,
-              formData[dmmfPropertyName]
-            );
             formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
           }
         }
@@ -766,11 +759,12 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               callback();
             },
             final(callback) {
-              console.log(file)
               if (!file.originalFilename) {
                 files[name] = [null];
               } else {
-                files[name] = [new File([Buffer.concat(chunks)], file.originalFilename)];
+                files[name] = [
+                  new File([Buffer.concat(chunks)], file.originalFilename),
+                ];
               }
               callback();
             },
