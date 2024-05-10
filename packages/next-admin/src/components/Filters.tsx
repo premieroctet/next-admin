@@ -58,19 +58,16 @@ const Filters = <T extends ModelName>({
 
   return (
     currentFilters && (
-        <div
-          {...props}
-          className={clsx("flex flex-wrap gap-2", props.className)}
-        >
-          {currentFilters.map(({ name, active }) => (
-            <Badge
-              onClick={() => toggleFilter(name)}
-              name={name}
-              key={name}
-              isActive={active}
-            />
-          ))}
-        </div>
+      <div {...props} className={clsx("flex flex-wrap gap-2", props.className)}>
+        {currentFilters.map(({ name, active }) => (
+          <Badge
+            onClick={() => toggleFilter(name)}
+            name={name}
+            key={name}
+            isActive={active}
+          />
+        ))}
+      </div>
     )
   );
 };

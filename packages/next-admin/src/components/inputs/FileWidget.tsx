@@ -121,6 +121,7 @@ const FileWidget = (props: WidgetProps) => {
                   ref={inputRef}
                   id={props.id}
                   disabled={props.disabled}
+                  required={props.required}
                   name={props.name}
                   onChange={handleFileChange}
                 />

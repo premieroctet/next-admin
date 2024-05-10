@@ -745,14 +745,14 @@ export const getFormDataValues = async (req: IncomingMessage) => {
       });
     },
   });
-  return new Promise<Record<string, string | Buffer | null>>(
+  return new Promise<Record<string, string | File | null>>(
     (resolve, reject) => {
-      const files = {} as Record<string, Buffer[] | [null]>;
+      const files = {} as Record<string, File[] | [null]>;
 
       form.on("fileBegin", (name, file) => {
         // @ts-expect-error
         file.createFileWriteStream = () => {
-          const chunks = [] as Buffer[];
+          const chunks: Buffer[] = [];
           return new Writable({
             write(chunk, _encoding, callback) {
               chunks.push(chunk);
@@ -762,7 +762,9 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               if (!file.originalFilename) {
                 files[name] = [null];
               } else {
-                files[name] = [Buffer.concat(chunks)];
+                files[name] = [
+                  new File([Buffer.concat(chunks)], file.originalFilename),
+                ];
               }
               callback();
             },
@@ -781,7 +783,7 @@ export const getFormDataValues = async (req: IncomingMessage) => {
             }
             return acc;
           },
-          {} as Record<string, string | Buffer | null>
+          {} as Record<string, string | File | null>
         );
         resolve(joinedFormData);
       });

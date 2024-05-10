@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 import { UiSchema } from "@rjsf/utils";
+import { EditFieldsOptions, Field, ModelName } from "../types";
 
 export type Schemas = {
   schema: any;
@@ -37,15 +38,31 @@ export function getSchemaForResource(schema: any, resource: string) {
   return resourceSchema;
 }
 
-export function getSchemas(
+export function getSchemas<M extends ModelName>(
   data: any,
   schema: any,
   dmmfSchema: Prisma.DMMF.Field[],
-  disabledFields?: string[]
+  editFieldsOptions?: EditFieldsOptions<M>
 ): Schemas & { edit: boolean; id?: string | number } {
   const uiSchema: UiSchema = {};
   let edit = false;
   let id;
+
+  const { disabledFields, requiredFields } = Object.entries(
+    editFieldsOptions ?? {}
+  ).reduce<{ disabledFields: string[]; requiredFields: string[] }>(
+    (acc, [name, opts]: [string, EditFieldsOptions<M>[Field<M>]]) => {
+      if (opts?.disabled) {
+        acc.disabledFields.push(name);
+      }
+      if (opts?.required) {
+        acc.requiredFields.push(name);
+      }
+      return acc;
+    },
+    { requiredFields: [], disabledFields: [] }
+  );
+
   if (schema && dmmfSchema) {
     const idProperty = dmmfSchema.find((property) => property.isId);
 
@@ -55,6 +72,14 @@ export function getSchemas(
       const dmmfProperty = dmmfSchema.find(
         (dmmfProperty) => dmmfProperty.name === property
       );
+
+      if (
+        dmmfProperty &&
+        requiredFields?.includes(dmmfProperty.name) &&
+        !schema.required?.includes(dmmfProperty.name)
+      ) {
+        schema.required = [...schema.required, dmmfProperty.name];
+      }
 
       if (
         dmmfProperty &&

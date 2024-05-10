@@ -54,8 +54,8 @@ const TextareaWidget = <
       name={id}
       className={clsx(
         "form-control",
-        "focus:ring-nextadmin-primary-600 block w-full rounded-md border-0 px-2 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset disabled:cursor-not-allowed disabled:bg-gray-200 disabled:opacity-50 sm:text-sm sm:leading-6",
-        { "ring-red-600": rawErrors }
+        "dark:bg-dark-nextadmin-background-subtle text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default dark:ring-dark-nextadmin-border-strong block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-colors duration-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6",
+        { "ring-red-600 dark:ring-red-400": rawErrors }
       )}
       value={value ? value : ""}
       placeholder={placeholder}
