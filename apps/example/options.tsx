@@ -99,7 +99,6 @@ export const options: NextAdminOptions = {
           },
           avatar: {
             format: "file",
-            required: true,
             handler: {
               /*
                * Include your own upload handler here,
