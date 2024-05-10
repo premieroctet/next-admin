@@ -32,7 +32,7 @@ export const Selector = ({
     setAllOptions,
     totalSearchedItems,
   } = useSearchPaginatedResource({
-    resourceName: name,
+    fieldName: name,
     initialOptions: options,
   });
   const [optionsLeft, setOptionsLeft] = useState<Enumeration[]>(() => {

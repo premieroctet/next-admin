@@ -86,7 +86,7 @@ export const submitForm = async (
       dmmfSchema?.fields!,
       schema,
       resource,
-      resourceId === undefined,
+      resourceId,
       fields
     );
 

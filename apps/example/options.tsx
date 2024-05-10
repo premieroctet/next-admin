@@ -174,9 +174,13 @@ export const options: NextAdminOptions = {
             format: "richtext-html",
           },
           categories: {
-            optionFormatter: (category) =>
-              `${category.name} Cat.${category.id}`,
-            display: "table",
+            optionFormatter: (category) => {
+              return `${category.name} Cat.${category.id}`;
+            },
+            display: "list",
+            orderField: "order",
+            relationshipSearchField: "category",
+            isExplicitManyToMany: true,
           },
         },
         display: [

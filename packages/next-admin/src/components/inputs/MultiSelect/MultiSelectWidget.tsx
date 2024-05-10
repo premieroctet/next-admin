@@ -49,6 +49,9 @@ const MultiSelectWidget = (props: Props) => {
       ? fieldOptions.display ?? "select"
       : "select";
 
+  // @ts-expect-error
+  const fieldSortable = displayMode === "list" && !!fieldOptions?.orderField;
+
   return (
     <div className="relative" ref={containerRef}>
       <select
@@ -104,6 +107,8 @@ const MultiSelectWidget = (props: Props) => {
             schema={schema}
             onRemoveClick={onRemoveClick}
             deletable={!props.disabled}
+            sortable={fieldSortable}
+            onUpdateFormData={onChange}
           />
           <Button
             onClick={() => {
