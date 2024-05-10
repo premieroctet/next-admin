@@ -167,6 +167,10 @@ export type EditFieldsOptions<T extends ModelName> = {
      * a boolean to indicate that the field is read only.
      */
     disabled?: boolean;
+    /**
+     * a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false
+     */
+    required?: true;
   } & (P extends keyof ObjectField<T>
     ? {
         /**
@@ -646,6 +650,7 @@ export type CustomInputProps = Partial<{
   readonly: boolean;
   rawErrors: string[];
   disabled: boolean;
+  required?: boolean;
 }>;
 
 export type TranslationKeys =
