@@ -1,212 +1,171 @@
-import { CloudArrowUpIcon, DocumentIcon } from "@heroicons/react/24/outline";
+import {
+  CloudArrowUpIcon,
+  DocumentIcon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import { useI18n } from "../../context/I18nContext";
 
 const FileWidget = (props: WidgetProps) => {
-  const [fileInfo, setFileInfo] = useState<number | null>(
-    props.value ? props.value : null
-  );
-  const [hasChanged, setHasChanged] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const [file, setFile] = useState<File>();
   const [fileIsImage, setFileIsImage] = useState(false);
-  const [fileImage, setFileImage] = useState<string | null>(props.value);
-  const [fileName, setFileName] = useState<string | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [fileData, setFileData] = useState<string | null>(props.value);
+
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [hasChanged, setHasChanged] = useState(false);
   const { t } = useI18n();
   const [isDragging, setIsDragging] = useState(false);
 
-  const handleFileSelect = (file: File) => {
-    const { size } = file;
-    setFileInfo(size);
-    setFileName(file.name);
-
-    if (file.type.includes("image")) {
-      const reader = new FileReader();
-
-      reader.onload = () => {
-        setFileIsImage(true);
-        setFileImage(reader.result as string);
-      };
-
-      reader.readAsDataURL(file);
-    } else {
-      setFileImage(null);
-      setFileIsImage(false);
-    }
-  };
-
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setHasChanged(true);
-    const selectedFile = event.target.files?.[0];
+    const selectedFile = event.target.files;
     if (selectedFile) {
-      handleFileSelect(selectedFile);
-    }
-  };
-
-  const getFileType = () => {
-    if (!props.value) {
-      return;
-    }
-
-    try {
-      const img = new Image();
-
-      img.onload = () => {
-        setFileIsImage(true);
-        setFileImage(props.value);
-      };
-
-      img.onerror = () => {
-        setFileIsImage(false);
-        setFileImage(props.value);
-      };
-
-      img.src = props.value as string;
-    } catch (error) {
-      setFileIsImage(false);
-    }
-  };
-
-  const onCheckDelete = (evt: ChangeEvent<HTMLInputElement>) => {
-    setIsDeleting(evt.target.checked);
-    if (inputRef.current) {
-      inputRef.current.value = "";
+      setHasChanged(true);
+      setFile(selectedFile[0]);
     }
   };
 
   useEffect(() => {
-    getFileType();
+    if (props.value) {
+      fetch(props.value)
+        .then((res) => {
+          return res.blob();
+        })
+        .then((blob) => {
+          setFile(new File([blob], blob.name, { type: blob.type }));
+        });
+    }
   }, []);
 
-  let isLink = false;
+  const handleDelete = () => {
+    setFile(undefined);
+  };
 
-  try {
-    isLink = Boolean(new URL(props.value as string));
-  } catch (error) {
-    isLink = false;
-  }
+  const handleDrop = (event: React.DragEvent) => {
+    if (!props.disabled) {
+      event.preventDefault();
+      setFile(event.dataTransfer?.files[0]);
+      setIsDragging(false);
+    }
+  };
+
+  useEffect(() => {
+    if (inputRef?.current) {
+      const dataTransfer = new DataTransfer();
+      if (file) {
+        dataTransfer.items.add(file);
+        const reader = new FileReader();
+        reader.onload = () => {
+          setFileIsImage(file.type.includes("image"));
+          if (hasChanged) {
+            setFileData(reader.result as string);
+          }
+        };
+
+        reader.readAsDataURL(file);
+      }
+      inputRef.current.files = dataTransfer.files;
+    }
+  }, [file]);
 
   return (
-    <div className="relative">
-      <div className="relative flex flex-col items-start gap-3 py-1">
-        {fileInfo && (
-          <div className="flex items-end gap-4">
-            <div className="relative flex flex-col items-center gap-1 space-x-2">
-              <a
-                href={isLink ? props.value : undefined}
-                className="relative"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {fileIsImage ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={fileImage!} alt="file" className="h-32" />
-                ) : (
-                  <DocumentIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-12 w-12" />
+    <div className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted relative flex flex-col items-start space-y-2">
+      {
+        <div
+          className={clsx(
+            "border-nextadmin-border-default dark:border-dark-nextadmin-border-default hover:bg-dark-nextadmin-background-subtle relative flex w-full justify-center rounded-lg border-2 border-dashed px-6 py-10",
+            {
+              "bg-dark-nextadmin-background-subtle": isDragging,
+              "opacity-50": props.disabled,
+            },
+            file && "hidden"
+          )}
+          onDrop={handleDrop}
+          onDragOver={(evt) => {
+            if (!props.disabled) {
+              evt.preventDefault();
+            }
+          }}
+          onDragEnter={(evt) => {
+            if (!props.disabled) {
+              evt.preventDefault();
+              setIsDragging(true);
+            }
+          }}
+          onDragLeave={(evt) => {
+            if (!props.disabled) {
+              evt.preventDefault();
+              setIsDragging(false);
+            }
+          }}
+        >
+          <div className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-center">
+            <CloudArrowUpIcon className="mx-auto h-8 w-8" />
+            <div className="mt-4 flex text-sm leading-6">
+              <label
+                htmlFor={props.id}
+                className={clsx(
+                  "text-nextadmin-primary-600 hover:text-nextadmin-primary-500 rounded-md font-semibold focus-visible:outline-none"
                 )}
-              </a>
-              {!!fileName && (
-                <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ml-2 text-sm font-medium">
-                  {fileName}
-                </span>
-              )}
-            </div>
-            {!props.disabled && (
-              <div
-                className={clsx("relative flex items-start", {
-                  "mb-5": !!fileName,
-                })}
               >
-                <div className="flex h-6 items-center">
-                  <input
-                    id="delete_file"
-                    type="checkbox"
-                    className="h-4 w-4 rounded"
-                    onChange={onCheckDelete}
-                  />
-                </div>
-                <div className="ml-2 text-sm leading-6">
-                  <label
-                    htmlFor="delete_file"
-                    className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted font-medium"
-                  >
-                    {t("form.widgets.file_upload.delete")}
-                  </label>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-        {((props.disabled && !fileInfo) || !props.disabled) && (
-          <div
-            className={clsx(
-              "border-nextadmin-border-default dark:border-dark-nextadmin-border-strong flex w-full justify-center rounded-lg border border-dashed px-6 py-10",
-              {
-                "bg-dark-nextadmin-background-subtle": isDragging,
-                "opacity-50": props.disabled,
-              }
-            )}
-            onDrop={(evt) => {
-              if (!props.disabled) {
-                evt.preventDefault();
-                const files = evt.dataTransfer.files;
-
-                setHasChanged(true);
-                handleFileSelect(files[0]);
-                setIsDragging(false);
-              }
-            }}
-            onDragOver={(evt) => {
-              if (!props.disabled) {
-                evt.preventDefault();
-              }
-            }}
-            onDragEnter={(evt) => {
-              if (!props.disabled) {
-                evt.preventDefault();
-                setIsDragging(true);
-              }
-            }}
-            onDragLeave={(evt) => {
-              if (!props.disabled) {
-                evt.preventDefault();
-                setIsDragging(false);
-              }
-            }}
-          >
-            <div className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-center">
-              <CloudArrowUpIcon className="mx-auto h-8 w-8" />
-              <div className="mt-4 flex text-sm leading-6">
-                <label
-                  htmlFor={props.id}
+                <span>{t("form.widgets.file_upload.label")}</span>
+                <input
+                  type="file"
                   className={clsx(
-                    "text-nextadmin-primary-600 hover:text-nextadmin-primary-500 relative cursor-pointer rounded-md font-semibold focus-visible:outline-none",
-                    {
-                      "cursor-not-allowed": props.disabled,
-                    }
+                    "absolute inset-0 h-full w-full opacity-0",
+                    props.disabled
+                      ? "point-event-none cursor-not-allowed"
+                      : "cursor-pointer"
                   )}
-                >
-                  <span>{t("form.widgets.file_upload.label")}</span>
-                  <input
-                    type="file"
-                    className="sr-only"
-                    ref={inputRef}
-                    id={props.id}
-                    disabled={props.disabled}
-                    name={isDeleting || hasChanged ? props.name : ""}
-                    onChange={handleFileChange}
-                  />
-                </label>
-                <p className="pl-1">
-                  {t("form.widgets.file_upload.drag_and_drop")}
-                </p>
-              </div>
+                  ref={inputRef}
+                  id={props.id}
+                  disabled={props.disabled}
+                  name={props.name}
+                  onChange={handleFileChange}
+                />
+              </label>
+              <p className="pl-1">
+                {t("form.widgets.file_upload.drag_and_drop")}
+              </p>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      }
+      {file && (
+        <div
+          className={clsx(
+            "ring-nextadmin-border-default dark:ring-dark-nextadmin-border-default relative flex cursor-default items-center justify-between rounded-md px-3 px-8 py-2 text-sm placeholder-gray-500 shadow-sm ring-1"
+          )}
+        >
+          <a
+            href={fileData ?? undefined}
+            className="relative flex flex-1 cursor-pointer flex-col items-center gap-2"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {fileIsImage ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={fileData!} alt="file" className="h-32" />
+            ) : (
+              <DocumentIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-10 w-10" />
+            )}
+            {file.name && file.name !== "undefined" && (
+              <span className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-sm">
+                {file.name}
+              </span>
+            )}
+          </a>
+          {
+            <div
+              onClick={handleDelete}
+              className={clsx(props.disabled && "hidden")}
+            >
+              <XMarkIcon className="absolute right-2 top-2 h-5 w-5 cursor-pointer text-gray-400" />
+            </div>
+          }
+        </div>
+      )}
     </div>
   );
 };
