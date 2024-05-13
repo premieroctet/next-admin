@@ -67,11 +67,10 @@ model Category {
 model CategoriesOnPosts {
   id         Int      @default(autoincrement())
   post       Post     @relation(fields: [postId], references: [id])
-  postId     Int      @map("B")
+  postId     Int      
   category   Category @relation(fields: [categoryId], references: [id])
-  categoryId Int      @map("A")
+  categoryId Int      
   order      Int      @default(0)
 
   @@id([postId, categoryId])
-  @@map("_category")
 }
