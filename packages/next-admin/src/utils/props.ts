@@ -224,7 +224,7 @@ export async function getPropsFromParams({
 
             if (
               // @ts-expect-error
-              edit.fields?.[key as Field<ModelName>]?.display === "table"
+              edit?.fields?.[key as Field<ModelName>]?.display === "table"
             ) {
               if (!relatedResourceOptions?.display) {
                 throw new Error(
@@ -258,7 +258,7 @@ export async function getPropsFromParams({
             if (fieldTypeDmmf && dmmfSchema) {
               if (
                 // @ts-expect-error
-                edit.fields?.[key as Field<ModelName>]?.display === "table"
+                edit?.fields?.[key as Field<ModelName>]?.display === "table"
               ) {
                 data[key] = mapDataList({
                   context: { locale },

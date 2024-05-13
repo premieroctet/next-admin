@@ -247,7 +247,7 @@ export const transformData = <M extends ModelName>(
       if (Array.isArray(data[key])) {
         acc[key] = data[key].map((item: any) => {
           if (
-            !!editOptions.fields?.[key as Field<M>] &&
+            !!editOptions?.fields?.[key as Field<M>] &&
             "display" in editOptions.fields[key as Field<M>]! &&
             // @ts-expect-error
             editOptions.fields[key as keyof ObjectField<M>]!.display === "table"
@@ -655,7 +655,7 @@ export const removeHiddenProperties =
     if (!editOptions?.display) return schema;
     const properties = schema.definitions[resource].properties;
     Object.keys(properties).forEach((property) => {
-      if (!editOptions.display?.includes(property as Field<M>)) {
+      if (!editOptions?.display?.includes(property as Field<M>)) {
         delete properties[property as Field<M>];
       }
     });
