@@ -9,16 +9,22 @@ declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
 };
 
+type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
+
 /** Type for Model */
 
 export type ModelName = Prisma.ModelName;
-
-export type ScalarField<T extends ModelName> =
-  Prisma.TypeMap["model"][T]["payload"]["scalars"];
-export type ObjectField<T extends ModelName> =
-  Prisma.TypeMap["model"][T]["payload"]["objects"];
-
 export type Payload = Prisma.TypeMap["model"][ModelName]["payload"];
+export type ModelPayload<M extends ModelName> =
+  Prisma.TypeMap["model"][M]["payload"];
+
+export type ScalarField<T extends ModelName> = ModelPayload<T>["scalars"];
+export type ObjectField<T extends ModelName> = ModelPayload<T>["objects"];
+export type NonArrayObjectField<T extends ModelName> = OmitNever<{
+  [K in keyof ModelPayload<T>["objects"]]: ModelPayload<T>["objects"][K] extends Array<any>
+    ? never
+    : ModelPayload<T>["objects"][K];
+}>;
 
 export type ModelFromPayload<
   P extends Payload,
@@ -94,7 +100,39 @@ export type ListFieldsOptions<T extends ModelName> = {
         : Model<T>[P],
       context?: NextAdminContext
     ) => ReactNode;
-  };
+  } & (P extends keyof NonArrayObjectField<T>
+    ? {
+        /**
+         * The field to use for relationship sorting, defaults to the id field
+         */
+        sortBy?: keyof ModelFromProperty<T, P>;
+      }
+    : {});
+};
+
+export enum LogicalOperator {
+  And = "AND",
+  Or = "OR",
+  Not = "NOT",
+}
+
+export type Filter<T extends ModelName> =
+  Prisma.TypeMap["model"][T]["operations"]["findMany"]["args"]["where"];
+
+export type FilterWrapper<T extends ModelName> = {
+  /**
+   * a string to identify filter, must be unique
+   */
+  name: string;
+  /**
+   * a boolean to set filter as default active on list page
+   */
+  active?: boolean;
+  /**
+   * a Prisma filter, equivalent to `where` clause in Prisma queries
+   * @link https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators
+   */
+  value: Filter<T>;
 };
 
 export type EditFieldsOptions<T extends ModelName> = {
@@ -129,6 +167,10 @@ export type EditFieldsOptions<T extends ModelName> = {
      * a boolean to indicate that the field is read only.
      */
     disabled?: boolean;
+    /**
+     * a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false
+     */
+    required?: true;
   } & (P extends keyof ObjectField<T>
     ? {
         /**
@@ -137,6 +179,15 @@ export type EditFieldsOptions<T extends ModelName> = {
          * @returns
          */
         optionFormatter?: (item: ModelFromProperty<T, P>) => string;
+        /**
+         * Property to indicate how to display the multi select widget :
+         * - `list`: displayed as a list of elements that has a link and a delete button
+         * - `table`: displayed as the table list for a resource. Requires to have display options configured for the related model
+         * - `select`: displayed as a multi select dropdown
+         *
+         * @default "select"
+         */
+        display?: "list" | "table" | "select";
       }
     : {});
 };
@@ -157,7 +208,7 @@ export type Handler<
    * @param file
    * @returns
    */
-  upload?: (file: Buffer) => Promise<string>;
+  upload?: (file: File) => Promise<string>;
   /**
    * an optional string displayed in the input field as an error message in case of a failure during the upload handler.
    */
@@ -221,6 +272,10 @@ export type ListOptions<T extends ModelName> = {
      */
     direction?: Prisma.SortOrder;
   };
+  /**
+   * define a set of Prisma filters that user can choose in list
+   */
+  filters?: FilterWrapper<T>[];
 };
 
 export type EditOptions<T extends ModelName> = {
@@ -422,7 +477,10 @@ export type Body<F> = {
 };
 
 export type Order<M extends ModelName> = {
-  [P in Field<M>]?: Prisma.SortOrder | { _count: Prisma.SortOrder };
+  [P in Field<M>]?:
+    | Prisma.SortOrder
+    | { _count: Prisma.SortOrder }
+    | { [key: string]: Prisma.SortOrder };
 };
 
 export type Select<M extends ModelName> = {
@@ -438,6 +496,7 @@ export type Select<M extends ModelName> = {
 export type Enumeration = {
   label: string;
   value: string;
+  data?: any;
 };
 
 export type PrismaListRequest<M extends ModelName> = {
@@ -545,8 +604,6 @@ export type MainLayoutProps = Pick<
   | "resourcesTitles"
   | "customPages"
   | "basePath"
-  | "message"
-  | "error"
   | "isAppDir"
   | "translations"
   | "locale"
@@ -593,6 +650,7 @@ export type CustomInputProps = Partial<{
   readonly: boolean;
   rawErrors: string[];
   disabled: boolean;
+  required?: boolean;
 }>;
 
 export type TranslationKeys =

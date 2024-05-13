@@ -6,6 +6,8 @@ import {
   ActionParams,
   AdminComponentProps,
   EditOptions,
+  Field,
+  ListOptions,
   MainLayoutProps,
   ModelIcon,
   ModelName,
@@ -14,7 +16,11 @@ import {
 } from "../types";
 import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
-import { getMappedDataList, selectPayloadForModel } from "./prisma";
+import {
+  getMappedDataList,
+  mapDataList,
+  selectPayloadForModel,
+} from "./prisma";
 import {
   getModelIdProperty,
   getPrismaModelForResource,
@@ -89,13 +95,11 @@ export async function getPropsFromParams({
     resourcesTitles,
     basePath,
     customPages,
-    error,
-    message,
     title,
     sidebar,
     resourcesIcons,
     externalLinks,
-  } = getMainLayoutProps({ options, params, searchParams, isAppDir });
+  } = getMainLayoutProps({ options, params, isAppDir });
 
   const resourcesIdProperty = resources!.reduce(
     (acc, resource) => {
@@ -125,8 +129,6 @@ export async function getPropsFromParams({
     action: action
       ? createBoundServerAction({ schema, params }, action)
       : undefined,
-    message,
-    error,
     customPages,
     resourcesTitles,
     resourcesIdProperty,
@@ -210,11 +212,66 @@ export async function getPropsFromParams({
 
       if (resourceId !== undefined) {
         const select = selectPayloadForModel(resource, edit, "object");
+
+        Object.entries(select).forEach(([key, value]) => {
+          const fieldTypeDmmf = dmmfSchema?.fields.find(
+            (field) => field.name === key
+          )?.type;
+
+          if (fieldTypeDmmf && dmmfSchema) {
+            const relatedResourceOptions =
+              options.model?.[fieldTypeDmmf as ModelName]?.list;
+
+            if (
+              // @ts-expect-error
+              edit?.fields?.[key as Field<ModelName>]?.display === "table"
+            ) {
+              if (!relatedResourceOptions?.display) {
+                throw new Error(
+                  `'table' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
+                );
+              }
+
+              select[key] = {
+                select: selectPayloadForModel(
+                  fieldTypeDmmf as ModelName,
+                  relatedResourceOptions as ListOptions<ModelName>,
+                  "object"
+                ),
+              };
+            }
+          }
+        });
+
         // @ts-expect-error
         let data = await prisma[resource].findUniqueOrThrow({
           select,
           where: { [idProperty]: resourceId },
         });
+
+        Object.entries(data).forEach(([key, value]) => {
+          if (Array.isArray(value)) {
+            const fieldTypeDmmf = dmmfSchema?.fields.find(
+              (field) => field.name === key
+            )?.type;
+
+            if (fieldTypeDmmf && dmmfSchema) {
+              if (
+                // @ts-expect-error
+                edit?.fields?.[key as Field<ModelName>]?.display === "table"
+              ) {
+                data[key] = mapDataList({
+                  context: { locale },
+                  appDir: isAppDir,
+                  fetchData: value,
+                  options,
+                  resource: fieldTypeDmmf as ModelName,
+                });
+              }
+            }
+          }
+        });
+
         data = transformData(data, resource, edit, options);
         return {
           ...defaultProps,
@@ -246,14 +303,12 @@ export async function getPropsFromParams({
 type GetMainLayoutPropsParams = {
   options: NextAdminOptions;
   params?: string[];
-  searchParams?: { [key: string]: string | string[] | undefined };
   isAppDir?: boolean;
 };
 
 export const getMainLayoutProps = ({
   options,
   params,
-  searchParams,
   isAppDir = false,
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   const resources = getResources(options);
@@ -264,14 +319,6 @@ export const getMainLayoutProps = ({
     path: path,
     icon: options.pages![path as keyof typeof options.pages].icon,
   }));
-
-  let message = undefined;
-
-  try {
-    message = searchParams?.message
-      ? JSON.parse(searchParams.message as string)
-      : null;
-  } catch {}
 
   const resourcesTitles = resources.reduce(
     (acc, resource) => {
@@ -299,8 +346,6 @@ export const getMainLayoutProps = ({
     resource,
     basePath: options.basePath,
     customPages,
-    error: searchParams?.error as string,
-    message,
     resourcesTitles,
     isAppDir,
     title: options.title ?? "Admin",

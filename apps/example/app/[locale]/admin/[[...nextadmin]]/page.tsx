@@ -1,14 +1,24 @@
 import {
   deleteItem,
-  submitFormAction,
   searchResource,
+  submitFormAction,
 } from "@/actions/nextadmin";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import schema from "@/prisma/json-schema/json-schema.json";
 import { NextAdmin } from "@premieroctet/next-admin";
 import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
+import { Metadata, Viewport } from "next";
 import { getMessages } from "next-intl/server";
+
+export const viewport: Viewport = {
+  initialScale: 1,
+  width: "device-width",
+};
+
+export const metadata: Metadata = {
+  icons: "/favicon.ico",
+};
 
 export default async function AdminPage({
   params,

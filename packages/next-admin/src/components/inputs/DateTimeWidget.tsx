@@ -1,11 +1,11 @@
 import {
-  getTemplate,
-  localToUTC,
-  utcToLocal,
   FormContextType,
   RJSFSchema,
   StrictRJSFSchema,
   WidgetProps,
+  getTemplate,
+  localToUTC,
+  utcToLocal,
 } from "@rjsf/utils";
 import { useMemo } from "react";
 
@@ -32,7 +32,12 @@ export default function DateTimeWidget<
 
   return (
     <>
-      <input type="hidden" name={name} value={hiddenValue} />
+      <input
+        name={name}
+        defaultValue={hiddenValue}
+        className="absolute inset-0 -z-10 h-full w-full opacity-0"
+        required={props.required}
+      />
       <BaseInputTemplate
         type="datetime-local"
         {...props}

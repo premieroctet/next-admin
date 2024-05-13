@@ -17,6 +17,29 @@ export const options: NextAdminOptions = {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email", "role"],
         copy: ["email"],
+        filters: [
+          {
+            name: "is Admin",
+            active: false,
+            value: {
+              role: {
+                equals: "ADMIN",
+              },
+            },
+          },
+          {
+            name: "over 18",
+            value: {
+              birthDate: {
+                lte: (() => {
+                  const date = new Date();
+                  date.setFullYear(date.getFullYear() - 18);
+                  return date;
+                })(),
+              },
+            },
+          },
+        ],
         fields: {
           role: {
             formatter: (role) => {
@@ -63,6 +86,9 @@ export const options: NextAdminOptions = {
           metadata: "col-span-4 row-start-9",
         },
         fields: {
+          name: {
+            required: true,
+          },
           email: {
             validate: (email) => email.includes("@") || "form.user.email.error",
             helperText: "Must be a valid email address",
@@ -79,7 +105,7 @@ export const options: NextAdminOptions = {
                * for example you can upload the file to an S3 bucket.
                * Make sure to return a string.
                */
-              upload: async (file: Buffer) => {
+              upload: async (file: File) => {
                 return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
               },
             },
@@ -117,6 +143,7 @@ export const options: NextAdminOptions = {
       toString: (post) => `${post.title}`,
       title: "Posts",
       icon: "NewspaperIcon",
+      permissions: ["edit", "delete", "create"],
       list: {
         display: ["id", "title", "published", "author", "categories", "rate"],
         search: ["title", "content"],
@@ -124,6 +151,11 @@ export const options: NextAdminOptions = {
           author: {
             formatter: (author) => {
               return <strong>{author.name}</strong>;
+            },
+          },
+          published: {
+            formatter: (value: boolean) => {
+              return value ? "Published" : "Unpublished";
             },
           },
         },
@@ -136,6 +168,7 @@ export const options: NextAdminOptions = {
           categories: {
             optionFormatter: (category) =>
               `${category.name} Cat.${category.id}`,
+            display: "table",
           },
         },
         display: [

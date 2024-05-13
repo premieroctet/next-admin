@@ -1,6 +1,6 @@
+import { notFound } from "next/navigation";
 import { PropsWithChildren } from "react";
 import "../../styles.css";
-import { notFound } from "next/navigation";
 
 type Props = {
   params: {
@@ -19,7 +19,7 @@ export default function Layout({
   }
 
   return (
-    <html lang={locale}>
+    <html lang={locale} suppressHydrationWarning={true}>
       <body className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default">
         {children}
       </body>

@@ -1,9 +1,11 @@
 import { $Enums, Prisma, PrismaClient } from "@prisma/client";
+import { cloneDeep } from "lodash";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   EditOptions,
   Enumeration,
   Field,
+  Filter,
   ListOptions,
   ModelName,
   NextAdminContext,
@@ -23,9 +25,10 @@ import { capitalize, isScalar, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
   fieldsFiltered?: Prisma.DMMF.Field[],
-  search?: string
+  search?: string,
+  otherFilters?: Filter<ModelName>[]
 ) => {
-  return search
+  const searchFilter = search
     ? {
         OR: fieldsFiltered
           ?.filter((field) => {
@@ -66,20 +69,41 @@ export const createWherePredicate = (
           .filter(Boolean),
       }
     : {};
+
+  const externalFilters = otherFilters ?? [];
+
+  return { AND: [...externalFilters, searchFilter] };
 };
 
 export const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
-  options?: NextAdminOptions
+  options?: NextAdminOptions,
+  skipFilters: boolean = false
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
+  let filtersParams: string[] = [];
+  try {
+    filtersParams = skipFilters
+      ? []
+      : (JSON.parse(searchParams.get("filters")) as string[]);
+  } catch {}
   const page = Number(searchParams.get("page")) || 1;
   const itemsPerPage =
     Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
 
   const fieldSort = options?.model?.[resource]?.list?.defaultSort;
+
+  const fieldFilters = options?.model?.[resource]?.list?.filters
+    ?.filter((filter) => {
+      if (Array.isArray(filtersParams)) {
+        return filtersParams.includes(filter.name);
+      } else {
+        return filter.active;
+      }
+    })
+    ?.map((filter) => filter.value);
 
   let orderBy: Order<typeof resource> = {};
   const sortParam =
@@ -96,13 +120,26 @@ export const preparePrismaListRequest = <M extends ModelName>(
   if (orderValue in Prisma.SortOrder) {
     if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
       orderBy[sortParam] = orderValue;
-    } else if (
-      modelFieldSortParam?.kind === "object" &&
-      modelFieldSortParam.isList
-    ) {
-      orderBy[modelFieldSortParam.name as Field<M>] = {
-        _count: orderValue,
-      };
+    } else if (modelFieldSortParam?.kind === "object") {
+      if (modelFieldSortParam.isList) {
+        orderBy[modelFieldSortParam.name as Field<M>] = {
+          _count: orderValue,
+        };
+      } else {
+        const modelFieldSortProperty =
+          options?.model?.[resource]?.list?.fields?.[
+            modelFieldSortParam.name as Field<M>
+            // @ts-expect-error
+          ]?.sortBy;
+
+        const resourceSortByField =
+          modelFieldSortProperty ??
+          getModelIdProperty(modelFieldSortParam.type as ModelName);
+
+        orderBy[modelFieldSortParam.name as Field<M>] = {
+          [resourceSortByField]: orderValue,
+        };
+      }
     }
   }
 
@@ -120,7 +157,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
     select = selectPayloadForModel(resource, undefined, "object");
   }
 
-  where = createWherePredicate(fieldsFiltered, search);
+  where = createWherePredicate(fieldsFiltered, search, fieldFilters);
 
   return {
     select,
@@ -150,9 +187,14 @@ export const optionsFromResource = async ({
   property,
   ...args
 }: OptionsFromResourceParams) => {
-  const data = await fetchDataList(args);
+  const data = await fetchDataList(args, true);
   const { data: dataItems, total, error } = data;
   const { resource } = args;
+  const idProperty = getModelIdProperty(resource);
+  const dataTableItems = mapDataList({
+    ...args,
+    fetchData: cloneDeep(dataItems),
+  });
 
   const toStringModel = getToStringForRelations(
     originResource,
@@ -160,12 +202,15 @@ export const optionsFromResource = async ({
     args.resource,
     args.options
   );
-  const idProperty = getModelIdProperty(resource);
   return {
     data: dataItems.map((item): Enumeration => {
+      const dataTableItem = dataTableItems.find(
+        (dataTableItem) => dataTableItem[idProperty].value === item[idProperty]
+      );
       return {
         label: toStringModel ? toStringModel(item) : item[idProperty],
         value: item[idProperty],
+        data: dataTableItem,
       };
     }),
     total,
@@ -180,16 +225,15 @@ type FetchDataListParams = {
   searchParams: URLSearchParams;
 };
 
-export const fetchDataList = async ({
-  prisma,
-  resource,
-  options,
-  searchParams,
-}: FetchDataListParams) => {
+export const fetchDataList = async (
+  { prisma, resource, options, searchParams }: FetchDataListParams,
+  skipFilters: boolean = false
+) => {
   const prismaListRequest = preparePrismaListRequest(
     resource,
     searchParams,
-    options
+    options,
+    skipFilters
   );
   let data: any[] = [];
   let total: number;
@@ -222,20 +266,23 @@ export const fetchDataList = async ({
   };
 };
 
-export const getMappedDataList = async ({
+export const mapDataList = ({
   context,
-  appDir = false,
+  appDir,
+  fetchData,
   ...args
-}: GetMappedDataListParams) => {
-  const { data: fetchData, total, error } = await fetchDataList(args);
+}: Pick<
+  GetMappedDataListParams,
+  "resource" | "options" | "context" | "appDir"
+> & { fetchData: any[] }) => {
   const { resource, options } = args;
   const dmmfSchema = getPrismaModelForResource(resource);
-  const data = await findRelationInData(fetchData, dmmfSchema?.fields);
+  const data = findRelationInData(fetchData, dmmfSchema?.fields);
   const listFields = options.model?.[resource]?.list?.fields ?? {};
 
   data.forEach((item, index) => {
     Object.keys(item).forEach((key) => {
-      let itemValue;
+      let itemValue = null;
       const model = capitalize(key) as ModelName;
       const idProperty = getModelIdProperty(model);
       if (typeof item[key] === "object" && item[key] !== null) {
@@ -268,7 +315,7 @@ export const getMappedDataList = async ({
         appDir &&
         key in listFields &&
         listFields[key as keyof typeof listFields]?.formatter &&
-        !!itemValue
+        itemValue !== null
       ) {
         item[key].__nextadmin_formatted = listFields[
           key as keyof typeof listFields
@@ -287,9 +334,18 @@ export const getMappedDataList = async ({
       }
     });
   });
+  return data;
+};
+
+export const getMappedDataList = async ({
+  context,
+  appDir = false,
+  ...args
+}: GetMappedDataListParams) => {
+  const { data: fetchData, total, error } = await fetchDataList(args);
 
   return {
-    data,
+    data: mapDataList({ context, appDir, fetchData, ...args }),
     total,
     error,
   };

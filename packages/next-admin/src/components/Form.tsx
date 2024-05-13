@@ -38,6 +38,7 @@ import {
   ModelAction,
   ModelIcon,
   ModelName,
+  ModelOptions,
   Permission,
   SubmitFormResult,
 } from "../types";
@@ -45,6 +46,7 @@ import { getSchemas } from "../utils/jsonSchema";
 import { formatLabel, slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
+import Message from "./Message";
 import ArrayField from "./inputs/ArrayField";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
@@ -83,6 +85,7 @@ export type FormProps = {
   actions?: ModelAction[];
   searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
   icon?: ModelIcon;
+  resourcesIdProperty: Record<ModelName, string>;
 };
 
 const fields: CustomForm["props"]["fields"] = {
@@ -111,37 +114,26 @@ const Form = ({
   actions,
   searchPaginatedResourceAction,
   icon,
+  resourcesIdProperty,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
-  const { basePath, options: globalOptions } = useConfig();
-  const options = globalOptions?.model?.[resource];
+  const { basePath, options } = useConfig();
+  const modelOptions: ModelOptions<typeof resource>[typeof resource] =
+    options?.model?.[resource];
   const canDelete =
-    !options?.permissions || options?.permissions?.includes(Permission.DELETE);
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.DELETE);
   const canEdit =
-    !options?.permissions || options?.permissions?.includes(Permission.EDIT);
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.EDIT);
   const canCreate =
-    !options?.permissions || options?.permissions?.includes(Permission.CREATE);
-  const disabledFields = options?.edit?.fields
-    ? (Object.entries(options?.edit?.fields)
-        .map(
-          ([name, opts]: [
-            string,
-            EditFieldsOptions<ModelName>[Field<ModelName>],
-          ]) => {
-            if (opts?.disabled) {
-              return name;
-            }
-
-            return undefined;
-          }
-        )
-        .filter(Boolean) as string[])
-    : [];
+    !modelOptions?.permissions ||
+    modelOptions?.permissions?.includes(Permission.CREATE);
   const { edit, id, ...schemas } = getSchemas(
     data,
     schema,
     dmmfSchema,
-    disabledFields
+    modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
   );
   const { router } = useRouterInternal();
   const { t } = useI18n();
@@ -165,59 +157,11 @@ const Form = ({
 
     return (
       <div className="mt-4 flex justify-between space-x-2">
-        <div>
-          {edit && canDelete && (
-            <Button
-              variant="destructiveOutline"
-              className="flex gap-2"
-              tabIndex={-1}
-              onClick={(e) => {
-                if (!confirm("Are you sure to delete this ?")) {
-                  e.preventDefault();
-                  return;
-                }
-
-                const deletionInput = document.createElement("input");
-                deletionInput.type = "hidden";
-                deletionInput.name = "__admin_action";
-                deletionInput.value = "delete";
-
-                e.currentTarget.form?.appendChild(deletionInput);
-
-                e.currentTarget.form?.dispatchEvent(
-                  new CustomEvent("submit", { cancelable: true })
-                );
-                e.currentTarget.form?.requestSubmit();
-              }}
-              type="button"
-              loading={isPending}
-            >
-              <TrashIcon className="h-4 w-4" />
-              {t("form.button.delete.label")}
-            </Button>
-          )}
-        </div>
         {((edit && canEdit) || (!edit && canCreate)) && (
-          <div className="flex space-x-2">
+          <div className="order-2 flex space-x-2">
             <Button
               {...buttonProps}
-              variant={"ghost"}
-              className="hidden sm:block"
-              tabIndex={-1}
-              onClick={(e) => {
-                e.currentTarget.form?.dispatchEvent(
-                  new CustomEvent("submit", { cancelable: true })
-                );
-                e.currentTarget.form?.requestSubmit();
-              }}
-              type="button"
-              loading={isPending}
-            >
-              {t("form.button.save_edit.label")}
-            </Button>
-            <Button
-              {...buttonProps}
-              className="flex gap-2"
+              className="order-2 flex gap-2"
               type="submit"
               {...(edit
                 ? {
@@ -230,8 +174,40 @@ const Form = ({
               <CheckCircleIcon className="h-6 w-6" />
               {t("form.button.save.label")}
             </Button>
+            <Button
+              {...buttonProps}
+              variant={"ghost"}
+              className="order-1 hidden sm:block"
+              tabIndex={-1}
+              type="submit"
+              loading={isPending}
+            >
+              {t("form.button.save_edit.label")}
+            </Button>
           </div>
         )}
+        <div className="order-1">
+          {edit && canDelete && (
+            <Button
+              variant="destructiveOutline"
+              className="flex gap-2"
+              name="__admin_action"
+              value="delete"
+              formNoValidate
+              tabIndex={-1}
+              onClick={(e) => {
+                if (!confirm(t("form.delete.alert"))) {
+                  e.preventDefault();
+                }
+              }}
+              type="submit"
+              loading={isPending}
+            >
+              <TrashIcon className="h-4 w-4" />
+              {t("form.button.delete.label")}
+            </Button>
+          )}
+        </div>
       </div>
     );
   };
@@ -334,12 +310,13 @@ const Form = ({
         } = props;
 
         const labelAlias =
-          options?.aliases?.[id as Field<typeof resource>] ||
+          modelOptions?.aliases?.[id as Field<typeof resource>] ||
           formatLabel(label);
-        let styleField = options?.edit?.styles?.[id as Field<typeof resource>];
+        let styleField =
+          modelOptions?.edit?.styles?.[id as Field<typeof resource>];
 
         const tooltip =
-          options?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
+          modelOptions?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
 
         const sanitizedClassNames = classNames
           ?.split(",")
@@ -388,7 +365,7 @@ const Form = ({
         );
       },
       ObjectFieldTemplate: (props: ObjectFieldTemplateProps) => {
-        const styleForm = options?.edit?.styles?._form;
+        const styleForm = modelOptions?.edit?.styles?._form;
         return (
           <div className={clsx("grid", styleForm)}>
             {props.properties.map((element) => element.content)}
@@ -446,6 +423,7 @@ const Form = ({
               value={props.value}
               schema={schema}
               disabled={props.disabled}
+              required={props.required}
             />
           );
         }
@@ -520,13 +498,16 @@ const Form = ({
           />
         )}
       </div>
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default h-full max-w-full p-4 align-middle sm:p-8">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
+        <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <FormProvider
             initialValue={data}
             searchPaginatedResourceAction={searchPaginatedResourceAction}
             dmmfSchema={dmmfSchema}
             resource={resource}
+            options={options}
+            resourcesIdProperty={resourcesIdProperty}
           >
             <FormContext.Consumer>
               {({ formData, setFormData }) => (

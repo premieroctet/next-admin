@@ -234,6 +234,7 @@ This property determines how your data is displayed in the [List View](/docs/glo
 | `defaultSort`           | an optional object to determine the default sort to apply on the list                                  | undefined                                    |
 | `defaultSort.field`     | the model's field name on which the sort is applied. It is mandatory                                   |                                              |
 | `defaultSort.direction` | the sort direction to apply. It is optional                                                            |                                              |
+| `filters`               | define a set of Prisma filters that user can choose in list, see [below](#filters-property)            | undefined                                    |
 
 > Note that the `search` property is only available for `scalar` fields.
 
@@ -277,11 +278,12 @@ For the `list` property, it can take the following:
 | Name        | Description                                                                                                                                                                |
 | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `formatter` | a function that takes the field value as a parameter, and that return a JSX node. It also accepts a second argument which is the [`NextAdmin` context](#nextadmin-context) |
+| `sortBy`    | available only on many-to-one models. The name of a field of the related model to apply the sort on. Defaults to the id field of the related model.                        |
 
 For the `edit` property, it can take the following:
 
 | Name                         | Description                                                                                                                                                                  |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
 | `validate`                   | a function that takes the field value as a parameter, and that returns a boolean                                                                                             |
 | `format`                     | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                       |
 | `input`                      | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                          |
@@ -293,6 +295,18 @@ For the `edit` property, it can take the following:
 | `tooltip`                    | a tooltip content to show for the field                                                                                                                                      |
 | `helperText`                 | a helper text that is displayed underneath the input                                                                                                                         |
 | `disabled`                   | a boolean to indicate that the field is read only                                                                                                                            |
+| `display`                    | only for relation fields, indicate which display format to use between `list`, `table` or `select`. Default `select`                                                         |
+| `required`                   | a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false                        | undefined |
+
+##### `filters` property
+
+The `filters` property allow you to define a set of Prisma filters that user can apply on list page. It's an array of the type below:
+
+| Name     | Description                                                                                                                                                                  | Default value |
+| -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------- |
+| `name`   | an unique name for the filter                                                                                                                                                | undefined     |
+| `active` | a boolean to set filter active by default                                                                                                                                    | false         |
+| `value`  | a where clause Prisma filter of the related model (e.g [Prisma operators](https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators)) |               |
 
 ### `pages`
 

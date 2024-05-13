@@ -10,6 +10,7 @@ async function main() {
       create: {
         email: `user${i}@nextadmin.io`,
         name: `User ${i}`,
+        ...(i === 0 ? { role: "ADMIN" } : {}),
       },
     });
   }

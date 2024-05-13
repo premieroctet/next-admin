@@ -28,6 +28,10 @@ const buttonVariants = cva(
         sm: "h-9 px-3 rounded-md",
         lg: "h-11 px-8 rounded-md",
       },
+      icon: {
+        true: "!px-2",
+        false: "",
+      },
     },
     defaultVariants: {
       variant: "default",
@@ -53,6 +57,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       children,
       loading,
       disabled,
+      icon,
       ...props
     },
     ref
@@ -60,10 +65,10 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     const Comp = asChild ? Slot : "button";
     return (
       <Comp
-        className={clsx(buttonVariants({ variant, size, className }))}
         ref={ref}
         disabled={loading || disabled}
         {...props}
+        className={clsx(buttonVariants({ variant, size, className, icon }))}
       >
         {loading && <Spinner className="mr-2 inline h-4 w-4" />}
         {children}

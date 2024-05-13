@@ -245,10 +245,24 @@ export const transformData = <M extends ModelName>(
         options
       );
       if (Array.isArray(data[key])) {
-        acc[key] = data[key].map((item: any) => ({
-          label: toStringForRelations(item),
-          value: item[modelRelationIdField],
-        }));
+        acc[key] = data[key].map((item: any) => {
+          if (
+            !!editOptions?.fields?.[key as Field<M>] &&
+            "display" in editOptions.fields[key as Field<M>]! &&
+            // @ts-expect-error
+            editOptions.fields[key as keyof ObjectField<M>]!.display === "table"
+          ) {
+            return {
+              data: item,
+              value: item[modelRelationIdField].value,
+            };
+          }
+
+          return {
+            label: toStringForRelations(item),
+            value: item[modelRelationIdField],
+          };
+        });
       } else {
         acc[key] = data[key]
           ? {
@@ -283,7 +297,7 @@ export const transformData = <M extends ModelName>(
  *
  * @returns data
  * */
-export const findRelationInData = async (
+export const findRelationInData = (
   data: any[],
   dmmfSchema?: Prisma.DMMF.Field[]
 ) => {
@@ -300,7 +314,7 @@ export const findRelationInData = async (
         dmmfPropertyRelationToFields!.length > 0
       ) {
         const idProperty = getModelIdProperty(dmmfProperty.type as ModelName);
-        data.map((item) => {
+        data.forEach((item) => {
           if (item[dmmfPropertyName]) {
             item[dmmfPropertyName] = {
               type: "link",
@@ -315,7 +329,7 @@ export const findRelationInData = async (
           return item;
         });
       } else {
-        data.map((item) => {
+        data.forEach((item) => {
           if (item[dmmfPropertyName]) {
             item[dmmfPropertyName] = {
               type: "count",
@@ -332,7 +346,7 @@ export const findRelationInData = async (
       dmmfPropertyType === "Decimal" ||
       dmmfPropertyType === "BigInt"
     ) {
-      data.map((item) => {
+      data.forEach((item) => {
         if (item[dmmfProperty.name]) {
           if (dmmfPropertyType === "DateTime") {
             item[dmmfProperty.name] = {
@@ -352,7 +366,6 @@ export const findRelationInData = async (
       });
     }
   });
-
   return data;
 };
 
@@ -494,7 +507,7 @@ export const formattedFormData = async <M extends ModelName>(
             ["data-url", "file"].includes(
               editOptions?.[dmmfPropertyName]?.format ?? ""
             ) &&
-            formData[dmmfPropertyName] instanceof Buffer
+            formData[dmmfPropertyName] instanceof File
           ) {
             const uploadHandler =
               editOptions?.[dmmfPropertyName]?.handler?.upload;
@@ -508,7 +521,7 @@ export const formattedFormData = async <M extends ModelName>(
             } else {
               try {
                 const uploadResult = await uploadHandler(
-                  formData[dmmfPropertyName] as unknown as Buffer
+                  formData[dmmfPropertyName] as unknown as File
                 );
                 if (typeof uploadResult !== "string") {
                   console.warn(
@@ -642,7 +655,7 @@ export const removeHiddenProperties =
     if (!editOptions?.display) return schema;
     const properties = schema.definitions[resource].properties;
     Object.keys(properties).forEach((property) => {
-      if (!editOptions.display?.includes(property as Field<M>)) {
+      if (!editOptions?.display?.includes(property as Field<M>)) {
         delete properties[property as Field<M>];
       }
     });
@@ -732,14 +745,14 @@ export const getFormDataValues = async (req: IncomingMessage) => {
       });
     },
   });
-  return new Promise<Record<string, string | Buffer | null>>(
+  return new Promise<Record<string, string | File | null>>(
     (resolve, reject) => {
-      const files = {} as Record<string, Buffer[] | [null]>;
+      const files = {} as Record<string, File[] | [null]>;
 
       form.on("fileBegin", (name, file) => {
         // @ts-expect-error
         file.createFileWriteStream = () => {
-          const chunks = [] as Buffer[];
+          const chunks: Buffer[] = [];
           return new Writable({
             write(chunk, _encoding, callback) {
               chunks.push(chunk);
@@ -749,7 +762,9 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               if (!file.originalFilename) {
                 files[name] = [null];
               } else {
-                files[name] = [Buffer.concat(chunks)];
+                files[name] = [
+                  new File([Buffer.concat(chunks)], file.originalFilename),
+                ];
               }
               callback();
             },
@@ -768,7 +783,7 @@ export const getFormDataValues = async (req: IncomingMessage) => {
             }
             return acc;
           },
-          {} as Record<string, string | Buffer | null>
+          {} as Record<string, string | File | null>
         );
         resolve(joinedFormData);
       });
@@ -785,7 +800,7 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
     tmpFormValues[key] = val;
   });
 
-  const formValues = {} as Record<string, string | Buffer | null>;
+  const formValues = {} as Record<string, string | File | null>;
 
   await Promise.allSettled(
     Object.entries(tmpFormValues).map(async ([key, value]) => {
@@ -795,8 +810,7 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
           formValues[key] = null;
           return;
         }
-        const buffer = await file.arrayBuffer();
-        formValues[key] = Buffer.from(buffer);
+        formValues[key] = file;
       } else {
         formValues[key] = value as string;
       }

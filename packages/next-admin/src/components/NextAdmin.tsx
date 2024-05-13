@@ -89,6 +89,7 @@ export function NextAdmin({
           actions={actions}
           searchPaginatedResourceAction={searchPaginatedResourceAction}
           icon={resourceIcon}
+          resourcesIdProperty={resourcesIdProperty!}
         />
       );
     }
@@ -102,19 +103,19 @@ export function NextAdmin({
   return (
     <>
       <PageLoader />
-      <Head>
-        <title>{title}</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      {!isAppDir && (
+        <Head>
+          <title>{title}</title>
+          <meta name="viewport" content="width=device-width, initial-scale=1" />
+          <link rel="icon" href="/favicon.ico" />
+        </Head>
+      )}
       <MainLayout
         resource={resource}
         resources={resources}
         resourcesTitles={resourcesTitles}
         customPages={customPages}
         basePath={basePath}
-        message={message}
-        error={error}
         isAppDir={isAppDir}
         translations={translations}
         locale={locale}

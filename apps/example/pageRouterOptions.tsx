@@ -1,5 +1,4 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
-import React from "react";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
@@ -13,6 +12,29 @@ export const options: NextAdminOptions = {
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
+        filters: [
+          {
+            name: "is Admin",
+            active: false,
+            value: {
+              role: {
+                equals: "ADMIN",
+              },
+            },
+          },
+          {
+            name: "over 18",
+            value: {
+              birthDate: {
+                lte: (() => {
+                  const date = new Date();
+                  date.setFullYear(date.getFullYear() - 18);
+                  return date;
+                })(),
+              },
+            },
+          },
+        ],
         fields: {
           role: {
             formatter: (role) => {
@@ -50,6 +72,9 @@ export const options: NextAdminOptions = {
           metadata: "col-span-4 row-start-6",
         },
         fields: {
+          name: {
+            required: true,
+          },
           email: {
             validate: (email) => email.includes("@") || "Invalid email",
           },
@@ -64,7 +89,7 @@ export const options: NextAdminOptions = {
                * for example you can upload the file to an S3 bucket.
                * Make sure to return a string.
                */
-              upload: async (file: Buffer) => {
+              upload: async (file: File) => {
                 return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
               },
             },
@@ -100,6 +125,11 @@ export const options: NextAdminOptions = {
           author: {
             formatter: (author) => {
               return <strong>{author.name}</strong>;
+            },
+          },
+          published: {
+            formatter: (value: boolean) => {
+              return value ? "Published" : "Unpublished";
             },
           },
         },
