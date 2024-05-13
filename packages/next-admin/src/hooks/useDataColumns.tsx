@@ -33,7 +33,7 @@ const useDataColumns = ({
   const { router, query } = useRouterInternal();
   const { isAppDir, options: configOptions } = useConfig();
 
-  const options = configOptions!.model![resource];
+  const options = configOptions?.model?.[resource];
 
   return useMemo<ColumnDef<ListDataItem<ModelName>>[]>(() => {
     return data && data?.length > 0
