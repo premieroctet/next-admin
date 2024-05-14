@@ -17,7 +17,8 @@ import {
 } from "../types";
 import { isNativeFunction, pipe } from "./tools";
 
-export const models = Prisma.dmmf.datamodel.models;
+export const models: Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
+  .models as Prisma.DMMF.Model[];
 export const enums = Prisma.dmmf.datamodel.enums;
 export const resources = models.map((model) => model.name as ModelName);
 
@@ -36,7 +37,9 @@ export const enumValueForEnumType = (enumName: string, value: string) => {
   return false;
 };
 
-export const getPrismaModelForResource = (resource: ModelName) =>
+export const getPrismaModelForResource = (
+  resource: ModelName
+): Prisma.DMMF.Model | undefined =>
   models.find((datamodel) => datamodel.name === resource);
 
 export const getModelIdProperty = (model: ModelName) => {
