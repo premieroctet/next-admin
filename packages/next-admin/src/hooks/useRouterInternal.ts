@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { NextRouter, useRouter as usePageRouter } from "next/router";
 import {
   useRouter as useAppRouter,
   usePathname,
   useSearchParams,
 } from "next/navigation";
-import qs from "querystring";
+import { NextRouter, useRouter as usePageRouter } from "next/router";
 import { useConfig } from "../context/ConfigContext";
 
 type AppRouter = ReturnType<typeof useAppRouter>;
@@ -23,12 +22,11 @@ export const useRouterInternal = () => {
   const router = isAppDir ? useAppRouter() : usePageRouter();
   const query = isAppDir
     ? useSearchParams()
-    : new URLSearchParams(
-        typeof window !== "undefined"
-          ? location.search
-          : qs.stringify((router as NextRouter).query)
-      );
-
+    : typeof window !== "undefined"
+      ? new URLSearchParams(location.search)
+      : new URLSearchParams(
+          (router as NextRouter).query as Record<string, string>
+        );
   const pathname = isAppDir
     ? usePathname()
     : (router as NextRouter).asPath.split("?")[0];
@@ -36,7 +34,11 @@ export const useRouterInternal = () => {
   const push = ({ pathname, query }: PushParams) => {
     if (isAppDir) {
       (router as AppRouter).push(
-        pathname + (query ? "?" + qs.stringify(query) : "")
+        pathname +
+          (query
+            ? "?" +
+              new URLSearchParams(query as Record<string, string>).toString()
+            : "")
       );
     } else {
       (router as NextRouter).push({ pathname, query });
@@ -46,7 +48,11 @@ export const useRouterInternal = () => {
   const replace = ({ pathname, query }: PushParams) => {
     if (isAppDir) {
       (router as AppRouter).replace(
-        pathname + (query ? "?" + qs.stringify(query) : "")
+        pathname +
+          (query
+            ? "?" +
+              new URLSearchParams(query as Record<string, string>).toString()
+            : "")
       );
     } else {
       (router as NextRouter).replace({ pathname, query });

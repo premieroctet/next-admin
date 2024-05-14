@@ -41,7 +41,7 @@ export function getSchemaForResource(schema: any, resource: string) {
 export function getSchemas<M extends ModelName>(
   data: any,
   schema: any,
-  dmmfSchema: Prisma.DMMF.Field[],
+  dmmfSchema: readonly Prisma.DMMF.Field[],
   editFieldsOptions?: EditFieldsOptions<M>
 ): Schemas & { edit: boolean; id?: string | number } {
   const uiSchema: UiSchema = {};

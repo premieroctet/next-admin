@@ -559,7 +559,7 @@ export type AdminComponentProps = {
   validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
-  dmmfSchema?: Prisma.DMMF.Field[];
+  dmmfSchema?: readonly Prisma.DMMF.Field[];
   isAppDir?: boolean;
   locale?: string;
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
@@ -672,6 +672,10 @@ export type Translations = {
   [key in TranslationKeys]?: string;
 } & {
   [key: string]: string;
+};
+
+export declare type ReadonlyDeep_2<O> = {
+  +readonly [K in keyof O]: ReadonlyDeep_2<O[K]>;
 };
 
 export const colorSchemes = ["light", "dark", "system"] as const;

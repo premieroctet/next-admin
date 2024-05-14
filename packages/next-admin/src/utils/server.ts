@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { Writable } from "stream";
+import { Writable } from "node:stream";
 import {
   AdminFormData,
   EditFieldsOptions,
@@ -299,7 +299,7 @@ export const transformData = <M extends ModelName>(
  * */
 export const findRelationInData = (
   data: any[],
-  dmmfSchema?: Prisma.DMMF.Field[]
+  dmmfSchema?: readonly Prisma.DMMF.Field[]
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name;
@@ -371,7 +371,7 @@ export const findRelationInData = (
 
 export const parseFormData = <M extends ModelName>(
   formData: AdminFormData<M>,
-  dmmfSchema: Prisma.DMMF.Field[]
+  dmmfSchema: readonly Prisma.DMMF.Field[]
 ): Partial<ModelWithoutRelationships<M>> => {
   const parsedData: Partial<ModelWithoutRelationships<M>> = {};
   dmmfSchema.forEach((dmmfProperty) => {
@@ -423,7 +423,7 @@ export const formatId = (ressource: ModelName, id: string) => {
  */
 export const formattedFormData = async <M extends ModelName>(
   formData: AdminFormData<M>,
-  dmmfSchema: Prisma.DMMF.Field[],
+  dmmfSchema: readonly Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
   creating: boolean,
