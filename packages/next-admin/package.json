@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin",
-  "version": "4.2.0",
+  "version": "4.2.1",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "license": "MIT",
@@ -63,7 +63,7 @@
     "jest-mock-extended": "^3.0.4",
     "lodash.debounce": "^4.0.8",
     "postcss": "^8.4.21",
-    "prisma": "^4.11.0",
+    "prisma": "5.2.0",
     "tailwindcss": "^3.2.7",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
