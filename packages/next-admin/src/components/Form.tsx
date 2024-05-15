@@ -78,6 +78,7 @@ export type FormProps = {
   schema: any;
   dmmfSchema: readonly Prisma.DMMF.Field[];
   resource: ModelName;
+  slug?: string;
   validation?: PropertyValidationError[];
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   title: string;
@@ -107,6 +108,7 @@ const Form = ({
   schema,
   dmmfSchema,
   resource,
+  slug,
   validation: validationProp,
   action,
   title,
@@ -479,7 +481,7 @@ const Form = ({
 
   if (edit && id) {
     breadcrumItems.push({
-      label: id.toString(),
+      label: slug ?? id.toString(),
       href: `${basePath}/${slugify(resource)}/${id}`,
       current: true,
     });

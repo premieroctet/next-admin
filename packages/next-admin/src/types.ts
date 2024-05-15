@@ -548,6 +548,7 @@ export type AdminComponentProps = {
   schema?: Schema;
   data?: ListData<ModelName>;
   resource?: ModelName;
+  slug?: string;
   /**
    * Page router only
    */
