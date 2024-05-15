@@ -24,7 +24,7 @@ import {
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
 export const createWherePredicate = (
-  fieldsFiltered?: Prisma.DMMF.Field[],
+  fieldsFiltered?: readonly Prisma.DMMF.Field[],
   search?: string,
   otherFilters?: Filter<ModelName>[]
 ) => {

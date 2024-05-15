@@ -1,6 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { cloneDeep } from "lodash";
-import qs from "querystring";
 import type { SearchPaginatedResourceParams } from "../actions";
 import {
   ActionParams,
@@ -177,7 +176,9 @@ export async function getPropsFromParams({
         prisma,
         resource,
         options,
-        searchParams: new URLSearchParams(qs.stringify(searchParams)),
+        searchParams: new URLSearchParams(
+          searchParams as Record<string, string>
+        ),
         context: { locale },
         appDir: isAppDir,
       });

@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { Writable } from "stream";
+import { Writable } from "node:stream";
 import {
   AdminFormData,
   EditFieldsOptions,
@@ -17,7 +17,8 @@ import {
 } from "../types";
 import { isNativeFunction, pipe } from "./tools";
 
-export const models = Prisma.dmmf.datamodel.models;
+export const models: Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
+  .models as Prisma.DMMF.Model[];
 export const enums = Prisma.dmmf.datamodel.enums;
 export const resources = models.map((model) => model.name as ModelName);
 
@@ -36,7 +37,9 @@ export const enumValueForEnumType = (enumName: string, value: string) => {
   return false;
 };
 
-export const getPrismaModelForResource = (resource: ModelName) =>
+export const getPrismaModelForResource = (
+  resource: ModelName
+): Prisma.DMMF.Model | undefined =>
   models.find((datamodel) => datamodel.name === resource);
 
 export const getModelIdProperty = (model: ModelName) => {
@@ -299,7 +302,7 @@ export const transformData = <M extends ModelName>(
  * */
 export const findRelationInData = (
   data: any[],
-  dmmfSchema?: Prisma.DMMF.Field[]
+  dmmfSchema?: readonly Prisma.DMMF.Field[]
 ) => {
   dmmfSchema?.forEach((dmmfProperty) => {
     const dmmfPropertyName = dmmfProperty.name;
@@ -371,7 +374,7 @@ export const findRelationInData = (
 
 export const parseFormData = <M extends ModelName>(
   formData: AdminFormData<M>,
-  dmmfSchema: Prisma.DMMF.Field[]
+  dmmfSchema: readonly Prisma.DMMF.Field[]
 ): Partial<ModelWithoutRelationships<M>> => {
   const parsedData: Partial<ModelWithoutRelationships<M>> = {};
   dmmfSchema.forEach((dmmfProperty) => {
@@ -423,7 +426,7 @@ export const formatId = (ressource: ModelName, id: string) => {
  */
 export const formattedFormData = async <M extends ModelName>(
   formData: AdminFormData<M>,
-  dmmfSchema: Prisma.DMMF.Field[],
+  dmmfSchema: readonly Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
   creating: boolean,

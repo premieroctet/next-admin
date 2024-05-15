@@ -76,7 +76,7 @@ class CustomForm extends RjsfForm {
 export type FormProps = {
   data: any;
   schema: any;
-  dmmfSchema: Prisma.DMMF.Field[];
+  dmmfSchema: readonly Prisma.DMMF.Field[];
   resource: ModelName;
   validation?: PropertyValidationError[];
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
