@@ -282,21 +282,21 @@ For the `list` property, it can take the following:
 
 For the `edit` property, it can take the following:
 
-| Name                         | Description                                                                                                                                                                  |
-| ---------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
-| `validate`                   | a function that takes the field value as a parameter, and that returns a boolean                                                                                             |
-| `format`                     | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                       |
-| `input`                      | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                          |
-| `handler`                    | an object that can take the following properties                                                                                                                             |
-| `handler.get`                | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                   |
-| `handler.upload`             | an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider |
-| `handler.uploadErrorMessage` | an optional string displayed in the input field as an error message in case of a failure during the upload handler                                                           |
-| `optionFormatter`            | only for relation fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                          |
-| `tooltip`                    | a tooltip content to show for the field                                                                                                                                      |
-| `helperText`                 | a helper text that is displayed underneath the input                                                                                                                         |
-| `disabled`                   | a boolean to indicate that the field is read only                                                                                                                            |
-| `display`                    | only for relation fields, indicate which display format to use between `list`, `table` or `select`. Default `select`                                                         |
-| `required`                   | a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false                        | undefined |
+| Name                         | Description                                                                                                                                                                       |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- |
+| `validate`                   | a function that takes the field value as a parameter, and that returns a boolean                                                                                                  |
+| `format`                     | a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input                            |
+| `input`                      | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                               |
+| `handler`                    | an object that can take the following properties                                                                                                                                  |
+| `handler.get`                | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                        |
+| `handler.upload`             | an async function that is used only for formats `file` and `data-url`. It takes a File object as parameter and must return a string. Useful to upload a file to a remote provider |
+| `handler.uploadErrorMessage` | an optional string displayed in the input field as an error message in case of a failure during the upload handler                                                                |
+| `optionFormatter`            | only for relation fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                               |
+| `tooltip`                    | a tooltip content to show for the field                                                                                                                                           |
+| `helperText`                 | a helper text that is displayed underneath the input                                                                                                                              |
+| `disabled`                   | a boolean to indicate that the field is read only                                                                                                                                 |
+| `display`                    | only for relation fields, indicate which display format to use between `list`, `table` or `select`. Default `select`                                                              |
+| `required`                   | a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false                             | undefined |
 
 ##### `filters` property
 
@@ -415,7 +415,7 @@ const options: NextAdminOptions = {
           avatar: {
             format: "file",
             handler: {
-              upload: async (file: Buffer) => {
+              upload: async (file: File) => {
                 return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
               },
             },

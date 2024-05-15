@@ -1,5 +1,20 @@
 # @premieroctet/next-admin
 
+## 4.2.0
+
+### Minor Changes
+
+- 167517b: Add preconfigured prisma filters on list page
+- f5afd73: feat: add field selection for relationship sort (#258)
+- 58a2727: Change file handler function parameter type to File (more informations)
+- 3049a83: Add possibly to apply required HTML validation on fields (#257)
+- 50ed9a0: feat: add deletion message customization (#254)
+
+### Patch Changes
+
+- 4fe6dac: Fix no fields options error (#268)
+- 8093d5f: Fix outline for checkbox and sr-only span position
+
 ## 4.1.0
 
 ### Minor Changes
