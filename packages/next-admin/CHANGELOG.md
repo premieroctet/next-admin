@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 4.2.1
+
+### Patch Changes
+
+- d6e88ea: Remove querystring library (#273)
+
 ## 4.2.0
 
 ### Minor Changes
