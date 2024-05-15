@@ -27,11 +27,10 @@ jobs:
       - name: Link
         run: yarn lint
 
-      - name: Create Release Pull Request or Publish
+      - name: Create Release Pull Request
         uses: changesets/action@v1
         with:
           version: yarn changeset version
-          publish: yarn publish-package
           branch: main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
