@@ -15,6 +15,7 @@ export function NextAdmin({
   resource,
   schema,
   resources,
+  slug,
   message,
   error,
   total,
@@ -80,6 +81,7 @@ export function NextAdmin({
       return (
         <Form
           data={data}
+          slug={slug}
           schema={modelSchema}
           dmmfSchema={dmmfSchema!}
           resource={resource!}

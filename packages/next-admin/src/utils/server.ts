@@ -8,6 +8,7 @@ import {
   EditOptions,
   Enumeration,
   Field,
+  Model,
   ModelName,
   ModelWithoutRelationships,
   NextAdminOptions,
@@ -72,6 +73,17 @@ export const getToStringForRelations = <M extends ModelName>(
       : (item: any) =>
           item[relationToFields?.[0]] ?? item[modelRelationIdField];
 
+  return toStringForRelations;
+};
+
+export const getToStringForModel = <M extends ModelName>(
+  options: Required<NextAdminOptions>["model"][M]
+): ((item: Model<M>) => string) | undefined => {
+  const nonCheckedToString = options?.toString;
+  const toStringForRelations =
+    nonCheckedToString && !isNativeFunction(nonCheckedToString)
+      ? nonCheckedToString
+      : undefined;
   return toStringForRelations;
 };
 
