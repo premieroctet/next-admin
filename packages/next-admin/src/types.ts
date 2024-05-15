@@ -674,10 +674,6 @@ export type Translations = {
   [key: string]: string;
 };
 
-export declare type ReadonlyDeep_2<O> = {
-  +readonly [K in keyof O]: ReadonlyDeep_2<O[K]>;
-};
-
 export const colorSchemes = ["light", "dark", "system"] as const;
 export type ColorScheme = (typeof colorSchemes)[number];
 export type BasicColorScheme = Exclude<ColorScheme, "system">;
