@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 4.2.2
+
+### Patch Changes
+
+- 1bae6d5: CHANGE TEST
+
 ## 4.2.1
 
 ### Patch Changes
