@@ -7,6 +7,17 @@
       "layout": "raw"
     }
   },
+  "docs": {
+    "title": "Documentation",
+    "type": "page",
+    "display": "hidden"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "type": "page",
+    "href": "https://github.com/premieroctet/next-admin/blob/main/packages/next-admin/CHANGELOG.md",
+    "newWindow": true
+  },
   "demo": {
     "title": "Demo",
     "type": "page",
