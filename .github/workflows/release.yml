@@ -3,8 +3,6 @@ name: Release
 on:
   push:
     branches:
-      - develop
-      - hotfix
       - main
       - v[0-9]+
 
@@ -29,40 +27,7 @@ jobs:
       - name: Link
         run: yarn lint
 
-      - name: Create Release Pull Request
-        if: github.ref == 'refs/heads/develop'
-        uses: changesets/action@v1
-        with:
-          version: yarn changeset version
-          branch: main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
       - name: Create Release Pull Request or Publish (${{ github.ref_name }})
-        if: github.ref == 'refs/heads/hotfix'
-        uses: cregourd/changesets-action@main
-        with:
-          version: yarn changeset version
-          title: Hotfix — Version Packages
-          branchName: hotfix-release/main
-          branch: main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Publish
-        if: github.ref == 'refs/heads/main'
-        uses: changesets/action@v1
-        with:
-          version: yarn changeset version
-          publish: yarn publish-package
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create Release Pull Request or Publish (${{ github.ref_name }})
-        if: startsWith(github.ref, 'refs/tags/v')
         uses: changesets/action@v1
         with:
           version: yarn changeset version
