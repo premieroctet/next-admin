@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 4.2.2
+
+### Patch Changes
+
+- 844c169: HOTFIX TEST
+
 ## 4.2.1
 
 ### Patch Changes
