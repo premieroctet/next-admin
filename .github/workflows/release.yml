@@ -41,10 +41,12 @@ jobs:
 
       - name: Create Release Pull Request or Publish (${{ github.ref_name }})
         if: github.ref == 'refs/heads/hotfix'
-        uses: changesets/action@v1
+        uses: cregourd/changesets-action@main
         with:
           version: yarn changeset version
           title: Hotfix — Version Packages
+          branchName: hotfix-release/main
+          branch: main
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
