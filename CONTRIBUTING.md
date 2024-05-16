@@ -26,16 +26,10 @@ The project workflow uses GitHub Actions to run tests, build, deploy (prod - pre
 
 #### Current major release features
 
-If you want to contribute on the current major version, you can create a PR on the `develop` branch. Any merged PR on the `develop` branch that contains `changeset` files will create a `changeset-release/main` PR that you can merge into `main` to release a new version.
+If you want to contribute on the current major version, you can create a PR on the `main` branch. 
 
-![schema-develop](https://github.com/premieroctet/next-admin/assets/7901622/8ceed2e3-6cca-449f-a250-8dc3e1f16fdf)
+![schema](https://github.com/premieroctet/next-admin/assets/7901622/b9f87c18-6fce-4e7d-80ab-777cbeaba158)
 
-
-#### Hotfix current major release
-
-If you want to do a hotfix for the current major version and there are already features on the `develop` branch, you can create a PR on the `hotfix` branch. Any merged PR on the `hotfix`  branch that contains `changeset` files will create a `hotfix-release/main` PR that you can merge into `main` to release a new version.
-
-![schema-hotfix](https://github.com/premieroctet/next-admin/assets/7901622/a1429da9-3753-4157-ba7a-afb2c1a1f8bc)
 
 
 #### Fixing an old major release
