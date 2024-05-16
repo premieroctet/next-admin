@@ -28,13 +28,17 @@ The project workflow uses GitHub Actions to run tests, build, deploy (prod - pre
 
 If you want to contribute on the current major version, you can create a PR on the `develop` branch. Any merged PR on the `develop` branch that contains `changeset` files will create a `changeset-release/main` PR that you can merge into `main` to release a new version.
 
-![schema-develop](https://github.com/premieroctet/next-admin/assets/7901622/328cb0a7-c91e-47a9-bcf9-67c5a2e0a0cd)
+![schema-develop](https://github.com/premieroctet/next-admin/assets/7901622/8ceed2e3-6cca-449f-a250-8dc3e1f16fdf)
+
 
 #### Hotfix current major release
 
 If you want to do a hotfix for the current major version and there are already features on the `develop` branch, you can create a PR on the `hotfix` branch. Any merged PR on the `hotfix`  branch that contains `changeset` files will create a `hotfix-release/main` PR that you can merge into `main` to release a new version.
 
-![schema-hotfix](https://github.com/premieroctet/next-admin/assets/7901622/94df041c-e7ed-4e0f-a77d-86744d47026e)
+![schema-hotfix](https://github.com/premieroctet/next-admin/assets/7901622/4412c65a-5e44-4c1b-8bfd-a95186bc0c98)
+
+> Note: You need to change base branch to `main` when merging a PR for a hotfix.
+
 
 #### Fixing an old major release
 
@@ -42,7 +46,8 @@ If you want to fix a previous major version, you can create a PR on the relative
 
 > Note: Make sure that the branch was created from the latest release of the major version you want to fix.
 
-![schema-fix](https://github.com/premieroctet/next-admin/assets/7901622/6cf84ee0-f693-4993-af75-205a4ffc3ddb)
+![schema-fix](https://github.com/premieroctet/next-admin/assets/7901622/18d463a2-7bea-4a62-bedb-968c58bc0cd2)
+
 
 Once a fix has been released, you can cherry-pick the fix on the `develop` branch if that fix is still relevant.
 
