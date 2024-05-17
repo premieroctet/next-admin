@@ -34,7 +34,7 @@ jobs:
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
       - name: Build Project Artifacts (Docs)
-        run: vercel build ${{ inputs.extra_args }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: cp packages/next-admin/CHANGELOG.md apps/docs/changelog/index.md && vercel build ${{ inputs.extra_args }} --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
       - name: Deploy Project Artifacts to Vercel (Docs)
