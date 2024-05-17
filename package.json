@@ -19,7 +19,8 @@
     "test:e2e": "dotenv turbo test:e2e",
     "database": "dotenv turbo run database",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-package": "yarn build:next-admin && changeset publish"
+    "publish-package": "yarn build:next-admin && changeset publish",
+    "version": "yarn changeset version &&  && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md"
   },
   "devDependencies": {
     "dotenv-cli": "7.2.1",
