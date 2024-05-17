@@ -27,14 +27,19 @@ const getReleaseLine = async (
 
 const getDependencyReleaseLine = async (
   changesets,
-  dependenciesUpdated
+  dependenciesUpdated,
+  options
 ) => {
   if (dependenciesUpdated.length === 0) return "";
 
+
   const changesetLinks = changesets.map(
-    (changeset) =>
-      `- Updated dependencies${changeset.commit ? ` [${changeset.commit.slice(0, 7)}]` : ""
-      }`
+    (changeset) => {
+      const commitShortId = changeset.commit.slice(0, 7);
+      const commitLink = options?.repo ? `[${commitShortId}](https://github.com/${options.repo}/commit/${changeset.commit})` : commitShortId;
+      return `- Updated dependencies${changeset.commit ? ` [${commitLink}]` : ""
+        }`;
+    }
   );
 
   const updatedDependenciesList = dependenciesUpdated.map(
