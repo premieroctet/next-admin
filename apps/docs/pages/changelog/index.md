@@ -1,5 +1,17 @@
 # @premieroctet/next-admin
 
+## 4.2.3
+
+### Patch Changes
+
+- [484d087](https://github.com/premieroctet/next-admin/commit/484d087): Upgrade Prisma to 5.13.0
+
+## 4.2.2
+
+### Patch Changes
+
+- [6cd3362](https://github.com/premieroctet/next-admin/commit/6cd3362): Add slug inside breadcrumb ([#263](https://github.com/premieroctet/next-admin/issues/263))
+
 ## 4.2.1
 
 ### Patch Changes
