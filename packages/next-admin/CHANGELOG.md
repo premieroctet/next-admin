@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 4.2.2
+
+### Patch Changes
+
+- 6cd3362: Add slug inside breadcrumb (#263)
+
 ## 4.2.1
 
 ### Patch Changes
