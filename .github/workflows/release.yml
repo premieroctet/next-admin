@@ -30,7 +30,7 @@ jobs:
       - name: Create Release Pull Request or Publish (${{ github.ref_name }})
         uses: changesets/action@v1
         with:
-          version: (yarn changeset version) && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md
+          version: yarn version
           publish: yarn publish-package
           title: ${{github.ref_name}} — Version Packages
         env:
