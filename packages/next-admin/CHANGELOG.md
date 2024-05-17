@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 4.2.3
+
+### Patch Changes
+
+- [484d087](https://github.com/premieroctet/next-admin/commit/484d087): Upgrade Prisma to 5.13.0
+
 ## 4.2.2
 
 ### Patch Changes
