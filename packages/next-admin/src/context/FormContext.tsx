@@ -25,7 +25,7 @@ type FormContextType = {
   setSelectedValue: (selectedValue: any, name: string) => void;
   resource?: ModelName;
   searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
-  dmmfSchema?: Prisma.DMMF.Field[];
+  dmmfSchema?: readonly Prisma.DMMF.Field[];
   options?: NextAdminOptions;
   resourcesIdProperty: Record<ModelName, string> | null;
 };
@@ -43,7 +43,7 @@ export const FormContext = createContext<FormContextType>({
 type Props = PropsWithChildren<{
   initialValue: any;
   searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
-  dmmfSchema: Prisma.DMMF.Field[];
+  dmmfSchema: readonly Prisma.DMMF.Field[];
   resource: ModelName;
   options?: NextAdminOptions;
   resourcesIdProperty: Record<ModelName, string>;

@@ -1,6 +1,5 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { cloneDeep } from "lodash";
-import qs from "querystring";
 import type { SearchPaginatedResourceParams } from "../actions";
 import {
   ActionParams,
@@ -27,6 +26,7 @@ import {
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
+  getToStringForModel,
   transformData,
   transformSchema,
 } from "./server";
@@ -177,7 +177,9 @@ export async function getPropsFromParams({
         prisma,
         resource,
         options,
-        searchParams: new URLSearchParams(qs.stringify(searchParams)),
+        searchParams: new URLSearchParams(
+          searchParams as Record<string, string>
+        ),
         context: { locale },
         appDir: isAppDir,
       });
@@ -272,11 +274,18 @@ export async function getPropsFromParams({
           }
         });
 
+        const toStringFunction = getToStringForModel(
+          options?.model?.[resource]
+        );
+        const slug = toStringFunction
+          ? toStringFunction(data)
+          : resourceId.toString();
         data = transformData(data, resource, edit, options);
         return {
           ...defaultProps,
           resource,
           data,
+          slug,
           schema: deepCopySchema,
           dmmfSchema: dmmfSchema?.fields,
           customInputs,

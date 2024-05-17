@@ -548,6 +548,7 @@ export type AdminComponentProps = {
   schema?: Schema;
   data?: ListData<ModelName>;
   resource?: ModelName;
+  slug?: string;
   /**
    * Page router only
    */
@@ -559,7 +560,7 @@ export type AdminComponentProps = {
   validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
-  dmmfSchema?: Prisma.DMMF.Field[];
+  dmmfSchema?: readonly Prisma.DMMF.Field[];
   isAppDir?: boolean;
   locale?: string;
   action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;

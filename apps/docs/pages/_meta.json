@@ -7,6 +7,15 @@
       "layout": "raw"
     }
   },
+  "docs": {
+    "title": "Documentation",
+    "type": "page",
+    "display": "hidden"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "type": "page"
+  },
   "demo": {
     "title": "Demo",
     "type": "page",
