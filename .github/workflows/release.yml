@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - v[0-9]+
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
@@ -26,11 +27,12 @@ jobs:
       - name: Link
         run: yarn lint
 
-      - name: Create Release Pull Request or Publish
+      - name: Create Release Pull Request or Publish (${{ github.ref_name }})
         uses: changesets/action@v1
         with:
           version: yarn changeset version
           publish: yarn publish-package
+          title: ${{github.ref_name}} — Version Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -1,0 +1,16 @@
+name: Vercel Production Deployment
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - "main"
+jobs:
+  Deploy-Production:
+    if: github.event.pull_request.merged == true && (startsWith(github.event.pull_request.head.ref, 'changeset-release/') || (!contains(github.event.pull_request.changed_files, 'packages/next-admin/') && contains(github.event.pull_request.changed_files, 'apps/')))
+    uses: ./.github/workflows/vercel-deploy.yml
+    secrets: inherit
+    with:
+      environment: production
+      extra_args: --prod

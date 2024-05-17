@@ -1,0 +1,12 @@
+name: Vercel Preview Deployment
+
+on:
+  push:
+    branches-ignore:
+      - main
+jobs:
+  Deploy-Preview:
+    uses: ./.github/workflows/vercel-deploy.yml
+    secrets: inherit
+    with:
+      environment: preview
