@@ -14,9 +14,7 @@
   },
   "changelog": {
     "title": "Changelog",
-    "type": "page",
-    "href": "https://github.com/premieroctet/next-admin/blob/main/packages/next-admin/CHANGELOG.md",
-    "newWindow": true
+    "type": "page"
   },
   "demo": {
     "title": "Demo",
