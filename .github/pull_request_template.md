@@ -7,6 +7,7 @@
 - [ ] New feature
 - [ ] Bug fix
 - [ ] Documentation update
+- [ ] Example update
 - [ ] Refactoring
 - [ ] Hotfix
 - [ ] Security patch
