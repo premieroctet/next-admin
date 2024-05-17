@@ -8,7 +8,7 @@ const getReleaseLine = async (
     .split("\n")
     .map((l) => l.trimRight());
 
-  const commitShortId = changeset.commit.slice(0, 7);
+  const commitShortId = changeset.commit?.slice(0, 7);
   const commitLink = options?.repo ? `[${commitShortId}](https://github.com/${options.repo}/commit/${changeset.commit})` : commitShortId;
   let returnVal = `- ${changeset.commit ? `${commitLink}: ` : ""
     }${firstLine}`;
