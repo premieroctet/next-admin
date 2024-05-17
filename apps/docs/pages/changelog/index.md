@@ -1,11 +1,5 @@
 # @premieroctet/next-admin
 
-## 4.2.2
-
-### Patch Changes
-
-- [6cd3362](https://github.com/premieroctet/next-admin/commit/6cd3362): Add slug inside breadcrumb ([#263](https://github.com/premieroctet/next-admin/issues/263))
-
 ## 4.2.1
 
 ### Patch Changes
