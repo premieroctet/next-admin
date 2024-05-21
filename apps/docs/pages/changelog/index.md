@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 4.2.4
+
+### Patch Changes
+
+- [b202581](https://github.com/premieroctet/next-admin/commit/b202581): Fill package information
+- [2751e7d](https://github.com/premieroctet/next-admin/commit/2751e7d): Remove html warning ([#307](https://github.com/premieroctet/next-admin/issues/307))
+
 ## 4.2.3
 
 ### Patch Changes
