@@ -26,6 +26,7 @@
       "url": "https://github.com/premieroctet/next-admin/blob/main/LICENSE"
     }
   ],
+  "homepage": "https://next-admin.js.org/",
   "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
