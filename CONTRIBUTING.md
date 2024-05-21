@@ -22,19 +22,29 @@ This turborepo has some additional tools already setup for you:
 
 ### Workflow
 
-The project workflow uses GitHub Actions to run tests, build, deploy (prod - preview - docs) and publish packages. To handle versioning up and publishing, we use [Changesets](https://github.com/changesets/changesets) 
+The project workflow uses GitHub Actions to run tests, build, deploy (prod - preview - docs) and publish packages. To handle versioning up and publishing, we use [Changesets](https://github.com/changesets/changesets)
+
+#### Create a `changeset` file
+
+To increase the version of a package, you need to create a `changeset` file. You can create a `changeset` file by running the following command:
+
+```sh
+yarn changeset
+```
+
+Any PR without a `changeset` file will just trigger the tests and eventually deploy/preview the app.
 
 #### Current major release features
 
-If you want to contribute on the current major version, you can create a PR on the `main` branch. 
+If you want to contribute on the current major version, you can create a PR on the `main` branch. Any merged PR on the `main` branch that contains `changeset` files will create a PR `changeset-release/main`, which we could merge into `main` to release a new version.
+
+> Note: Make sure that the branch was created and updated from the `main` branch.
 
 ![schema](https://github.com/premieroctet/next-admin/assets/7901622/b9f87c18-6fce-4e7d-80ab-777cbeaba158)
 
-
-
 #### Fixing an old major release
 
-If you want to fix a previous major version, you can create a PR on the relative branch (fix `v1` on branch `v1`). Any merged PR on those branches that contains `changeset` files will create a PR `changeset-release/[v1|v2|v3]`, which you could merge into `[v1|v2|v3]` to release a new version.
+If you want to fix a previous major version, you can create a PR on the relative branch (fix `v1` on branch `v1`). Any merged PR on those branches that contains `changeset` files will create a PR `changeset-release/[v1|v2|v3]`, which we could merge into `[v1|v2|v3]` to release a new version.
 
 > Note: Make sure that the branch was created from the latest release of the major version you want to fix.
 
