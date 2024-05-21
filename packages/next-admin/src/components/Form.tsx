@@ -385,6 +385,8 @@ const Form = ({
         rawErrors,
         schema,
         registry,
+        hideError,
+        hideLabel,
         ...props
       }: BaseInputTemplateProps) => {
         const onTextChange = ({
