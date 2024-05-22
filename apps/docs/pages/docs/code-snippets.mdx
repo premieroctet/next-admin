@@ -30,6 +30,55 @@ export async function GET() {
 }
 ```
 
+or with a stream response:
+
+```typescript copy
+// app/api/users/export/route.ts
+import { prisma } from "@/prisma";
+const BATCH_SIZE = 1000;
+
+export async function GET() {
+  const headers = new Headers();
+  headers.set("Content-Type", "text/csv");
+  headers.set("Content-Disposition", `attachment; filename="users.csv"`);
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const batchSize = BATCH_SIZE;
+        let skip = 0;
+        let users;
+
+        do {
+          users = await prisma.user.findMany({
+            skip,
+            take: batchSize,
+          });
+
+          const csv = users
+            .map((user) => {
+              return `${user.id},${user.name},${user.email},${user.role},${user.birthDate}\n`;
+            })
+            .join("");
+
+          controller.enqueue(csv);
+
+          skip += batchSize;
+        } while (users.length === batchSize);
+      } catch (error) {
+        controller.error(error);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, { headers });
+}
+```
+
+> Note that you must secure the export route if you don't want to expose your data to the public by adding authentication middleware.
+
 There is two example files in the example project:
 
 - [app/api/users/export/route.ts](https://github.com/premieroctet/next-admin/tree/main/apps/example/app/api/users/export/route.ts)
@@ -111,4 +160,3 @@ The `CustomInputProps` type is provided by Next Admin.
 You can find an example of this component in the example project:
 
 - [app/components/inputs/DatePicker.tsx](https://github.com/premieroctet/next-admin/blob/main/apps/example/components/DatePicker.tsx)
-
