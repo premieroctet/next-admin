@@ -61,7 +61,7 @@ export async function GET() {
             })
             .join("");
 
-          controller.enqueue(csv);
+          controller.enqueue(Buffer.from(csv));
 
           skip += batchSize;
         } while (users.length === batchSize);

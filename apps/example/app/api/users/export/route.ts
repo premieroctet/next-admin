@@ -22,7 +22,7 @@ export async function GET() {
               return `${user.id},${user.name},${user.email},${user.role},${user.birthDate}\n`;
             })
             .join("");
-          controller.enqueue(csv);
+          controller.enqueue(Buffer.from(csv));
           skip += batchSize;
         } while (users.length === batchSize);
       } catch (error) {
