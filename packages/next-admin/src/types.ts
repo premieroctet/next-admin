@@ -239,7 +239,23 @@ export type FormatOptions<T> = T extends string
       ? "updown" | "range"
       : never;
 
+export type ListExport = {
+  /**
+   * a string defining the format of the export. It is mandatory.
+   */
+  format: string
+  /**
+   * a string defining the URL of the export. It is mandatory.
+   */
+  url: string;
+};
+
+
 export type ListOptions<T extends ModelName> = {
+  /**
+   * an url to export the list data as CSV.
+   */
+  exports?: ListExport[] | ListExport;
   /**
    * an array of fields that are displayed in the list.
    * @default all scalar

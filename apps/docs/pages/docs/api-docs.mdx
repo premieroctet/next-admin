@@ -235,6 +235,7 @@ This property determines how your data is displayed in the [List View](/docs/glo
 | `defaultSort.field`     | the model's field name on which the sort is applied. It is mandatory                                   |                                              |
 | `defaultSort.direction` | the sort direction to apply. It is optional                                                            |                                              |
 | `filters`               | define a set of Prisma filters that user can choose in list, see [below](#filters-property)            | undefined                                    |
+| `exports`               | an object or array of [export](#exports-property) - containing export url                                       | undefined                                    |
 
 > Note that the `search` property is only available for `scalar` fields.
 
@@ -307,6 +308,17 @@ The `filters` property allow you to define a set of Prisma filters that user can
 | `name`   | an unique name for the filter                                                                                                                                                | undefined     |
 | `active` | a boolean to set filter active by default                                                                                                                                    | false         |
 | `value`  | a where clause Prisma filter of the related model (e.g [Prisma operators](https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators)) |               |
+
+##### `exports` property
+
+The `exports` property is available in the `list` property. It's an object or an array of objects that can take the following properties:
+
+| Name     | Description                                                                         | Default value |
+| -------- | ----------------------------------------------------------------------------------- | ------------- |
+| `format` | a string defining the format of the export. It's used to labeled the export button. | undefined     |
+| `url`    | a string defining the URL of the export action.                                     | undefined     |
+
+> Note that the `exports` property do not take care of active filters. If you want to export filtered data, you have to add the filters in the URL or in your export action.
 
 ### `pages`
 
