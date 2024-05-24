@@ -109,6 +109,10 @@
             "number",
             "null"
           ]
+        },
+        "order": {
+          "type": "integer",
+          "default": 0
         }
       },
       "required": [

@@ -1,16 +1,16 @@
-import clsx from "clsx";
-import { Enumeration } from "../../../types";
-import Link from "next/link";
-import { useConfig } from "../../../context/ConfigContext";
-import { slugify } from "../../../utils/tools";
-import {
-  ArrowTopRightOnSquareIcon,
-  Squares2X2Icon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import {
+  ArrowTopRightOnSquareIcon,
+  Bars2Icon,
+  XMarkIcon,
+} from "@heroicons/react/24/outline";
 import { RJSFSchema } from "@rjsf/utils";
+import clsx from "clsx";
+import Link from "next/link";
+import { useConfig } from "../../../context/ConfigContext";
+import { Enumeration } from "../../../types";
+import { slugify } from "../../../utils/tools";
 
 type Props = {
   item: Enumeration;
@@ -46,7 +46,7 @@ const MultiSelectDisplayListItem = ({
   return (
     <li
       className={clsx(
-        "ring-nextadmin-border-default dark:ring-dark-nextadmin-border-default relative flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1"
+        "ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle relative flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1"
       )}
       ref={setNodeRef}
       style={style}
@@ -61,7 +61,7 @@ const MultiSelectDisplayListItem = ({
             })}
             {...listeners}
           >
-            <Squares2X2Icon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-4 w-4" />
+            <Bars2Icon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-4 w-4" />
           </div>
         )}
         {label}
@@ -69,8 +69,9 @@ const MultiSelectDisplayListItem = ({
       <div className="flex items-center space-x-3">
         <Link
           href={`${basePath}/${slugify(
-            // @ts-expect-error
-            schema.items?.relation
+            item?.data?.modelName ??
+              // @ts-expect-error
+              schema.items?.relation
           )}/${value}`}
           className="flex items-center"
         >

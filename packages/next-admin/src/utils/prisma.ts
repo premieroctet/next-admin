@@ -79,7 +79,7 @@ export const createWherePredicate = (
 export const getFieldsFiltered = <M extends ModelName>(
   resource: M,
   options?: NextAdminOptions
-) => {
+): readonly Prisma.DMMF.Field[] => {
   const model = getPrismaModelForResource(resource);
 
   let fieldsFiltered = model?.fields;
@@ -92,7 +92,7 @@ export const getFieldsFiltered = <M extends ModelName>(
       : fieldsFiltered;
   }
 
-  return fieldsFiltered;
+  return fieldsFiltered as readonly Prisma.DMMF.Field[];
 };
 
 export const preparePrismaListRequest = <M extends ModelName>(
@@ -247,7 +247,7 @@ export const optionsFromResource = async ({
         (dataTableItem) => dataTableItem[idProperty].value === item[idProperty]
       );
       return {
-        label: toStringModel ? toStringModel(item) : item[idProperty],
+        label: toStringModel(item),
         value: item[idProperty],
         data: displayMode === "table" ? dataTableItem : undefined,
       };

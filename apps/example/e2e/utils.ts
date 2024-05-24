@@ -49,7 +49,7 @@ export const createItem = async (
 
   await fillForm(model, page, dataTest);
 
-  await page.click('button[type="submit"]');
+  await page.click('button[name="save_edit"]');
   await page.waitForURL((url) => !url.pathname.endsWith("/new"));
 
   const url = new URL(page.url());

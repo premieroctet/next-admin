@@ -1,8 +1,8 @@
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
 import { RJSFSchema } from "@rjsf/utils";
 import { Enumeration } from "../../../types";
 import MultiSelectDisplayListItem from "./MultiSelectDisplayListItem";
-import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { SortableContext } from "@dnd-kit/sortable";
 
 type Props = {
   formData: any;

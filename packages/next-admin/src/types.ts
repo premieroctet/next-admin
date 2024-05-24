@@ -152,18 +152,11 @@ type OptionFormatterFromRelationshipSearch<
          * @param item
          * @returns
          */
-        optionFormatter?: (item: ModelFromProperty<T, P>) => string;
+        relationOptionFormatter?: (item: ModelFromProperty<T, P>[S]) => string;
         /**
          * model name on which to execute a research. Useful in case the field is related to an explicit many-to-many table
          */
-        relationshipSearchField?: undefined;
-        /**
-         * a boolean to indicate that the field is related to
-         * an [explicit many-to-many relationship](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations#explicit-many-to-many-relations)
-         *
-         * @default false
-         */
-        isExplicitManyToMany?: undefined;
+        relationshipSearchField?: S;
       }
     | {
         /**
@@ -171,22 +164,7 @@ type OptionFormatterFromRelationshipSearch<
          * @param item
          * @returns
          */
-        optionFormatter?: (
-          item: ModelFromProperty<T, P>[S] extends object
-            ? ModelFromProperty<T, P>[S]
-            : ModelFromProperty<T, P>
-        ) => string;
-        /**
-         * model name on which to execute a research. Useful in case the field is related to an explicit many-to-many table
-         */
-        relationshipSearchField: S;
-        /**
-         * a boolean to indicate that the field is related to
-         * an [explicit many-to-many relationship](https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations#explicit-many-to-many-relations)
-         *
-         * @default false
-         */
-        isExplicitManyToMany: true;
+        optionFormatter?: (item: ModelFromProperty<T, P>) => string;
       };
 }[RelationshipSearch<ModelFromProperty<T, P>>["field"]];
 

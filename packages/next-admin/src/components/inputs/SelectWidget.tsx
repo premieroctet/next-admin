@@ -43,7 +43,7 @@ const SelectWidget = ({
 
   return (
     <div className="relative" ref={containerRef}>
-      <div className="ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong dark:bg-dark-nextadmin-background-subtle relative flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1">
+      <div className="ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong dark:bg-dark-nextadmin-background-subtle relative flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1">
         <select
           name={name}
           className="absolute inset-0 -z-10 h-full w-full opacity-0"

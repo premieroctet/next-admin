@@ -167,12 +167,8 @@ const Form = ({
               {...buttonProps}
               className="order-2 flex gap-2"
               type="submit"
-              {...(edit
-                ? {
-                    name: "__admin_redirect",
-                    value: "list",
-                  }
-                : {})}
+              name="__admin_redirect"
+              value="list"
               loading={isPending}
             >
               <CheckCircleIcon className="h-6 w-6" />
@@ -185,6 +181,7 @@ const Form = ({
               tabIndex={-1}
               type="submit"
               loading={isPending}
+              name="save_edit"
             >
               {t("form.button.save_edit.label")}
             </Button>

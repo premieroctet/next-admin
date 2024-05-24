@@ -45,6 +45,7 @@ model Post {
   authorId   Int
   categories CategoriesOnPosts[]
   rate       Decimal?            @db.Decimal(5, 2)
+  order      Int                 @default(0)
 }
 
 model Profile {

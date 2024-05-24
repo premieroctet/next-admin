@@ -18,7 +18,7 @@ import {
 } from "../types";
 import { isNativeFunction, pipe } from "./tools";
 
-export const models: Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
+export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
   .models as Prisma.DMMF.Model[];
 export const enums = Prisma.dmmf.datamodel.enums;
 export const resources = models.map((model) => model.name as ModelName);
@@ -49,6 +49,15 @@ export const getModelIdProperty = (model: ModelName) => {
   return idField?.name ?? "id";
 };
 
+export const getDeepRelationModel = <M extends ModelName>(
+  model: M,
+  property: Field<M>
+): Prisma.DMMF.Field | undefined => {
+  const prismaModel = getPrismaModelForResource(model);
+  const relationField = prismaModel?.fields.find((f) => f.name === property);
+  return relationField;
+};
+
 export const modelHasIdField = (model: ModelName) => {
   const prismaModel = models.find((m) => m.name === model);
   return !!prismaModel?.fields.some((f) => f.isId);
@@ -67,19 +76,24 @@ export const getToStringForRelations = <M extends ModelName>(
   modelName: M,
   fieldName: Field<M>,
   modelNameRelation: ModelName,
-  options?: NextAdminOptions,
-  relationToFields?: any[]
+  options?: NextAdminOptions
 ) => {
+  const editOptions = options?.model?.[modelName]?.edit;
+  const relationOptions = options?.model?.[modelNameRelation];
+  const explicitManyToManyRelationField =
+  // @ts-expect-error
+    editOptions?.fields?.[fieldName as Field<M>]?.relationshipSearchField;
+
   const nonCheckedToString =
     // @ts-expect-error
-    options?.model?.[modelName]?.edit?.fields?.[fieldName]?.optionFormatter ||
-    options?.model?.[modelNameRelation]?.toString;
+    editOptions?.fields?.[fieldName]?.[
+      explicitManyToManyRelationField ? "relationOptionFormatter" : "optionFormatter"
+    ] || relationOptions?.toString;
   const modelRelationIdField = getModelIdProperty(modelNameRelation);
   const toStringForRelations =
     nonCheckedToString && !isNativeFunction(nonCheckedToString)
       ? nonCheckedToString
-      : (item: any) =>
-          item[relationToFields?.[0]] ?? item[modelRelationIdField];
+      : (item: any) => item[modelRelationIdField];
 
   return toStringForRelations;
 };
@@ -251,12 +265,6 @@ export const transformData = <M extends ModelName>(
     const field = model.fields.find((field) => field.name === key);
     const fieldKind = field?.kind;
     const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
-    const fieldOptionFormatter =
-      // @ts-expect-error
-      editOptions?.fields?.[key as Field<M>]?.optionFormatter;
-    const fieldIsExplicitManyToMany =
-      // @ts-expect-error
-      editOptions?.fields?.[key as Field<M>]?.isExplicitManyToMany;
     const explicitManyToManyRelationField =
       // @ts-expect-error
       editOptions?.fields?.[key as Field<M>]?.relationshipSearchField;
@@ -268,11 +276,26 @@ export const transformData = <M extends ModelName>(
     } else if (fieldKind === "object") {
       const modelRelation = field!.type as ModelName;
       const modelRelationIdField = getModelIdProperty(modelRelation);
+      let deepRelationModel: Prisma.DMMF.Field | undefined;
+      let deepModelRelationIdField: string;
+
+      if (explicitManyToManyRelationField) {
+        deepRelationModel = getDeepRelationModel(
+          modelRelation,
+          explicitManyToManyRelationField
+        );
+        deepModelRelationIdField = getModelIdProperty(
+          deepRelationModel?.type as ModelName
+        );
+      }
+
       const toStringForRelations = getToStringForRelations(
         modelName,
         key as Field<M>,
-        modelRelation,
-        options
+        explicitManyToManyRelationField
+          ? (deepRelationModel?.type as ModelName)
+          : modelRelation,
+        options,
       );
       if (Array.isArray(data[key])) {
         acc[key] = data[key].map((item: any) => {
@@ -289,13 +312,17 @@ export const transformData = <M extends ModelName>(
           }
 
           return {
-            label:
-              fieldOptionFormatter &&
-              fieldIsExplicitManyToMany &&
-              explicitManyToManyRelationField
-                ? toStringForRelations(item[explicitManyToManyRelationField])
-                : toStringForRelations(item),
-            value: item[modelRelationIdField],
+            label: explicitManyToManyRelationField
+              ? toStringForRelations(item[explicitManyToManyRelationField])
+              : toStringForRelations(item),
+            value: explicitManyToManyRelationField
+              ? item[explicitManyToManyRelationField]?.[
+                  deepModelRelationIdField
+                ]
+              : item[modelRelationIdField],
+            data: {
+              modelName: deepRelationModel?.type as ModelName,
+            },
           };
         });
       } else {
@@ -489,6 +516,7 @@ export const formattedFormData = async <M extends ModelName>(
   editOptions?: EditFieldsOptions<M>
 ) => {
   const formattedData: any = {};
+  const complementaryFormattedData: any = {};
   const modelName = resource;
   const errors: Array<{ field: string; message: string }> = [];
   const creating = resourceId === undefined;
@@ -519,8 +547,8 @@ export const formattedFormData = async <M extends ModelName>(
 
             if (
               fieldOptions &&
-              "isExplicitManyToMany" in fieldOptions &&
-              fieldOptions?.isExplicitManyToMany
+              "relationshipSearchField" in fieldOptions &&
+              fieldOptions?.relationshipSearchField
             ) {
               const relationFields = getExplicitManyToManyTableFields(
                 dmmfPropertyTypeTyped
@@ -622,9 +650,45 @@ export const formattedFormData = async <M extends ModelName>(
 
                     return formattedItem;
                   }),
+                  deleteMany: {
+                    [resourcePrimaryKeyCurrentResourceField]: formatId(
+                      resource,
+                      resourceId.toString()
+                    ),
+                    [resourcePrimaryKeyExternalResourceField]: {
+                      notIn: (
+                        formData[
+                          dmmfPropertyName
+                        ] as unknown as Enumeration["value"][]
+                      ).map((item) =>
+                        formatId(externalResourceField.type as ModelName, item)
+                      ),
+                    },
+                  },
                 };
               }
+              console.dir(formattedData[dmmfPropertyName], { depth: null });
             } else {
+              const updateRelatedField = {
+                ...(orderField && {
+                  update: formData[
+                    dmmfPropertyName
+                    // @ts-expect-error
+                  ]?.map((item: any, index: number) => {
+                    return {
+                      where: {
+                        id: formatId(dmmfPropertyType as ModelName, item),
+                      },
+                      data: {
+                        ...(orderField && {
+                          [orderField]: index,
+                        }),
+                      },
+                    };
+                  }),
+                }),
+              };
+
               formattedData[dmmfPropertyName] = {
                 // @ts-expect-error
                 [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
@@ -632,7 +696,13 @@ export const formattedFormData = async <M extends ModelName>(
                     id: formatId(dmmfPropertyType as ModelName, item),
                   })
                 ),
+                ...(!creating && updateRelatedField),
               };
+
+              if (creating) {
+                complementaryFormattedData[dmmfPropertyName] =
+                  updateRelatedField;
+              }
             }
           } else {
             const connect = Boolean(formData[dmmfPropertyName]);
@@ -731,7 +801,7 @@ export const formattedFormData = async <M extends ModelName>(
     }
   });
 
-  return { formattedData, errors };
+  return { formattedData, complementaryFormattedData, errors };
 };
 
 /**
