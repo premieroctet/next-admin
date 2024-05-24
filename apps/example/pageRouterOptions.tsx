@@ -156,7 +156,6 @@ export const options: NextAdminOptions = {
       toString: (category) => `${category.name}`,
       list: {
         display: ["name", "posts"],
-        search: ["name"],
       },
       edit: {
         display: ["name", "posts"],
