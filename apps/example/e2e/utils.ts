@@ -163,9 +163,9 @@ const getRows = async (page: Page) => {
   return await tbody?.$$("tr");
 };
 
-export const search = async (page: Page) => {
-  await page.goto(`${process.env.BASE_URL}/user`);
-  await page.fill('input[name="search"]', "user0@nextadmin.io");
+export const search = async (page: Page, model: ModelName, search: string) => {
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}`);
+  await page.fill('input[name="search"]', search);
   await page.waitForURL((url) => !!url.searchParams.get("search"));
   const table = await page.$("table");
   const tbody = await table?.$("tbody");
