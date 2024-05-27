@@ -2,6 +2,7 @@
 import {
   CheckCircleIcon,
   InformationCircleIcon,
+  PlusSmallIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import { Prisma } from "@prisma/client";
@@ -56,7 +57,7 @@ import JsonField from "./inputs/JsonField";
 import NullField from "./inputs/NullField";
 import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
-import Button from "./radix/Button";
+import Button, { buttonVariants } from "./radix/Button";
 import {
   TooltipContent,
   TooltipPortal,
@@ -64,6 +65,7 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
+import Link from "next/link";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
@@ -158,9 +160,9 @@ const Form = ({
     }
 
     return (
-      <div className="mt-4 flex justify-between space-x-2">
+      <div className="mt-4 flex justify-between gap-2">
         {((edit && canEdit) || (!edit && canCreate)) && (
-          <div className="order-2 flex space-x-2">
+          <div className="order-2 flex gap-2">
             <Button
               {...buttonProps}
               className="order-2 flex gap-2"
@@ -493,14 +495,30 @@ const Form = ({
     <div className="relative h-full">
       <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex h-16 flex-row items-center justify-between gap-3 border-b px-4 shadow-sm">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
-        {!!actions && actions.length > 0 && !!id && (
-          <ActionsDropdown
-            actions={actions}
-            resource={resource}
-            selectedIds={[id] as string[] | number[]}
-            selectedCount={1}
-          />
-        )}
+        <div className="flex items-center gap-2">
+          {!!actions && actions.length > 0 && !!id && (
+            <ActionsDropdown
+              actions={actions}
+              resource={resource}
+              selectedIds={[id] as string[] | number[]}
+              selectedCount={1}
+            />
+          )}
+          {canCreate && (
+            <Link
+              href={`${basePath}/${slugify(resource)}/new`}
+              role="button"
+              data-testid="add-new-button"
+              className={buttonVariants({
+                variant: "default",
+                size: "sm",
+              })}
+            >
+              <span>{t("list.header.add.label")}</span>
+              <PlusSmallIcon className="ml-2 h-5 w-5" aria-hidden="true" />
+            </Link>
+          )}
+        </div>
       </div>
       <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
         <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
