@@ -1,5 +1,18 @@
 # @premieroctet/next-admin
 
+## 4.3.0
+
+### Minor Changes
+
+- [7ebf263](https://github.com/premieroctet/next-admin/commit/7ebf263): minor typo fix
+
+### Patch Changes
+
+- [3dc9fd2](https://github.com/premieroctet/next-admin/commit/3dc9fd2): Add possibility to set an export url for data ([#265](https://github.com/premieroctet/next-admin/issues/265))
+- [3dc9fd2](https://github.com/premieroctet/next-admin/commit/3dc9fd2): Add code snippets in doc
+- [324e99b](https://github.com/premieroctet/next-admin/commit/324e99b): feat: update preset to apply on body
+  feat: add form header to add new resource from edit form
+
 ## 4.2.4
 
 ### Patch Changes
