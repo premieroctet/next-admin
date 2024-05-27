@@ -25,7 +25,8 @@
         "actions": {
           "delete": {
             "label": "Supprimer"
-          }
+          },
+          "export": "Exporter en {{format}}"
         }
       },
       "empty": {
@@ -58,6 +59,9 @@
           "error": "Email invalide"
         }
       }
+    },
+    "export": {
+      "label": "Exporter"
     },
     "actions": {
       "user": {

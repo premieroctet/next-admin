@@ -14,6 +14,10 @@ export const options: NextAdminOptions = {
         id: "ID",
       },
       list: {
+        exports: {
+          format: "CSV",
+          url: "/api/users/export",
+        },
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email", "role"],
         copy: ["email"],
@@ -145,6 +149,10 @@ export const options: NextAdminOptions = {
       icon: "NewspaperIcon",
       permissions: ["edit", "delete", "create"],
       list: {
+        exports: [
+          { format: "CSV", url: "/api/posts/export?format=csv" },
+          { format: "JSON", url: "/api/posts/export?format=json" },
+        ],
         display: ["id", "title", "published", "author", "categories", "rate"],
         search: ["title", "content"],
         fields: {

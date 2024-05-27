@@ -1,15 +1,15 @@
 "use server";
 import { ActionParams, ModelName } from "@premieroctet/next-admin";
 import {
-  deleteResourceItems,
-  submitForm,
-  searchPaginatedResource,
   SearchPaginatedResourceParams,
+  deleteResourceItems,
+  searchPaginatedResource,
+  submitForm,
 } from "@premieroctet/next-admin/dist/actions";
-import { prisma } from "../prisma";
 import { options } from "../options";
+import { prisma } from "../prisma";
 
-const delay = (ms: number) => new Promise(res => setTimeout(res, ms));
+const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
 
 export const submitFormAction = async (
   params: ActionParams,
@@ -23,7 +23,7 @@ export const submitEmail = async (
   ids: number[] | string[]
 ) => {
   console.log("Sending email to " + ids.length + " users");
-  await delay(1000)
+  await delay(1000);
 };
 
 export const deleteItem = async (

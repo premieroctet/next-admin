@@ -20,6 +20,7 @@ import {
 import { slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
+import ExportDropdown from "./ExportDropdown";
 import { buttonVariants } from "./radix/Button";
 
 type Props = {
@@ -136,6 +137,20 @@ export default function ListHeader({
               selectedCount={selectedRowsCount}
             />
           )}
+          {modelOptions?.list?.exports &&
+            (Array.isArray(modelOptions?.list?.exports) ? (
+              <ExportDropdown exports={modelOptions?.list?.exports} />
+            ) : (
+              <Link
+                href={modelOptions?.list?.exports.url}
+                target="_blank"
+                className="text-nextadmin-content-inverted dark:text-dark-nextadmin-brand-inverted border-nextadmin-border-default dark:border-dark-nextadmin-border-default dark:bg-dark-nextadmin-background-subtle flex items-center gap-x-2 rounded-md border bg-transparent px-3 py-2 text-sm"
+              >
+                {t("list.row.actions.export", {
+                  format: modelOptions?.list?.exports.format,
+                })}
+              </Link>
+            ))}
           {canCreate && (
             <Link
               href={`${basePath}/${slugify(resource)}/new`}
