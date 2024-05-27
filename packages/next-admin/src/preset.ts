@@ -1,5 +1,6 @@
 import { PresetsConfig } from "tailwindcss/types/config";
 import defaultColors from "tailwindcss/colors";
+import plugin from "tailwindcss/plugin";
 
 const nextAdminPreset: PresetsConfig = {
   theme: {
@@ -101,6 +102,31 @@ const nextAdminPreset: PresetsConfig = {
     },
   },
   darkMode: "class",
+  plugins: [
+    plugin(function ({ addBase, config, theme }) {
+      let [mode, className = ".dark"] = ([] as any[]).concat(
+        config("darkMode", "media")
+      );
+      if (mode === false) {
+        mode = "media";
+      }
+
+      const darkContext =
+        mode === "media"
+          ? "@media (prefers-color-scheme: dark)"
+          : `:is(${className} &)`;
+
+      addBase({
+        body: {
+          backgroundColor: theme("colors.nextadmin.background.default"),
+
+          [darkContext]: {
+            backgroundColor: theme("colors.dark-nextadmin.background.default"),
+          },
+        },
+      });
+    }),
+  ],
 };
 
 export default nextAdminPreset;
