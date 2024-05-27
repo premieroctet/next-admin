@@ -5,7 +5,7 @@ export const defaultTranslations: Translations = {
   "actions.label": "Action",
   "export.label": "Export",
   "form.button.delete.label": "Delete",
-  "form.delete.alert": "Are you sure to delete this?",
+  "form.delete.alert": "Are you sure you want to delete this?",
   "form.button.save.label": "Save",
   "form.button.save_edit.label": "Save and continue editing",
   "list.empty.label": "No {{resource}} found",
