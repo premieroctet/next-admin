@@ -1,5 +1,15 @@
 # @premieroctet/next-admin
 
+## 4.4.0
+
+### Minor Changes
+
+- [af271ed](https://github.com/premieroctet/next-admin/commit/af271ed): feat: handle explicit many-to-many and sorting ([#261](https://github.com/premieroctet/next-admin/issues/261))
+
+### Patch Changes
+
+- [4d90eb5](https://github.com/premieroctet/next-admin/commit/4d90eb5): Fix search on all scalar list
+
 ## 4.3.0
 
 ### Minor Changes
