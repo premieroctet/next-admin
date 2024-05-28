@@ -135,6 +135,39 @@ export type FilterWrapper<T extends ModelName> = {
   value: Filter<T>;
 };
 
+type RelationshipSearch<T> = {
+  [S in keyof T]: {
+    field: T[S] extends object ? S : never;
+  };
+}[keyof T];
+
+type OptionFormatterFromRelationshipSearch<
+  T extends ModelName,
+  P extends keyof ObjectField<T>,
+> = {
+  [S in RelationshipSearch<ModelFromProperty<T, P>>["field"]]:
+    | {
+        /**
+         * only for relation fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list.
+         * @param item
+         * @returns
+         */
+        relationOptionFormatter?: (item: ModelFromProperty<T, P>[S]) => string;
+        /**
+         * model name on which to execute a research. Useful in case the field is related to an explicit many-to-many table
+         */
+        relationshipSearchField?: S;
+      }
+    | {
+        /**
+         * only for relation fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list.
+         * @param item
+         * @returns
+         */
+        optionFormatter?: (item: ModelFromProperty<T, P>) => string;
+      };
+}[RelationshipSearch<ModelFromProperty<T, P>>["field"]];
+
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     /**
@@ -172,23 +205,21 @@ export type EditFieldsOptions<T extends ModelName> = {
      */
     required?: true;
   } & (P extends keyof ObjectField<T>
-    ? {
-        /**
-         * only for relation fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list.
-         * @param item
-         * @returns
-         */
-        optionFormatter?: (item: ModelFromProperty<T, P>) => string;
-        /**
-         * Property to indicate how to display the multi select widget :
-         * - `list`: displayed as a list of elements that has a link and a delete button
-         * - `table`: displayed as the table list for a resource. Requires to have display options configured for the related model
-         * - `select`: displayed as a multi select dropdown
-         *
-         * @default "select"
-         */
-        display?: "list" | "table" | "select";
-      }
+    ? OptionFormatterFromRelationshipSearch<T, P> &
+        (
+          | {
+              /**
+               * Property to indicate how to display the multi select widget :
+               * - `list`: displayed as a list of elements that has a link and a delete button
+               * - `table`: displayed as the table list for a resource. Requires to have display options configured for the related model
+               * - `select`: displayed as a multi select dropdown
+               *
+               * @default "select"
+               */
+              display?: "table" | "select";
+            }
+          | { display?: "list"; orderField?: keyof ModelFromProperty<T, P> }
+        )
     : {});
 };
 

@@ -37,15 +37,15 @@ model User {
 }
 
 model Post {
-  id         Int            @id @default(autoincrement())
+  id         Int                 @id @default(autoincrement())
   title      String
   content    String?
-  published  Boolean        @default(false)
-  author     User           @relation("author", fields: [authorId], references: [id]) // Many-to-one relation
+  published  Boolean             @default(false)
+  author     User                @relation("author", fields: [authorId], references: [id]) // Many-to-one relation
   authorId   Int
-  categories Category[]     @relation("category") // implicit Many-to-many relation
-  comments   post_comment[] @relation("comments") // One-to-many relation
-  rate       Decimal?       @db.Decimal(5, 2)
+  categories CategoriesOnPosts[]
+  rate       Decimal?            @db.Decimal(5, 2)
+  order      Int                 @default(0)
 }
 
 model Profile {
@@ -58,18 +58,20 @@ model Profile {
 }
 
 model Category {
-  id        Int      @id @default(autoincrement())
+  id        Int                 @id @default(autoincrement())
   name      String
-  posts     Post[]   @relation("category") // implicit Many-to-many relation
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  posts     CategoriesOnPosts[]
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @default(now()) @updatedAt
 }
 
-model post_comment {
-  id        String   @id @default(uuid())
-  content   String
-  post      Post     @relation("comments", fields: [postId], references: [id])
-  postId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+model CategoriesOnPosts {
+  id         Int      @default(autoincrement())
+  post       Post     @relation(fields: [postId], references: [id])
+  postId     Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  order      Int      @default(0)
+
+  @@id([postId, categoryId])
 }

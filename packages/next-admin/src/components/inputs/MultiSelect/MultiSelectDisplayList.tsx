@@ -1,19 +1,16 @@
-import {
-  ArrowTopRightOnSquareIcon,
-  XMarkIcon,
-} from "@heroicons/react/24/outline";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
 import { RJSFSchema } from "@rjsf/utils";
-import clsx from "clsx";
-import Link from "next/link";
-import { useConfig } from "../../../context/ConfigContext";
 import { Enumeration } from "../../../types";
-import { slugify } from "../../../utils/tools";
+import MultiSelectDisplayListItem from "./MultiSelectDisplayListItem";
 
 type Props = {
   formData: any;
   schema: RJSFSchema;
   onRemoveClick: (value: Enumeration["value"]) => void;
   deletable: boolean;
+  sortable?: boolean;
+  onUpdateFormData?: (value: Enumeration[]) => void;
 };
 
 const MultiSelectDisplayList = ({
@@ -21,41 +18,56 @@ const MultiSelectDisplayList = ({
   schema,
   onRemoveClick,
   deletable = true,
+  sortable = false,
+  onUpdateFormData,
 }: Props) => {
-  const { basePath } = useConfig();
+  const onDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (active.id !== over?.id) {
+      const activeIndex = formData.findIndex(
+        (value: Enumeration) => value.value === active.id
+      );
+      const overIndex = formData.findIndex(
+        (value: Enumeration) => value.value === over?.id
+      );
+      const newFormData = [...formData];
+      newFormData.splice(overIndex, 0, newFormData.splice(activeIndex, 1)[0]);
+      onUpdateFormData?.(newFormData);
+    }
+  };
+
+  const renderList = () => {
+    return (
+      <ul className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted space-y-2">
+        {formData?.map((value: Enumeration) => {
+          return (
+            <MultiSelectDisplayListItem
+              item={value}
+              key={value.value}
+              onRemoveClick={onRemoveClick}
+              deletable={deletable}
+              sortable={sortable}
+              schema={schema}
+            />
+          );
+        })}
+      </ul>
+    );
+  };
+
+  if (!sortable) {
+    return renderList();
+  }
 
   return (
-    <ul className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted space-y-2">
-      {formData?.map((value: Enumeration, index: number) => {
-        return (
-          <li
-            key={index}
-            className={clsx(
-              "ring-nextadmin-border-default dark:ring-dark-nextadmin-border-default relative flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1"
-            )}
-          >
-            {value.label}
-            <div className="flex items-center space-x-3">
-              {" "}
-              <Link
-                href={`${basePath}/${slugify(
-                  // @ts-expect-error
-                  schema.items?.relation
-                )}/${value?.value}`}
-                className="flex items-center"
-              >
-                <ArrowTopRightOnSquareIcon className="h-5 w-5 cursor-pointer text-gray-400" />
-              </Link>
-              {deletable && (
-                <div onClick={() => onRemoveClick(value.value)}>
-                  <XMarkIcon className="h-5 w-5 cursor-pointer text-gray-400" />
-                </div>
-              )}
-            </div>
-          </li>
-        );
-      })}
-    </ul>
+    <DndContext onDragEnd={onDragEnd}>
+      <SortableContext
+        items={formData?.map((value: Enumeration) => value.value) ?? []}
+      >
+        {renderList()}
+      </SortableContext>
+    </DndContext>
   );
 };
 

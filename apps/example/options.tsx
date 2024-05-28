@@ -101,6 +101,10 @@ export const options: NextAdminOptions = {
           birthDate: {
             input: <DatePicker />,
           },
+          posts: {
+            display: "list",
+            orderField: "order",
+          },
           avatar: {
             format: "file",
             handler: {
@@ -174,9 +178,12 @@ export const options: NextAdminOptions = {
             format: "richtext-html",
           },
           categories: {
-            optionFormatter: (category) =>
-              `${category.name} Cat.${category.id}`,
-            display: "table",
+            relationOptionFormatter: (category) => {
+              return `${category.name} Cat.${category.id}`;
+            },
+            display: "list",
+            orderField: "order",
+            relationshipSearchField: "category",
           },
         },
         display: [
@@ -199,6 +206,12 @@ export const options: NextAdminOptions = {
       },
       edit: {
         display: ["name", "posts"],
+        fields: {
+          posts: {
+            display: "list",
+            relationshipSearchField: "post",
+          },
+        },
       },
     },
   },

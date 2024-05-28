@@ -81,14 +81,15 @@ export const submitForm = async (
     // Validate
     validate(parsedFormData, fields);
 
-    const { formattedData, errors } = await formattedFormData(
-      formValues,
-      dmmfSchema?.fields!,
-      schema,
-      resource,
-      resourceId === undefined,
-      fields
-    );
+    const { formattedData, complementaryFormattedData, errors } =
+      await formattedFormData(
+        formValues,
+        dmmfSchema?.fields!,
+        schema,
+        resource,
+        resourceId,
+        fields
+      );
 
     if (errors.length) {
       return {
@@ -136,6 +137,14 @@ export const submitForm = async (
     // @ts-expect-error
     data = await prisma[resource].create({
       data: formattedData,
+    });
+
+    // @ts-expect-error
+    await prisma[resource].update({
+      where: {
+        [resourceIdField]: data[resourceIdField],
+      },
+      data: complementaryFormattedData,
     });
 
     return {

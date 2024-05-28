@@ -20,6 +20,7 @@ import {
   getModelIdProperty,
   getPrismaModelForResource,
   getToStringForRelations,
+  modelHasIdField,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
@@ -73,6 +74,25 @@ export const createWherePredicate = (
   const externalFilters = otherFilters ?? [];
 
   return { AND: [...externalFilters, searchFilter] };
+};
+
+export const getFieldsFiltered = <M extends ModelName>(
+  resource: M,
+  options?: NextAdminOptions
+): readonly Prisma.DMMF.Field[] => {
+  const model = getPrismaModelForResource(resource);
+
+  let fieldsFiltered = model?.fields;
+  const list = options?.model?.[resource]?.list as ListOptions<M>;
+  if (list) {
+    fieldsFiltered = list?.search
+      ? model?.fields.filter(
+          ({ name }) => list.search?.includes(name as Field<M>)
+        )
+      : fieldsFiltered;
+  }
+
+  return fieldsFiltered as readonly Prisma.DMMF.Field[];
 };
 
 export const preparePrismaListRequest = <M extends ModelName>(
@@ -145,19 +165,9 @@ export const preparePrismaListRequest = <M extends ModelName>(
 
   let select: Select<M> | undefined;
   let where = {};
-  let fieldsFiltered = model?.fields;
+  let fieldsFiltered = getFieldsFiltered(resource, options);
   const list = options?.model?.[resource]?.list as ListOptions<M>;
-  if (list) {
-    select = selectPayloadForModel(resource, list, "object");
-    fieldsFiltered = list?.search
-      ? model?.fields.filter(
-          ({ name }) => list.search?.includes(name as Field<M>)
-        )
-      : fieldsFiltered;
-  } else {
-    select = selectPayloadForModel(resource, undefined, "object");
-  }
-
+  select = selectPayloadForModel(resource, list, "object");
   where = createWherePredicate(fieldsFiltered, search, fieldFilters);
 
   return {
@@ -188,6 +198,27 @@ export const optionsFromResource = async ({
   property,
   ...args
 }: OptionsFromResourceParams) => {
+  const relationshipField =
+    args.options.model?.[originResource]?.edit?.fields?.[
+      property as Field<typeof originResource>
+      // @ts-expect-error
+    ]?.relationshipSearchField;
+
+  if (relationshipField) {
+    const targetModel = getPrismaModelForResource(args.resource);
+    const modelField = targetModel?.fields.find(
+      (field) => field.name === relationshipField
+    );
+
+    if (modelField && modelField.type !== "scalar") {
+      args.resource = modelField.type as ModelName;
+    } else {
+      console.warn(
+        "Used relationshipSearch on a scalar field, ignoring property"
+      );
+    }
+  }
+
   const data = await fetchDataList(args, true);
   const { data: dataItems, total, error } = data;
   const { resource } = args;
@@ -203,15 +234,22 @@ export const optionsFromResource = async ({
     args.resource,
     args.options
   );
+
+  const displayMode =
+    args.options?.model?.[originResource]?.edit?.fields?.[
+      property as Field<typeof originResource>
+      // @ts-expect-error
+    ]?.display;
+
   return {
     data: dataItems.map((item): Enumeration => {
       const dataTableItem = dataTableItems.find(
         (dataTableItem) => dataTableItem[idProperty].value === item[idProperty]
       );
       return {
-        label: toStringModel ? toStringModel(item) : item[idProperty],
+        label: toStringModel(item),
         value: item[idProperty],
-        data: dataTableItem,
+        data: displayMode === "table" ? dataTableItem : undefined,
       };
     }),
     total,
@@ -315,12 +353,11 @@ export const mapDataList = ({
       if (
         appDir &&
         key in listFields &&
-        listFields[key as keyof typeof listFields]?.formatter &&
+        listFields[key as Field<ModelName>]?.formatter &&
         itemValue !== null
       ) {
         item[key].__nextadmin_formatted = listFields[
           key as keyof typeof listFields
-          // @ts-expect-error
         ]?.formatter?.(itemValue ?? item[key], context);
       } else {
         if (typeof item[key]?.__nextadmin_formatted === "object") {
@@ -376,14 +413,50 @@ export const selectPayloadForModel = <M extends ModelName>(
               "scalar"
             ),
           };
+
+          const orderField = (options as EditOptions<M>)?.fields?.[
+            field.name as Field<M>
+            // @ts-expect-error
+          ]?.orderField;
+
+          if (orderField) {
+            acc[field.name].orderBy = {
+              [orderField]: "asc",
+            };
+          }
         } else {
           acc[field.name] = true;
         }
       }
       return acc;
     },
-    { [idProperty]: true } as any
+    modelHasIdField(resource) ? ({ [idProperty]: true } as any) : {}
   );
 
   return selectedFields;
+};
+
+export const includeOrderByPayloadForModel = <M extends ModelName>(
+  resource: M,
+  options: EditOptions<M>
+) => {
+  const model = getPrismaModelForResource(resource);
+
+  let orderedFields = model?.fields.reduce(
+    (acc, field) => {
+      // @ts-expect-error
+      if (options.fields?.[field.name as Field<M>]?.orderField) {
+        acc[field.name] = {
+          orderBy: {
+            // @ts-expect-error
+            [options.fields[field.name as Field<M>].orderField]: "asc",
+          },
+        };
+      }
+      return acc;
+    },
+    {} as Record<string, any>
+  );
+
+  return orderedFields;
 };

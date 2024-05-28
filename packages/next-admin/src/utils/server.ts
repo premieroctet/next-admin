@@ -18,7 +18,7 @@ import {
 } from "../types";
 import { isNativeFunction, pipe } from "./tools";
 
-export const models: Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
+export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
   .models as Prisma.DMMF.Model[];
 export const enums = Prisma.dmmf.datamodel.enums;
 export const resources = models.map((model) => model.name as ModelName);
@@ -49,6 +49,20 @@ export const getModelIdProperty = (model: ModelName) => {
   return idField?.name ?? "id";
 };
 
+export const getDeepRelationModel = <M extends ModelName>(
+  model: M,
+  property: Field<M>
+): Prisma.DMMF.Field | undefined => {
+  const prismaModel = getPrismaModelForResource(model);
+  const relationField = prismaModel?.fields.find((f) => f.name === property);
+  return relationField;
+};
+
+export const modelHasIdField = (model: ModelName) => {
+  const prismaModel = models.find((m) => m.name === model);
+  return !!prismaModel?.fields.some((f) => f.isId);
+};
+
 export const getResources = (
   options?: NextAdminOptions
 ): Prisma.ModelName[] => {
@@ -62,19 +76,24 @@ export const getToStringForRelations = <M extends ModelName>(
   modelName: M,
   fieldName: Field<M>,
   modelNameRelation: ModelName,
-  options?: NextAdminOptions,
-  relationToFields?: any[]
+  options?: NextAdminOptions
 ) => {
+  const editOptions = options?.model?.[modelName]?.edit;
+  const relationOptions = options?.model?.[modelNameRelation];
+  const explicitManyToManyRelationField =
+  // @ts-expect-error
+    editOptions?.fields?.[fieldName as Field<M>]?.relationshipSearchField;
+
   const nonCheckedToString =
     // @ts-expect-error
-    options?.model?.[modelName]?.edit?.fields?.[fieldName]?.optionFormatter ||
-    options?.model?.[modelNameRelation]?.toString;
+    editOptions?.fields?.[fieldName]?.[
+      explicitManyToManyRelationField ? "relationOptionFormatter" : "optionFormatter"
+    ] || relationOptions?.toString;
   const modelRelationIdField = getModelIdProperty(modelNameRelation);
   const toStringForRelations =
     nonCheckedToString && !isNativeFunction(nonCheckedToString)
       ? nonCheckedToString
-      : (item: any) =>
-          item[relationToFields?.[0]] ?? item[modelRelationIdField];
+      : (item: any) => item[modelRelationIdField];
 
   return toStringForRelations;
 };
@@ -246,6 +265,10 @@ export const transformData = <M extends ModelName>(
     const field = model.fields.find((field) => field.name === key);
     const fieldKind = field?.kind;
     const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
+    const explicitManyToManyRelationField =
+      // @ts-expect-error
+      editOptions?.fields?.[key as Field<M>]?.relationshipSearchField;
+
     if (get) {
       acc[key] = get(data[key]);
     } else if (fieldKind === "enum") {
@@ -253,11 +276,26 @@ export const transformData = <M extends ModelName>(
     } else if (fieldKind === "object") {
       const modelRelation = field!.type as ModelName;
       const modelRelationIdField = getModelIdProperty(modelRelation);
+      let deepRelationModel: Prisma.DMMF.Field | undefined;
+      let deepModelRelationIdField: string;
+
+      if (explicitManyToManyRelationField) {
+        deepRelationModel = getDeepRelationModel(
+          modelRelation,
+          explicitManyToManyRelationField
+        );
+        deepModelRelationIdField = getModelIdProperty(
+          deepRelationModel?.type as ModelName
+        );
+      }
+
       const toStringForRelations = getToStringForRelations(
         modelName,
         key as Field<M>,
-        modelRelation,
-        options
+        explicitManyToManyRelationField
+          ? (deepRelationModel?.type as ModelName)
+          : modelRelation,
+        options,
       );
       if (Array.isArray(data[key])) {
         acc[key] = data[key].map((item: any) => {
@@ -274,8 +312,17 @@ export const transformData = <M extends ModelName>(
           }
 
           return {
-            label: toStringForRelations(item),
-            value: item[modelRelationIdField],
+            label: explicitManyToManyRelationField
+              ? toStringForRelations(item[explicitManyToManyRelationField])
+              : toStringForRelations(item),
+            value: explicitManyToManyRelationField
+              ? item[explicitManyToManyRelationField]?.[
+                  deepModelRelationIdField
+                ]
+              : item[modelRelationIdField],
+            data: {
+              modelName: deepRelationModel?.type as ModelName,
+            },
           };
         });
       } else {
@@ -421,14 +468,38 @@ export const parseFormData = <M extends ModelName>(
   return parsedData;
 };
 
-export const formatId = (ressource: ModelName, id: string) => {
-  const model = models.find((model) => model.name === ressource);
-  const idProperty = getModelIdProperty(ressource);
+export const formatId = (resource: ModelName, id: string) => {
+  const model = models.find((model) => model.name === resource);
+  const idProperty = getModelIdProperty(resource);
+
   return model?.fields.find((field) => field.name === idProperty)?.type ===
     "Int"
     ? Number(id)
     : id;
 };
+
+const getExplicitManyToManyTableFields = <M extends ModelName>(
+  manyToManyResource: M
+) => {
+  const model = getPrismaModelForResource(manyToManyResource);
+  const relationFields = model?.fields.filter(
+    (field) => field.kind === "object"
+  );
+
+  return relationFields;
+};
+
+const getExplicitManyToManyTablePrimaryKey = <M extends ModelName>(
+  resource: M
+) => {
+  const model = getPrismaModelForResource(resource);
+
+  return {
+    name: model?.primaryKey?.fields.join("_"),
+    fields: model?.primaryKey?.fields,
+  };
+};
+
 /**
  * Convert the form data to the format expected by Prisma
  *
@@ -441,14 +512,16 @@ export const formattedFormData = async <M extends ModelName>(
   dmmfSchema: readonly Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
-  creating: boolean,
+  resourceId: string | number | undefined,
   editOptions?: EditFieldsOptions<M>
 ) => {
   const formattedData: any = {};
+  const complementaryFormattedData: any = {};
   const modelName = resource;
   const errors: Array<{ field: string; message: string }> = [];
+  const creating = resourceId === undefined;
 
-  await Promise.allSettled(
+  const results = await Promise.allSettled(
     dmmfSchema.map(async (dmmfProperty) => {
       if (dmmfProperty.name in formData) {
         const dmmfPropertyType = dmmfProperty.type;
@@ -464,14 +537,173 @@ export const formattedFormData = async <M extends ModelName>(
             formData[dmmfPropertyName] = JSON.parse(
               formData[dmmfPropertyName]!
             );
-            formattedData[dmmfPropertyName] = {
-              // @ts-expect-error
-              [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
-                (item: any) => ({
-                  id: formatId(dmmfPropertyType as ModelName, item),
-                })
-              ),
-            };
+
+            const fieldOptions = editOptions?.[dmmfPropertyName];
+
+            const orderField =
+              fieldOptions &&
+              "orderField" in fieldOptions &&
+              fieldOptions.orderField;
+
+            if (
+              fieldOptions &&
+              "relationshipSearchField" in fieldOptions &&
+              fieldOptions?.relationshipSearchField
+            ) {
+              const relationFields = getExplicitManyToManyTableFields(
+                dmmfPropertyTypeTyped
+              )!;
+
+              const currentResourceField = relationFields.filter(
+                (field) => field.type === resource
+              )[0];
+              const externalResourceField = relationFields.filter(
+                (field) => field.type !== resource
+              )[0];
+
+              if (creating) {
+                formattedData[dmmfPropertyName] = {
+                  create: (
+                    formData[
+                      dmmfPropertyName
+                    ] as unknown as Enumeration["value"][]
+                  ).map((item, index) => {
+                    const data: Record<string, any> = {
+                      [externalResourceField.name]: {
+                        connect: {
+                          id: formatId(
+                            externalResourceField.type as ModelName,
+                            item
+                          ),
+                        },
+                      },
+                    };
+
+                    if (orderField) {
+                      data[orderField as string] = index;
+                    }
+
+                    return data;
+                  }),
+                };
+              } else {
+                const resourcePrimaryKey = getExplicitManyToManyTablePrimaryKey(
+                  dmmfPropertyTypeTyped
+                )!;
+
+                const resourcePrimaryKeyCurrentResourceField =
+                  resourcePrimaryKey.fields!.find(
+                    (field) =>
+                      field === currentResourceField.relationFromFields?.[0]
+                  )!;
+                const resourcePrimaryKeyExternalResourceField =
+                  resourcePrimaryKey.fields!.find(
+                    (field) =>
+                      field === externalResourceField.relationFromFields?.[0]
+                  )!;
+
+                formattedData[dmmfPropertyName] = {
+                  upsert: (
+                    formData[
+                      dmmfPropertyName
+                    ] as unknown as Enumeration["value"][]
+                  ).map((item, index) => {
+                    const formattedItem: Record<string, any> = {
+                      create: {
+                        [externalResourceField.name]: {
+                          connect: {
+                            id: formatId(
+                              externalResourceField.type as ModelName,
+                              item
+                            ),
+                          },
+                        },
+                      },
+                      where: {
+                        [resourcePrimaryKey.name!]: {
+                          [resourcePrimaryKeyCurrentResourceField]: formatId(
+                            resource,
+                            resourceId.toString()
+                          ),
+                          [resourcePrimaryKeyExternalResourceField]: formatId(
+                            externalResourceField.type as ModelName,
+                            item
+                          ),
+                        },
+                      },
+                      update: {
+                        [externalResourceField.name]: {
+                          connect: {
+                            id: formatId(
+                              externalResourceField.type as ModelName,
+                              item
+                            ),
+                          },
+                        },
+                      },
+                    };
+
+                    if (orderField) {
+                      formattedItem.create[orderField as string] = index;
+                      formattedItem.update[orderField as string] = index;
+                    }
+
+                    return formattedItem;
+                  }),
+                  deleteMany: {
+                    [resourcePrimaryKeyCurrentResourceField]: formatId(
+                      resource,
+                      resourceId.toString()
+                    ),
+                    [resourcePrimaryKeyExternalResourceField]: {
+                      notIn: (
+                        formData[
+                          dmmfPropertyName
+                        ] as unknown as Enumeration["value"][]
+                      ).map((item) =>
+                        formatId(externalResourceField.type as ModelName, item)
+                      ),
+                    },
+                  },
+                };
+              }
+              console.dir(formattedData[dmmfPropertyName], { depth: null });
+            } else {
+              const updateRelatedField = {
+                ...(orderField && {
+                  update: formData[
+                    dmmfPropertyName
+                    // @ts-expect-error
+                  ]?.map((item: any, index: number) => {
+                    return {
+                      where: {
+                        id: formatId(dmmfPropertyType as ModelName, item),
+                      },
+                      data: {
+                        ...(orderField && {
+                          [orderField]: index,
+                        }),
+                      },
+                    };
+                  }),
+                }),
+              };
+
+              formattedData[dmmfPropertyName] = {
+                // @ts-expect-error
+                [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
+                  (item: any) => ({
+                    id: formatId(dmmfPropertyType as ModelName, item),
+                  })
+                ),
+                ...(!creating && updateRelatedField),
+              };
+
+              if (creating) {
+                complementaryFormattedData[dmmfPropertyName] =
+                  updateRelatedField;
+              }
+            }
           } else {
             const connect = Boolean(formData[dmmfPropertyName]);
             if (connect) {
@@ -562,7 +794,14 @@ export const formattedFormData = async <M extends ModelName>(
       }
     })
   );
-  return { formattedData, errors };
+
+  results.forEach((result) => {
+    if (result.status === "rejected") {
+      console.error(result.reason);
+    }
+  });
+
+  return { formattedData, complementaryFormattedData, errors };
 };
 
 /**

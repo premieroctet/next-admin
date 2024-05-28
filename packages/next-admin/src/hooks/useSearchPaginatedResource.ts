@@ -4,17 +4,17 @@ import { useForm } from "../context/FormContext";
 import { Enumeration } from "../types";
 
 type UseSearchPaginatedResourceParams = {
-  resourceName: string;
+  fieldName: string;
   initialOptions?: Enumeration[];
 };
 
 const useSearchPaginatedResource = ({
-  resourceName,
+  fieldName,
   initialOptions,
 }: UseSearchPaginatedResourceParams) => {
   const [isPending, setIsPending] = useState(false);
   const { dmmfSchema, searchPaginatedResourceAction, resource } = useForm();
-  const { isAppDir, basePath } = useConfig();
+  const { isAppDir, basePath, options } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
   const [allOptions, setAllOptions] = useState<Enumeration[]>(
@@ -25,9 +25,7 @@ const useSearchPaginatedResource = ({
   const runSearch = async (query: string, resetOptions = true) => {
     const perPage = 25;
 
-    const fieldFromDmmf = dmmfSchema?.find(
-      (model) => model.name === resourceName
-    );
+    const fieldFromDmmf = dmmfSchema?.find((field) => field.name === fieldName);
 
     if (!fieldFromDmmf) {
       return;
@@ -40,7 +38,7 @@ const useSearchPaginatedResource = ({
       if (isAppDir) {
         const response = await searchPaginatedResourceAction?.({
           originModel: resource!,
-          property: resourceName,
+          property: fieldName,
           model,
           query,
           page: searchPage.current,
@@ -65,7 +63,7 @@ const useSearchPaginatedResource = ({
           },
           body: JSON.stringify({
             originModel: resource!,
-            property: resourceName,
+            property: fieldName,
             model,
             query,
             page: searchPage.current,

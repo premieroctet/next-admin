@@ -193,14 +193,15 @@ export const nextAdminRouter = async (
           // Validate
           validate(parsedFormData, fields);
 
-          const { formattedData, errors } = await formattedFormData(
-            formData,
-            dmmfSchema?.fields!,
-            schema,
-            resource,
-            resourceId === undefined,
-            fields
-          );
+          const { formattedData, complementaryFormattedData, errors } =
+            await formattedFormData(
+              formData,
+              dmmfSchema?.fields!,
+              schema,
+              resource,
+              resourceId,
+              fields
+            );
 
           if (errors.length) {
             return {
@@ -282,6 +283,14 @@ export const nextAdminRouter = async (
           // @ts-expect-error
           const createdData = await prisma[resource].create({
             data: formattedData,
+          });
+
+          // @ts-expect-error
+          await prisma[resource].update({
+            where: {
+              [modelIdProperty]: createdData[modelIdProperty],
+            },
+            data: complementaryFormattedData,
           });
 
           const pathname = redirect

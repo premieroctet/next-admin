@@ -101,13 +101,7 @@
         "categories": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Category"
-          }
-        },
-        "comments": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/post_comment"
+            "$ref": "#/definitions/CategoriesOnPosts"
           }
         },
         "rate": {
@@ -115,6 +109,10 @@
             "number",
             "null"
           ]
+        },
+        "order": {
+          "type": "integer",
+          "default": 0
         }
       },
       "required": [
@@ -167,7 +165,7 @@
         "posts": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/Post"
+            "$ref": "#/definitions/CategoriesOnPosts"
           }
         },
         "createdAt": {
@@ -183,30 +181,26 @@
         "name"
       ]
     },
-    "post_comment": {
+    "CategoriesOnPosts": {
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
-        },
-        "content": {
-          "type": "string"
+          "type": "integer"
         },
         "post": {
           "$ref": "#/definitions/Post"
         },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time"
+        "category": {
+          "$ref": "#/definitions/Category"
         },
-        "updatedAt": {
-          "type": "string",
-          "format": "date-time"
+        "order": {
+          "type": "integer",
+          "default": 0
         }
       },
       "required": [
-        "content",
-        "postId"
+        "postId",
+        "categoryId"
       ]
     }
   },
@@ -224,8 +218,8 @@
     "category": {
       "$ref": "#/definitions/Category"
     },
-    "post_comment": {
-      "$ref": "#/definitions/post_comment"
+    "categoriesOnPosts": {
+      "$ref": "#/definitions/CategoriesOnPosts"
     }
   }
 }

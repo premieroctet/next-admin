@@ -32,7 +32,7 @@ export const Selector = ({
     setAllOptions,
     totalSearchedItems,
   } = useSearchPaginatedResource({
-    resourceName: name,
+    fieldName: name,
     initialOptions: options,
   });
   const [optionsLeft, setOptionsLeft] = useState<Enumeration[]>(() => {
@@ -128,7 +128,7 @@ export const Selector = ({
     <Transition.Root show={open} as="div">
       <Transition.Child
         as="div"
-        className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md shadow-2xl ring-1"
+        className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md shadow-2xl ring-1"
         enter="transition-all ease-linear"
         enterFrom="opacity-0 -translate-y-1"
         enterTo="opacity-100 translate-y-0"
