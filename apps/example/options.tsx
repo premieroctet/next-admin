@@ -209,7 +209,7 @@ export const options: NextAdminOptions = {
         fields: {
           posts: {
             display: "list",
-            relationshipSearchField: 'post'
+            relationshipSearchField: "post",
           },
         },
       },
