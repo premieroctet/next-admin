@@ -163,10 +163,14 @@ const getRows = async (page: Page) => {
   return await tbody?.$$("tr");
 };
 
-export const search = async (page: Page) => {
-  await page.goto(`${process.env.BASE_URL}/user`);
-  await page.fill('input[name="search"]', "user0@nextadmin.io");
-  await page.waitForURL((url) => !!url.searchParams.get("search"));
+export const search = async (page: Page, model: ModelName, search: string) => {
+  await page.goto(`${process.env.BASE_URL}/${model.toLowerCase()}`);
+  await page.fill('input[name="search"]', search);
+  await page.waitForURL((url) => {
+    const search = url.searchParams.get("search");
+
+    return !!search && search.includes(search);
+  });
   const table = await page.$("table");
   const tbody = await table?.$("tbody");
   const rows = await tbody?.$$("tr");
@@ -188,7 +192,11 @@ export const filter = async (page: Page) => {
   await page.click(`button[id="over 18"]`); // Remove `over 18` filter
 
   await page.click(`button[id="is Admin"]`); // Add `isAdmin` filter
-  await page.waitForURL((url) => !!url.searchParams.get("filters"));
+  await page.waitForURL((url) => {
+    const filters = url.searchParams.get("filters");
+
+    return !!filters && filters.includes("is Admin");
+  });
   table = await page.$("table");
   tbody = await table?.$("tbody");
   rows = await tbody?.$$("tr");

@@ -149,10 +149,11 @@ export const preparePrismaListRequest = <M extends ModelName>(
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
     select = selectPayloadForModel(resource, list, "object");
-    fieldsFiltered =
-      model?.fields.filter(
-        ({ name }) => list.search?.includes(name as Field<M>)
-      ) ?? fieldsFiltered;
+    fieldsFiltered = list?.search
+      ? model?.fields.filter(
+          ({ name }) => list.search?.includes(name as Field<M>)
+        )
+      : fieldsFiltered;
   } else {
     select = selectPayloadForModel(resource, undefined, "object");
   }
