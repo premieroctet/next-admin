@@ -25,11 +25,17 @@ async function main() {
   }
 
   for (const category of categories) {
-    await prisma.category.create({
-      data: {
-        name: category,
-      },
+    const existingCategory = await prisma.category.findFirst({
+      where: { name: category },
     });
+
+    if (!existingCategory) {
+      await prisma.category.create({
+        data: {
+          name: category,
+        },
+      });
+    }
   }
 }
 main()
