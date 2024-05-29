@@ -25,8 +25,12 @@ The following keys are accepted:
 | form.widgets.file_upload.delete        | The text displayed in file upload widget to delete the current file                           | Delete                                                    |
 | form.widgets.multiselect.select        | The text displayed in the multiselect widget in list display mode to toggle the select dialog | Select items                                              |
 | actions.label                          | The text displayed in the dropdown button for the actions list                                | Action                                                    |
+| actions.edit.label                     | The text displayed for the default edit action in the actions dropdown                        | Edit                                                      |
+| actions.create.label                   | The text displayed for the default create action in the actions dropdown                      | Create                                                    |
 | actions.delete.label                   | The text displayed for the default delete action in the actions dropdown                      | Delete                                                    |
 | selector.loading                       | The text displayed in the selector widget while loading the options                           | Loading...                                                |
+| user.logout                            | The text displayed in the logout button                                                       | Logout                                                    |
+| model                                  | Object to custom model and fields names. [More details](#translate-model-name-and-fields)     | {}                                                        |
 
 There is two ways to translate these default keys, provide a function named `getMessages` inside the options or provide `translations` props to `NextAdmin` component.
 
@@ -57,3 +61,24 @@ Currently, you can only translate the following:
 - field validation error message
 
 Check the example app for more details on the usage.
+
+## Translate model name and fields
+
+By using the `model` key in the translations object, you can translate the model name and fields.
+
+```json
+{
+  "model": {
+    "User": { // Keep the case sensitive name of the model
+      "name": "User",
+      "plural": "Users",
+      "fields": {
+        "email": "Email",
+        "password": "Password"
+      }
+    }
+  }
+}
+```
+
+> Note that if you only use one language for your admin, you should prefer to use the `alias` system ([more details](/docs/api-docs#model)) to customize field names.

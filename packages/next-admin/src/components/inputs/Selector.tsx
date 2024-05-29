@@ -4,6 +4,7 @@ import { ChangeEvent, createRef, useEffect, useRef, useState } from "react";
 import useSearchPaginatedResource from "../../hooks/useSearchPaginatedResource";
 import { Enumeration } from "../../types";
 import LoaderRow from "../LoaderRow";
+import { useI18n } from "../../context/I18nContext";
 
 export type SelectorProps = {
   open: boolean;
@@ -23,6 +24,7 @@ export const Selector = ({
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
   const loaderRowRef = useRef(null);
+  const { t } = useI18n(); 
   const [isLastRowReached, setIsLastRowReached] = useState(false);
   const {
     allOptions,
@@ -147,7 +149,7 @@ export const Selector = ({
                 defaultValue={currentQuery.current}
                 type="text"
                 className="dark:bg-dark-nextadmin-background-subtle text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default dark:ring-dark-nextadmin-border-strong block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6"
-                placeholder="Search..."
+                placeholder={`${t("list.header.search.placeholder")}...`}
                 onChange={onSearchChange}
               />
             </div>

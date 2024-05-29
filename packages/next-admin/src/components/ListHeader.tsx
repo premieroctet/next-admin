@@ -84,13 +84,15 @@ export default function ListHeader({
     return [...(actionsProp || []), ...defaultActions];
   }, [actionsProp, onDelete, t]);
 
+  const resourcePluralName = t(`model.${resource}.plural`, {}, title);
+
   return (
     <>
       <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-14 z-10 flex h-auto flex-col items-start justify-between gap-3 border-b px-4 py-4 shadow-sm sm:flex-row sm:items-center md:h-16 md:py-0 lg:top-0">
         <Breadcrumb
           breadcrumbItems={[
             {
-              label: title,
+              label: resourcePluralName,
               href: `${basePath}/${slugify(resource)}`,
               current: true,
               icon,
@@ -118,7 +120,7 @@ export default function ListHeader({
                 className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle rounded-md bg-[transparent] py-1.5 text-sm focus:outline-none focus:ring-0 focus:ring-offset-0"
                 placeholder={`${t(
                   "list.header.search.placeholder"
-                )} ${title?.toLowerCase()}`}
+                )} ${resourcePluralName.toLowerCase()}`}
               />
               <label htmlFor="search">
                 {isPending ? (

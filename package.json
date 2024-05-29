@@ -18,6 +18,7 @@
     "test": "turbo run test",
     "test:e2e": "dotenv turbo test:e2e",
     "database": "dotenv turbo run database",
+    "reset-database": "dotenv turbo run reset-database",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "publish-package": "yarn build:next-admin && changeset publish",
     "changeset-version": "(changeset version) && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md"

@@ -1,17 +1,17 @@
-import React, { useMemo } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { useMemo } from "react";
+import Cell from "../components/Cell";
+import TableHead from "../components/TableHead";
+import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
 import {
   Field,
   ListDataFieldValue,
   ListDataItem,
   ListFieldsOptions,
   ModelName,
-  NextAdminOptions,
 } from "../types";
-import TableHead from "../components/TableHead";
 import { useRouterInternal } from "./useRouterInternal";
-import { ColumnDef } from "@tanstack/react-table";
-import Cell from "../components/Cell";
-import { useConfig } from "../context/ConfigContext";
 
 type UseDataColumnsParams = {
   sortable?: boolean;
@@ -32,16 +32,20 @@ const useDataColumns = ({
 }: UseDataColumnsParams) => {
   const { router, query } = useRouterInternal();
   const { isAppDir, options: configOptions } = useConfig();
+  const { t } = useI18n();
 
   const options = configOptions?.model?.[resource];
 
   return useMemo<ColumnDef<ListDataItem<ModelName>>[]>(() => {
     return data && data?.length > 0
       ? (options?.list?.display || Object.keys(data[0])).map((property) => {
-          const propertyAlias =
+          const propertyAlias = t(
+            `model.${resource}.fields.${property}`,
+            {},
             options?.aliases?.[
               property as keyof ListFieldsOptions<typeof resource>
-            ] || property;
+            ] || property
+          );
 
           return {
             accessorKey: property,

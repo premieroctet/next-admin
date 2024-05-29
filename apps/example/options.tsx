@@ -13,6 +13,8 @@ export const options: NextAdminOptions = {
       icon: "UsersIcon",
       aliases: {
         id: "ID",
+        name: "Full name",
+        birthDate: "Date of birth",
       },
       list: {
         exports: {
@@ -92,6 +94,7 @@ export const options: NextAdminOptions = {
         },
         fields: {
           name: {
+
             required: true,
           },
           email: {

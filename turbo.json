@@ -19,6 +19,9 @@
     "test": {},
     "test:coverage": {},
     "test:e2e": {},
-    "database": {}
+    "database": {},
+    "reset-database": {
+      "cache": false
+    }
   }
 }
