@@ -1,0 +1,14 @@
+on:
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  reset-db:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: yarn install
+      - name: Reset database
+        run: yarn reset-database
