@@ -1,3 +1,5 @@
+name: Reset database
+
 on:
   schedule:
     - cron: "0 0 * * *"
