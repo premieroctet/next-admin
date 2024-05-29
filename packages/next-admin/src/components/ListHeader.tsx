@@ -11,6 +11,7 @@ import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import {
+  AdminComponentProps,
   ModelAction,
   ModelIcon,
   ModelName,
@@ -22,13 +23,14 @@ import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
 import ExportDropdown from "./ExportDropdown";
 import { buttonVariants } from "./radix/Button";
+import { SPECIFIC_IDS_TO_RUN_ACTION } from "../hooks/useAction";
 
 type Props = {
   resource: ModelName;
   isPending: boolean;
   onSearchChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   search: string;
-  actions?: ModelAction[];
+  actions?: AdminComponentProps["actions"];
   selectedRows: RowSelectionState;
   getSelectedRowsIds: () => string[] | number[];
   onDelete: () => Promise<void>;
@@ -65,10 +67,11 @@ export default function ListHeader({
 
   const selectedRowsCount = Object.keys(selectedRows).length;
 
-  const actions = useMemo<ModelAction[]>(() => {
+  const actions = useMemo(() => {
     const defaultActions: ModelAction[] = canDelete
       ? [
           {
+            id: SPECIFIC_IDS_TO_RUN_ACTION.DELETE,
             title: t("actions.delete.label"),
             style: "destructive",
             action: async () => {

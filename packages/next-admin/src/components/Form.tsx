@@ -18,14 +18,17 @@ import {
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import React, {
   ChangeEvent,
+  HTMLProps,
   cloneElement,
+  forwardRef,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  useTransition,
 } from "react";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
@@ -36,7 +39,6 @@ import {
   AdminComponentProps,
   EditFieldsOptions,
   Field,
-  ModelAction,
   ModelIcon,
   ModelName,
   ModelOptions,
@@ -65,15 +67,11 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import Link from "next/link";
+import { useDeleteAction } from "../hooks/useDeleteAction";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
 });
-
-class CustomForm extends RjsfForm {
-  onSubmit = (e: any) => {};
-}
 
 export type FormProps = {
   data: any;
@@ -82,21 +80,19 @@ export type FormProps = {
   resource: ModelName;
   slug?: string;
   validation?: PropertyValidationError[];
-  action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   title: string;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
-  actions?: ModelAction[];
-  searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
+  actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;
 };
 
-const fields: CustomForm["props"]["fields"] = {
+const fields: RjsfForm["props"]["fields"] = {
   ArrayField,
   NullField,
 };
 
-const widgets: CustomForm["props"]["widgets"] = {
+const widgets: RjsfForm["props"]["widgets"] = {
   DateWidget: DateWidget,
   DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
@@ -112,16 +108,14 @@ const Form = ({
   resource,
   slug,
   validation: validationProp,
-  action,
   title,
   customInputs,
   actions,
-  searchPaginatedResourceAction,
   icon,
   resourcesIdProperty,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
-  const { basePath, options } = useConfig();
+  const { basePath, options, apiBasePath } = useConfig();
   const modelOptions: ModelOptions<typeof resource>[typeof resource] =
     options?.model?.[resource];
   const canDelete =
@@ -141,9 +135,10 @@ const Form = ({
   );
   const { router } = useRouterInternal();
   const { t } = useI18n();
-  const formRef = useRef<CustomForm>(null);
-  const [isPending, startTransition] = useTransition();
+  const formRef = useRef<RjsfForm>(null);
+  const [isPending, setIsPending] = useState(false);
   const allDisabled = edit && !canEdit;
+  const { runDeletion } = useDeleteAction(resource);
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -196,9 +191,16 @@ const Form = ({
               value="delete"
               formNoValidate
               tabIndex={-1}
-              onClick={(e) => {
+              onClick={async (e) => {
                 if (!confirm(t("form.delete.alert"))) {
                   e.preventDefault();
+
+                  try {
+                    setIsPending(true);
+                    await runDeletion([id!] as string[] | number[]);
+                  } finally {
+                    setIsPending(false);
+                  }
                 }
               }}
               type="submit"
@@ -225,9 +227,17 @@ const Form = ({
     {} as ErrorSchema
   );
 
-  const onSubmit = async (formData: FormData) => {
-    if (action) {
-      const result = await action(formData);
+  const onSubmit = useCallback(
+    async (formData: FormData) => {
+      const response = await fetch(
+        `${apiBasePath}/${slugify(resource)}${id ? `/${id}` : ""}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
 
       if (result?.validation) {
         setValidation(result.validation);
@@ -248,9 +258,7 @@ const Form = ({
       }
 
       if (result?.created) {
-        const pathname = result?.redirect
-          ? `${basePath}/${slugify(resource)}`
-          : `${basePath}/${slugify(resource)}/${result.createdId}`;
+        const pathname = `${basePath}/${slugify(resource)}/${result.createdId}`;
         return router.replace({
           pathname,
           query: {
@@ -285,16 +293,38 @@ const Form = ({
           },
         });
       }
-    }
-  };
+    },
+    [apiBasePath, id]
+  );
 
-  const onSubmitAction = (formData: FormData) => {
-    startTransition(() => {
-      onSubmit(formData);
-    });
-  };
+  const onSubmitAction = useCallback(
+    async (formData: FormData) => {
+      try {
+        setIsPending(true);
+        await onSubmit(formData);
+      } finally {
+        setIsPending(false);
+      }
+    },
+    [onSubmit]
+  );
 
-  const templates: CustomForm["props"]["templates"] = useMemo(
+  const CustomForm = useMemo(() => {
+    return forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>(
+      (props, ref) => (
+        <form
+          {...props}
+          ref={ref}
+          onSubmit={(e) => {
+            e.preventDefault();
+            onSubmitAction(new FormData(e.target as HTMLFormElement));
+          }}
+        />
+      )
+    );
+  }, [onSubmitAction]);
+
+  const templates: RjsfForm["props"]["templates"] = useMemo(
     () => ({
       FieldTemplate: (props: FieldTemplateProps) => {
         const {
@@ -522,7 +552,6 @@ const Form = ({
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <FormProvider
             initialValue={data}
-            searchPaginatedResourceAction={searchPaginatedResourceAction}
             dmmfSchema={dmmfSchema}
             resource={resource}
             options={options}
@@ -530,16 +559,13 @@ const Form = ({
           >
             <FormContext.Consumer>
               {({ formData, setFormData }) => (
-                <CustomForm
-                  // @ts-expect-error
-                  action={action ? onSubmitAction : ""}
-                  {...(!action ? { method: "post" } : {})}
+                <RjsfForm
+                  tagName={CustomForm}
                   onChange={(e) => {
                     setFormData(e.formData);
                   }}
                   idPrefix=""
                   idSeparator=""
-                  enctype={!action ? "multipart/form-data" : undefined}
                   {...schemas}
                   formData={formData}
                   validator={validator}
@@ -552,8 +578,6 @@ const Form = ({
                     ButtonTemplates: { SubmitButton: submitButton },
                   }}
                   widgets={widgets}
-                  onSubmit={(e) => console.log("onSubmit", e)}
-                  onError={(e) => console.log("onError", e)}
                   ref={formRef}
                 />
               )}

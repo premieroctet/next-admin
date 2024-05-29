@@ -13,12 +13,10 @@ import {
   NextAdminOptions,
   SubmitFormResult,
 } from "../types";
-import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
 import {
   getMappedDataList,
   mapDataList,
-  includeOrderByPayloadForModel,
   selectPayloadForModel,
 } from "./prisma";
 import {
@@ -127,20 +125,10 @@ export async function getPropsFromParams({
     resources,
     basePath,
     isAppDir,
-    action: action
-      ? createBoundServerAction({ schema, params }, action)
-      : undefined,
     customPages,
     resourcesTitles,
     resourcesIdProperty,
-    deleteAction,
     options: clientOptions,
-    searchPaginatedResourceAction: searchPaginatedResourceAction
-      ? createBoundServerAction(
-          { schema, params },
-          searchPaginatedResourceAction
-        )
-      : undefined,
     title,
     sidebar,
     resourcesIcons,
@@ -151,7 +139,11 @@ export async function getPropsFromParams({
 
   if (!resource) return defaultProps;
 
-  const actions = options?.model?.[resource]?.actions;
+  // We don't need to pass the action function to the component
+  const actions = options?.model?.[resource]?.actions?.map((action) => {
+    const { action: _, ...actionRest } = action;
+    return actionRest;
+  });
 
   if (getMessages) {
     const messages = await getMessages();

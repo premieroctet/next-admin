@@ -6,6 +6,7 @@ export type ConfigContextType = {
   options?: NextAdminOptions;
   basePath: string;
   isAppDir: boolean;
+  apiBasePath: string;
 };
 
 const ConfigContext = React.createContext<ConfigContextType>(
@@ -14,6 +15,7 @@ const ConfigContext = React.createContext<ConfigContextType>(
 
 type ProviderProps = {
   basePath: string;
+  apiBasePath: string;
   options?: NextAdminOptions;
   children: React.ReactNode;
   isAppDir?: boolean;
@@ -24,6 +26,7 @@ export const ConfigProvider = ({
   options,
   basePath,
   isAppDir = false,
+  apiBasePath,
 }: ProviderProps) => {
   return (
     <ConfigContext.Provider
@@ -31,6 +34,7 @@ export const ConfigProvider = ({
         options,
         basePath,
         isAppDir,
+        apiBasePath,
       }}
     >
       {children}

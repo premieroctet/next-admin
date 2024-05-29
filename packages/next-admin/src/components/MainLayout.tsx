@@ -34,6 +34,7 @@ export const MainLayout = ({
       options={options}
       basePath={`${localePath}${basePath}`}
       isAppDir={isAppDir}
+      apiBasePath={options!.apiBasePath}
     >
       <I18nProvider translations={mergedTranslations}>
         <ColorSchemeProvider>

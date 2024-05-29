@@ -17,7 +17,7 @@ import {
 } from "./radix/Dropdown";
 
 type Props = {
-  actions: ModelAction[];
+  actions: Array<ModelAction | Omit<ModelAction, "action">>;
   selectedIds: string[] | number[];
   resource: ModelName;
   selectedCount?: number;
@@ -33,7 +33,7 @@ const ActionsDropdown = ({
   const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
 
-  const onActionClick = (action: ModelAction) => {
+  const onActionClick = (action: ModelAction | Omit<ModelAction, "action">) => {
     runAction(action);
   };
 

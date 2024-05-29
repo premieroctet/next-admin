@@ -10,9 +10,9 @@ import useDataColumns from "../hooks/useDataColumns";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
+  AdminComponentProps,
   ListData,
   ListDataItem,
-  ModelAction,
   ModelIcon,
   ModelName,
 } from "../types";
@@ -45,8 +45,7 @@ export type ListProps = {
   total: number;
   resourcesIdProperty: Record<ModelName, string>;
   title: string;
-  actions?: ModelAction[];
-  deleteAction?: ModelAction["action"];
+  actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
 };
 
@@ -57,18 +56,17 @@ function List({
   actions,
   resourcesIdProperty,
   title,
-  deleteAction,
   icon,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
-  const { isAppDir, options } = useConfig();
+  const { options } = useConfig();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
   const sortColumn = query.sortColumn as string;
   const sortDirection = query.sortDirection as "asc" | "desc";
-  const { deleteItems } = useDeleteAction(resource, deleteAction);
+  const { deleteItems } = useDeleteAction(resource);
   const { t } = useI18n();
   const columns = useDataColumns({
     data,

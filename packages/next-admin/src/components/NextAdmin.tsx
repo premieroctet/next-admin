@@ -16,24 +16,19 @@ export function NextAdmin({
   schema,
   resources,
   slug,
-  message,
-  error,
   total,
   dmmfSchema,
   dashboard,
   validation,
   isAppDir,
-  action,
   options,
   resourcesTitles,
   resourcesIdProperty,
   customInputs: customInputsProp,
   customPages,
   actions: actionsProp,
-  deleteAction,
   translations,
   locale,
-  searchPaginatedResourceAction,
   title,
   sidebar,
   resourcesIcons,
@@ -66,7 +61,6 @@ export function NextAdmin({
           title={resourceTitle!}
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
-          deleteAction={deleteAction}
           icon={resourceIcon}
         />
       );
@@ -85,11 +79,9 @@ export function NextAdmin({
           dmmfSchema={dmmfSchema!}
           resource={resource!}
           validation={validation}
-          action={action}
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}
-          searchPaginatedResourceAction={searchPaginatedResourceAction}
           icon={resourceIcon}
           resourcesIdProperty={resourcesIdProperty!}
         />

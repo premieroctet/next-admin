@@ -3,6 +3,7 @@ import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   basePath: "/pagerouter/admin",
+  apiBasePath: "/api/admin",
   title: "⚡️ My Admin",
   model: {
     User: {

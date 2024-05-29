@@ -274,13 +274,12 @@ export type ListExport = {
   /**
    * a string defining the format of the export. It is mandatory.
    */
-  format: string
+  format: string;
   /**
    * a string defining the URL of the export. It is mandatory.
    */
   url: string;
 };
-
 
 export type ListOptions<T extends ModelName> = {
   /**
@@ -358,7 +357,8 @@ export type ActionStyle = "default" | "destructive";
 
 export type ModelAction = {
   title: string;
-  action: (resource: ModelName, ids: string[] | number[]) => Promise<void>;
+  id: string;
+  action: (ids: string[] | number[]) => Promise<void>;
   style?: ActionStyle;
   successMessage?: string;
   errorMessage?: string;
@@ -442,6 +442,10 @@ export type NextAdminOptions = {
    * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
    */
   basePath: string;
+  /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
+   */
+  apiBasePath: string;
   /**
    * Global admin title
    *
@@ -610,7 +614,6 @@ export type AdminComponentProps = {
   dmmfSchema?: readonly Prisma.DMMF.Field[];
   isAppDir?: boolean;
   locale?: string;
-  action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   /**
    * Mandatory for page router
    */
@@ -624,16 +627,8 @@ export type AdminComponentProps = {
    */
   pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
-  actions?: ModelAction[];
-  deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
+  actions?: Omit<ModelAction, "action">[];
   translations?: Translations;
-  searchPaginatedResourceAction?: (
-    params: SearchPaginatedResourceParams
-  ) => Promise<{
-    data: Enumeration[];
-    total: number;
-    error: string | null;
-  }>;
   /**
    * Global admin title
    *
