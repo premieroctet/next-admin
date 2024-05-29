@@ -4,6 +4,8 @@ export const defaultTranslations: Translations = {
   "actions.delete.label": "Delete",
   "actions.label": "Action",
   "export.label": "Export",
+  "actions.create.label": "Create",
+  "actions.edit.label": "Edit",
   "form.button.delete.label": "Delete",
   "form.delete.alert": "Are you sure you want to delete this?",
   "form.button.save.label": "Save",
@@ -32,4 +34,5 @@ export const defaultTranslations: Translations = {
   "theme.dark": "Dark",
   "theme.light": "Light",
   "theme.system": "System",
+  "user.logout": "Logout",
 };

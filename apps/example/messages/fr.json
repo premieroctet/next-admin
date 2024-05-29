@@ -5,12 +5,49 @@
       "light": "Clair",
       "system": "Système"
     },
+    "model": {
+      "User": {
+        "name": "Utilisateur",
+        "plural": "Utilisateurs",
+        "fields": {
+          "id": "ID",
+          "email": "Email",
+          "name": "Nom",
+          "birthDate": "Date de naissance",
+          "role": "Rôle",
+          "metadata": "Métadonnées"
+        }
+      },
+      "Post": {
+        "name": "Article",
+        "plural": "Articles",
+        "fields": {
+          "id": "ID",
+          "title": "Titre",
+          "content": "Contenu",
+          "author": "Auteur",
+          "rate": "Note",
+          "published": "Publié",
+          "categories": "Catégories"
+        }
+      },
+      "Category": {
+        "name": "Catégorie",
+        "plural": "Catégories",
+        "fields": {
+          "id": "ID",
+          "name": "Nom",
+          "posts": "Articles"
+        }
+      }
+    },
     "list": {
       "header": {
         "add": {
           "label": "Ajouter"
         },
         "search": {
+          "result": "{{count}} éléments",
           "placeholder": "Recherche"
         }
       },
@@ -30,7 +67,8 @@
         }
       },
       "empty": {
-        "label": "Aucun(e) {{resource}} trouvée"
+        "label": "Aucun(e) {{resource}} trouvé(e)",
+        "caption": "Commencez par créer un nouvel objet {{resource}}"
       }
     },
     "selector": {
@@ -52,6 +90,9 @@
         "file_upload": {
           "label": "Choisir un fichier",
           "delete": "Supprimer"
+        },
+        "multiselect": {
+          "select": "Sélectionner"
         }
       },
       "user": {
@@ -74,7 +115,16 @@
       "label": "Action",
       "delete": {
         "label": "Supprimer"
+      },
+      "create": {
+        "label": "Créer"
+      },
+      "edit": {
+        "label": "Éditer"
       }
+    },
+    "user": {
+      "logout": "Déconnexion"
     }
   }
 }
