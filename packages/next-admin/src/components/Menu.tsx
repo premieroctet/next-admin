@@ -6,12 +6,13 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Fragment, useState } from "react";
-import dynamic from "next/dynamic";
 
 import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
 import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
@@ -66,6 +67,7 @@ export default function Menu({
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
   const { pathname } = useRouterInternal();
+  const { t } = useI18n();
 
   const customPagesNavigation = customPages?.map((page) => ({
     name: page.title,
@@ -118,7 +120,7 @@ export default function Menu({
 
   const getItemProps = (model: ModelName) => {
     return {
-      name: resourcesTitles?.[model] || model,
+      name: t(`model.${model}.plural`, {}, resourcesTitles?.[model] || model),
       href: `${basePath}/${slugify(model)}`,
       current: model === currentResource,
       icon: resourcesIcons?.[model],
@@ -181,14 +183,14 @@ export default function Menu({
               <DropdownLabel className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted px-4 py-1 font-normal">
                 {user.data.name}
               </DropdownLabel>
-              <DropdownSeparator />
+              <DropdownSeparator className="bg-nextadmin-border-default dark:bg-dark-nextadmin-border-emphasis" />
               <DropdownItem asChild>
                 <Link
                   href={user.logoutUrl}
                   className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
                 >
                   <PowerIcon className="h-4 w-4" />
-                  <span>Logout</span>
+                  <span>{t("user.logout")}</span>
                 </Link>
               </DropdownItem>
             </DropdownContent>

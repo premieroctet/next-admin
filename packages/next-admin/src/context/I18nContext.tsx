@@ -7,7 +7,7 @@ type Props = {
 };
 
 const I18nContext = createContext<{
-  t: (key: string, options?: { [key: string]: any }) => string;
+  t: (key: string, options?: { [key: string]: any }, fallback?: string) => string;
 }>({
   t: () => "",
 });
@@ -16,7 +16,11 @@ export const I18nProvider = ({
   translations,
   children,
 }: PropsWithChildren<Props>) => {
-  const t = (key: string, options?: { [key: string]: any }) => {
+  const t = (
+    key: string,
+    options?: { [key: string]: any },
+    fallback?: string
+  ) => {
     let translation = translations[key];
 
     if (options && translation) {
@@ -25,7 +29,7 @@ export const I18nProvider = ({
       });
     }
 
-    return translation ?? key;
+    return translation ?? fallback ?? key;
   };
 
   return <I18nContext.Provider value={{ t }}>{children}</I18nContext.Provider>;

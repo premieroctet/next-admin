@@ -18,6 +18,7 @@ import {
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
+import Link from "next/link";
 import React, {
   ChangeEvent,
   cloneElement,
@@ -65,7 +66,6 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import Link from "next/link";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
@@ -313,6 +313,8 @@ const Form = ({
         const labelAlias =
           modelOptions?.aliases?.[id as Field<typeof resource>] ||
           formatLabel(label);
+        const labelName = t(`model.${resource}.fields.${id}`, {}, labelAlias);
+
         let styleField =
           modelOptions?.edit?.styles?.[id as Field<typeof resource>];
 
@@ -336,7 +338,7 @@ const Form = ({
                 )}
                 htmlFor={id}
               >
-                {labelAlias}
+                {labelName}
                 {required ? "*" : null}
                 {!!tooltip && (
                   <TooltipProvider>
@@ -472,9 +474,13 @@ const Form = ({
   );
 
   const breadcrumItems = [
-    { label: title, href: `${basePath}/${slugify(resource)}`, icon },
     {
-      label: edit ? `Edit` : "Create",
+      label: t(`model.${resource}.plural`, {}, title),
+      href: `${basePath}/${slugify(resource)}`,
+      icon,
+    },
+    {
+      label: edit ? t("actions.edit.label") : t("actions.create.label"),
       href: `${basePath}/${slugify(resource)}/${id}`,
       current: !edit,
     },
