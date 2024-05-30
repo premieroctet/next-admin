@@ -38,6 +38,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
+import { MessageProvider } from "../context/MessageContext";
 
 export type ListProps = {
   resource: ModelName;
@@ -279,4 +280,12 @@ function List({
   );
 }
 
-export default List;
+const ListWrapper = (props: ListProps) => {
+  return (
+    <MessageProvider>
+      <List {...props} />
+    </MessageProvider>
+  );
+};
+
+export default ListWrapper;

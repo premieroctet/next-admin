@@ -2,6 +2,7 @@ import { useRouterInternal } from "./useRouterInternal";
 import { ModelAction, ModelName } from "../types";
 import { useI18n } from "../context/I18nContext";
 import { useConfig } from "../context/ConfigContext";
+import { useMessage } from "../context/MessageContext";
 
 export const SPECIFIC_IDS_TO_RUN_ACTION = {
   DELETE: "__admin-delete",
@@ -11,6 +12,7 @@ export const useAction = (resource: ModelName, ids: string[] | number[]) => {
   const { router } = useRouterInternal();
   const { t } = useI18n();
   const { apiBasePath } = useConfig();
+  const { showMessage } = useMessage();
 
   const runAction = async (
     modelAction: ModelAction | Omit<ModelAction, "action">
@@ -27,6 +29,9 @@ export const useAction = (resource: ModelName, ids: string[] | number[]) => {
           {
             method: "POST",
             body: JSON.stringify(ids),
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
         );
 
@@ -36,26 +41,17 @@ export const useAction = (resource: ModelName, ids: string[] | number[]) => {
       }
 
       if (modelAction.successMessage) {
-        router.setQuery(
-          {
-            message: JSON.stringify({
-              type: "success",
-              content: t(modelAction.successMessage),
-            }),
-            error: null,
-          },
-          true
-        );
+        showMessage({
+          type: "success",
+          message: t(modelAction.successMessage),
+        });
       }
     } catch {
       if (modelAction.errorMessage) {
-        router.setQuery(
-          {
-            error: t(modelAction.errorMessage),
-            message: null,
-          },
-          true
-        );
+        showMessage({
+          type: "error",
+          message: t(modelAction.errorMessage),
+        });
       }
     }
   };

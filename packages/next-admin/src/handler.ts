@@ -30,8 +30,7 @@ type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    */
   onRequest?: (
     req: NextRequest,
-    ctx: RequestContext<P>,
-    next: NextHandler
+    ctx: RequestContext<P>
   ) =>
     | ReturnType<NextResponse["json"]>
     | ReturnType<NextResponse["text"]>
@@ -64,7 +63,7 @@ export const createAppHandler = <P extends string = "nextadmin">({
 
   if (onRequest) {
     router.use(async (req, ctx, next) => {
-      const response = await onRequest(req, ctx, next);
+      const response = await onRequest(req, ctx);
 
       if (response) {
         return response;
@@ -172,7 +171,7 @@ export const createAppHandler = <P extends string = "nextadmin">({
         );
       }
 
-      if (hasPermission(options.model?.[resource], Permission.DELETE)) {
+      if (!hasPermission(options.model?.[resource], Permission.DELETE)) {
         return NextResponse.json(
           { error: "You don't have permission to delete this resource" },
           { status: 403 }
@@ -197,7 +196,7 @@ export const createAppHandler = <P extends string = "nextadmin">({
         );
       }
 
-      if (hasPermission(options.model?.[resource], Permission.DELETE)) {
+      if (!hasPermission(options.model?.[resource], Permission.DELETE)) {
         return NextResponse.json(
           { error: "You don't have permission to delete this resource" },
           { status: 403 }
@@ -215,7 +214,7 @@ export const createAppHandler = <P extends string = "nextadmin">({
     req: NextRequest,
     context: RequestContext<P>
   ) => {
-    return router.run(req, context);
+    return router.run(req, context) as Promise<Response>;
   };
 
   return { run: executeRouteHandler, router };

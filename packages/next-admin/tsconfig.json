@@ -8,7 +8,8 @@
     "./src/mainLayout.tsx",
     "./src/plugin.ts",
     "./src/preset.ts",
-    "./src/handler.ts"
+    "./src/handler.ts",
+    "./src/apiRoute.ts"
   ],
   "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {

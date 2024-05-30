@@ -43,7 +43,6 @@ import {
   ModelName,
   ModelOptions,
   Permission,
-  SubmitFormResult,
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
 import { formatLabel, slugify } from "../utils/tools";
@@ -68,6 +67,7 @@ import {
   TooltipTrigger,
 } from "./radix/Tooltip";
 import { useDeleteAction } from "../hooks/useDeleteAction";
+import { MessageProvider, useMessage } from "../context/MessageContext";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
@@ -139,6 +139,7 @@ const Form = ({
   const [isPending, setIsPending] = useState(false);
   const allDisabled = edit && !canEdit;
   const { runDeletion } = useDeleteAction(resource);
+  const { showMessage, hideMessage } = useMessage();
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -187,23 +188,34 @@ const Form = ({
             <Button
               variant="destructiveOutline"
               className="flex gap-2"
-              name="__admin_action"
-              value="delete"
               formNoValidate
               tabIndex={-1}
               onClick={async (e) => {
                 if (!confirm(t("form.delete.alert"))) {
                   e.preventDefault();
-
+                } else {
                   try {
                     setIsPending(true);
                     await runDeletion([id!] as string[] | number[]);
+                    router.replace({
+                      pathname: `${basePath}/${slugify(resource)}`,
+                      query: {
+                        message: JSON.stringify({
+                          type: "success",
+                          message: "Deleted successfully",
+                        }),
+                      },
+                    });
+                  } catch (e) {
+                    showMessage({
+                      type: "error",
+                      message: (e as Error).message,
+                    });
                   } finally {
                     setIsPending(false);
                   }
                 }
               }}
-              type="submit"
               loading={isPending}
             >
               <TrashIcon className="h-4 w-4" />
@@ -251,7 +263,7 @@ const Form = ({
           query: {
             message: JSON.stringify({
               type: "success",
-              content: "Deleted successfully",
+              message: "Deleted successfully",
             }),
           },
         });
@@ -264,7 +276,7 @@ const Form = ({
           query: {
             message: JSON.stringify({
               type: "success",
-              content: "Created successfully",
+              message: "Created successfully",
             }),
           },
         });
@@ -274,23 +286,29 @@ const Form = ({
         const pathname = result?.redirect
           ? `${basePath}/${slugify(resource)}`
           : location.pathname;
-        return router.replace({
-          pathname,
-          query: {
-            message: JSON.stringify({
-              type: "success",
-              content: "Updated successfully",
-            }),
-          },
-        });
+
+        if (pathname === location.pathname) {
+          showMessage({
+            type: "success",
+            message: "Updated successfully",
+          });
+        } else {
+          return router.replace({
+            pathname,
+            query: {
+              message: JSON.stringify({
+                type: "success",
+                message: "Updated successfully",
+              }),
+            },
+          });
+        }
       }
 
       if (result?.error) {
-        return router.replace({
-          pathname: location.pathname,
-          query: {
-            error: result.error,
-          },
+        showMessage({
+          type: "error",
+          message: result.error,
         });
       }
     },
@@ -317,7 +335,11 @@ const Form = ({
           ref={ref}
           onSubmit={(e) => {
             e.preventDefault();
-            onSubmitAction(new FormData(e.target as HTMLFormElement));
+            const data = new FormData(e.target as HTMLFormElement);
+            // @ts-expect-error
+            const submitter = e.nativeEvent.submitter as HTMLButtonElement;
+            data.append(submitter.name, submitter.value);
+            onSubmitAction(data);
           }}
         />
       )
@@ -595,4 +617,12 @@ const Form = ({
   );
 };
 
-export default Form;
+const FormWrapper = (props: FormProps) => {
+  return (
+    <MessageProvider>
+      <Form {...props} />
+    </MessageProvider>
+  );
+};
+
+export default FormWrapper;

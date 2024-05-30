@@ -1,6 +1,7 @@
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { ModelAction, ModelName } from "../types";
+import { useMessage } from "../context/MessageContext";
+import { ModelName } from "../types";
 import { slugify } from "../utils/tools";
 import { useRouterInternal } from "./useRouterInternal";
 
@@ -8,15 +9,20 @@ export const useDeleteAction = (resource: ModelName) => {
   const { apiBasePath } = useConfig();
   const { router } = useRouterInternal();
   const { t } = useI18n();
+  const { showMessage } = useMessage();
 
   const runDeletion = async (ids: string[] | number[]) => {
     const response = await fetch(`${apiBasePath}/${slugify(resource)}`, {
       method: "DELETE",
       body: JSON.stringify(ids),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
 
     if (!response.ok) {
-      throw new Error();
+      const result = await response.json();
+      throw new Error(result.error);
     }
   };
 
@@ -26,22 +32,16 @@ export const useDeleteAction = (resource: ModelName) => {
     ) {
       try {
         await runDeletion(ids);
-        router.setQuery(
-          {
-            message: JSON.stringify({
-              type: "success",
-              content: t("list.row.actions.delete.success"),
-            }),
-          },
-          true
-        );
+        showMessage({
+          type: "success",
+          message: t("list.row.actions.delete.success"),
+        });
+        router.refresh();
       } catch {
-        router.setQuery(
-          {
-            error: t("list.row.actions.delete.error"),
-          },
-          true
-        );
+        showMessage({
+          type: "error",
+          message: t("list.row.actions.delete.error"),
+        });
       }
     }
   };

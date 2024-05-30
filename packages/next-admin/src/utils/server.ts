@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
 import { Writable } from "node:stream";
+import { NextApiRequest } from "next";
 import {
   AdminFormData,
   EditFieldsOptions,
@@ -81,13 +82,15 @@ export const getToStringForRelations = <M extends ModelName>(
   const editOptions = options?.model?.[modelName]?.edit;
   const relationOptions = options?.model?.[modelNameRelation];
   const explicitManyToManyRelationField =
-  // @ts-expect-error
+    // @ts-expect-error
     editOptions?.fields?.[fieldName as Field<M>]?.relationshipSearchField;
 
   const nonCheckedToString =
     // @ts-expect-error
     editOptions?.fields?.[fieldName]?.[
-      explicitManyToManyRelationField ? "relationOptionFormatter" : "optionFormatter"
+      explicitManyToManyRelationField
+        ? "relationOptionFormatter"
+        : "optionFormatter"
     ] || relationOptions?.toString;
   const modelRelationIdField = getModelIdProperty(modelNameRelation);
   const toStringForRelations =
@@ -295,7 +298,7 @@ export const transformData = <M extends ModelName>(
         explicitManyToManyRelationField
           ? (deepRelationModel?.type as ModelName)
           : modelRelation,
-        options,
+        options
       );
       if (Array.isArray(data[key])) {
         acc[key] = data[key].map((item: any) => {
@@ -1072,6 +1075,21 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
   );
 
   return formValues;
+};
+
+export const getJsonBody = async (req: NextApiRequest): Promise<any> => {
+  let body = await getBody(req);
+
+  // Handle case where bodyParser is disabled
+  if (
+    body &&
+    typeof body === "string" &&
+    req.headers["content-type"] === "application/json"
+  ) {
+    body = JSON.parse(body);
+  }
+
+  return body;
 };
 
 export const getBody = async (req: IncomingMessage) => {
