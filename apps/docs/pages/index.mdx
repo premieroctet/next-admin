@@ -1,20 +1,18 @@
 ---
 title: Next Admin - Full-featured Admin for Next.js and Prisma
-description: Ready-to-go Admin for Next.js and Prisma
+description: Next Admin is a full-featured Admin for Next.js and Prisma. Provide components and utilities to build a complete admin interface for your application.
 ---
 
-import Footer from "@/components/Footer";
-import Header from "@/components/Header";
 import { Hero } from "@/components/Hero";
 import Subtitle from "@/components/Subtitle";
 import { FeaturesBento } from "@/components/bento/FeaturesBento";
 
 <main className="flex min-h-screen flex-col items-center justify-between px-10">
   <Hero />
-  <div className="w-full bg-grid-small-black/20 dark:bg-grid-small-white/20">
-    <div className="max-w-4xl mx-auto flex flex-col gap-10">
+  <div className="bg-grid-small-black/20 dark:bg-grid-small-white/20 w-full">
+    <div className="mx-auto flex max-w-4xl flex-col gap-10">
       <Subtitle>Getting Started</Subtitle>
-      <div className="bg-black text-white font-mono px-5 py-3 rounded-md mx-auto inline-block shadow-[0_10px_20px_rgba(230,253,238,1)] dark:shadow-[0_10px_20px_rgba(255,255,255,0.4)]">
+      <div className="mx-auto inline-block rounded-md bg-black px-5 py-3 font-mono text-white shadow-[0_10px_20px_rgba(230,253,238,1)] dark:shadow-[0_10px_20px_rgba(255,255,255,0.4)]">
         yarn add @premieroctet/next-admin prisma-json-schema-generator
       </div>
     </div>
