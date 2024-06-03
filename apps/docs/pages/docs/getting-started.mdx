@@ -135,6 +135,23 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
 
 <Tabs items={['App router', 'Page router']}>
   <Tabs.Tab>
+
+    ```ts
+    // app/api/admin/[[...nextadmin]]/route.ts
+    import { createAppHandler } from "@premieroctet/next-admin/dist/handler";
+    import schema from "@/prisma/json-schema/json-schema.json";
+    import { prisma } from "@/prisma";
+    import { options } from "@/options";
+
+    const { run } = createAppHandler({
+      options,
+      prisma,
+      schema,
+    });
+
+    export { run as POST, run as GET, run as DELETE };
+    ```
+
     ```tsx
     // app/admin/[[...nextadmin]]/page.tsx
     import { NextAdmin } from "@premieroctet/next-admin";
@@ -143,7 +160,6 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
     import { options } from "../../../options";
     import { prisma } from "../../../prisma";
     import schema from "../../../prisma/json-schema/json-schema.json";
-    import { submitFormAction } from "../../../actions/nextadmin";
     import "../../../styles.css" // .css file containing tailiwnd rules
 
     export default async function AdminPage({
@@ -159,7 +175,6 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
         options,
         prisma,
         schema,
-        action: submitFormAction,
       });
 
       return <NextAdmin {...props} dashboard={Dashboard} />;
@@ -180,26 +195,37 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
 
     </Callout>
 
-    You will also need to create the action:
-
-    ```tsx
-    // actions/nextadmin.ts
-    "use server";
-    import { ActionParams } from "@premieroctet/next-admin";
-    import { submitForm } from "@premieroctet/next-admin/dist/actions";
-    import { prisma } from "../prisma";
-    import { options } from "../options";
-
-    export const submitFormAction = async (
-      params: ActionParams,
-      formData: FormData
-    ) => {
-      return submitForm({ ...params, options, prisma }, formData);
-    };
-    ```
-
   </Tabs.Tab>
   <Tabs.Tab>
+
+    ```ts
+    // pages/api/admin/[[...nextadmin]].ts
+    import { options } from "@/pageRouterOptions";
+    import { prisma } from "@/prisma";
+    import { createApiRouter } from "@premieroctet/next-admin/dist/apiRoute";
+    import schema from "@/prisma/json-schema/json-schema.json";
+
+    export const config = {
+      api: {
+        bodyParser: false,
+      },
+    };
+
+    const { run } = createApiRouter({
+      options,
+      prisma,
+      schema: schema,
+    });
+
+    export default run;
+    ```
+
+    <Callout emoji="⚠️">
+
+      Make sure to export the config object to define no `bodyParser`. This is required to be able to parse FormData.
+
+    </Callout>
+
     ```tsx
     // pages/admin/[[...nextadmin]].tsx
     import { GetServerSideProps, GetServerSidePropsResult } from "next";
