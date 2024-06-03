@@ -1,5 +1,5 @@
-import React from "react";
 import { useRouter } from "next/router";
+import React from "react";
 import Logo from "./components/Logo";
 
 const config = {
@@ -14,7 +14,18 @@ const config = {
   },
   docsRepositoryBase: "https://github.com/premieroctet/next-admin",
   footer: {
-    text: `MIT ${new Date().getFullYear()} © Premier Octet.`,
+    text: (
+      <span>
+        MIT {new Date().getFullYear()} ©{" "}
+        {
+          // eslint-disable-next-line react/jsx-no-target-blank
+          <a href="https://premieroctet.com" target="_blank">
+            Premier Octet
+          </a>
+        }
+        .
+      </span>
+    ),
   },
   darkMode: true,
   primaryHue: 209,
@@ -22,14 +33,10 @@ const config = {
   head: (
     <>
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta
-        property="og:title"
-        content="Next Admin, auto generated admin from Prisma for your Next.js app."
-      />
-      <meta
-        property="og:description"
-        content="Next Admin is a GUI built on top of Prisma and Next.js that allows you to easily manage and visualize your database."
-      />
+      <meta name="keywords" content="next, prisma, admin, database, next.js, back-office, cms" />
+      <meta name="publisher" content="Premier Octet" />
+      <link rel="canonical" href="https://next-admin.vercel.app" />
+      <link rel="icon" href="/logo.svg" />
     </>
   ),
   editLink: {
