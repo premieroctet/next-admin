@@ -5,36 +5,41 @@ import { ConfigProvider } from "../context/ConfigContext";
 import { I18nProvider } from "../context/I18nContext";
 import { defaultTranslations } from "../i18n";
 import { MainLayoutProps } from "../types";
+import { getMainLayoutProps } from "../utils/props";
 import Menu from "./Menu";
 
 type Props = MainLayoutProps;
 
 export const MainLayout = ({
-  resource,
-  resources,
-  resourcesTitles,
-  customPages,
   basePath,
-  children,
-  isAppDir,
+  apiBasePath,
   locale,
-  translations,
-  sidebar,
-  resourcesIcons,
-  user,
-  externalLinks,
-  title,
+  params,
   options,
+  children,
+  user,
 }: PropsWithChildren<Props>) => {
-  const mergedTranslations = merge({ ...defaultTranslations }, translations);
+  const mergedTranslations = merge({ ...defaultTranslations }, {/* TODO: Restore translations */});
   const localePath = locale ? `/${locale}` : "";
+  const {
+    resource,
+    resources,
+    resourcesTitles,
+    customPages,
+    title,
+    sidebar,
+    resourcesIcons,
+    externalLinks,
+    serializedOptions,
+  } = getMainLayoutProps({ options, params });
+
+  console.log(resourcesTitles);
 
   return (
     <ConfigProvider
-      options={options}
+      options={serializedOptions}
       basePath={`${localePath}${basePath}`}
-      isAppDir={isAppDir}
-      apiBasePath={options!.apiBasePath}
+      apiBasePath={apiBasePath}
     >
       <I18nProvider translations={mergedTranslations}>
         <ColorSchemeProvider>
@@ -45,7 +50,7 @@ export const MainLayout = ({
               resource={resource}
               resourcesTitles={resourcesTitles}
               customPages={customPages}
-              configuration={sidebar}
+              sidebar={sidebar}
               resourcesIcons={resourcesIcons}
               user={user}
               externalLinks={externalLinks}

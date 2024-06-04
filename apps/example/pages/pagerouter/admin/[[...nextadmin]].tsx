@@ -4,10 +4,13 @@ import { options } from "../../../pageRouterOptions";
 import { prisma } from "../../../prisma";
 import schema from "../../../prisma/json-schema/json-schema.json";
 import "../../../styles.css";
+import type { AppProps } from 'next/app'
 
 const pageOptions = options;
 
-export default function Admin(props: AdminComponentProps) {
+export default function Admin(props: AppProps) {
+  console.log("HERE")
+  props.pageProps.params = props.router.query.nextadmin as string[];
   return (
     <NextAdmin
       {...props}

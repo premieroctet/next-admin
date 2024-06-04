@@ -63,3 +63,17 @@ export const formatLabel = (label: string) => {
 
   return capitalize(spacedLabel.toLowerCase());
 };
+
+export const exec = (path: string[], result: {
+  keys: string[];
+  pattern: RegExp;
+}) => {
+  let i=0, out: Record<string, string | null>={};
+  console.log(result, path)
+  //from the keys, we can get the values and return an object
+  for (const key of result.keys) {
+    out[key] = path[i++];
+  }
+  
+  return out;
+}

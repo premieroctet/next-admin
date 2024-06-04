@@ -1,127 +1,83 @@
-import Head from "next/head";
-import { AdminComponentProps, CustomUIProps } from "../types";
-import { getSchemaForResource } from "../utils/jsonSchema";
-import { getCustomInputs } from "../utils/options";
-import Dashboard from "./Dashboard";
-import Form from "./Form";
-import List from "./List";
+import { AdminComponentProps } from "../types";
 import { MainLayout } from "./MainLayout";
 import PageLoader from "./PageLoader";
 
 // Components
 export function NextAdmin({
   basePath,
-  data,
-  resource,
+  apiBasePath,
   schema,
-  resources,
-  slug,
-  total,
-  dmmfSchema,
-  dashboard,
-  validation,
-  isAppDir,
   options,
-  resourcesTitles,
-  resourcesIdProperty,
-  customInputs: customInputsProp,
-  customPages,
-  actions: actionsProp,
-  translations,
   locale,
-  title,
-  sidebar,
-  resourcesIcons,
   user,
-  externalLinks,
-}: AdminComponentProps & CustomUIProps) {
-  if (!isAppDir && !options) {
-    throw new Error(
-      "You must provide the options prop when using next-admin with page router"
-    );
-  }
+  params,
+  searchParams,
+}: AdminComponentProps) {
+  // const modelSchema =
+  //   resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
-  const actions =
-    actionsProp || (resource ? options?.model?.[resource]?.actions : undefined);
+  // const resourceTitle = resourcesTitles?.[resource!] ?? resource;
+  // const resourceIcon = resourcesIcons?.[resource!];
 
-  const modelSchema =
-    resource && schema ? getSchemaForResource(schema, resource) : undefined;
+  // console.log(params)
+  // const routeRegex = parse("/:resource/:id")
+  // console.log(routeRegex)
+  // const routeObj = exec(params ?? [], routeRegex)
+  // console.log(routeObj)
+  // console.log(resources)
+  // const ar = ["a", "b", "c"]
+  // const matching =  match(routeObj)
+  // .with({resource: P.when(resource=> resource && models.map(model=> model.name).includes(resource))}, ({resource}: {resource: ModelName}) => (<List
+  //   key={resource}
+  //   resource={resource}
+  //   data={[]}
+  //   total={0}
+  //   title={resourceTitle!}
+  //   resourcesIdProperty={resourcesIdProperty!}
+  //   actions={actions}
+  //   icon={resourceIcon}
+  // />))
+  // .with({resource, id: P.string}, ({resource, id}) => {
+  //   const customInputs = isAppDir
+  //   ? customInputsProp
+  //   : getCustomInputs(resource!, options!);
 
-  const resourceTitle = resourcesTitles?.[resource!] ?? resource;
-  const resourceIcon = resourcesIcons?.[resource!];
-
-  const renderMainComponent = () => {
-    if (Array.isArray(data) && resource && typeof total != "undefined") {
-      return (
-        <List
-          key={resource}
-          resource={resource}
-          data={data}
-          total={total}
-          title={resourceTitle!}
-          resourcesIdProperty={resourcesIdProperty!}
-          actions={actions}
-          icon={resourceIcon}
-        />
-      );
-    }
-
-    if ((data && !Array.isArray(data)) || (modelSchema && !data)) {
-      const customInputs = isAppDir
-        ? customInputsProp
-        : getCustomInputs(resource!, options!);
-
-      return (
-        <Form
-          data={data}
-          slug={slug}
-          schema={modelSchema}
-          dmmfSchema={dmmfSchema!}
-          resource={resource!}
-          validation={validation}
-          title={resourceTitle!}
-          customInputs={customInputs}
-          actions={actions}
-          icon={resourceIcon}
-          resourcesIdProperty={resourcesIdProperty!}
-        />
-      );
-    }
-
-    if (resources) {
-      if (dashboard && typeof dashboard === "function") return dashboard();
-      return dashboard || <Dashboard resources={resources} />;
-    }
-  };
+  //   return (<Form
+  //   data={data}
+  //   slug={id}
+  //   schema={modelSchema}
+  //   dmmfSchema={dmmfSchema!}
+  //   resource={resource!}
+  //   validation={validation}
+  //   title={resourceTitle!}
+  //   customInputs={customInputs}
+  //   actions={actions}
+  //   icon={resourceIcon}
+  //   resourcesIdProperty={resourcesIdProperty!}
+  // />)})
+  // .otherwise(() => {
+  //   if (dashboard && typeof dashboard === "function") return dashboard();
+  //     return dashboard || <Dashboard resources={resources!} />;
+  // });
 
   return (
     <>
       <PageLoader />
-      {!isAppDir && (
+      {/* {!isAppDir && (
         <Head>
           <title>{title}</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
-      )}
+      )} */}
       <MainLayout
-        resource={resource}
-        resources={resources}
-        resourcesTitles={resourcesTitles}
-        customPages={customPages}
         basePath={basePath}
-        isAppDir={isAppDir}
-        translations={translations}
-        locale={locale}
-        title={title}
-        sidebar={sidebar}
-        resourcesIcons={resourcesIcons}
-        user={user}
-        externalLinks={externalLinks}
+        apiBasePath={apiBasePath}
+        params={params}
         options={options}
-      >
-        {renderMainComponent()}
-      </MainLayout>
+        user={user}
+        locale={locale}
+      ></MainLayout>
     </>
   );
 }

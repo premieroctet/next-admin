@@ -2,8 +2,6 @@ import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
-  basePath: "/admin",
-  apiBasePath: "/api/admin",
   title: "⚡️ My Admin",
   model: {
     User: {

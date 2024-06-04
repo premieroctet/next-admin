@@ -1,11 +1,10 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useMemo } from "react";
 import { NextAdminOptions } from "../types";
 
 export type ConfigContextType = {
   options?: NextAdminOptions;
   basePath: string;
-  isAppDir: boolean;
   apiBasePath: string;
 };
 
@@ -18,27 +17,24 @@ type ProviderProps = {
   apiBasePath: string;
   options?: NextAdminOptions;
   children: React.ReactNode;
-  isAppDir?: boolean;
 };
 
 export const ConfigProvider = ({
   children,
   options,
   basePath,
-  isAppDir = false,
   apiBasePath,
 }: ProviderProps) => {
+  const values = useMemo(() => {
+    return {
+      options,
+      basePath,
+      apiBasePath,
+    };
+  }, [options, basePath, apiBasePath]);
+
   return (
-    <ConfigContext.Provider
-      value={{
-        options,
-        basePath,
-        isAppDir,
-        apiBasePath,
-      }}
-    >
-      {children}
-    </ConfigContext.Provider>
+    <ConfigContext.Provider value={values}>{children}</ConfigContext.Provider>
   );
 };
 

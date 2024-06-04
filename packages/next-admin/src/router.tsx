@@ -2,7 +2,6 @@ import { PrismaClient } from "@prisma/client";
 import { createRouter } from "next-connect";
 
 import { NextAdminOptions } from "./types";
-import { getPropsFromParams } from "./utils/props";
 import {
   formatSearchFields,
   getParamsFromUrl,
@@ -16,7 +15,7 @@ export const nextAdminRouter = async (
   options: NextAdminOptions
 ) => {
   const resources = getResources(options);
-  const defaultProps = { resources, basePath: options.basePath };
+  // const defaultProps = { resources, basePath: options.basePath };
 
   return (
     createRouter()
@@ -30,25 +29,24 @@ export const nextAdminRouter = async (
           }
 
           return {
-            props: { ...defaultProps, error: e.message },
+            props: {},
           };
         }
       })
       .get(async (req, res) => {
-        const params = getParamsFromUrl(req.url!, options.basePath);
+        // const params = getParamsFromUrl(req.url!, options.basePath);
 
-        const requestOptions = formatSearchFields(req.url!);
+        // const requestOptions = formatSearchFields(req.url!);
 
-        const props = await getPropsFromParams({
-          options,
-          prisma,
-          schema,
-          searchParams: requestOptions,
-          params,
-          isAppDir: false,
-        });
+        // const props = await getPropsFromParams({
+        //   options,
+        //   prisma,
+        //   schema,
+        //   searchParams: requestOptions,
+        //   params,
+        // });
 
-        return { props };
+        return {  };
       })
   );
 };

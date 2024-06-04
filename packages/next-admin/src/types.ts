@@ -2,8 +2,6 @@ import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
 import type { ChangeEvent, ReactNode } from "react";
-import type { SearchPaginatedResourceParams } from "./actions";
-import type { PropertyValidationError } from "./exceptions/ValidationError";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -439,14 +437,6 @@ export type ExternalLink = {
 
 export type NextAdminOptions = {
   /**
-   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
-   */
-  basePath: string;
-  /**
-   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
-   */
-  apiBasePath: string;
-  /**
    * Global admin title
    *
    * @default "Admin"
@@ -594,68 +584,67 @@ export type AdminUser = {
   logoutUrl: string;
 };
 
+// type t = {
+//   data?: ListData<ModelName>;
+//   resource?: ModelName;
+//   slug?: string;
+//   /**
+//    * Page router only
+//    */
+//   message?: {
+//     type: "success" | "info";
+//     content: string;
+//   };
+//   error?: string;
+//   validation?: PropertyValidationError[];
+//   resources?: ModelName[];
+//   total?: number;
+//   dmmfSchema?: readonly Prisma.DMMF.Field[];
+//   isAppDir?: boolean;
+//   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
+//   resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
+//   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+//   resourcesIdProperty?: Record<ModelName, string>;
+//   /**
+//    * App router only
+//    */
+//   pageComponent?: React.ComponentType;
+//   customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
+//   actions?: Omit<ModelAction, "action">[];
+//   translations?: Translations;
+//   /**
+//    * Global admin title
+//    *
+//    * @default "Admin"
+//    */
+//   title?: string;
+//   sidebar?: SidebarConfiguration;
+//   externalLinks?: ExternalLink[];
+// }
+
 export type AdminComponentProps = {
-  basePath: string;
-  schema?: Schema;
-  data?: ListData<ModelName>;
-  resource?: ModelName;
-  slug?: string;
   /**
-   * Page router only
+   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
    */
-  message?: {
-    type: "success" | "info";
-    content: string;
-  };
-  error?: string;
-  validation?: PropertyValidationError[];
-  resources?: ModelName[];
-  total?: number;
-  dmmfSchema?: readonly Prisma.DMMF.Field[];
-  isAppDir?: boolean;
+  basePath: string;
+  /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
+   */
+  apiBasePath: string;
+  params: string[];
+  searchParams: { [key: string]: string | string[] | undefined } | undefined;
+  schema?: Schema;
   locale?: string;
   /**
    * Mandatory for page router
    */
   options?: NextAdminOptions;
-  resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
-  resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
-  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
-  resourcesIdProperty?: Record<ModelName, string>;
-  /**
-   * App router only
-   */
-  pageComponent?: React.ComponentType;
-  customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
-  actions?: Omit<ModelAction, "action">[];
-  translations?: Translations;
-  /**
-   * Global admin title
-   *
-   * @default "Admin"
-   */
-  title?: string;
-  sidebar?: SidebarConfiguration;
   user?: AdminUser;
-  externalLinks?: ExternalLink[];
 };
 
 export type MainLayoutProps = Pick<
   AdminComponentProps,
-  | "resource"
-  | "resources"
-  | "resourcesTitles"
-  | "customPages"
-  | "basePath"
-  | "isAppDir"
-  | "translations"
-  | "locale"
-  | "title"
-  | "sidebar"
-  | "resourcesIcons"
-  | "user"
-  | "externalLinks"
-  | "options"
+  "options" | "params" | "basePath" | "apiBasePath" | "locale" | "user"
 >;
 
 export type CustomUIProps = {

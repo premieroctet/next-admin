@@ -4,8 +4,6 @@ import {
   usePathname,
   useSearchParams,
 } from "next/navigation";
-import { NextRouter, useRouter as usePageRouter } from "next/router";
-import { useConfig } from "../context/ConfigContext";
 
 type AppRouter = ReturnType<typeof useAppRouter>;
 
@@ -17,54 +15,32 @@ type PushParams = {
 };
 
 export const useRouterInternal = () => {
-  const { isAppDir } = useConfig();
-
-  const router = isAppDir ? useAppRouter() : usePageRouter();
-  const query = isAppDir
-    ? useSearchParams()
-    : typeof window !== "undefined"
-      ? new URLSearchParams(location.search)
-      : new URLSearchParams(
-          (router as NextRouter).query as Record<string, string>
-        );
-  const pathname = isAppDir
-    ? usePathname()
-    : (router as NextRouter).asPath.split("?")[0];
+  const router = useAppRouter();
+  const query = useSearchParams();
+  const pathname = usePathname();
 
   const push = ({ pathname, query }: PushParams) => {
-    if (isAppDir) {
-      (router as AppRouter).push(
-        pathname +
-          (query
-            ? "?" +
-              new URLSearchParams(query as Record<string, string>).toString()
-            : "")
-      );
-    } else {
-      (router as NextRouter).push({ pathname, query });
-    }
+    (router as AppRouter).push(
+      pathname +
+        (query
+          ? "?" +
+            new URLSearchParams(query as Record<string, string>).toString()
+          : "")
+    );
   };
 
   const replace = ({ pathname, query }: PushParams) => {
-    if (isAppDir) {
-      (router as AppRouter).replace(
-        pathname +
-          (query
-            ? "?" +
-              new URLSearchParams(query as Record<string, string>).toString()
-            : "")
-      );
-    } else {
-      (router as NextRouter).replace({ pathname, query });
-    }
+    (router as AppRouter).replace(
+      pathname +
+        (query
+          ? "?" +
+            new URLSearchParams(query as Record<string, string>).toString()
+          : "")
+    );
   };
 
   const refresh = () => {
-    if (isAppDir) {
-      (router as AppRouter).refresh();
-    } else {
-      (router as NextRouter).replace((router as NextRouter).asPath);
-    }
+    (router as AppRouter).refresh();
   };
 
   const setQuery = (queryArg: Query, merge = false) => {

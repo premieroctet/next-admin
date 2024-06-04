@@ -14,13 +14,8 @@ import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import {
-  AdminComponentProps,
-  ModelIcon,
-  ModelName,
-  NextAdminOptions,
-  SidebarConfiguration,
-} from "../types";
+import { AdminUser, ModelIcon, ModelName, NextAdminOptions } from "../types";
+import { getMainLayoutProps } from "../utils/props";
 import { slugify } from "../utils/tools";
 import Divider from "./Divider";
 import ResourceIcon from "./common/ResourceIcon";
@@ -40,24 +35,16 @@ const ColorSchemeSwitch = dynamic(() => import("./ColorSchemeSwitch"), {
 });
 
 export type MenuProps = {
-  resource?: ModelName;
-  resources?: ModelName[];
-  resourcesTitles?: Record<ModelName, string | undefined>;
-  customPages?: AdminComponentProps["customPages"];
-  configuration?: SidebarConfiguration;
-  resourcesIcons: AdminComponentProps["resourcesIcons"];
-  user?: AdminComponentProps["user"];
-  externalLinks?: AdminComponentProps["externalLinks"];
-  title?: string;
+  user?: AdminUser;
   forceColorScheme?: NextAdminOptions["forceColorScheme"];
-};
+} & Omit<ReturnType<typeof getMainLayoutProps>, "serializedOptions">;
 
 export default function Menu({
   resources,
   resource: currentResource,
   resourcesTitles,
   customPages,
-  configuration,
+  sidebar,
   resourcesIcons,
   user,
   externalLinks,
@@ -82,7 +69,7 @@ export default function Menu({
 
   const ungroupedModels = resources?.filter(
     (resource) =>
-      !configuration?.groups?.some((group) => group.models.includes(resource))
+      !sidebar?.groups?.some((group) => group.models.includes(resource))
   );
 
   const renderNavigationItem = (item: {
@@ -219,74 +206,70 @@ export default function Menu({
     ));
   };
 
-  const renderNavigation = () => {
-    return (
-      <>
-        <div className="bg-nextadmin-menu-background dark:bg-dark-nextadmin-menu-background border-r-nextadmin-border-default dark:border-r-dark-nextadmin-border-default flex grow flex-col overflow-y-auto border-r pb-2">
-          <div className="flex h-[63px] items-center px-2">
-            <Link
-              href={basePath}
-              className="flex items-center gap-2 overflow-hidden"
-            >
-              <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
-                {title}
-              </div>
-            </Link>
-          </div>
-          <Divider />
-          <nav className="mt-4 flex flex-1 flex-col gap-y-6 px-4">
-            <ul role="list" className="flex flex-1 flex-col gap-y-4">
-              {configuration?.groups?.map((group) => (
-                <li key={group.title}>
-                  <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color mb-2 text-xs uppercase tracking-wider">
-                    {group.title}
-                  </div>
-                  <ul role="list" className="-ml-2 mt-1 flex flex-col gap-y-1">
-                    {group.models.map((model) => {
+  const renderNavigation = () => (
+    <>
+      <div className="bg-nextadmin-menu-background dark:bg-dark-nextadmin-menu-background border-r-nextadmin-border-default dark:border-r-dark-nextadmin-border-default flex grow flex-col overflow-y-auto border-r pb-2">
+        <div className="flex h-[63px] items-center px-2">
+          <Link
+            href={basePath}
+            className="flex items-center gap-2 overflow-hidden"
+          >
+            <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
+              {title}
+            </div>
+          </Link>
+        </div>
+        <Divider />
+        <nav className="mt-4 flex flex-1 flex-col gap-y-6 px-4">
+          <ul role="list" className="flex flex-1 flex-col gap-y-4">
+            {sidebar?.groups?.map((group) => (
+              <li key={group.title}>
+                <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color mb-2 text-xs uppercase tracking-wider">
+                  {group.title}
+                </div>
+                <ul role="list" className="-ml-2 mt-1 flex flex-col gap-y-1">
+                  {group.models.map((model) => {
+                    const item = getItemProps(model);
+                    return <li key={model}>{renderNavigationItem(item)}</li>;
+                  })}
+                </ul>
+              </li>
+            ))}
+            {!!ungroupedModels?.length && (
+              <>
+                {!!sidebar?.groups.length && <Divider />}
+                <li>
+                  <ul className="-ml-2 flex flex-col gap-y-1">
+                    {ungroupedModels?.map((model) => {
                       const item = getItemProps(model);
                       return <li key={model}>{renderNavigationItem(item)}</li>;
                     })}
                   </ul>
                 </li>
-              ))}
-              {!!ungroupedModels?.length && (
-                <>
-                  {!!configuration?.groups.length && <Divider />}
-                  <li>
-                    <ul className="-ml-2 flex flex-col gap-y-1">
-                      {ungroupedModels?.map((model) => {
-                        const item = getItemProps(model);
-                        return (
-                          <li key={model}>{renderNavigationItem(item)}</li>
-                        );
-                      })}
-                    </ul>
-                  </li>
-                </>
-              )}
-              {!!customPagesNavigation?.length && (
-                <>
-                  <Divider />
-                  <li>
-                    <ul role="list" className="-ml-2 flex flex-col gap-y-1">
-                      {customPagesNavigation?.map((item) => (
-                        <li key={item.name}>{renderNavigationItem(item)}</li>
-                      ))}
-                    </ul>
-                  </li>
-                </>
-              )}
-            </ul>
-            <div className="flex flex-col">
-              {renderExternalLinks()}
-              {!forceColorScheme && <ColorSchemeSwitch />}
-              {renderUser()}
-            </div>
-          </nav>
-        </div>
-      </>
-    );
-  };
+              </>
+            )}
+            {!!customPagesNavigation?.length && (
+              <>
+                <Divider />
+                <li>
+                  <ul role="list" className="-ml-2 flex flex-col gap-y-1">
+                    {customPagesNavigation?.map((item, index) => (
+                      <li key={item.name}>{renderNavigationItem(item)}</li>
+                    ))}
+                  </ul>
+                </li>
+              </>
+            )}
+          </ul>
+          <div className="flex flex-col">
+            {renderExternalLinks()}
+            {!forceColorScheme && <ColorSchemeSwitch />}
+            {renderUser()}
+          </div>
+        </nav>
+      </div>
+    </>
+  );
 
   return (
     <>
