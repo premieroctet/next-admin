@@ -1,6 +1,7 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
+import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
@@ -709,3 +710,50 @@ export type Translations = {
 export const colorSchemes = ["light", "dark", "system"] as const;
 export type ColorScheme = (typeof colorSchemes)[number];
 export type BasicColorScheme = Exclude<ColorScheme, "system">;
+
+export type RequestContext<P extends string> = {
+  params: Record<P, string[]>;
+};
+
+export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
+  /**
+   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
+   */
+  basePath: string;
+  /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
+   */
+  apiBasePath: string;
+  /**
+   * Next-admin options
+   */
+  options: NextAdminOptions;
+  /**
+   * Prisma client instance
+   */
+  prisma: PrismaClient;
+  /**
+   * A function that acts as a middleware. Useful to add authentication logic for example.
+   */
+  onRequest?: (
+    req: NextRequest,
+    ctx: RequestContext<P>
+  ) =>
+    | ReturnType<NextResponse["json"]>
+    | ReturnType<NextResponse["text"]>
+    | Promise<void>;
+  /**
+   * A string indicating the name of the dynamic segment.
+   *
+   * Example:
+   * - If the dynamic segment is `[[...nextadmin]]`, then the `paramKey` should be `nextadmin`.
+   * - If the dynamic segment is `[[...admin]]`, then the `paramKey` should be `admin`.
+   *
+   * @default "nextadmin"
+   */
+  paramKey?: P;
+  /**
+   * Generated JSON schema from Prisma
+   */
+  schema: any;
+};
