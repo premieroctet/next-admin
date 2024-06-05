@@ -12,12 +12,14 @@ const CheckboxWidget = ({
     <div className="relative flex items-start py-1">
       <div className="flex h-5 items-center">
         <input
+          id={props.name}
           value={value ? "on" : "off"}
-          onChange={() => value}
           name={props.name}
           className="absolute inset-0 -z-10 h-full w-full opacity-0"
+          readOnly
         />
         <SwitchRoot
+          id={props.name}
           checked={value}
           onCheckedChange={onChange}
           disabled={disabled}
