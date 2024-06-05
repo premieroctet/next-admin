@@ -97,7 +97,8 @@
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "tsconfig": "*",
-    "tsup": "^6.7.0"
+    "tsup": "^6.7.0",
+    "typescript": "^5.1.6"
   },
   "optionalDependencies": {
     "@monaco-editor/react": "^4.6.0",

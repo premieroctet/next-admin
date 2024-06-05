@@ -670,7 +670,6 @@ export const formattedFormData = async <M extends ModelName>(
                   },
                 };
               }
-              console.dir(formattedData[dmmfPropertyName], { depth: null });
             } else {
               const updateRelatedField = {
                 ...(orderField && {
