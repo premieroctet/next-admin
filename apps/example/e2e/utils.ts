@@ -240,3 +240,12 @@ export const paginationPerPage = async (page: Page, itemPerPage: number) => {
   }
   await page.getByRole("button", { name: "1" }).click();
 };
+
+export const getFormData = async (page: Page) => {
+  const form = await page.$("form");
+  const formData = await form?.evaluate((form) => {
+    const formData = new FormData(form);
+    return Object.fromEntries(formData);
+  });
+  return formData;
+};

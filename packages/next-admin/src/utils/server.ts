@@ -81,13 +81,15 @@ export const getToStringForRelations = <M extends ModelName>(
   const editOptions = options?.model?.[modelName]?.edit;
   const relationOptions = options?.model?.[modelNameRelation];
   const explicitManyToManyRelationField =
-  // @ts-expect-error
+    // @ts-expect-error
     editOptions?.fields?.[fieldName as Field<M>]?.relationshipSearchField;
 
   const nonCheckedToString =
     // @ts-expect-error
     editOptions?.fields?.[fieldName]?.[
-      explicitManyToManyRelationField ? "relationOptionFormatter" : "optionFormatter"
+      explicitManyToManyRelationField
+        ? "relationOptionFormatter"
+        : "optionFormatter"
     ] || relationOptions?.toString;
   const modelRelationIdField = getModelIdProperty(modelNameRelation);
   const toStringForRelations =
@@ -295,7 +297,7 @@ export const transformData = <M extends ModelName>(
         explicitManyToManyRelationField
           ? (deepRelationModel?.type as ModelName)
           : modelRelation,
-        options,
+        options
       );
       if (Array.isArray(data[key])) {
         acc[key] = data[key].map((item: any) => {
@@ -667,7 +669,6 @@ export const formattedFormData = async <M extends ModelName>(
                   },
                 };
               }
-              console.dir(formattedData[dmmfPropertyName], { depth: null });
             } else {
               const updateRelatedField = {
                 ...(orderField && {

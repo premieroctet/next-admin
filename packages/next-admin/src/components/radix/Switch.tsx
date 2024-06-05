@@ -1,6 +1,6 @@
 import * as Switch from "@radix-ui/react-switch";
-import { ComponentProps, ElementRef, forwardRef } from "react";
 import clsx from "clsx";
+import { ElementRef, forwardRef } from "react";
 
 export const SwitchRoot = forwardRef<
   ElementRef<typeof Switch.Root>,
