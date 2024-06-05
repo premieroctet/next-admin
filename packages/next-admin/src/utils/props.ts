@@ -1,22 +1,80 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import { ModelIcon, NextAdminOptions, Schema } from "../types";
+import { Prisma } from "@prisma/client";
+import {
+  CustomPages,
+  GetNextAdminPropsParams,
+  MainLayoutProps,
+  ModelIcon,
+  NextAdminProps,
+} from "../types";
+import { extractTranslations } from "../utils/i18n";
 import { getResourceFromParams, getResources } from "./server";
 import { extractSerializable } from "./tools";
-
-export type GetPropsFromParamsParams = {
-  params?: string[];
-  searchParams: { [key: string]: string | string[] | undefined } | undefined;
-  options: NextAdminOptions;
-  schema: Schema;
-  prisma: PrismaClient;
-  locale?: string;
-  getMessages?: () => Promise<Record<string, string>>;
-};
 
 enum Page {
   LIST = 1,
   EDIT = 2,
 }
+
+export const getNextAdminProps = async ({
+  ...args
+}: GetNextAdminPropsParams): Promise<NextAdminProps> => {
+  const props = await getMainLayoutProps(args);
+  return props;
+};
+
+export const getMainLayoutProps = async ({
+  options,
+  getMessages,
+  params,
+  ...args
+}: GetNextAdminPropsParams): Promise<MainLayoutProps> => {
+  const resources = getResources(options);
+  const resource = getResourceFromParams(params ?? [], resources);
+  const translations = await extractTranslations(getMessages);
+
+  const customPages: CustomPages =
+    options &&
+    Object.keys(options.pages ?? {}).map((path) => ({
+      title: options?.pages![path as keyof typeof options.pages].title,
+      path: path,
+      icon: options?.pages![path as keyof typeof options.pages].icon,
+    }));
+
+  const resourcesTitles = resources.reduce(
+    (acc, resource) => {
+      acc[resource as Prisma.ModelName] =
+        options?.model?.[resource as keyof typeof options.model]?.title ??
+        resource;
+      return acc;
+    },
+    {} as { [key in Prisma.ModelName]: string }
+  );
+
+  const resourcesIcons = resources.reduce(
+    (acc, resource) => {
+      if (!options?.model?.[resource as keyof typeof options.model]?.icon)
+        return acc;
+      acc[resource as Prisma.ModelName] =
+        options.model?.[resource as keyof typeof options.model]?.icon!;
+      return acc;
+    },
+    {} as { [key in Prisma.ModelName]: ModelIcon }
+  );
+
+  return {
+    resources,
+    resource,
+    customPages,
+    resourcesTitles,
+    title: options?.title ?? "Admin",
+    sidebar: options?.sidebar,
+    resourcesIcons,
+    externalLinks: options?.externalLinks,
+    options: extractSerializable(options),
+    translations,
+    ...args,
+  };
+};
 
 // export async function getPropsFromParams({
 //   params,
@@ -217,55 +275,3 @@ enum Page {
 //       return defaultProps;
 //   }
 // }
-
-type GetMainLayoutPropsParams = {
-  options?: NextAdminOptions;
-  params?: string[];
-};
-
-export const getMainLayoutProps = ({
-  options,
-  params,
-}: GetMainLayoutPropsParams) => {
-  const resources = getResources(options);
-  const resource = getResourceFromParams(params ?? [], resources);
-
-  const customPages = options && Object.keys(options.pages ?? {}).map((path) => ({
-    title: options?.pages![path as keyof typeof options.pages].title,
-    path: path,
-    icon: options?.pages![path as keyof typeof options.pages].icon,
-  }));
-
-  const resourcesTitles = resources.reduce(
-    (acc, resource) => {
-      acc[resource as Prisma.ModelName] =
-        options?.model?.[resource as keyof typeof options.model]?.title ??
-        resource;
-      return acc;
-    },
-    {} as { [key in Prisma.ModelName]: string }
-  );
-
-  const resourcesIcons = resources.reduce(
-    (acc, resource) => {
-      if (!options?.model?.[resource as keyof typeof options.model]?.icon)
-        return acc;
-      acc[resource as Prisma.ModelName] =
-        options.model?.[resource as keyof typeof options.model]?.icon!;
-      return acc;
-    },
-    {} as { [key in Prisma.ModelName]: ModelIcon }
-  );
-
-  return {
-    resources,
-    resource,
-    customPages,
-    resourcesTitles,
-    title: options?.title ?? "Admin",
-    sidebar: options?.sidebar,
-    resourcesIcons,
-    externalLinks: options?.externalLinks,
-    serializedOptions: extractSerializable(options),
-  };
-};

@@ -1,7 +1,7 @@
 import { options } from "@/options";
-import schema from "@/prisma/json-schema/json-schema.json";
-import { NextAdmin, Schema } from "@premieroctet/next-admin";
+import { NextAdmin, getNextAdminProps } from "@premieroctet/next-admin";
 import { Metadata, Viewport } from "next";
+import { getMessages } from "next-intl/server";
 
 export const viewport: Viewport = {
   initialScale: 1,
@@ -21,41 +21,24 @@ export default async function AdminPage({
     | { [key: string]: string | string[] | undefined }
     | undefined;
 }) {
-  // const props = await getPropsFromParams({
-  //   params: params.nextadmin as string[],
-  //   searchParams,
-  //   options,
-  //   prisma,
-  //   schema,
-  //   action: submitFormAction,
-  //   deleteAction: deleteItem,
-  //   getMessages: () =>
-  //     getMessages({ locale: params.locale as string }).then(
-  //       (messages) => messages.admin as Record<string, string>
-  //     ),
-  //   locale: params.locale as string,
-  //   searchPaginatedResourceAction: searchResource,
-  // });
 
-  return (
-    <NextAdmin
-      basePath="/admin"
-      apiBasePath="/api/admin"
-      params={params.nextadmin as string[]}
-      searchParams={searchParams}
-      schema={schema as Schema}
-      options={options}
-      // getMessages={() =>
-      //   getMessages({ locale: params.locale as string }).then(
-      //     (messages) => messages.admin as Record<string, string>
-      //   )}
-      locale={params.locale as string}
-      user={{
-        data: {
-          name: "John Doe",
-        },
-        logoutUrl: "/",
-      }}
-    />
-  );
+  const nextAdminProps = await getNextAdminProps({
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
+    params: params.nextadmin as string[],
+    searchParams,
+    user: { 
+      data: {
+        name: "User",
+      },
+      logoutUrl: "/logout",
+    },
+    options,
+    getMessages: () =>
+      getMessages({ locale: params.locale as string }).then(
+        (messages) => messages.admin as Record<string, string>
+      ),
+  });
+
+  return <NextAdmin {...nextAdminProps} />;
 }

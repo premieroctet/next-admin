@@ -4,7 +4,6 @@ import schema from "@/prisma/json-schema/json-schema.json";
 import { createHandler } from "@premieroctet/next-admin/dist/handler";
 
 const { run } = createHandler({
-  basePath: "/admin",
   apiBasePath: "/api/admin",
   options,
   prisma,

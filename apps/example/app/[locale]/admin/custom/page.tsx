@@ -1,12 +1,27 @@
-import { MainLayout } from "@premieroctet/next-admin";
-import { getMainLayoutProps } from "@premieroctet/next-admin/dist/mainLayout";
+import { getMainLayoutProps, MainLayout } from "@premieroctet/next-admin";
+import { getMessages } from "next-intl/server";
 import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";
 
-const CustomPage = async () => {
-  const mainLayoutProps = getMainLayoutProps({
+const CustomPage = async ({
+  params: { locale },
+}: {
+  readonly params: { locale: string };
+}) => {
+  const mainLayoutProps = await getMainLayoutProps({
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
+    user: {
+      data: {
+        name: "User",
+      },
+      logoutUrl: "/logout",
+    },
     options,
-    isAppDir: true,
+    getMessages: () =>
+      getMessages({ locale }).then(
+        (messages) => messages.admin as Record<string, string>
+      ),
   });
 
   const totalUsers = await prisma.user.count();
@@ -20,15 +35,7 @@ const CustomPage = async () => {
   ];
 
   return (
-    <MainLayout
-      {...mainLayoutProps}
-      user={{
-        data: {
-          name: "John Doe",
-        },
-        logoutUrl: "/",
-      }}
-    >
+    <MainLayout {...mainLayoutProps}>
       <div className="p-10">
         <h1 className="mb-4 text-xl font-bold leading-7 text-gray-900 dark:text-gray-300 sm:truncate sm:text-3xl sm:tracking-tight">
           Dashboard

@@ -1,7 +1,5 @@
 import { Prisma } from "@prisma/client";
-import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { Writable } from "node:stream";
 import { NextApiRequest } from "next";
 import {
   AdminFormData,
@@ -19,10 +17,10 @@ import {
 } from "../types";
 import { isNativeFunction, pipe } from "./tools";
 
-export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
+export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf?.datamodel
   .models as Prisma.DMMF.Model[];
-export const enums = Prisma.dmmf.datamodel.enums;
-export const resources = models.map((model) => model.name as ModelName);
+export const enums = Prisma.dmmf?.datamodel.enums;
+export const resources = models?.map((model) => model.name as ModelName);
 
 export const getEnumValues = (enumName: string) => {
   const enumValues = enums.find((en) => en.name === enumName);
@@ -42,10 +40,10 @@ export const enumValueForEnumType = (enumName: string, value: string) => {
 export const getPrismaModelForResource = (
   resource: ModelName
 ): Prisma.DMMF.Model | undefined =>
-  models.find((datamodel) => datamodel.name === resource);
+  models?.find((datamodel) => datamodel.name === resource);
 
 export const getModelIdProperty = (model: ModelName) => {
-  const prismaModel = models.find((m) => m.name === model);
+  const prismaModel = models?.find((m) => m.name === model);
   const idField = prismaModel?.fields.find((f) => f.isId);
   return idField?.name ?? "id";
 };
@@ -989,63 +987,63 @@ export const getResourceIdFromParam = (param: string, resource: ModelName) => {
     : idProperty;
 };
 
-export const getFormDataValues = async (req: IncomingMessage) => {
-  const form = formidable({
-    allowEmptyFiles: true,
-    minFileSize: 0,
-    fileWriteStreamHandler: () => {
-      return new Writable({
-        write(_chunk, _encoding, callback) {
-          callback();
-        },
-      });
-    },
-  });
-  return new Promise<Record<string, string | File | null>>(
-    (resolve, reject) => {
-      const files = {} as Record<string, File[] | [null]>;
+// export const getFormDataValues = async (req: IncomingMessage) => {
+//   const form = formidable({
+//     allowEmptyFiles: true,
+//     minFileSize: 0,
+//     fileWriteStreamHandler: () => {
+//       return new Writable({
+//         write(_chunk, _encoding, callback) {
+//           callback();
+//         },
+//       });
+//     },
+//   });
+//   return new Promise<Record<string, string | File | null>>(
+//     (resolve, reject) => {
+//       const files = {} as Record<string, File[] | [null]>;
 
-      form.on("fileBegin", (name, file) => {
-        // @ts-expect-error
-        file.createFileWriteStream = () => {
-          const chunks: Buffer[] = [];
-          return new Writable({
-            write(chunk, _encoding, callback) {
-              chunks.push(chunk);
-              callback();
-            },
-            final(callback) {
-              if (!file.originalFilename) {
-                files[name] = [null];
-              } else {
-                files[name] = [
-                  new File([Buffer.concat(chunks)], file.originalFilename),
-                ];
-              }
-              callback();
-            },
-          });
-        };
-      });
+//       form.on("fileBegin", (name, file) => {
+//         // @ts-expect-error
+//         file.createFileWriteStream = () => {
+//           const chunks: Buffer[] = [];
+//           return new Writable({
+//             write(chunk, _encoding, callback) {
+//               chunks.push(chunk);
+//               callback();
+//             },
+//             final(callback) {
+//               if (!file.originalFilename) {
+//                 files[name] = [null];
+//               } else {
+//                 files[name] = [
+//                   new File([Buffer.concat(chunks)], file.originalFilename),
+//                 ];
+//               }
+//               callback();
+//             },
+//           });
+//         };
+//       });
 
-      form.parse(req, (err, fields) => {
-        if (err) {
-          reject(err);
-        }
-        const joinedFormData = Object.entries({ ...fields, ...files }).reduce(
-          (acc, [key, value]) => {
-            if (Array.isArray(value)) {
-              acc[key] = value[0];
-            }
-            return acc;
-          },
-          {} as Record<string, string | File | null>
-        );
-        resolve(joinedFormData);
-      });
-    }
-  );
-};
+//       form.parse(req, (err, fields) => {
+//         if (err) {
+//           reject(err);
+//         }
+//         const joinedFormData = Object.entries({ ...fields, ...files }).reduce(
+//           (acc, [key, value]) => {
+//             if (Array.isArray(value)) {
+//               acc[key] = value[0];
+//             }
+//             return acc;
+//           },
+//           {} as Record<string, string | File | null>
+//         );
+//         resolve(joinedFormData);
+//       });
+//     }
+//   );
+// };
 
 export const getFormValuesFromFormData = async (formData: FormData) => {
   const tmpFormValues = {} as Record<string, string | File | null>;

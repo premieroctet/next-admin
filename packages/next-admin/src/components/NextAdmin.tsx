@@ -1,18 +1,27 @@
-import { AdminComponentProps } from "../types";
-import { MainLayout } from "./MainLayout";
+"use client";
+
+import { NextAdminProps } from "../types";
+import MainLayout from "./MainLayout";
 import PageLoader from "./PageLoader";
 
 // Components
 export function NextAdmin({
   basePath,
   apiBasePath,
-  schema,
   options,
   locale,
   user,
   params,
-  searchParams,
-}: AdminComponentProps) {
+  translations,
+  resource,
+  resources,
+  resourcesTitles,
+  customPages,
+  title,
+  sidebar,
+  resourcesIcons,
+  externalLinks,
+}: NextAdminProps) {
   // const modelSchema =
   //   resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
@@ -60,6 +69,22 @@ export function NextAdmin({
   //     return dashboard || <Dashboard resources={resources!} />;
   // });
 
+  const mainLayoutProps = {
+    basePath,
+    apiBasePath,
+    options,
+    user,
+    locale,
+    resource,
+    resources,
+    resourcesTitles,
+    customPages,
+    title,
+    sidebar,
+    resourcesIcons,
+    externalLinks,
+  };
+
   return (
     <>
       <PageLoader />
@@ -70,14 +95,8 @@ export function NextAdmin({
           <link rel="icon" href="/favicon.ico" />
         </Head>
       )} */}
-      <MainLayout
-        basePath={basePath}
-        apiBasePath={apiBasePath}
-        params={params}
-        options={options}
-        user={user}
-        locale={locale}
-      ></MainLayout>
+
+      <MainLayout {...mainLayoutProps}></MainLayout>
     </>
   );
 }

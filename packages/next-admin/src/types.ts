@@ -640,17 +640,79 @@ export type AdminComponentProps = {
    * Mandatory for page router
    */
   options?: NextAdminOptions;
+  /**
+   * User data
+   */
+  user?: AdminUser;
+  /**
+   * @returns a record of translation keys and their values
+   */
+  translations?: Record<string, string>;
+};
+
+export type NextAdminProps = {
+  basePath: string;
+  apiBasePath: string;
+  params?: string[];
+  searchParams?: { [key: string]: string | string[] | undefined };
+  options?: NextAdminOptions;
+  locale?: string;
+  user?: AdminUser;
+  translations?: Record<string, string>;
+  resources?: Prisma.ModelName[];
+  resource?: Prisma.ModelName;
+  customPages?: CustomPages;
+  resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
+  title?: string;
+  sidebar?: SidebarConfiguration;
+  externalLinks?: ExternalLink[];
+  resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
+};
+
+export type GetNextAdminPropsParams = {
+  params?: string[];
+  searchParams?: { [key: string]: string | string[] | undefined };
+  options: NextAdminOptions;
+  getMessages?: () => Promise<Record<string, string>>;
+  /**
+   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
+   */
+  basePath: string;
+  /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
+   */
+  apiBasePath: string;
   user?: AdminUser;
 };
 
+export type CustomPages = {
+  title: string;
+  path: string;
+  icon?: ModelIcon;
+}[];
+
 export type MainLayoutProps = Pick<
-  AdminComponentProps,
-  "options" | "params" | "basePath" | "apiBasePath" | "locale" | "user"
+  NextAdminProps,
+  | "basePath"
+  | "apiBasePath"
+  | "locale"
+  | "options"
+  | "user"
+  | "resource"
+  | "resources"
+  | "resourcesTitles"
+  | "customPages"
+  | "title"
+  | "sidebar"
+  | "resourcesIcons"
+  | "externalLinks"
+  | "translations"
 >;
 
-export type CustomUIProps = {
-  dashboard?: JSX.Element | (() => JSX.Element);
-};
+export type MenuProps = {
+  user?: AdminUser;
+  forceColorScheme?: NextAdminOptions["forceColorScheme"];
+} & Omit<MainLayoutProps, "options" | "basePath" | "apiBasePath">;
 
 export type ActionFullParams = ActionParams & {
   prisma: PrismaClient;
@@ -716,10 +778,6 @@ export type RequestContext<P extends string> = {
 };
 
 export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
-  /**
-   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
-   */
-  basePath: string;
   /**
    * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
    */

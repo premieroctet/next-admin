@@ -14,8 +14,7 @@ import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import { AdminUser, ModelIcon, ModelName, NextAdminOptions } from "../types";
-import { getMainLayoutProps } from "../utils/props";
+import { MenuProps, ModelIcon, ModelName } from "../types";
 import { slugify } from "../utils/tools";
 import Divider from "./Divider";
 import ResourceIcon from "./common/ResourceIcon";
@@ -33,11 +32,6 @@ import {
 const ColorSchemeSwitch = dynamic(() => import("./ColorSchemeSwitch"), {
   ssr: false,
 });
-
-export type MenuProps = {
-  user?: AdminUser;
-  forceColorScheme?: NextAdminOptions["forceColorScheme"];
-} & Omit<ReturnType<typeof getMainLayoutProps>, "serializedOptions">;
 
 export default function Menu({
   resources,

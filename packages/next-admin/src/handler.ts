@@ -13,7 +13,6 @@ import {
 } from "./utils/server";
 
 export const createHandler = <P extends string = "nextadmin">({
-  basePath,
   apiBasePath,
   options,
   prisma,

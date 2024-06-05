@@ -1,3 +1,5 @@
+"use client";
+
 import { merge } from "lodash";
 import { PropsWithChildren } from "react";
 import { ColorSchemeProvider } from "../context/ColorSchemeContext";
@@ -5,39 +7,30 @@ import { ConfigProvider } from "../context/ConfigContext";
 import { I18nProvider } from "../context/I18nContext";
 import { defaultTranslations } from "../i18n";
 import { MainLayoutProps } from "../types";
-import { getMainLayoutProps } from "../utils/props";
 import Menu from "./Menu";
 
-type Props = MainLayoutProps;
-
-export const MainLayout = ({
+const MainLayout = ({
   basePath,
   apiBasePath,
   locale,
-  params,
   options,
   children,
   user,
-}: PropsWithChildren<Props>) => {
-  const mergedTranslations = merge({ ...defaultTranslations }, {/* TODO: Restore translations */});
+  resource,
+  resources,
+  resourcesTitles,
+  customPages,
+  title,
+  sidebar,
+  resourcesIcons,
+  externalLinks,
+  translations,
+}: PropsWithChildren<MainLayoutProps>) => {
+  const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
-  const {
-    resource,
-    resources,
-    resourcesTitles,
-    customPages,
-    title,
-    sidebar,
-    resourcesIcons,
-    externalLinks,
-    serializedOptions,
-  } = getMainLayoutProps({ options, params });
-
-  console.log(resourcesTitles);
-
   return (
     <ConfigProvider
-      options={serializedOptions}
+      options={options}
       basePath={`${localePath}${basePath}`}
       apiBasePath={apiBasePath}
     >
@@ -63,3 +56,5 @@ export const MainLayout = ({
     </ConfigProvider>
   );
 };
+
+export default MainLayout;

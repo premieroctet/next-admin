@@ -44,7 +44,7 @@
   },
   "homepage": "https://next-admin.js.org",
   "resolutions": {
-    "@types/react": "^18.2.0",
+    "@types/react": "^18.3.3",
     "@types/react-dom": "^18.2.0"
   }
 }
