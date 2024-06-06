@@ -318,8 +318,9 @@ export const mapDataList = ({
   const dmmfSchema = getPrismaModelForResource(resource);
   const data = findRelationInData(fetchData, dmmfSchema?.fields);
   const listFields = options.model?.[resource]?.list?.fields ?? {};
-
+  const originalData = cloneDeep(data);
   data.forEach((item, index) => {
+    context.row = originalData[index];
     Object.keys(item).forEach((key) => {
       let itemValue = null;
       const model = capitalize(key) as ModelName;
@@ -357,7 +358,7 @@ export const mapDataList = ({
         itemValue !== null
       ) {
         item[key].__nextadmin_formatted = listFields[
-          key as keyof typeof listFields
+          key as Field<ModelName>
         ]?.formatter?.(itemValue ?? item[key], context);
       } else {
         if (typeof item[key]?.__nextadmin_formatted === "object") {

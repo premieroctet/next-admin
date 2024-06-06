@@ -274,13 +274,12 @@ export type ListExport = {
   /**
    * a string defining the format of the export. It is mandatory.
    */
-  format: string
+  format: string;
   /**
    * a string defining the URL of the export. It is mandatory.
    */
   url: string;
 };
-
 
 export type ListOptions<T extends ModelName> = {
   /**
@@ -689,6 +688,7 @@ export type SubmitFormResult = {
 
 export type NextAdminContext = {
   locale?: string;
+  row?: any;
 };
 
 export type CustomInputProps = Partial<{
