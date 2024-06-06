@@ -1,10 +1,10 @@
 import { Transition } from "@headlessui/react";
 import debounce from "lodash/debounce";
 import { ChangeEvent, createRef, useEffect, useRef, useState } from "react";
+import { useI18n } from "../../context/I18nContext";
 import useSearchPaginatedResource from "../../hooks/useSearchPaginatedResource";
 import { Enumeration } from "../../types";
 import LoaderRow from "../LoaderRow";
-import { useI18n } from "../../context/I18nContext";
 
 export type SelectorProps = {
   open: boolean;
@@ -24,7 +24,7 @@ export const Selector = ({
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
   const loaderRowRef = useRef(null);
-  const { t } = useI18n(); 
+  const { t } = useI18n();
   const [isLastRowReached, setIsLastRowReached] = useState(false);
   const {
     allOptions,
@@ -130,7 +130,7 @@ export const Selector = ({
     <Transition.Root show={open} as="div">
       <Transition.Child
         as="div"
-        className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong absolute z-10 mt-2 max-h-60 w-full overflow-auto rounded-md shadow-2xl ring-1"
+        className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong absolute z-20 mt-2 max-h-60 w-full overflow-auto rounded-md shadow-2xl ring-1"
         enter="transition-all ease-linear"
         enterFrom="opacity-0 -translate-y-1"
         enterTo="opacity-100 translate-y-0"
