@@ -103,7 +103,7 @@ export const fillForm = async (
       break;
     case "Post":
       await page.fill('input[id="title"]', dataTest.Post.title);
-      await page.getByLabel("author*").click();
+      await page.click('select[name="author"]');
       /* Search for relationship test */
       await page.fill(
         'input[id="author-search"]',
@@ -143,7 +143,7 @@ export const readForm = async (
       expect(await page.inputValue('input[id="title"]')).toBe(
         dataTest.Post.title
       );
-      expect(await page.inputValue('input[id="author"]')).toBe(
+      expect(await page.innerText('span[id="author"]')).toBe(
         dataTest.Post.author
       );
       break;
