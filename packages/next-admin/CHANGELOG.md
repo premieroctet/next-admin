@@ -1,5 +1,15 @@
 # @premieroctet/next-admin
 
+## 4.4.1
+
+### Patch Changes
+
+- [e79b338](https://github.com/premieroctet/next-admin/commit/e79b338): Add row context to formatter function
+- [4d5b7f8](https://github.com/premieroctet/next-admin/commit/4d5b7f8): Fix selector fields for enum and relationships
+- [9d778ae](https://github.com/premieroctet/next-admin/commit/9d778ae): Disable creation button on list based on permission
+- [9a139fb](https://github.com/premieroctet/next-admin/commit/9a139fb): Possibility to translate model names and field names
+- [7ce8ebf](https://github.com/premieroctet/next-admin/commit/7ce8ebf): Fix boolean fields submission
+
 ## 4.4.0
 
 ### Minor Changes
