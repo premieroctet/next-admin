@@ -1,6 +1,7 @@
 import { Prisma } from "@prisma/client";
 import {
   CustomPages,
+  GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
   MainLayoutProps,
   ModelIcon,
@@ -9,17 +10,41 @@ import {
 import { extractTranslations } from "../utils/i18n";
 import { getResourceFromParams, getResources } from "./server";
 import { extractSerializable } from "./tools";
+import { ListProps } from "../components/List";
+import { getModelIdProperty } from "./schema";
 
 enum Page {
   LIST = 1,
   EDIT = 2,
 }
 
+type GetListPropsParams = {
+  resource: Prisma.ModelName;
+  resources?: Prisma.ModelName[];
+};
+
+export const getListProps = async ({
+  resource,
+  resources,
+}: GetListPropsParams): Promise<ListProps> => {
+  return {
+    resource,
+    data: [],
+    total: 0,
+    title: resource,
+    resourcesIdProperty: {
+      [resource]: "id",
+    },
+  };
+}
+
 export const getNextAdminProps = async ({
+  params,
+  searchParams,
   ...args
 }: GetNextAdminPropsParams): Promise<NextAdminProps> => {
-  const props = await getMainLayoutProps(args);
-  return props;
+  const mainLayoutProps = await getMainLayoutProps({ params, ...args });
+  return { ...mainLayoutProps, params, searchParams };
 };
 
 export const getMainLayoutProps = async ({
@@ -27,7 +52,7 @@ export const getMainLayoutProps = async ({
   getMessages,
   params,
   ...args
-}: GetNextAdminPropsParams): Promise<MainLayoutProps> => {
+}: GetMainLayoutPropsParams): Promise<MainLayoutProps> => {
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
   const translations = await extractTranslations(getMessages);

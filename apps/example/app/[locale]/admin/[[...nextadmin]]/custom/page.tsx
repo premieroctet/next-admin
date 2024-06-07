@@ -4,12 +4,11 @@ import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";
 
 const CustomPage = async ({
-  params,
+  params: { locale },
 }: {
-  readonly params: { [key: string]: string[] | string };
+  readonly params: { locale: string };
 }) => {
   const mainLayoutProps = await getMainLayoutProps({
-    params: params.nextadmin as string[],
     basePath: "/admin",
     apiBasePath: "/api/admin",
     user: {
@@ -20,7 +19,7 @@ const CustomPage = async ({
     },
     options,
     getMessages: () =>
-      getMessages({ locale: params.locale as string }).then(
+      getMessages({ locale }).then(
         (messages) => messages.admin as Record<string, string>
       ),
   });

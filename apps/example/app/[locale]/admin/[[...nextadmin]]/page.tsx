@@ -12,22 +12,13 @@ export const metadata: Metadata = {
   icons: "/favicon.ico",
 };
 
-export default async function AdminPage({
-  params,
-  searchParams,
-}: {
-  readonly params: { [key: string]: string[] | string };
-  readonly searchParams:
-    | { [key: string]: string | string[] | undefined }
-    | undefined;
-}) {
-
+export default async function AdminPage(props: any) {
   const nextAdminProps = await getNextAdminProps({
     basePath: "/admin",
     apiBasePath: "/api/admin",
-    params: params.nextadmin as string[],
-    searchParams,
-    user: { 
+    params: props?.params.nextadmin as string[],
+    searchParams: props?.searchParams!,
+    user: {
       data: {
         name: "User",
       },
@@ -35,7 +26,7 @@ export default async function AdminPage({
     },
     options,
     getMessages: () =>
-      getMessages({ locale: params.locale as string }).then(
+      getMessages({ locale: props?.params.locale as string }).then(
         (messages) => messages.admin as Record<string, string>
       ),
   });

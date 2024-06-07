@@ -9,7 +9,7 @@ import { defaultTranslations } from "../i18n";
 import { MainLayoutProps } from "../types";
 import Menu from "./Menu";
 
-const MainLayout = ({
+export function MainLayout({
   basePath,
   apiBasePath,
   locale,
@@ -25,7 +25,7 @@ const MainLayout = ({
   resourcesIcons,
   externalLinks,
   translations,
-}: PropsWithChildren<MainLayoutProps>) => {
+}: PropsWithChildren<MainLayoutProps>) {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
   return (
@@ -55,6 +55,4 @@ const MainLayout = ({
       </I18nProvider>
     </ConfigProvider>
   );
-};
-
-export default MainLayout;
+}

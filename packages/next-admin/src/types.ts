@@ -644,6 +644,7 @@ export type AdminComponentProps = {
    * User data
    */
   user?: AdminUser;
+  actions?: any;
   /**
    * @returns a record of translation keys and their values
    */
@@ -651,10 +652,40 @@ export type AdminComponentProps = {
 };
 
 export type NextAdminProps = {
+  params: string[];
+  searchParams: { [key: string]: string | string[] | undefined };
+} & MainLayoutProps;
+
+export type GetNextAdminPropsParams = {
+  searchParams: { [key: string]: string | string[] | undefined };
+} & GetMainLayoutPropsParams;
+
+export type GetMainLayoutPropsParams = {
+  params: string[];
+  options?: NextAdminOptions;
+  getMessages?: () => Promise<Record<string, string>>;
+  /**
+   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
+   */
+  basePath: string;
+  /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
+   */
+  apiBasePath: string;
+  user?: AdminUser;
+};
+
+export type CustomPages =
+  | {
+      title: string;
+      path: string;
+      icon?: ModelIcon;
+    }[]
+  | undefined;
+
+export type MainLayoutProps = {
   basePath: string;
   apiBasePath: string;
-  params?: string[];
-  searchParams?: { [key: string]: string | string[] | undefined };
   options?: NextAdminOptions;
   locale?: string;
   user?: AdminUser;
@@ -668,46 +699,6 @@ export type NextAdminProps = {
   externalLinks?: ExternalLink[];
   resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
 };
-
-export type GetNextAdminPropsParams = {
-  params?: string[];
-  searchParams?: { [key: string]: string | string[] | undefined };
-  options: NextAdminOptions;
-  getMessages?: () => Promise<Record<string, string>>;
-  /**
-   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
-   */
-  basePath: string;
-  /**
-   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
-   */
-  apiBasePath: string;
-  user?: AdminUser;
-};
-
-export type CustomPages = {
-  title: string;
-  path: string;
-  icon?: ModelIcon;
-}[];
-
-export type MainLayoutProps = Pick<
-  NextAdminProps,
-  | "basePath"
-  | "apiBasePath"
-  | "locale"
-  | "options"
-  | "user"
-  | "resource"
-  | "resources"
-  | "resourcesTitles"
-  | "customPages"
-  | "title"
-  | "sidebar"
-  | "resourcesIcons"
-  | "externalLinks"
-  | "translations"
->;
 
 export type MenuProps = {
   user?: AdminUser;

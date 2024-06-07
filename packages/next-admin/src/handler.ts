@@ -17,7 +17,6 @@ export const createHandler = <P extends string = "nextadmin">({
   options,
   prisma,
   paramKey = "nextadmin" as P,
-  onRequest,
   schema,
 }: CreateAppHandlerParams<P>) => {
   const router = createEdgeRouter<NextRequest, RequestContext<P>>();
