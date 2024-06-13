@@ -456,6 +456,7 @@ const Form = ({
             readonly,
             rawErrors,
             name: props.name,
+            required: props.required,
             disabled: props.disabled,
           });
         }

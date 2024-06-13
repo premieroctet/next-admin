@@ -162,10 +162,12 @@ const RichTextField = ({
               "dark:focus:ring-dark-nextadmin-brand-default",
               "dark:ring-dark-nextadmin-border-strong",
               "dark:text-dark-nextadmin-content-inverted",
-              "dark:bg-dark-nextadmin-background-subtle min-h-[200px] rounded-b-md p-3 shadow-sm ring-1 focus:ring-2 focus-visible:outline-none",
+              "dark:bg-dark-nextadmin-background-subtle min-h-[150px] rounded-bl-md p-3 shadow-sm ring-1 focus:ring-2 focus-visible:outline-none",
               {
                 "cursor-not-allowed opacity-50": disabled,
-              }
+              },
+              "overflow-y-auto",
+              "resize-y"
             )}
           />
         </EditorContainer>

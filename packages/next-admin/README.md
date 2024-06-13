@@ -162,6 +162,10 @@ You can find the library code in the [next-admin](https://github.com/premierocte
 
 Also you can find a deployed version of the library [here](https://next-admin-po.vercel.app/).
 
+## Sponsors
+
+This project is being developed by [Premier Octet](https://www.premieroctet.com), a Web and mobile agency specializing in React and React Native developments.
+
 ## License
 
 This library is open source and released under the [MIT License](https://opensource.org/licenses/MIT).

@@ -94,7 +94,6 @@ export const options: NextAdminOptions = {
         },
         fields: {
           name: {
-
             required: true,
           },
           email: {

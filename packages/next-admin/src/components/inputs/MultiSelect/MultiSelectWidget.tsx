@@ -56,43 +56,44 @@ const MultiSelectWidget = (props: Props) => {
     <div className="relative" ref={containerRef}>
       <select
         name={name}
-        className="absolute inset-0 -z-10 h-full w-full opacity-0"
+        className={clsx(
+          "absolute inset-0 h-full w-full opacity-0",
+          props.disabled ? "cursor-not-allowed" : "cursor-pointer"
+        )}
         disabled={props.disabled}
         required={props.required}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          if (!props.disabled) {
+            formContext.toggleOpen(name);
+          }
+        }}
       >
         {!(props.required && selectedValues.length === 0) && (
           <option value={JSON.stringify(selectedValues)} />
         )}
       </select>
       {displayMode === "select" && (
-        <div className="relative">
-          <div
-            className={clsx(
-              "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default ring-nextadmin-border-default flex min-h-[38px] w-full cursor-default appearance-none flex-wrap gap-x-1 gap-y-1 rounded-md border-0 border-gray-300 px-2 py-1.5 pr-10 text-sm placeholder-gray-500 shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 sm:leading-6",
-              {
-                "cursor-not-allowed opacity-50 [&_*]:pointer-events-auto [&_*]:cursor-default":
-                  props.disabled,
-              }
-            )}
-            onClick={() => {
-              if (!props.disabled) {
-                formContext.toggleOpen(name);
-              }
-            }}
-            aria-disabled={props.disabled}
-          >
-            {formData?.map(
-              (value: any, index: number) =>
-                value && (
-                  <MultiSelectItem
-                    key={index}
-                    label={value.label}
-                    onRemoveClick={() => onRemoveClick(value.value)}
-                    deletable={!props.disabled}
-                  />
-                )
-            )}
-          </div>
+        <div
+          className={clsx(
+            "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default ring-nextadmin-border-default flex min-h-[38px] w-full appearance-none flex-wrap gap-x-1 gap-y-1 rounded-md border-0 border-gray-300 px-2 py-1.5 pr-10 text-sm placeholder-gray-500 shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 sm:leading-6",
+            {
+              "opacity-50": props.disabled,
+            }
+          )}
+          aria-disabled={props.disabled}
+        >
+          {formData?.map(
+            (value: any, index: number) =>
+              value && (
+                <MultiSelectItem
+                  key={index}
+                  label={value.label}
+                  onRemoveClick={() => onRemoveClick(value.value)}
+                  deletable={!props.disabled}
+                />
+              )
+          )}
           {!props.disabled && (
             <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
               <DoubleArrow />

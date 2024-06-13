@@ -83,8 +83,8 @@ export function getSchemas<M extends ModelName>(
 
       if (
         dmmfProperty &&
-        ((dmmfProperty.hasDefaultValue &&
-          typeof dmmfProperty.default === "object") ||
+        (dmmfProperty.isId ||
+          dmmfProperty.name === "createdAt" ||
           dmmfProperty?.isUpdatedAt ||
           disabledFields?.includes(dmmfProperty.name))
       ) {

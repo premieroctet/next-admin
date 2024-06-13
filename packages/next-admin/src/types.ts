@@ -684,6 +684,7 @@ export type SubmitFormResult = {
 
 export type NextAdminContext = {
   locale?: string;
+  row?: any;
 };
 
 export type CustomInputProps = Partial<{
