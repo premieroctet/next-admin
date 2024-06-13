@@ -1,6 +1,5 @@
-export const extractTranslations = async (getMessages?: () => Promise<Record<string, string>>) => {
-  if (getMessages) {
-    const messages = await getMessages();
+export const extractTranslations = (messages?: Record<string, string>) => {
+  if (messages) {
     const dottedProperty = {} as any;
     const dot = (obj: object, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {

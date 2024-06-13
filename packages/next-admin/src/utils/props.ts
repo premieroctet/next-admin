@@ -5,13 +5,12 @@ import {
   GetNextAdminPropsParams,
   MainLayoutProps,
   ModelIcon,
+  ModelName,
   NextAdminProps,
 } from "../types";
 import { extractTranslations } from "../utils/i18n";
-import { getResourceFromParams, getResources } from "./server";
+import { getResources } from "./server";
 import { extractSerializable } from "./tools";
-import { ListProps } from "../components/List";
-import { getModelIdProperty } from "./schema";
 
 enum Page {
   LIST = 1,
@@ -23,39 +22,36 @@ type GetListPropsParams = {
   resources?: Prisma.ModelName[];
 };
 
-export const getListProps = async ({
-  resource,
-  resources,
-}: GetListPropsParams): Promise<ListProps> => {
-  return {
-    resource,
-    data: [],
-    total: 0,
-    title: resource,
-    resourcesIdProperty: {
-      [resource]: "id",
-    },
-  };
-}
+// export const getListProps = async ({
+//   resource,
+//   resources,
+// }: GetListPropsParams): Promise<ListProps> => {
+//   return {
+//     resource,
+//     data: [],
+//     total: 0,
+//     title: resource,
+//     resourcesIdProperty: {
+//       [resource]: "id",
+//     },
+//   };
+// }
 
-export const getNextAdminProps = async ({
-  params,
-  searchParams,
+export const getNextAdminProps = ({
   ...args
-}: GetNextAdminPropsParams): Promise<NextAdminProps> => {
-  const mainLayoutProps = await getMainLayoutProps({ params, ...args });
-  return { ...mainLayoutProps, params, searchParams };
+}: GetNextAdminPropsParams): NextAdminProps => {
+  const mainLayoutProps = getMainLayoutProps(args);
+  return { ...mainLayoutProps };
 };
 
-export const getMainLayoutProps = async ({
+export const getMainLayoutProps = ({
   options,
-  getMessages,
-  params,
+  translations,
   ...args
-}: GetMainLayoutPropsParams): Promise<MainLayoutProps> => {
+}: GetMainLayoutPropsParams): MainLayoutProps => {
   const resources = getResources(options);
-  const resource = getResourceFromParams(params ?? [], resources);
-  const translations = await extractTranslations(getMessages);
+  const resource = "User" as ModelName; //getResourceFromParams(params ?? [], resources);
+  const extractedTranslations = extractTranslations(translations);
 
   const customPages: CustomPages =
     options &&
@@ -96,7 +92,7 @@ export const getMainLayoutProps = async ({
     resourcesIcons,
     externalLinks: options?.externalLinks,
     options: extractSerializable(options),
-    translations,
+    translations: extractedTranslations,
     ...args,
   };
 };

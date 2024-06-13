@@ -651,19 +651,27 @@ export type AdminComponentProps = {
   translations?: Record<string, string>;
 };
 
-export type NextAdminProps = {
-  params: string[];
-  searchParams: { [key: string]: string | string[] | undefined };
-} & MainLayoutProps;
+export type NextAdminProps = {} & MainLayoutProps;
 
-export type GetNextAdminPropsParams = {
-  searchParams: { [key: string]: string | string[] | undefined };
-} & GetMainLayoutPropsParams;
+export type GetNextAdminParams = {
+  options?: NextAdminOptions;
+  translations?: Record<string, string>;
+  /**
+   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
+   */
+  basePath: string;
+  /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
+   */
+  apiBasePath: string;
+  user?: AdminUser;
+};
+
+export type GetNextAdminPropsParams = {} & GetMainLayoutPropsParams;
 
 export type GetMainLayoutPropsParams = {
-  params: string[];
   options?: NextAdminOptions;
-  getMessages?: () => Promise<Record<string, string>>;
+  translations?: Record<string, string>;
   /**
    * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
    */
