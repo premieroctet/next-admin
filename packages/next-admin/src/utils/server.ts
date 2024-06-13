@@ -722,7 +722,9 @@ export const formattedFormData = async <M extends ModelName>(
           }
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
-          if (
+          if (formData[dmmfPropertyName] === "") {
+            formattedData[dmmfPropertyName] = null;
+          } else if (
             dmmfPropertyType === "Int" ||
             dmmfPropertyType === "Float" ||
             dmmfPropertyType === "Decimal"
