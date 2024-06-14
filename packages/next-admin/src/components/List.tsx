@@ -81,6 +81,10 @@ function List({
 
   let onSearchChange;
   const modelOptions = options?.["model"]?.[resource];
+
+  const hasDeletePermission =
+    !modelOptions?.permissions || modelOptions?.permissions?.includes("delete");
+
   const filterOptions = modelOptions?.list?.filters;
   if (
     !(modelOptions?.list?.search && modelOptions?.list?.search?.length === 0)
@@ -214,7 +218,7 @@ function List({
           <DataTable
             resource={resource}
             data={data}
-            columns={[checkboxColumn, ...columns, actionsColumn]}
+            columns={[checkboxColumn, ...columns, hasDeletePermission && actionsColumn]}
             resourcesIdProperty={resourcesIdProperty}
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
