@@ -184,8 +184,12 @@ export const renderElement = (props: RenderElementProps) => {
       );
     case "br":
       return <>{children}</>;
-    default:
+    case "pargraph":
       return <p {...attributes}>{children}</p>;
+    case "div":
+      return <div {...attributes}>{children}</div>;
+    default:
+      return <>{children}</>;
   }
 };
 
@@ -245,8 +249,10 @@ export const serializeHtml = (node: Node) => {
       return `<h3>${children}</h3>`;
     case "blockquote":
       return `<blockquote>${children}</blockquote>`;
-    default:
+    case "paragraph":
       return `<p>${children}</p>`;
+    default:
+      return `<div>${children}</div>`;
   }
 };
 
@@ -295,7 +301,8 @@ export const deserialize = (
     if (typeof window === "undefined") {
       return DEFAULT_HTML_VALUE;
     }
-    const dom = new DOMParser().parseFromString(string, "text/html");
+    const html = string.replace(/>\s+</g, "><");
+    const dom = new DOMParser().parseFromString(html, "text/html");
     return deserializeHtml(ensureRootNodeIsNotTextContent(dom.body));
   } else {
     try {
@@ -390,6 +397,11 @@ export const deserializeHtml = (
     case "LI":
       return {
         type: "list-item",
+        children,
+      };
+    case "DIV":
+      return {
+        type: "div",
         children,
       };
     default:

@@ -77,7 +77,7 @@ const RichTextField = ({
           value={inputValue}
           className="absolute inset-0 -z-10 h-full w-full opacity-0"
           required={required}
-          onChange={() => {}}
+          readOnly
         />
         <EditorContainer>
           <Toolbar>
@@ -166,7 +166,7 @@ const RichTextField = ({
               {
                 "cursor-not-allowed opacity-50": disabled,
               },
-              "overflow-y-auto",
+              "h-[150px] overflow-y-auto",
               "resize-y"
             )}
           />
