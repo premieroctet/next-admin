@@ -1,8 +1,9 @@
-import nextAdmin from "@/actions/adminClass";
+
+import NextAdmin from "../../../nextadmin"
 import "../../../styles.css";
 
 export default function Admin(props: any) {
-  return <nextAdmin.NextAdmin />;
+  return <NextAdmin.Component {...props} />;
 }
 
 // export const getServerSideProps = async (req: GetServerSidePropsContext) => {

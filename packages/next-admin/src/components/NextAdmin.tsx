@@ -21,6 +21,7 @@ export function NextAdmin({
   resourcesIcons,
   externalLinks,
 }: NextAdminProps) {
+  console.log(args);
   let matching = null;
   if (resource) {
     const resourceTitle = resourcesTitles?.[resource] ?? resource;

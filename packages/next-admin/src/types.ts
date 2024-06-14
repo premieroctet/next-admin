@@ -654,6 +654,8 @@ export type AdminComponentProps = {
 export type NextAdminProps = {} & MainLayoutProps;
 
 export type GetNextAdminParams = {
+  schema: any;
+  prisma: PrismaClient;
   options?: NextAdminOptions;
   translations?: Record<string, string>;
   /**
@@ -667,7 +669,9 @@ export type GetNextAdminParams = {
   user?: AdminUser;
 };
 
-export type GetNextAdminPropsParams = {} & GetMainLayoutPropsParams;
+export type GetNextAdminPropsParams = {
+
+} & GetMainLayoutPropsParams;
 
 export type GetMainLayoutPropsParams = {
   options?: NextAdminOptions;
