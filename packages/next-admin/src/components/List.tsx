@@ -80,6 +80,10 @@ function List({
 
   let onSearchChange;
   const modelOptions = options?.["model"]?.[resource];
+
+  const hasDeletePermission =
+    !modelOptions?.permissions || modelOptions?.permissions?.includes("delete");
+
   const filterOptions = modelOptions?.list?.filters;
   if (
     !(modelOptions?.list?.search && modelOptions?.list?.search?.length === 0)
@@ -137,6 +141,8 @@ function List({
     },
     cell: ({ row }) => {
       const idProperty = resourcesIdProperty[resource];
+
+      if (!hasDeletePermission) return;
 
       return (
         <Dropdown>
