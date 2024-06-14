@@ -2,7 +2,6 @@ import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
 import type { ChangeEvent, ReactNode } from "react";
-import type { SearchPaginatedResourceParams } from "./actions";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
@@ -721,3 +720,8 @@ export type Translations = {
 export const colorSchemes = ["light", "dark", "system"] as const;
 export type ColorScheme = (typeof colorSchemes)[number];
 export type BasicColorScheme = Exclude<ColorScheme, "system">;
+
+export type PageProps = {
+  readonly params: { [key: string]: string[] | string };
+  readonly searchParams: { [key: string]: string | string[] | undefined } | undefined;
+};
