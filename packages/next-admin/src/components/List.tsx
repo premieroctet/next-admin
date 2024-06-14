@@ -143,6 +143,10 @@ function List({
     cell: ({ row }) => {
       const idProperty = resourcesIdProperty[resource];
 
+      if (!hasDeletePermission) {
+        return;
+      }
+
       return (
         <Dropdown>
           <DropdownTrigger asChild>
@@ -218,7 +222,7 @@ function List({
           <DataTable
             resource={resource}
             data={data}
-            columns={[checkboxColumn, ...columns, hasDeletePermission && actionsColumn]}
+            columns={[checkboxColumn, ...columns, actionsColumn]}
             resourcesIdProperty={resourcesIdProperty}
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
