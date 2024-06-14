@@ -1,5 +1,15 @@
 # @premieroctet/next-admin
 
+## 4.4.2
+
+### Patch Changes
+
+- [c45a87d](https://github.com/premieroctet/next-admin/commit/c45a87d): Add resizable button and scroll richtext ([#348](https://github.com/premieroctet/next-admin/issues/348))
+- [b33de41](https://github.com/premieroctet/next-admin/commit/b33de41): Set null value instead of empty string ([#345](https://github.com/premieroctet/next-admin/issues/345))
+- [c5180af](https://github.com/premieroctet/next-admin/commit/c5180af): Minify html for richtext and support div ([#347](https://github.com/premieroctet/next-admin/issues/347))
+- [e1c455f](https://github.com/premieroctet/next-admin/commit/e1c455f): Modify to be undeleteable from the list if you do not have permission to delete
+- [9b194f6](https://github.com/premieroctet/next-admin/commit/9b194f6): Fix disabled fields when default value ([#340](https://github.com/premieroctet/next-admin/issues/340))
+
 ## 4.4.1
 
 ### Patch Changes
