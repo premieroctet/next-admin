@@ -143,9 +143,7 @@ function List({
     cell: ({ row }) => {
       const idProperty = resourcesIdProperty[resource];
 
-      if (!hasDeletePermission) {
-        return;
-      }
+      if (!hasDeletePermission) return;
 
       return (
         <Dropdown>
