@@ -1,3 +1,5 @@
+import { Prisma } from "@prisma/client";
+
 export const capitalize = <T extends string>(str: T): Capitalize<T> => {
   let capitalizedStr = str.charAt(0).toLocaleUpperCase() + str.slice(1);
   return capitalizedStr as Capitalize<T>;
@@ -77,3 +79,13 @@ export const exec = (path: string[], result: {
   
   return out;
 }
+
+export const getResourceFromParams = (
+  params: string[],
+  resources?: Prisma.ModelName[]
+) => {
+  return resources && resources.find((r) => {
+    const slugifiedResource = r.toLowerCase();
+    return params.some((param) => param.toLowerCase() === slugifiedResource);
+  });
+};

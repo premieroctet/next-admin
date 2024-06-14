@@ -9,7 +9,7 @@ import {
   NextAdminProps,
 } from "../types";
 import { extractTranslations } from "../utils/i18n";
-import { getResources } from "./server";
+import { getResourceFromParams, getResources } from "./server";
 import { extractSerializable } from "./tools";
 
 enum Page {
@@ -50,7 +50,6 @@ export const getMainLayoutProps = ({
   ...args
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   const resources = getResources(options);
-  const resource = "User" as ModelName; //getResourceFromParams(params ?? [], resources);
   const extractedTranslations = extractTranslations(translations);
 
   const customPages: CustomPages =
@@ -84,7 +83,6 @@ export const getMainLayoutProps = ({
 
   return {
     resources,
-    resource,
     customPages,
     resourcesTitles,
     title: options?.title ?? "Admin",

@@ -6,17 +6,16 @@ import { ColorSchemeProvider } from "../context/ColorSchemeContext";
 import { ConfigProvider } from "../context/ConfigContext";
 import { I18nProvider } from "../context/I18nContext";
 import { defaultTranslations } from "../i18n";
-import { MainLayoutProps } from "../types";
+import { MainLayoutProps, PageProps } from "../types";
 import Menu from "./Menu";
+import { getResourceFromParams } from "../utils/tools";
 
 export function MainLayout({
   basePath,
   apiBasePath,
-  locale,
   options,
   children,
   user,
-  resource,
   resources,
   resourcesTitles,
   customPages,
@@ -25,9 +24,11 @@ export function MainLayout({
   resourcesIcons,
   externalLinks,
   translations,
-}: PropsWithChildren<MainLayoutProps>) {
+  params,
+}: PropsWithChildren<MainLayoutProps & PageProps>) {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
-  const localePath = locale ? `/${locale}` : "";
+  const localePath = params?.locale ? `/${params?.locale}` : "";
+  const resource = getResourceFromParams(params?.nextadmin as string[], resources);
   return (
     <ConfigProvider
       options={options}

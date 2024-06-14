@@ -669,9 +669,7 @@ export type GetNextAdminParams = {
   user?: AdminUser;
 };
 
-export type GetNextAdminPropsParams = {
-
-} & GetMainLayoutPropsParams;
+export type GetNextAdminPropsParams = {} & GetMainLayoutPropsParams;
 
 export type GetMainLayoutPropsParams = {
   options?: NextAdminOptions;
@@ -703,7 +701,6 @@ export type MainLayoutProps = {
   user?: AdminUser;
   translations?: Record<string, string>;
   resources?: Prisma.ModelName[];
-  resource?: Prisma.ModelName;
   customPages?: CustomPages;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
   title?: string;
@@ -715,6 +712,7 @@ export type MainLayoutProps = {
 export type MenuProps = {
   user?: AdminUser;
   forceColorScheme?: NextAdminOptions["forceColorScheme"];
+  resource?: Prisma.ModelName;
 } & Omit<MainLayoutProps, "options" | "basePath" | "apiBasePath">;
 
 export type ActionFullParams = ActionParams & {
@@ -818,4 +816,11 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    * Generated JSON schema from Prisma
    */
   schema: any;
+};
+
+export type PageProps = {
+  readonly params: { [key: string]: string[] | string };
+  readonly searchParams:
+    | { [key: string]: string | string[] | undefined }
+    | undefined;
 };

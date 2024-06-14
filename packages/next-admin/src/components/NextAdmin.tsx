@@ -20,8 +20,9 @@ export function NextAdmin({
   sidebar,
   resourcesIcons,
   externalLinks,
+  params,
+  searchParams,
 }: NextAdminProps) {
-  console.log(args);
   let matching = null;
   if (resource) {
     const resourceTitle = resourcesTitles?.[resource] ?? resource;
@@ -108,6 +109,8 @@ export function NextAdmin({
     resourcesIcons,
     externalLinks,
     translations,
+    params,
+    searchParams,
   };
 
   return (

@@ -1,3 +1,4 @@
+import { PageProps } from "@premieroctet/next-admin";
 import { Metadata, Viewport } from "next";
 import NextAdmin from "../../../../nextadmin";
 
@@ -10,9 +11,6 @@ export const metadata: Metadata = {
   icons: "/favicon.ico",
 };
 
-export default async function AdminPage(props: {
-  params: { [key: string]: string[] | string };
-  searchParams: { [key: string]: string | string[] | undefined } | undefined;
-}) {
-  return <NextAdmin.Component {...props} />;
+export default async function AdminPage(props: PageProps) {
+  return <NextAdmin.Layout {...props} />;
 }
