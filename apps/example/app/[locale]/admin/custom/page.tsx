@@ -2,28 +2,13 @@ import { MainLayout, getMainLayoutProps } from "@premieroctet/next-admin";
 import { getMessages } from "next-intl/server";
 import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";
+import Nextadmin from "@/nextadmin";
 
 const CustomPage = async ({
   params,
 }: {
   readonly params: { [key: string]: string[] | string };
 }) => {
-  const mainLayoutProps = await getMainLayoutProps({
-    params: params.nextadmin as string[],
-    basePath: "/admin",
-    apiBasePath: "/api/admin",
-    user: {
-      data: {
-        name: "User",
-      },
-      logoutUrl: "/logout",
-    },
-    options,
-    getMessages: () =>
-      getMessages({ locale: params.locale as string }).then(
-        (messages) => messages.admin as Record<string, string>
-      ),
-  });
 
   const totalUsers = await prisma.user.count();
   const totalPosts = await prisma.post.count();
@@ -36,7 +21,7 @@ const CustomPage = async ({
   ];
 
   return (
-    <MainLayout {...mainLayoutProps}>
+    <Nextadmin.Layout params={params} searchParams={undefined}>
       <div className="p-10">
         <h1 className="mb-4 text-xl font-bold leading-7 text-gray-900 dark:text-gray-300 sm:truncate sm:text-3xl sm:tracking-tight">
           Dashboard
@@ -72,7 +57,7 @@ const CustomPage = async ({
           </div>
         </div>
       </div>
-    </MainLayout>
+    </Nextadmin.Layout>
   );
 };
 

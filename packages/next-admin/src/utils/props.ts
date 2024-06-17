@@ -1,15 +1,12 @@
 import { Prisma } from "@prisma/client";
 import {
   CustomPages,
-  GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
   MainLayoutProps,
   ModelIcon,
-  ModelName,
   NextAdminProps,
 } from "../types";
-import { extractTranslations } from "../utils/i18n";
-import { getResourceFromParams, getResources } from "./server";
+import { getResources } from "./server";
 import { extractSerializable } from "./tools";
 
 enum Page {
@@ -46,11 +43,9 @@ export const getNextAdminProps = ({
 
 export const getMainLayoutProps = ({
   options,
-  translations,
   ...args
-}: GetMainLayoutPropsParams): MainLayoutProps => {
+}: GetNextAdminPropsParams): MainLayoutProps => {
   const resources = getResources(options);
-  const extractedTranslations = extractTranslations(translations);
 
   const customPages: CustomPages =
     options &&
@@ -82,6 +77,7 @@ export const getMainLayoutProps = ({
   );
 
   return {
+    ...args,
     resources,
     customPages,
     resourcesTitles,
@@ -90,8 +86,6 @@ export const getMainLayoutProps = ({
     resourcesIcons,
     externalLinks: options?.externalLinks,
     options: extractSerializable(options),
-    translations: extractedTranslations,
-    ...args,
   };
 };
 

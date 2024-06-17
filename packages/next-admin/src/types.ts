@@ -657,7 +657,6 @@ export type GetNextAdminParams = {
   schema: any;
   prisma: PrismaClient;
   options?: NextAdminOptions;
-  translations?: Record<string, string>;
   /**
    * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
    */
@@ -666,14 +665,12 @@ export type GetNextAdminParams = {
    * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
    */
   apiBasePath: string;
-  user?: AdminUser;
 };
 
 export type GetNextAdminPropsParams = {} & GetMainLayoutPropsParams;
 
 export type GetMainLayoutPropsParams = {
   options?: NextAdminOptions;
-  translations?: Record<string, string>;
   /**
    * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
    */
@@ -682,7 +679,6 @@ export type GetMainLayoutPropsParams = {
    * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
    */
   apiBasePath: string;
-  user?: AdminUser;
 };
 
 export type CustomPages =
@@ -697,9 +693,6 @@ export type MainLayoutProps = {
   basePath: string;
   apiBasePath: string;
   options?: NextAdminOptions;
-  locale?: string;
-  user?: AdminUser;
-  translations?: Record<string, string>;
   resources?: Prisma.ModelName[];
   customPages?: CustomPages;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
@@ -708,6 +701,12 @@ export type MainLayoutProps = {
   externalLinks?: ExternalLink[];
   resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
 };
+
+export type MainLayoutComponentProps = {
+  locale?: string;
+  translations?: Translations;
+  user?: AdminUser;
+} & PageProps;
 
 export type MenuProps = {
   user?: AdminUser;
