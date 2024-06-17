@@ -706,7 +706,9 @@ export type MainLayoutComponentProps = {
   locale?: string;
   translations?: Translations;
   user?: AdminUser;
-} & PageProps;
+  searchParams: PageProps["searchParams"];
+  params: string | string[]
+}
 
 export type MenuProps = {
   user?: AdminUser;

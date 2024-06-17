@@ -12,5 +12,5 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage(props: PageProps) {
-  return <NextAdmin.Layout {...props} />;
+  return <NextAdmin.Layout params={props?.params?.nextadmin} searchParams={undefined} />;
 }

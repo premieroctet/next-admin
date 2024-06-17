@@ -18,8 +18,10 @@ export const getNextAdmin = ({
   });
 
   return {
-    Component: ({ params, searchParams }: PageProps & { translations: any }) =>
-      null,
+    Component: ({
+      params,
+      searchParams,
+    }: PageProps & { translations: any }) => <div>Next</div>,
     Layout: (args: MainLayoutComponentProps) => (
       <MainLayout {...mainLayoutProps} {...args} />
     ),

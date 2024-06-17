@@ -85,6 +85,6 @@ export const getResourceFromParams = (
 ) => {
   return resources && resources.find((r) => {
     const slugifiedResource = r.toLowerCase();
-    return params.some((param) => param.toLowerCase() === slugifiedResource);
+    return params?.some((param) => param.toLowerCase() === slugifiedResource);
   });
 };
