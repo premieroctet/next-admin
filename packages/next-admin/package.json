@@ -71,6 +71,7 @@
     "nextjs-toploader": "^1.6.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "tailwind-merge": "^2.3.0",
     "typescript": "^5.1.6",
     "util": "^0.12.5"
   },
