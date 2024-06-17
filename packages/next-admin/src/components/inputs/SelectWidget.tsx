@@ -57,7 +57,7 @@ const SelectWidget = ({
             disabled ? "cursor-not-allowed" : "cursor-pointer"
           )}
           disabled={disabled}
-          required={required}
+          required={required && !hasValue}
           onMouseDown={(e) => {
             e.preventDefault();
             if (!disabled) {

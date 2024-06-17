@@ -81,9 +81,9 @@ export const options: NextAdminOptions = {
           "metadata",
         ],
         styles: {
-          _form: "grid-cols-3 gap-2 md:grid-cols-4",
+          _form: "grid-cols-3 gap-4 md:grid-cols-4",
           id: "col-span-2 row-start-1",
-          name: "col-span-2 row-start-2",
+          name: "col-span-2 row-start-1",
           "email-notice": "col-span-4 row-start-3",
           email: "col-span-2 row-start-4",
           posts: "col-span-2 row-start-5",

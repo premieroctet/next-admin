@@ -30,6 +30,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { twMerge } from "tailwind-merge";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
 import { useI18n } from "../context/I18nContext";
@@ -379,10 +380,7 @@ const Form = ({
           .join(" ");
 
         return (
-          <div
-            style={style}
-            className={clsx(sanitizedClassNames, styleField, "py-2 first:pt-0")}
-          >
+          <div style={style} className={clsx(sanitizedClassNames, styleField)}>
             {schema.type !== "null" && (
               <label
                 className={clsx(
@@ -422,7 +420,7 @@ const Form = ({
       ObjectFieldTemplate: (props: ObjectFieldTemplateProps) => {
         const styleForm = modelOptions?.edit?.styles?._form;
         return (
-          <div className={clsx("grid", styleForm)}>
+          <div className={twMerge("grid gap-4", styleForm)}>
             {props.properties.map((element) => element.content)}
           </div>
         );
