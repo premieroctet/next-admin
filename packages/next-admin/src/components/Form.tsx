@@ -329,7 +329,7 @@ const Form = ({
         return (
           <div
             style={style}
-            className={clsx(sanitizedClassNames, styleField, "py-2 first:pt-0")}
+            className={clsx(sanitizedClassNames, styleField)}
           >
             {schema.type !== "null" && (
               <label
