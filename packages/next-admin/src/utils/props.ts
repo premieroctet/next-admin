@@ -11,7 +11,6 @@ import {
   ModelIcon,
   ModelName,
   NextAdminOptions,
-  SubmitFormResult,
 } from "../types";
 import { getCustomInputs } from "./options";
 import {
@@ -37,25 +36,9 @@ export type GetPropsFromParamsParams = {
   options: NextAdminOptions;
   schema: any;
   prisma: PrismaClient;
-  action?: (
-    params: ActionParams,
-    formData: FormData
-  ) => Promise<SubmitFormResult | undefined>;
   isAppDir?: boolean;
-  deleteAction?: (
-    resource: ModelName,
-    ids: string[] | number[]
-  ) => Promise<void>;
   locale?: string;
-  getMessages?: () => Promise<Record<string, string>>;
-  searchPaginatedResourceAction?: (
-    actionBaseParams: ActionParams,
-    params: SearchPaginatedResourceParams
-  ) => Promise<{
-    data: any[];
-    total: number;
-    error: string | null;
-  }>;
+  getMessages?: (locale: string) => Promise<Record<string, string>>;
 };
 
 enum Page {
@@ -69,12 +52,9 @@ export async function getPropsFromParams({
   options,
   schema,
   prisma,
-  action,
   isAppDir = false,
-  deleteAction,
   locale,
   getMessages,
-  searchPaginatedResourceAction,
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -108,18 +88,6 @@ export async function getPropsFromParams({
     {} as Record<ModelName, string>
   );
 
-  if (isAppDir && !action) {
-    throw new Error("action is required when using App router");
-  }
-
-  if (isAppDir && !deleteAction) {
-    throw new Error("deleteAction must be provided");
-  }
-
-  if (isAppDir && !searchPaginatedResourceAction) {
-    throw new Error("searchPaginatedResourceAction must be provided");
-  }
-
   const clientOptions: NextAdminOptions = extractSerializable(options);
   let defaultProps: AdminComponentProps = {
     resources,
@@ -146,7 +114,7 @@ export async function getPropsFromParams({
   });
 
   if (getMessages) {
-    const messages = await getMessages();
+    const messages = await getMessages(locale!);
     const dottedProperty = {} as any;
     const dot = (obj: object, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {

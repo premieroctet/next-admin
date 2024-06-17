@@ -723,5 +723,7 @@ export type BasicColorScheme = Exclude<ColorScheme, "system">;
 
 export type PageProps = {
   readonly params: { [key: string]: string[] | string };
-  readonly searchParams: { [key: string]: string | string[] | undefined } | undefined;
+  readonly searchParams:
+    | { [key: string]: string | string[] | undefined }
+    | undefined;
 };

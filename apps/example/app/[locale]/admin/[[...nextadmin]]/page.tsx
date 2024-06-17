@@ -1,8 +1,3 @@
-import {
-  deleteItem,
-  searchResource,
-  submitFormAction,
-} from "@/actions/nextadmin";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import schema from "@/prisma/json-schema/json-schema.json";
@@ -20,24 +15,18 @@ export const metadata: Metadata = {
   icons: "/favicon.ico",
 };
 
-export default async function AdminPage({
-  params,
-  searchParams,
-}: PageProps) {
+export default async function AdminPage({ params, searchParams }: PageProps) {
   const props = await getPropsFromParams({
     params: params.nextadmin as string[],
     searchParams,
     options,
     prisma,
     schema,
-    action: submitFormAction,
-    deleteAction: deleteItem,
-    getMessages: () =>
-      getMessages({ locale: params.locale as string }).then(
+    getMessages: (locale) =>
+      getMessages({ locale }).then(
         (messages) => messages.admin as Record<string, string>
       ),
     locale: params.locale as string,
-    searchPaginatedResourceAction: searchResource,
   });
 
   return (
