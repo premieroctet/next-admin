@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- [46683c4](https://github.com/premieroctet/next-admin/commit/46683c4): Fix selection in form for Safari browser
+- [46683c4](https://github.com/premieroctet/next-admin/commit/46683c4): Fix selection in form for Safari browser ([#355](https://github.com/premieroctet/next-admin/issues/355))
 - [e709378](https://github.com/premieroctet/next-admin/commit/e709378): Fix padding form
 
 ## 4.4.2
