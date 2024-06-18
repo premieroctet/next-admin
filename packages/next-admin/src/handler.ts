@@ -5,7 +5,6 @@ import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
 import { NextAdminOptions, Permission } from "./types";
 import { hasPermission } from "./utils/permissions";
-import { fetchDataList } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
@@ -73,28 +72,6 @@ export const createAppHandler = <P extends string = "nextadmin">({
       return next();
     });
   }
-
-  router.get(`${options.apiBasePath}/:model`, async (req, ctx) => {
-    const resource = getResourceFromParams(ctx.params[paramKey], resources);
-
-    if (!resource) {
-      return NextResponse.json(
-        { error: "Resource not found" },
-        { status: 404 }
-      );
-    }
-
-    const searchParams = new URLSearchParams(req.url.split("?")[1]);
-
-    const data = await fetchDataList({
-      prisma,
-      resource,
-      options,
-      searchParams,
-    });
-
-    return NextResponse.json(data);
-  });
 
   router
     .post(`${options.apiBasePath}/:model/actions/:id`, async (req, ctx) => {

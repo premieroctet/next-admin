@@ -1,6 +1,6 @@
 "use server";
+import { GetPropsFromParamsParams } from "./types";
 import {
-  GetPropsFromParamsParams,
   getPropsFromParams as _getPropsFromParams,
 } from "./utils/props";
 

@@ -1,11 +1,10 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { cloneDeep } from "lodash";
-import type { SearchPaginatedResourceParams } from "../actions";
 import {
-  ActionParams,
   AdminComponentProps,
   EditOptions,
   Field,
+  GetPropsFromParamsParams,
   ListOptions,
   MainLayoutProps,
   ModelIcon,
@@ -29,17 +28,6 @@ import {
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
-
-export type GetPropsFromParamsParams = {
-  params?: string[];
-  searchParams: { [key: string]: string | string[] | undefined } | undefined;
-  options: NextAdminOptions;
-  schema: any;
-  prisma: PrismaClient;
-  isAppDir?: boolean;
-  locale?: string;
-  getMessages?: (locale: string) => Promise<Record<string, string>>;
-};
 
 enum Page {
   LIST = 1,

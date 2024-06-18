@@ -727,3 +727,14 @@ export type PageProps = {
     | { [key: string]: string | string[] | undefined }
     | undefined;
 };
+
+export type GetPropsFromParamsParams = {
+  params?: string[];
+  searchParams: { [key: string]: string | string[] | undefined } | undefined;
+  options: NextAdminOptions;
+  schema: any;
+  prisma: PrismaClient;
+  isAppDir?: boolean;
+  locale?: string;
+  getMessages?: (locale: string) => Promise<Record<string, string>>;
+};
