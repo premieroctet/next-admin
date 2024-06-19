@@ -495,7 +495,7 @@ const Form = ({
 
   return (
     <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex h-16 flex-row items-center justify-between gap-3 border-b px-4 shadow-sm">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default gap-4 dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex py-3 flex-row flex-wrap items-center justify-between gap-3 border-b px-4 shadow-sm">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
         <div className="flex items-center gap-2">
           {!!actions && actions.length > 0 && !!id && (
