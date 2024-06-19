@@ -34,18 +34,6 @@ export const options: NextAdminOptions = {
               },
             },
           },
-          {
-            name: "over 18",
-            value: {
-              birthDate: {
-                lte: (() => {
-                  const date = new Date();
-                  date.setFullYear(date.getFullYear() - 18);
-                  return date;
-                })(),
-              },
-            },
-          },
         ],
         fields: {
           role: {
@@ -85,9 +73,9 @@ export const options: NextAdminOptions = {
           id: "col-span-2 row-start-1",
           name: "col-span-2 row-start-1",
           "email-notice": "col-span-4 row-start-3",
-          email: "col-span-2 row-start-4",
-          posts: "col-span-2 row-start-5",
-          role: "col-span-2 row-start-6",
+          email: "col-span-4 md:col-span-2 row-start-4",
+          posts: "col-span-4 md:col-span-2 row-start-5",
+          role: "col-span-4 md:col-span-2 row-start-6",
           birthDate: "col-span-3 row-start-7",
           avatar: "col-span-4 row-start-8",
           metadata: "col-span-4 row-start-9",

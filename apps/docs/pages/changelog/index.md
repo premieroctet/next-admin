@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 4.4.4
+
+### Patch Changes
+
+- [192c4e8](https://github.com/premieroctet/next-admin/commit/192c4e8): Reponsive breadcrumb and actions
+
 ## 4.4.3
 
 ### Patch Changes

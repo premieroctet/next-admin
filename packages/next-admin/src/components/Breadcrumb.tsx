@@ -17,8 +17,8 @@ export default function Breadcrumb({
   const { basePath } = useConfig();
 
   return (
-    <nav className="flex" aria-label="Breadcrumb">
-      <ol role="list" className="flex items-center space-x-2">
+    <nav className="flex h-[40px]" aria-label="Breadcrumb">
+      <ol role="list" className="flex items-center gap-2 flex-wrap">
         <li>
           <div>
             <a
@@ -41,10 +41,9 @@ export default function Breadcrumb({
               >
                 <path d="M5.555 17.776l8-16 .894.448-8 16-.894-.448z" />
               </svg>
-
               <Link
                 href={page.href}
-                className={`hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis ml-2 flex gap-2 text-sm font-medium ${
+                className={`hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis ml-2 flex min-w-max gap-2 text-sm font-medium ${
                   page.current
                     ? "text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle"
                     : "text-nextadmin-menu-default dark:text-dark-nextadmin-menu-color"

@@ -181,20 +181,12 @@ export const search = async (page: Page, model: ModelName, search: string) => {
 export const filter = async (page: Page) => {
   await page.goto(`${process.env.BASE_URL}/user`);
   await page.waitForURL(`${process.env.BASE_URL}/user`);
-  await page.click(`button[id="over 18"]`); // Add `over 18` filter
-  await page.waitForURL((url) => !!url.searchParams.get("filters"));
   let table = await page.$("table");
-  let thead = await page.$("thead");
   let tbody = await table?.$("tbody");
   let rows = await tbody?.$$("tr");
-  const noRow = rows?.length === 1 && !thead;
-  expect(noRow).toBeTruthy();
-  await page.click(`button[id="over 18"]`); // Remove `over 18` filter
-
   await page.click(`button[id="is Admin"]`); // Add `isAdmin` filter
   await page.waitForURL((url) => {
     const filters = url.searchParams.get("filters");
-
     return !!filters && filters.includes("is Admin");
   });
   table = await page.$("table");
