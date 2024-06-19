@@ -33,18 +33,6 @@ export const options: NextAdminOptions = {
               },
             },
           },
-          // {
-          //   name: "over 18",
-          //   value: {
-          //     birthDate: {
-          //       lte: (() => {
-          //         const date = new Date();
-          //         date.setFullYear(date.getFullYear() - 18);
-          //         return date;
-          //       })(),
-          //     },
-          //   },
-          // },
         ],
         fields: {
           role: {
