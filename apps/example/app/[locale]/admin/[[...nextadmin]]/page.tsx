@@ -32,7 +32,6 @@ export default async function AdminPage({ params, searchParams }: PageProps) {
   return (
     <NextAdmin
       {...props}
-      locale={params.locale as string}
       user={{
         data: {
           name: "John Doe",

@@ -89,6 +89,7 @@ export async function getPropsFromParams({
     sidebar,
     resourcesIcons,
     externalLinks,
+    locale,
   };
 
   if (!params) return defaultProps;
