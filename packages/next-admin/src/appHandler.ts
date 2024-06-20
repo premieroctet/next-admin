@@ -51,7 +51,7 @@ type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   schema: any;
 };
 
-export const createAppHandler = <P extends string = "nextadmin">({
+export const createHandler = <P extends string = "nextadmin">({
   options,
   prisma,
   paramKey = "nextadmin" as P,

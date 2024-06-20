@@ -40,7 +40,7 @@ export async function getPropsFromParams({
   options,
   schema,
   prisma,
-  isAppDir = false,
+  isAppDir = true,
   locale,
   getMessages,
 }: GetPropsFromParamsParams): Promise<

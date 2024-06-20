@@ -2,7 +2,7 @@ import { options } from "@/options";
 import { prisma } from "@/prisma";
 import schema from "@/prisma/json-schema/json-schema.json";
 import { NextAdmin, PageProps } from "@premieroctet/next-admin";
-import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
+import { getNextAdminProps } from "@premieroctet/next-admin/dist/appRouter";
 import { Metadata, Viewport } from "next";
 import { getMessages } from "next-intl/server";
 
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function AdminPage({ params, searchParams }: PageProps) {
-  const props = await getPropsFromParams({
+  const props = await getNextAdminProps({
     params: params.nextadmin as string[],
     searchParams,
     options,

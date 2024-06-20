@@ -1,7 +1,7 @@
 import { options } from "@/pageRouterOptions";
 import { prisma } from "@/prisma";
-import { createApiRouter } from "@premieroctet/next-admin/dist/apiRoute";
 import schema from "@/prisma/json-schema/json-schema.json";
+import { createHandler } from "@premieroctet/next-admin/dist/pageHandler";
 
 export const config = {
   api: {
@@ -9,7 +9,7 @@ export const config = {
   },
 };
 
-const { run } = createApiRouter({
+const { run } = createHandler({
   options,
   prisma,
   schema: schema,

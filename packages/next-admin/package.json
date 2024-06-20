@@ -1,7 +1,17 @@
 {
   "name": "@premieroctet/next-admin",
   "version": "4.4.4",
-  "main": "./dist/index.js",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./tailwind-preset": {
+      "import": "./dist/preset.js",
+      "require": "./dist/preset.js"
+    }
+  },
   "description": "Next-Admin provides a customizable and turnkey admin dashboard for applications built with Next.js and powered by the Prisma ORM. It aims to simplify the development process by providing a turnkey admin system that can be easily integrated into your project.",
   "keywords": [
     "next.js",
