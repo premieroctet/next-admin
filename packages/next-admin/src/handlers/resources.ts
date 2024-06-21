@@ -47,7 +47,7 @@ type SubmitResourceParams = {
   resource: ModelName;
   body: Record<string, string | File | null>;
   id?: string | number;
-  options: NextAdminOptions;
+  options?: NextAdminOptions;
   schema: any;
 };
 
@@ -67,7 +67,7 @@ export const submitResource = async ({
 
   let data;
 
-  const fields = options.model?.[resource]?.edit?.fields as EditFieldsOptions<
+  const fields = options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
     typeof resource
   >;
 
@@ -87,7 +87,7 @@ export const submitResource = async ({
     if (errors.length) {
       return {
         error:
-          options.model?.[resource]?.edit?.submissionErrorMessage ??
+          options?.model?.[resource]?.edit?.submissionErrorMessage ??
           "Submission error",
         validation: errors.map((error) => ({
           property: error.field,
@@ -98,7 +98,7 @@ export const submitResource = async ({
 
     // Edit
     if (!!id) {
-      if (!hasPermission(options.model?.[resource], Permission.EDIT)) {
+      if (!hasPermission(options?.model?.[resource], Permission.EDIT)) {
         return {
           error: "Unable to update items of this model",
         };
@@ -115,7 +115,7 @@ export const submitResource = async ({
       return { updated: true, redirect: redirect === "list" };
     }
 
-    if (!hasPermission(options.model?.[resource], Permission.CREATE)) {
+    if (!hasPermission(options?.model?.[resource], Permission.CREATE)) {
       return {
         error: "Unable to create items of this model",
       };

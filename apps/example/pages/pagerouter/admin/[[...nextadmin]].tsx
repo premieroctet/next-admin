@@ -24,4 +24,12 @@ export default function Admin(props: AdminComponentProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) =>
-  await getNextAdminProps(prisma, schema, pageOptions, req);
+  await getNextAdminProps({
+    basePath: "/pagerouter/admin",
+    apiBasePath: "/api/pagerouter/admin",
+    prisma,
+    schema,
+    options: pageOptions,
+    req,
+    
+  });

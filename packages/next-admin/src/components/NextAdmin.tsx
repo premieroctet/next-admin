@@ -11,6 +11,7 @@ import PageLoader from "./PageLoader";
 // Components
 export function NextAdmin({
   basePath,
+  apiBasePath,
   data,
   resource,
   schema,
@@ -110,6 +111,7 @@ export function NextAdmin({
         resourcesTitles={resourcesTitles}
         customPages={customPages}
         basePath={basePath}
+        apiBasePath={apiBasePath}
         isAppDir={isAppDir}
         translations={translations}
         locale={locale}

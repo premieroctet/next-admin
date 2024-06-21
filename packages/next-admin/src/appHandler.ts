@@ -1,9 +1,8 @@
-import { PrismaClient } from "@prisma/client";
 import { createEdgeRouter } from "next-connect";
 import { NextRequest, NextResponse } from "next/server";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
-import { NextAdminOptions, Permission } from "./types";
+import { CreateAppHandlerParams, Permission, RequestContext } from "./types";
 import { hasPermission } from "./utils/permissions";
 import {
   formatId,
@@ -12,46 +11,8 @@ import {
   getResources,
 } from "./utils/server";
 
-type RequestContext<P extends string> = {
-  params: Record<P, string[]>;
-};
-
-type CreateAppHandlerParams<P extends string = "nextadmin"> = {
-  /**
-   * Next-admin options
-   */
-  options: NextAdminOptions;
-  /**
-   * Prisma client instance
-   */
-  prisma: PrismaClient;
-  /**
-   * A function that acts as a middleware. Useful to add authentication logic for example.
-   */
-  onRequest?: (
-    req: NextRequest,
-    ctx: RequestContext<P>
-  ) =>
-    | ReturnType<NextResponse["json"]>
-    | ReturnType<NextResponse["text"]>
-    | Promise<void>;
-  /**
-   * A string indicating the name of the dynamic segment.
-   *
-   * Example:
-   * - If the dynamic segment is `[[...nextadmin]]`, then the `paramKey` should be `nextadmin`.
-   * - If the dynamic segment is `[[...admin]]`, then the `paramKey` should be `admin`.
-   *
-   * @default "nextadmin"
-   */
-  paramKey?: P;
-  /**
-   * Generated JSON schema from Prisma
-   */
-  schema: any;
-};
-
 export const createHandler = <P extends string = "nextadmin">({
+  apiBasePath,
   options,
   prisma,
   paramKey = "nextadmin" as P,
@@ -74,7 +35,7 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
-    .post(`${options.apiBasePath}/:model/actions/:id`, async (req, ctx) => {
+    .post(`${apiBasePath}/:model/actions/:id`, async (req, ctx) => {
       const id = ctx.params[paramKey].at(-1)!;
 
       // Make sure we don't have a false positive with a model that could be named actions
@@ -90,7 +51,7 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
-      const modelAction = options.model?.[resource]?.actions?.find(
+      const modelAction = options?.model?.[resource]?.actions?.find(
         (action) => action.id === id
       );
 
@@ -114,13 +75,13 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
     })
-    .post(`${options.apiBasePath}/options`, async (req, ctx) => {
+    .post(`${apiBasePath}/options`, async (req, ctx) => {
       const body = await req.json();
       const data = await handleOptionsSearch(body, prisma, options);
 
       return NextResponse.json(data);
     })
-    .post(`${options.apiBasePath}/:model/:id?`, async (req, ctx) => {
+    .post(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
       const resource = getResourceFromParams(ctx.params[paramKey], resources);
 
       if (!resource) {
@@ -161,7 +122,7 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
     })
-    .delete(`${options.apiBasePath}/:model/:id`, async (req, ctx) => {
+    .delete(`${apiBasePath}/:model/:id`, async (req, ctx) => {
       const resource = getResourceFromParams(ctx.params[paramKey], resources);
 
       if (!resource) {
@@ -171,7 +132,7 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
-      if (!hasPermission(options.model?.[resource], Permission.DELETE)) {
+      if (!hasPermission(options?.model?.[resource], Permission.DELETE)) {
         return NextResponse.json(
           { error: "You don't have permission to delete this resource" },
           { status: 403 }
@@ -186,7 +147,7 @@ export const createHandler = <P extends string = "nextadmin">({
 
       return NextResponse.json({ ok: true });
     })
-    .delete(`${options.apiBasePath}/:model`, async (req, ctx) => {
+    .delete(`${apiBasePath}/:model`, async (req, ctx) => {
       const resource = getResourceFromParams(ctx.params[paramKey], resources);
 
       if (!resource) {
@@ -196,7 +157,7 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
-      if (!hasPermission(options.model?.[resource], Permission.DELETE)) {
+      if (!hasPermission(options?.model?.[resource], Permission.DELETE)) {
         return NextResponse.json(
           { error: "You don't have permission to delete this resource" },
           { status: 403 }

@@ -258,7 +258,7 @@ export const transformData = <M extends ModelName>(
   data: any,
   resource: M,
   editOptions: EditOptions<M>,
-  options: NextAdminOptions
+  options?: NextAdminOptions
 ) => {
   const modelName = resource;
   const model = models.find((model) => model.name === modelName);

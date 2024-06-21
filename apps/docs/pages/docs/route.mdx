@@ -5,6 +5,10 @@ The admin panel route name is set by your folder name.
 
 Examples:
 
-`pages/admin/[[...nextadmin]].tsx` will be `/admin`
+`pages/admin/[[...nextadmin]].tsx` => `basePath` will be `/admin` (Page Router)
 
-`pages/prisma/[[...nextadmin]].tsx` will be `/prisma`
+`pages/api/admin/[[...nextadmin]].ts` => `apiBasePath` will be `/api/admin` (API Page Router)
+
+`pages/prisma/[[...nextadmin]]/page.tsx` => `basePath` will be `/admin` (App Router)
+
+`pages/prisma/[[...nextadmin]]/route.ts` => `apiBasePath` will be `/api/admin` (API App Router)

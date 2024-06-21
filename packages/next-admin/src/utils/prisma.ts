@@ -182,7 +182,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
 type GetMappedDataListParams = {
   prisma: PrismaClient;
   resource: ModelName;
-  options: NextAdminOptions;
+  options?: NextAdminOptions;
   searchParams: URLSearchParams;
   context: NextAdminContext;
   appDir?: boolean;
@@ -199,7 +199,7 @@ export const optionsFromResource = async ({
   ...args
 }: OptionsFromResourceParams) => {
   const relationshipField =
-    args.options.model?.[originResource]?.edit?.fields?.[
+    args.options?.model?.[originResource]?.edit?.fields?.[
       property as Field<typeof originResource>
       // @ts-expect-error
     ]?.relationshipSearchField;
@@ -260,7 +260,7 @@ export const optionsFromResource = async ({
 type FetchDataListParams = {
   prisma: PrismaClient;
   resource: ModelName;
-  options: NextAdminOptions;
+  options?: NextAdminOptions;
   searchParams: URLSearchParams;
 };
 
@@ -317,7 +317,7 @@ export const mapDataList = ({
   const { resource, options } = args;
   const dmmfSchema = getPrismaModelForResource(resource);
   const data = findRelationInData(fetchData, dmmfSchema?.fields);
-  const listFields = options.model?.[resource]?.list?.fields ?? {};
+  const listFields = options?.model?.[resource]?.list?.fields ?? {};
   const originalData = cloneDeep(data);
   data.forEach((item, index) => {
     context.row = originalData[index];

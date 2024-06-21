@@ -5,7 +5,7 @@ import { NextAdminOptions } from "../types";
 export const handleOptionsSearch = (
   body: any,
   prisma: PrismaClient,
-  options: NextAdminOptions
+  options?: NextAdminOptions
 ) => {
   const { originModel, property, model, query, page, perPage } = body;
 

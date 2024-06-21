@@ -1,3 +1,4 @@
+import Dashboard from "@/components/Dashboard";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import schema from "@/prisma/json-schema/json-schema.json";
@@ -15,12 +16,17 @@ export const metadata: Metadata = {
   icons: "/favicon.ico",
 };
 
-export default async function AdminPage({ params, searchParams }: PageProps) {
+export default async function AdminPage({
+  params,
+  searchParams,
+}: Readonly<PageProps>) {
   const props = await getNextAdminProps({
     params: params.nextadmin as string[],
     searchParams,
-    options,
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
     prisma,
+    options,
     schema,
     getMessages: (locale) =>
       getMessages({ locale }).then(
@@ -32,6 +38,7 @@ export default async function AdminPage({ params, searchParams }: PageProps) {
   return (
     <NextAdmin
       {...props}
+      dashboard={<Dashboard />}
       user={{
         data: {
           name: "John Doe",

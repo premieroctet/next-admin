@@ -1,9 +1,10 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { cloneDeep } from "lodash";
 import {
   AdminComponentProps,
   EditOptions,
   Field,
+  GetMainLayoutPropsParams,
   GetPropsFromParamsParams,
   ListOptions,
   MainLayoutProps,
@@ -43,6 +44,8 @@ export async function getPropsFromParams({
   isAppDir = true,
   locale,
   getMessages,
+  basePath,
+  apiBasePath,
 }: GetPropsFromParamsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -50,6 +53,7 @@ export async function getPropsFromParams({
       AdminComponentProps,
       | "pageComponent"
       | "basePath"
+      | "apiBasePath"
       | "isAppDir"
       | "message"
       | "resources"
@@ -60,13 +64,12 @@ export async function getPropsFromParams({
     resource,
     resources,
     resourcesTitles,
-    basePath,
     customPages,
     title,
     sidebar,
     resourcesIcons,
     externalLinks,
-  } = getMainLayoutProps({ options, params, isAppDir });
+  } = getMainLayoutProps({ basePath, apiBasePath, options, params, isAppDir });
 
   const resourcesIdProperty = resources!.reduce(
     (acc, resource) => {
@@ -76,10 +79,12 @@ export async function getPropsFromParams({
     {} as Record<ModelName, string>
   );
 
-  const clientOptions: NextAdminOptions = extractSerializable(options);
+  const clientOptions: NextAdminOptions | undefined =
+    extractSerializable(options);
   let defaultProps: AdminComponentProps = {
     resources,
     basePath,
+    apiBasePath,
     isAppDir,
     customPages,
     resourcesTitles,
@@ -172,7 +177,7 @@ export async function getPropsFromParams({
 
           if (fieldTypeDmmf && dmmfSchema) {
             const relatedResourceOptions =
-              options.model?.[fieldTypeDmmf as ModelName]?.list;
+              options?.model?.[fieldTypeDmmf as ModelName]?.list;
 
             if (
               // @ts-expect-error
@@ -259,13 +264,9 @@ export async function getPropsFromParams({
   }
 }
 
-type GetMainLayoutPropsParams = {
-  options: NextAdminOptions;
-  params?: string[];
-  isAppDir?: boolean;
-};
-
 export const getMainLayoutProps = ({
+  basePath,
+  apiBasePath,
   options,
   params,
   isAppDir = false,
@@ -273,16 +274,16 @@ export const getMainLayoutProps = ({
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
 
-  const customPages = Object.keys(options.pages ?? {}).map((path) => ({
-    title: options.pages![path as keyof typeof options.pages].title,
+  const customPages = Object.keys(options?.pages ?? {}).map((path) => ({
+    title: options?.pages![path as keyof typeof options.pages].title ?? path,
     path: path,
-    icon: options.pages![path as keyof typeof options.pages].icon,
+    icon: options?.pages![path as keyof typeof options.pages].icon,
   }));
 
   const resourcesTitles = resources.reduce(
     (acc, resource) => {
       acc[resource as Prisma.ModelName] =
-        options.model?.[resource as keyof typeof options.model]?.title ??
+        options?.model?.[resource as keyof typeof options.model]?.title ??
         resource;
       return acc;
     },
@@ -291,7 +292,7 @@ export const getMainLayoutProps = ({
 
   const resourcesIcons = resources.reduce(
     (acc, resource) => {
-      if (!options.model?.[resource as keyof typeof options.model]?.icon)
+      if (!options?.model?.[resource as keyof typeof options.model]?.icon)
         return acc;
       acc[resource as Prisma.ModelName] =
         options.model?.[resource as keyof typeof options.model]?.icon!;
@@ -303,14 +304,15 @@ export const getMainLayoutProps = ({
   return {
     resources,
     resource,
-    basePath: options.basePath,
+    basePath,
+    apiBasePath,
     customPages,
     resourcesTitles,
     isAppDir,
-    title: options.title ?? "Admin",
-    sidebar: options.sidebar,
+    title: options?.title ?? "Admin",
+    sidebar: options?.sidebar,
     resourcesIcons,
-    externalLinks: options.externalLinks,
+    externalLinks: options?.externalLinks,
     options: extractSerializable(options),
   };
 };

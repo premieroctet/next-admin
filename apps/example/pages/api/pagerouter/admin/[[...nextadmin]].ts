@@ -10,6 +10,7 @@ export const config = {
 };
 
 const { run } = createHandler({
+  apiBasePath: "/api/admin",
   options,
   prisma,
   schema: schema,

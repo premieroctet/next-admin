@@ -89,24 +89,36 @@ There is two example files in the example project:
 If you want to add data to the form data before submitting it, you can add logic to the `submitFormAction` function. This is an example of how to add `createdBy` and `updatedBy` fields based on the user id:
 
 ```typescript copy
-// actions/nextadmin.ts
-"use server";
-import { ActionParams } from "@premieroctet/next-admin";
-import { submitForm } from "@premieroctet/next-admin/dist/actions";
+// /api/admin/[[...nextadmin]]/route.ts
+import { options } from "@/options";
+import { prisma } from "@/prisma";
+import schema from "@/prisma/json-schema/json-schema.json";
+import { createHandler } from "@premieroctet/next-admin/dist/appHandler";
+import { NextRequest } from "next/server";
 
-export const submitFormAction = async (
-  params: ActionParams,
-  formData: FormData
-) => {
-  const userId = /* get the user id */;
-  if (params.params[1] === "new") {
-    formData.append("createdBy", userId);
+const { run } = createHandler({
+  apiBasePath: "/api/admin",
+  options,
+  prisma,
+  schema,
+});
+
+export async function POST(req: NextRequest, context: any) {
+  const userId = 1;
+  const formData = await req.formData();
+  if (context.params.nextadmin[1] === "new") {
+    formData.append("createdBy", userId.toString());
   } else {
-    formData.append("updatedBy", userId);
+    formData.append("updatedBy", userId.toString());
   }
+  req.formData = async () => formData;
 
-  return submitForm({ ...params, options, prisma }, formData);
-};
+  return run(req, context);
+}
+
+export { run as DELETE, run as GET };
+
+
 ```
 
 > Note that this example assumes that you have a `createdBy` and `updatedBy` field on each model, if you need to check the model name, you can use `params.params[0]`.

@@ -15,9 +15,13 @@ import {
 
 type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
+   */
+  apiBasePath: string;
+  /**
    * Next-admin options
    */
-  options: NextAdminOptions;
+  options?: NextAdminOptions;
   /**
    * Prisma client instance
    */
@@ -47,6 +51,7 @@ type CreateAppHandlerParams<P extends string = "nextadmin"> = {
 };
 
 export const createHandler = <P extends string = "nextadmin">({
+  apiBasePath,
   options,
   prisma,
   paramKey = "nextadmin" as P,
@@ -61,7 +66,7 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
-    .post(`${options.apiBasePath}/:model/actions/:id`, async (req, res) => {
+    .post(`${apiBasePath}/:model/actions/:id`, async (req, res) => {
       const id = req.query[paramKey]!.at(-1)!;
 
       // Make sure we don't have a false positive with a model that could be named actions
@@ -74,7 +79,7 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(404).json({ error: "Resource not found" });
       }
 
-      const modelAction = options.model?.[resource]?.actions?.find(
+      const modelAction = options?.model?.[resource]?.actions?.find(
         (action) => action.id === id
       );
 
@@ -98,7 +103,7 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(500).json({ error: (e as Error).message });
       }
     })
-    .post(`${options.apiBasePath}/options`, async (req, res) => {
+    .post(`${apiBasePath}/options`, async (req, res) => {
       let body;
 
       try {
@@ -111,7 +116,7 @@ export const createHandler = <P extends string = "nextadmin">({
 
       return res.json(data);
     })
-    .post(`${options.apiBasePath}/:model/:id?`, async (req, res) => {
+    .post(`${apiBasePath}/:model/:id?`, async (req, res) => {
       const resource = getResourceFromParams(
         [req.query[paramKey]![0]],
         resources
@@ -149,7 +154,7 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(500).json({ error: (e as Error).message });
       }
     })
-    .delete(`${options.apiBasePath}/:model/:id`, async (req, res) => {
+    .delete(`${apiBasePath}/:model/:id`, async (req, res) => {
       const resource = getResourceFromParams(
         [req.query[paramKey]![0]],
         resources
@@ -159,7 +164,7 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(404).json({ error: "Resource not found" });
       }
 
-      if (!hasPermission(options.model?.[resource], Permission.DELETE)) {
+      if (!hasPermission(options?.model?.[resource], Permission.DELETE)) {
         return res.status(403).json({
           error: "You don't have permission to delete this resource",
         });
@@ -177,7 +182,7 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(500).json({ error: (e as Error).message });
       }
     })
-    .delete(`${options.apiBasePath}/:model`, async (req, res) => {
+    .delete(`${apiBasePath}/:model`, async (req, res) => {
       const resource = getResourceFromParams(
         [req.query[paramKey]![0]],
         resources
@@ -187,7 +192,7 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(404).json({ error: "Resource not found" });
       }
 
-      if (!hasPermission(options.model?.[resource], Permission.DELETE)) {
+      if (!hasPermission(options?.model?.[resource], Permission.DELETE)) {
         return res.status(403).json({
           error: "You don't have permission to delete this resource",
         });

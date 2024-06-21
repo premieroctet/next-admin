@@ -25,6 +25,7 @@ export const MainLayout = ({
   externalLinks,
   title,
   options,
+  apiBasePath
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
@@ -34,7 +35,7 @@ export const MainLayout = ({
       options={options}
       basePath={`${localePath}${basePath}`}
       isAppDir={isAppDir}
-      apiBasePath={options!.apiBasePath}
+      apiBasePath={apiBasePath}
     >
       <I18nProvider translations={mergedTranslations}>
         <ColorSchemeProvider>
