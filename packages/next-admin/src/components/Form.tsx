@@ -34,7 +34,9 @@ import { twMerge } from "tailwind-merge";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
 import { useI18n } from "../context/I18nContext";
+import { MessageProvider, useMessage } from "../context/MessageContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
+import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
@@ -67,8 +69,6 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import { useDeleteAction } from "../hooks/useDeleteAction";
-import { MessageProvider, useMessage } from "../context/MessageContext";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
@@ -271,7 +271,9 @@ const Form = ({
       }
 
       if (result?.created) {
-        const pathname = `${basePath}/${slugify(resource)}/${result.createdId}`;
+        const pathname = result?.redirect
+          ? `${basePath}/${slugify(resource)}`
+          : `${basePath}/${slugify(resource)}/${result.createdId}`;
         return router.replace({
           pathname,
           query: {
@@ -547,7 +549,7 @@ const Form = ({
 
   return (
     <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default gap-4 dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex py-3 flex-row flex-wrap items-center justify-between gap-3 border-b px-4 shadow-sm">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex flex-row flex-wrap items-center justify-between gap-3 gap-4 border-b px-4 py-3 shadow-sm">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
         <div className="flex items-center gap-2">
           {!!actions && actions.length > 0 && !!id && (
