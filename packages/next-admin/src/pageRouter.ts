@@ -1,5 +1,4 @@
 import { PrismaClient } from "@prisma/client";
-
 import { IncomingMessage } from "node:http";
 import { NextAdminOptions } from "./types";
 import { getPropsFromParams } from "./utils/props";
