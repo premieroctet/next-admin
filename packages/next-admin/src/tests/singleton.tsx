@@ -670,8 +670,6 @@ export const schema: Schema = {
 };
 
 export const options: NextAdminOptions = {
-  basePath: "/admin",
-  apiBasePath: "/api/admin",
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
