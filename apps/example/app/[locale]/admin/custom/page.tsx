@@ -5,6 +5,8 @@ import { prisma } from "../../../../prisma";
 
 const CustomPage = async () => {
   const mainLayoutProps = getMainLayoutProps({
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
     options,
     isAppDir: true,
   });
