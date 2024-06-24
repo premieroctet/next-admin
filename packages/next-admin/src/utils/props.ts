@@ -269,7 +269,7 @@ export const getMainLayoutProps = ({
   apiBasePath,
   options,
   params,
-  isAppDir = false,
+  isAppDir = true,
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);

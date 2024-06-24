@@ -24,7 +24,7 @@ export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
 export const enums = Prisma.dmmf.datamodel.enums;
 export const resources = models.map((model) => model.name as ModelName);
 
-export const getEnumValues = (enumName: string) => {
+const getEnumValues = (enumName: string) => {
   const enumValues = enums.find((en) => en.name === enumName);
   return enumValues?.values;
 };
@@ -50,7 +50,7 @@ export const getModelIdProperty = (model: ModelName) => {
   return idField?.name ?? "id";
 };
 
-export const getDeepRelationModel = <M extends ModelName>(
+const getDeepRelationModel = <M extends ModelName>(
   model: M,
   property: Field<M>
 ): Prisma.DMMF.Field | undefined => {
@@ -121,7 +121,7 @@ export const getToStringForModel = <M extends ModelName>(
  *
  * @returns schema
  */
-export const orderSchema =
+const orderSchema =
   (resource: ModelName, options?: NextAdminOptions) => (schema: Schema) => {
     const modelName = resource;
     const model = models.find((model) => model.name === modelName);
@@ -159,7 +159,7 @@ export const orderSchema =
  *
  * @returns schema
  */
-export const fillRelationInSchema =
+const fillRelationInSchema =
   (resource: ModelName, options?: NextAdminOptions) =>
   async (schema: Schema) => {
     const modelName = resource;
@@ -852,7 +852,7 @@ export const transformSchema = <M extends ModelName>(
     orderSchema(resource, options)
   );
 
-export const fillDescriptionInSchema = <M extends ModelName>(
+const fillDescriptionInSchema = <M extends ModelName>(
   resource: M,
   editOptions: EditOptions<M>
 ) => {
@@ -875,7 +875,7 @@ export const fillDescriptionInSchema = <M extends ModelName>(
   };
 };
 
-export const changeFormatInSchema =
+const changeFormatInSchema =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
   (schema: Schema) => {
     const modelName = resource;
@@ -907,7 +907,7 @@ export const changeFormatInSchema =
     return schema;
   };
 
-export const removeHiddenProperties =
+const removeHiddenProperties =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
   (schema: Schema) => {
     if (!editOptions?.display) return schema;
@@ -919,13 +919,6 @@ export const removeHiddenProperties =
     });
     return schema;
   };
-
-export const getResourceFromUrl = (
-  url: string,
-  resources: Prisma.ModelName[]
-): ModelName | undefined => {
-  return resources.find((r) => url.includes(`/${r}`));
-};
 
 export const getResourceFromParams = (
   params: string[],
@@ -959,26 +952,6 @@ export const getParamsFromUrl = (url: string, basePath: string) => {
     .replace(".json", "");
 
   return urlWithoutParams.split("/").filter(Boolean);
-};
-
-export const getResourceIdFromUrl = (
-  url: string,
-  resource: ModelName
-): string | number | undefined => {
-  const matching = url.match(`/${resource}/([0-9a-z-]+)`);
-
-  if (!matching) return undefined;
-  if (matching[1] === "new") return undefined;
-
-  const model = models.find((model) => model.name === resource);
-
-  const idType = model?.fields.find((field) => field.name === "id")?.type;
-
-  if (idType === "Int") {
-    return Number(matching[1]);
-  }
-
-  return matching ? matching[1] : undefined;
 };
 
 export const getResourceIdFromParam = (param: string, resource: ModelName) => {

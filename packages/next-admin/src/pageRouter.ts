@@ -1,6 +1,9 @@
 import { IncomingMessage } from "node:http";
-import { GetPropsFromParamsParams } from "./types";
-import { getPropsFromParams } from "./utils/props";
+import { GetMainLayoutPropsParams, GetPropsFromParamsParams } from "./types";
+import {
+  getMainLayoutProps as _getMainLayoutProps,
+  getPropsFromParams,
+} from "./utils/props";
 import { formatSearchFields, getParamsFromUrl } from "./utils/server";
 
 // Router
@@ -31,3 +34,5 @@ export const getNextAdminProps = async ({
   return { props };
 };
 
+export const getMainLayoutProps = (args: GetMainLayoutPropsParams) =>
+  _getMainLayoutProps({ ...args, isAppDir: false });

@@ -2,7 +2,7 @@
   "extends": "tsconfig/react-library.json",
   "include": [
     "./src/pageRouter.ts",
-    "./src/index.tsx",
+    "src/index.ts",
     "./src/appRouter.ts",
     "./src/actions/index.ts",
     "./src/mainLayout.tsx",

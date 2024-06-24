@@ -1,26 +1,10 @@
 import {
   getParamsFromUrl,
   getResourceFromParams,
-  getResourceFromUrl,
   getResourceIdFromParam,
-  getResourceIdFromUrl,
 } from "./server";
 
 describe("Server utils", () => {
-  describe("getResourceFromUrl", () => {
-    it("should return a resource with /admin/User", () => {
-      expect(getResourceFromUrl("/admin/User", ["User"])).toEqual("User");
-    });
-
-    it("should return a resource with /admin/User/1", () => {
-      expect(getResourceFromUrl("/admin/User/1", ["User"])).toEqual("User");
-    });
-
-    it("should not return a resource with /admin/Post", () => {
-      expect(getResourceFromUrl("/admin/Post", ["User"])).toEqual(undefined);
-    });
-  });
-
   describe("getResourceFromParams", () => {
     it("should return a resource with /admin/User", () => {
       expect(getResourceFromParams(["User"], ["User"])).toEqual("User");
@@ -36,24 +20,6 @@ describe("Server utils", () => {
 
     it("should not return a resource with /admin/Post", () => {
       expect(getResourceFromParams(["Post"], ["User"])).toEqual(undefined);
-    });
-  });
-
-  describe("getResourceIdFromUrl", () => {
-    it("should get the id from /admin/User/1", () => {
-      expect(getResourceIdFromUrl("/admin/User/1", "User")).toEqual(1);
-    });
-
-    it("should not return an id from /admin/User/new", () => {
-      expect(getResourceIdFromUrl("/admin/User/new", "User")).toEqual(
-        undefined
-      );
-    });
-
-    it("should not return an id from /admin/Dummy/--__", () => {
-      expect(getResourceIdFromUrl("/admin/Dummy/--__", "User")).toEqual(
-        undefined
-      );
     });
   });
 

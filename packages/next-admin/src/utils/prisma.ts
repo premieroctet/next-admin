@@ -24,7 +24,7 @@ import {
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
-export const createWherePredicate = (
+const createWherePredicate = (
   fieldsFiltered?: readonly Prisma.DMMF.Field[],
   search?: string,
   otherFilters?: Filter<ModelName>[]
@@ -76,7 +76,7 @@ export const createWherePredicate = (
   return { AND: [...externalFilters, searchFilter] };
 };
 
-export const getFieldsFiltered = <M extends ModelName>(
+const getFieldsFiltered = <M extends ModelName>(
   resource: M,
   options?: NextAdminOptions
 ): readonly Prisma.DMMF.Field[] => {
@@ -95,7 +95,7 @@ export const getFieldsFiltered = <M extends ModelName>(
   return fieldsFiltered as readonly Prisma.DMMF.Field[];
 };
 
-export const preparePrismaListRequest = <M extends ModelName>(
+const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
   options?: NextAdminOptions,
@@ -264,7 +264,7 @@ type FetchDataListParams = {
   searchParams: URLSearchParams;
 };
 
-export const fetchDataList = async (
+const fetchDataList = async (
   { prisma, resource, options, searchParams }: FetchDataListParams,
   skipFilters: boolean = false
 ) => {
@@ -435,29 +435,4 @@ export const selectPayloadForModel = <M extends ModelName>(
   );
 
   return selectedFields;
-};
-
-export const includeOrderByPayloadForModel = <M extends ModelName>(
-  resource: M,
-  options: EditOptions<M>
-) => {
-  const model = getPrismaModelForResource(resource);
-
-  let orderedFields = model?.fields.reduce(
-    (acc, field) => {
-      // @ts-expect-error
-      if (options.fields?.[field.name as Field<M>]?.orderField) {
-        acc[field.name] = {
-          orderBy: {
-            // @ts-expect-error
-            [options.fields[field.name as Field<M>].orderField]: "asc",
-          },
-        };
-      }
-      return acc;
-    },
-    {} as Record<string, any>
-  );
-
-  return orderedFields;
 };
