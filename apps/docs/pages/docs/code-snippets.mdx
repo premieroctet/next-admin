@@ -4,6 +4,126 @@ This page contains code snippets that you can use in your projects. These are no
 
 Some of the snippets are implemented in the example project. You can check them out in the [example project](https://next-admin-po.vercel.app) or in the [source code](https://github.com/premieroctet/next-admin/tree/main/apps/example).
 
+## Authentication
+
+<Tabs items={['App router', 'Page router']}>
+    <Tabs.Tab>
+    The library does not provide an authentication system. If you want to add your own, you can do so by adding a role check in the page:
+
+    > The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
+
+    ```ts
+    // app/api/admin/[[...nextadmin]]/route.ts
+    const { run } = createHandler({
+      options,
+      prisma,
+      apiBasePath: "/api/admin",
+      schema,
+      onRequest: (req) => {
+        const session = await getServerSession(authOptions);
+        const isAdmin = session?.user?.role === "SUPERADMIN";
+
+        if (!isAdmin) {
+          return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+        }
+      }
+    });
+
+    export { run as POST, run as GET, run as DELETE };
+    ```
+
+    ```tsx
+    // app/admin/[[...nextadmin]]/page.tsx
+    export default async function AdminPage({
+      params,
+      searchParams,
+    }: {
+      params: { [key: string]: string[] };
+      searchParams: { [key: string]: string | string[] | undefined } | undefined;
+    }) {
+      const session = await getServerSession(authOptions);
+      const isAdmin = session?.user?.role === "SUPERADMIN"; // your role check
+
+      if (!isAdmin) {
+        redirect('/', { permanent: false })
+      }
+
+      const props = await getNextAdminProps({
+        params: params.nextadmin,
+        searchParams,
+        basePath: "/admin",
+        apiBasePath: "/api/admin",
+        prisma,
+        schema,
+      });
+
+      return <NextAdmin {...props} dashboard={Dashboard} />;
+    }
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    The library does not provide an authentication system. If you want to add your own, you can do so by adding a role check to the `getServerSideProps` function:
+
+    > The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
+
+    ```ts
+    export const config = {
+      api: {
+        bodyParser: false,
+      },
+    };
+
+    const { run } = createHandler({
+      prisma,
+      options,
+      apiBasePath: "/api/admin",
+      schema: schema,
+      onRequest: (req, res, next) => {
+        const session = await getServerSession(req, res, authOptions);
+        const isAdmin = session?.user?.role === "SUPERADMIN";
+
+        if (!isAdmin) {
+          return res.status(403).json({ error: 'Forbidden' })
+        }
+
+        return next()
+      }
+    });
+
+    export default run;
+    ```
+
+    ```ts
+    // pages/api/admin/[[...nextadmin]].ts
+    export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+      const session = await getServerSession(req, res, authOptions);
+      const isAdmin = session?.user?.role === "SUPERADMIN"; // your role check
+
+      if (!isAdmin) {
+        return {
+          redirect: {
+            destination: "/",
+            permanent: false,
+          },
+        };
+      }
+
+      return await getNextAdminProps({
+        basePath: "/pagerouter/admin",
+        apiBasePath: "/api/pagerouter/admin",
+        prisma,
+        schema,
+        options,
+        req,
+      });
+    };
+    ```
+
+  </Tabs.Tab>
+</Tabs>
+
+
 ## Export data
 
 By using [exports](/docs/api-docs#exports-property) options, you can export data. Next Admin only implements the CSV export button, it's actually a link pointing to a provided url.

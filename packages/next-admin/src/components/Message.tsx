@@ -5,10 +5,16 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { useEffect } from "react";
 import { useMessage } from "../context/MessageContext";
 
 const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
-  const { message } = useMessage();
+  const { message, hideMessage } = useMessage();
+  useEffect(() => {
+    if (message) {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [hideMessage, message]);
 
   return (
     message && (

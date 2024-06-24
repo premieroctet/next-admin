@@ -5,7 +5,6 @@
     "src/index.ts",
     "./src/appRouter.ts",
     "./src/actions/index.ts",
-    "./src/mainLayout.tsx",
     "./src/plugin.ts",
     "./src/preset.ts",
     "./src/appHandler.ts",
