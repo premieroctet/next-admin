@@ -159,7 +159,7 @@ const orderSchema =
  *
  * @returns schema
  */
-const fillRelationInSchema =
+export const fillRelationInSchema =
   (resource: ModelName, options?: NextAdminOptions) =>
   async (schema: Schema) => {
     const modelName = resource;
@@ -875,7 +875,7 @@ const fillDescriptionInSchema = <M extends ModelName>(
   };
 };
 
-const changeFormatInSchema =
+export const changeFormatInSchema =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
   (schema: Schema) => {
     const modelName = resource;
@@ -907,7 +907,7 @@ const changeFormatInSchema =
     return schema;
   };
 
-const removeHiddenProperties =
+export const removeHiddenProperties =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
   (schema: Schema) => {
     if (!editOptions?.display) return schema;
