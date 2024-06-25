@@ -721,8 +721,14 @@ export type PageProps = Readonly<{
   searchParams: { [key: string]: string | string[] | undefined } | undefined;
 }>;
 
-export type GetPropsFromParamsParams = {
+export type GetNextAdminPropsParams = {
+  /**
+   * `params` is an array of strings that represents the dynamic segments of your route. (e.g. `[[...params]]`)
+   */
   params?: string[];
+  /**
+   * `searchParams` is an object that represents the query parameters of your route. (e.g. `?key=value`)
+   */
   searchParams: { [key: string]: string | string[] | undefined } | undefined;
   /**
    * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`)
@@ -732,27 +738,33 @@ export type GetPropsFromParamsParams = {
    * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api/admin`)
    */
   apiBasePath: string;
+  /**
+   * `options` is an object that represents the options of your admin.
+   *  @link https://next-admin.js.org/docs/api-docs#next-admin-options
+   */
   options?: NextAdminOptions;
+  /**
+   * `schema` is an object that represents the JSON schema of your Prisma schema.
+   */
   schema: any;
+  /**
+   * `prisma` is an instance of PrismaClient.
+   */
   prisma: PrismaClient;
   isAppDir?: boolean;
+  /**
+   * `locale` is a string that represents the locale of your admin. (e.g. `en`)
+   */
   locale?: string;
+  /**
+   * `getMessages` is a function that returns a promise of an object that represents the translations of your admin.
+   * @param locale 
+   * @returns 
+   */
   getMessages?: (locale: string) => Promise<Record<string, string>>;
 };
 
-export type GetMainLayoutPropsParams = {
-  /**
-   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
-   */
-  basePath: string;
-  /**
-   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
-   */
-  apiBasePath: string;
-  options?: NextAdminOptions;
-  params?: string[];
-  isAppDir?: boolean;
-};
+export type GetMainLayoutPropsParams = Omit<GetNextAdminPropsParams, "schema" | "searchParams" | "prisma">;
 
 export type RequestContext<P extends string> = {
   params: Record<P, string[]>;

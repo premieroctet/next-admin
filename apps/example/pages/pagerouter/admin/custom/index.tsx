@@ -75,7 +75,6 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
     options: pageOptions,
-    isAppDir: false,
   });
 
   if (req.method === "POST") {

@@ -1,32 +1,32 @@
 import { Prisma } from "@prisma/client";
 import { cloneDeep } from "lodash";
 import {
-  AdminComponentProps,
-  EditOptions,
-  Field,
-  GetMainLayoutPropsParams,
-  GetPropsFromParamsParams,
-  ListOptions,
-  MainLayoutProps,
-  ModelIcon,
-  ModelName,
-  NextAdminOptions,
+    AdminComponentProps,
+    EditOptions,
+    Field,
+    GetMainLayoutPropsParams,
+    GetNextAdminPropsParams,
+    ListOptions,
+    MainLayoutProps,
+    ModelIcon,
+    ModelName,
+    NextAdminOptions,
 } from "../types";
 import { getCustomInputs } from "./options";
 import {
-  getMappedDataList,
-  mapDataList,
-  selectPayloadForModel,
+    getMappedDataList,
+    mapDataList,
+    selectPayloadForModel,
 } from "./prisma";
 import {
-  getModelIdProperty,
-  getPrismaModelForResource,
-  getResourceFromParams,
-  getResourceIdFromParam,
-  getResources,
-  getToStringForModel,
-  transformData,
-  transformSchema,
+    getModelIdProperty,
+    getPrismaModelForResource,
+    getResourceFromParams,
+    getResourceIdFromParam,
+    getResources,
+    getToStringForModel,
+    transformData,
+    transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
 
@@ -46,7 +46,7 @@ export async function getPropsFromParams({
   getMessages,
   basePath,
   apiBasePath,
-}: GetPropsFromParamsParams): Promise<
+}: GetNextAdminPropsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<

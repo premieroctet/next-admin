@@ -8,7 +8,6 @@ const CustomPage = async () => {
     basePath: "/admin",
     apiBasePath: "/api/admin",
     options,
-    isAppDir: true,
   });
 
   const totalUsers = await prisma.user.count();
@@ -24,6 +23,7 @@ const CustomPage = async () => {
   return (
     <MainLayout
       {...mainLayoutProps}
+
       user={{
         data: {
           name: "John Doe",

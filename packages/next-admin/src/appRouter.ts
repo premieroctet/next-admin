@@ -1,9 +1,9 @@
-import { GetPropsFromParamsParams } from "./types";
-import { getPropsFromParams as _getPropsFromParams } from "./utils/props";
+import { GetMainLayoutPropsParams, GetNextAdminPropsParams } from "./types";
+import { getMainLayoutProps as _getMainLayoutProps, getPropsFromParams as _getPropsFromParams } from "./utils/props";
 
-export const getNextAdminProps = async (params: GetPropsFromParamsParams) => {
+export const getNextAdminProps = async (params: Omit<GetNextAdminPropsParams, 'isAppDir'>) => {
   "use server";
   return _getPropsFromParams({ ...params, isAppDir: true });
 };
 
-export { getMainLayoutProps } from "./utils/props";
+export const getMainLayoutProps = (args: Omit<GetMainLayoutPropsParams, 'isAppDir' | 'params'>) => _getMainLayoutProps({ ...args, isAppDir: true });
