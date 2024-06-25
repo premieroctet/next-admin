@@ -75,7 +75,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
 <Tabs items={['App router', 'Page router']}>
   <Tabs.Tab>
 
-    Create file : `app/api/admin/[[...nextadmin]]/page.ts`
+    #### Create file : `app/api/admin/[[...nextadmin]]/page.ts`
 
     ```tsx copy
     // app/admin/[[...nextadmin]]/page.tsx
@@ -114,7 +114,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
   </Tabs.Tab>
   <Tabs.Tab>
 
-    Create file : `pages/api/admin/[[...nextadmin]].ts`
+    #### Create file : `pages/api/admin/[[...nextadmin]].ts`
 
     ```tsx copy
     // pages/admin/[[...nextadmin]].tsx
@@ -146,9 +146,84 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
       });
     ```
 
-<Callout type="info" emoji="⚠️">
-  Do not forget to add the `options` prop to the `NextAdmin` component.
+    <Callout type="info" emoji="⚠️">
+
+Do not forget to add the `options` prop to the `NextAdmin` component.
+
 </Callout>
+
+    #### SuperJson configuration
+
+SuperJson is required to avoid errors related to invalid serialisation properties that can occur when passing data from server to client.
+
+##### With Babel
+
+<Tabs items={["yarn", "npm", "pnpm"]}>
+  <Tabs.Tab>
+    ```bash
+      yarn add -D babel-plugin-superjson-next superjson@^1
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+      npm install --save-dev babel-plugin-superjson-next superjson@^1
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+      pnpm install -D babel-plugin-superjson-next superjson@^1
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
+
+```json
+{
+  "presets": ["next/babel"],
+  "plugins": ["superjson-next"]
+}
+```
+
+##### With SWC (Experimental)
+
+<Tabs items={["yarn", "npm", "pnpm"]}>
+  <Tabs.Tab>
+    ```bash
+yarn add -E -D next-superjson-plugin@0.6.1 superjson
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+npm install --save-dev -E next-superjson-plugin@0.6.1 superjson
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+pnpm install -E -D next-superjson-plugin@0.6.1 superjson
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+Add the `next-superjson-plugin` plugin to your `next.config.js` file:
+
+```js
+module.exports = {
+  // your current config
+  experimental: {
+    swcPlugins: [
+      [
+        "next-superjson-plugin",
+        {
+          excluded: [],
+        },
+      ],
+    ],
+  },
+};
+```
 
   </Tabs.Tab>
 
