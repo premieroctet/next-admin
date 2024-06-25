@@ -31,5 +31,4 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) =>
     schema,
     options: pageOptions,
     req,
-    
   });

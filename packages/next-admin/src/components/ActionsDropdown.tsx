@@ -41,7 +41,7 @@ const ActionsDropdown = ({
     <Dropdown onOpenChange={setIsOpen}>
       <DropdownTrigger
         asChild
-        className="text-nextadmin-content-inverted dark:text-dark-nextadmin-brand-inverted border-nextadmin-border-default dark:border-dark-nextadmin-border-default dark:bg-dark-nextadmin-background-subtle flex items-center gap-x-2 rounded-md border bg-transparent px-3 py-2 text-sm min-w-fit"
+        className="text-nextadmin-content-inverted dark:text-dark-nextadmin-brand-inverted border-nextadmin-border-default dark:border-dark-nextadmin-border-default dark:bg-dark-nextadmin-background-subtle flex min-w-fit items-center gap-x-2 rounded-md border bg-transparent px-3 py-2 text-sm"
         data-testid="actions-dropdown"
       >
         <button type="button">

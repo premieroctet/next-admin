@@ -3,7 +3,7 @@ import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
-  
+
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,

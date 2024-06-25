@@ -25,7 +25,7 @@ export const MainLayout = ({
   externalLinks,
   title,
   options,
-  apiBasePath
+  apiBasePath,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";

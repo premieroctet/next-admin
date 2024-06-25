@@ -18,7 +18,7 @@ export default function Breadcrumb({
 
   return (
     <nav className="flex h-[40px]" aria-label="Breadcrumb">
-      <ol role="list" className="flex items-center gap-2 flex-wrap">
+      <ol role="list" className="flex flex-wrap items-center gap-2">
         <li>
           <div>
             <a

@@ -3,7 +3,7 @@ import { Callout, Tabs } from "nextra/components";
 # Code snippets
 
 <Callout type="info">
-  This is the documentation for the latest version of Next Admin. If you are using an older version (`<5.0.0`), please refer to the [documentation](/v4/docs)
+  This is the documentation for the latest version of Next Admin. If you are using an older version (`<5.0.0`), please refer to the [documentation](/v4/docs/code-snippets)
 </Callout>
 
 This page contains code snippets that you can use in your projects. These are not a part of Next Admin, but may be useful for your projects.
@@ -361,3 +361,47 @@ Note that you will need to use `relationOptionFormatter` instead of `optionForma
 With the `list` display, if the `orderField` property is defined, you will be able to apply drag and drop sorting on the categories. Upon form submission, the order will be updated accordingly, starting from 0.
 
 > The `orderField` property can also be applied for one-to-many relationships. In that case, drag and drop will also be available.
+
+# Custom pages
+
+You can create custom pages in the Next Admin UI. By reusing the `MainLayout` component, you can create a new page with the same layout as the Next Admin pages. This is an example of how to create a custom page:
+
+```typescript copy
+// app/custom/page.tsx
+
+import { MainLayout } from "@premieroctet/next-admin";
+import { getMainLayoutProps } from "@premieroctet/next-admin/dist/appRouter";
+import { options } from "@/options";
+import { prisma } from "@/prisma";
+
+const CustomPage = async () => {
+  const mainLayoutProps = getMainLayoutProps({
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
+    /*options*/
+  });
+
+  return (
+    <MainLayout {...mainLayoutProps}>
+      {/*Page content*/}
+    </MainLayout>
+  );
+};
+
+export default CustomPage;
+```
+
+Then, if you want that route to be available on the sidebar, you can add a new route - [more info](/docs/api-docs#pages):
+
+```typescript copy
+{
+  [...]
+  pages: {
+    "/custom": {
+      title: "Custom page",
+      icon: "PresentationChartBarIcon",
+    },
+  },
+  [...]
+}
+```

@@ -21,7 +21,6 @@ export const options: NextAdminOptions = {
               },
             },
           },
-          
         ],
         fields: {
           role: {

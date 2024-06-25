@@ -223,10 +223,10 @@ export default function Menu({
     return (
       <>
         <div className="bg-nextadmin-menu-background dark:bg-dark-nextadmin-menu-background border-r-nextadmin-border-default dark:border-r-dark-nextadmin-border-default flex grow flex-col overflow-y-auto border-r pb-2">
-          <div className="flex py-3 items-center px-2">
+          <div className="flex items-center px-2 py-3">
             <Link
               href={basePath}
-              className="flex items-center gap-2 overflow-hidden h-[40px]"
+              className="flex h-[40px] items-center gap-2 overflow-hidden"
             >
               <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
                 {title}
