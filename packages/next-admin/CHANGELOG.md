@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.1
+
+### Patch Changes
+
+- [8512b5e](https://github.com/premieroctet/next-admin/commit/8512b5e): Restore Buffer for `upload` function, add informations as second parameter
+
 ## 4.4.4
 
 ### Patch Changes
