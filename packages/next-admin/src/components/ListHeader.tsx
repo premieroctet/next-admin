@@ -10,7 +10,6 @@ import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { SPECIFIC_IDS_TO_RUN_ACTION } from "../hooks/useAction";
 import {
   ModelAction,
   ModelIcon,
