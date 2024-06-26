@@ -4,6 +4,7 @@ import {
   ModelName,
   NextAdminOptions,
   Permission,
+  UploadParameters,
 } from "../types";
 import {
   formattedFormData,
@@ -45,7 +46,7 @@ export const deleteResource = ({
 type SubmitResourceParams = {
   prisma: PrismaClient;
   resource: ModelName;
-  body: Record<string, string | File | null>;
+  body: Record<string, string | UploadParameters | null>;
   id?: string | number;
   options?: NextAdminOptions;
   schema: any;

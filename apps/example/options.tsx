@@ -103,7 +103,7 @@ export const options: NextAdminOptions = {
                * for example you can upload the file to an S3 bucket.
                * Make sure to return a string.
                */
-              upload: async (file: File) => {
+              upload: async (buffer, infos) => {
                 return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
               },
             },

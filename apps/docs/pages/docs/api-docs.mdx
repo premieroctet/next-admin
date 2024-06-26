@@ -188,7 +188,7 @@ For the `edit` property, it can take the following:
 | `input`                      | a React Element that should receive [CustomInputProps](#custominputprops). For App Router, this element must be a client component.                                                                                                                                                                                   |
 | `handler`                    | an object that can take the following properties                                                                                                                                                                                                                                                                      |
 | `handler.get`                | a function that takes the field value as a parameter and returns a transformed value displayed in the form                                                                                                                                                                                                            |
-| `handler.upload`             | an async function that is used only for formats `file` and `data-url`. It takes a File object as parameter and must return a string. Useful to upload a file to a remote provider                                                                                                                                     |
+| `handler.upload`             | an async function that is used only for formats `file` and `data-url`. It takes a Buffer object and and informations object containing `name` and `type` property as parameter and must return a string. Useful to upload a file to a remote provider                                                                 |
 | `handler.uploadErrorMessage` | an optional string displayed in the input field as an error message in case of a failure during the upload handler                                                                                                                                                                                                    |
 | `optionFormatter`            | only for relation fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list                                                                                                                                                                   |
 | `tooltip`                    | a tooltip content to show for the field                                                                                                                                                                                                                                                                               |
@@ -329,7 +329,7 @@ export const options: NextAdminOptions = {
           avatar: {
             format: "file",
             handler: {
-              upload: async (file: File) => {
+              upload: async (buffer, infos) => {
                 return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
               },
             },
