@@ -15,8 +15,9 @@ import {
   ObjectField,
   ScalarField,
   Schema,
+  UploadParameters,
 } from "../types";
-import { isNativeFunction, pipe } from "./tools";
+import { isNativeFunction, isUploadParameters, pipe } from "./tools";
 
 export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
   .models as Prisma.DMMF.Model[];
@@ -757,7 +758,7 @@ export const formattedFormData = async <M extends ModelName>(
             ["data-url", "file"].includes(
               editOptions?.[dmmfPropertyName]?.format ?? ""
             ) &&
-            formData[dmmfPropertyName] instanceof File
+            isUploadParameters(formData[dmmfPropertyName])
           ) {
             const uploadHandler =
               editOptions?.[dmmfPropertyName]?.handler?.upload;
@@ -771,7 +772,7 @@ export const formattedFormData = async <M extends ModelName>(
             } else {
               try {
                 const uploadResult = await uploadHandler(
-                  formData[dmmfPropertyName] as unknown as File
+                  ...(formData[dmmfPropertyName] as unknown as UploadParameters)
                 );
                 if (typeof uploadResult !== "string") {
                   console.warn(
@@ -1002,9 +1003,9 @@ export const getFormDataValues = async (req: IncomingMessage) => {
       });
     },
   });
-  return new Promise<Record<string, string | File | null>>(
+  return new Promise<Record<string, string | UploadParameters | null>>(
     (resolve, reject) => {
-      const files = {} as Record<string, File[] | [null]>;
+      const files = {} as Record<string, UploadParameters[] | [null]>;
 
       form.on("fileBegin", (name, file) => {
         // @ts-expect-error
@@ -1019,9 +1020,10 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               if (!file.originalFilename) {
                 files[name] = [null];
               } else {
-                files[name] = [
-                  new File([Buffer.concat(chunks)], file.originalFilename),
-                ];
+                files[name] = [[Buffer.concat(chunks), {
+                  name: file.originalFilename,
+                  type: file.mimetype,
+                }]];
               }
               callback();
             },
@@ -1040,7 +1042,7 @@ export const getFormDataValues = async (req: IncomingMessage) => {
             }
             return acc;
           },
-          {} as Record<string, string | File | null>
+          {} as Record<string, string | UploadParameters | null>
         );
         resolve(joinedFormData);
       });
@@ -1057,7 +1059,7 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
     tmpFormValues[key] = val;
   });
 
-  const formValues = {} as Record<string, string | File | null>;
+  const formValues = {} as Record<string, string | UploadParameters | null>;
 
   await Promise.allSettled(
     Object.entries(tmpFormValues).map(async ([key, value]) => {
@@ -1067,7 +1069,11 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
           formValues[key] = null;
           return;
         }
-        formValues[key] = file;
+        const buffer = await file.arrayBuffer();
+        formValues[key] = [Buffer.from(buffer), {
+          name: file.name,
+          type: file.type,
+        }];
       } else {
         formValues[key] = value as string;
       }

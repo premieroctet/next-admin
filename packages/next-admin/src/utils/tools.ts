@@ -1,3 +1,5 @@
+import { UploadParameters } from "../types";
+
 export const capitalize = <T extends string>(str: T): Capitalize<T> => {
   let capitalizedStr = str.charAt(0).toLocaleUpperCase() + str.slice(1);
   return capitalizedStr as Capitalize<T>;
@@ -63,3 +65,14 @@ export const formatLabel = (label: string) => {
 
   return capitalize(spacedLabel.toLowerCase());
 };
+
+//Create a function that check if object satifies UploadParameters
+export const isUploadParameters = (obj: any): obj is UploadParameters => {
+  return (
+    obj.length === 2 &&
+    Buffer.isBuffer(obj[0]) &&
+    typeof obj[1] === 'object' &&
+    'name' in obj[1] &&
+    'type' in obj[1]
+  );
+}
