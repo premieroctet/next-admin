@@ -757,7 +757,7 @@ export const formattedFormData = async <M extends ModelName>(
             ["data-url", "file"].includes(
               editOptions?.[dmmfPropertyName]?.format ?? ""
             ) &&
-            formData[dmmfPropertyName] instanceof File
+            formData[dmmfPropertyName] instanceof Buffer
           ) {
             const uploadHandler =
               editOptions?.[dmmfPropertyName]?.handler?.upload;
@@ -771,7 +771,7 @@ export const formattedFormData = async <M extends ModelName>(
             } else {
               try {
                 const uploadResult = await uploadHandler(
-                  formData[dmmfPropertyName] as unknown as File
+                  formData[dmmfPropertyName] as unknown as Buffer
                 );
                 if (typeof uploadResult !== "string") {
                   console.warn(
@@ -1019,7 +1019,7 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               if (!file.originalFilename) {
                 files[name] = [null];
               } else {
-                files[name] = [null];
+                files[name] = [new File([Buffer.concat(chunks)], file.originalFilename)];
               }
               callback();
             },
@@ -1055,7 +1055,7 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
     tmpFormValues[key] = val;
   });
 
-  const formValues = {} as Record<string, string | File | null>;
+  const formValues = {} as Record<string, string | Buffer | null>;
 
   await Promise.allSettled(
     Object.entries(tmpFormValues).map(async ([key, value]) => {
@@ -1065,7 +1065,8 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
           formValues[key] = null;
           return;
         }
-        formValues[key] = file;
+        const buffer = await file.arrayBuffer();
+        formValues[key] = Buffer.from(buffer);
       } else {
         formValues[key] = value as string;
       }

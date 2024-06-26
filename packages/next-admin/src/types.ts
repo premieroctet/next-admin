@@ -239,7 +239,7 @@ export type Handler<
    * @param file
    * @returns
    */
-  upload?: (file: File) => Promise<string>;
+  upload?: (file: Buffer) => Promise<string>;
   /**
    * an optional string displayed in the input field as an error message in case of a failure during the upload handler.
    */
