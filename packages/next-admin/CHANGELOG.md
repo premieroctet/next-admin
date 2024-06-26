@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.2
+
+### Patch Changes
+
+- [e52ed18](https://github.com/premieroctet/next-admin/commit/e52ed18): Don't prefetch export Link in header
+
 ## 5.0.0-rc.1
 
 ### Patch Changes
