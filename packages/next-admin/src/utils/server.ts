@@ -1019,9 +1019,7 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               if (!file.originalFilename) {
                 files[name] = [null];
               } else {
-                files[name] = [
-                  new File([Buffer.concat(chunks)], file.originalFilename),
-                ];
+                files[name] = [null];
               }
               callback();
             },
