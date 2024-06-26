@@ -65,7 +65,7 @@ const ExportDropdown = ({ exports }: Props) => {
                   key={format}
                   className={clsx("cursor-pointer rounded-md px-2 py-1")}
                 >
-                  <Link href={url} target="_blank">
+                  <Link prefetch={false} href={url} target="_blank">
                     {t("list.row.actions.export", { format: format })}
                   </Link>
                 </DropdownItem>
