@@ -10,6 +10,7 @@ import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
+import { SPECIFIC_IDS_TO_RUN_ACTION } from "../hooks/useAction";
 import {
   ModelAction,
   ModelIcon,
@@ -35,8 +36,6 @@ type Props = {
   title: string;
   icon?: ModelIcon;
   totalCount?: number;
-  canCreate?: boolean;
-  canDelete?: boolean;
 };
 
 export default function ListHeader({
@@ -144,6 +143,7 @@ export default function ListHeader({
               <ExportDropdown exports={modelOptions?.list?.exports} />
             ) : (
               <Link
+                prefetch={false}
                 href={modelOptions?.list?.exports.url}
                 target="_blank"
                 className="text-nextadmin-content-inverted dark:text-dark-nextadmin-brand-inverted border-nextadmin-border-default dark:border-dark-nextadmin-border-default dark:bg-dark-nextadmin-background-subtle flex min-w-fit items-center gap-x-2 rounded-md border bg-transparent px-3 py-2 text-sm"
