@@ -5,7 +5,7 @@ import {
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
 import Link from "next/link";
-import { useMemo, useRef } from "react";
+import { useMemo } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";
 import { useForm } from "../../context/FormContext";
@@ -28,8 +28,9 @@ const SelectWidget = ({
   const enumOptions = options.enumOptions?.map(
     (option: any) => option.value as Enumeration
   );
-  const containerRef = useRef<HTMLDivElement>(null);
-  useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
+  const containerRef = useCloseOnOutsideClick<HTMLDivElement>(() => {
+    formContext.setOpen(false, name);
+  });
 
   const { basePath } = useConfig();
 
