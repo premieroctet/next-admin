@@ -5,12 +5,10 @@
     "docs": "0.0.0",
     "example": "0.0.0",
     "eslint-config-custom": "0.0.0",
-    "@premieroctet/next-admin": "4.4.4",
+    "@premieroctet/next-admin": "4.4.5",
     "tsconfig": "0.0.0"
   },
   "changesets": [
-    "eight-buses-admire",
-    "soft-mugs-cover",
     "strong-cobras-look"
   ]
 }
