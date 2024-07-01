@@ -3,7 +3,6 @@ import clsx from "clsx";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
 import { useForm } from "../../../context/FormContext";
 import { useI18n } from "../../../context/I18nContext";
-import useCloseOnOutsideClick from "../../../hooks/useCloseOnOutsideClick";
 import { Enumeration, Field, ModelName } from "../../../types";
 import Button from "../../radix/Button";
 import { Selector } from "../Selector";
@@ -24,9 +23,6 @@ type Props = {
 const MultiSelectWidget = (props: Props) => {
   const formContext = useForm();
   const { formData, onChange, options, name, schema } = props;
-  const containerRef = useCloseOnOutsideClick<HTMLDivElement>(() =>
-    formContext.setOpen(false, name)
-  );
   const { t } = useI18n();
   const fieldOptions =
     formContext.options?.model?.[formContext.resource!]?.edit?.fields?.[
@@ -67,6 +63,9 @@ const MultiSelectWidget = (props: Props) => {
           formContext.toggleOpen(name);
         }
       }}
+      onClick={(e) => {
+        e.stopPropagation();
+      }}
     >
       {!(props.required && selectedValues.length === 0) && (
         <option value={JSON.stringify(selectedValues)} />
@@ -75,7 +74,7 @@ const MultiSelectWidget = (props: Props) => {
   );
 
   return (
-    <div className="relative" ref={containerRef}>
+    <div className="relative">
       {displayMode === "select" && (
         <div
           className={clsx(

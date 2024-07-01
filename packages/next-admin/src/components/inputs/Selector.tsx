@@ -1,7 +1,9 @@
 import { Transition } from "@headlessui/react";
 import debounce from "lodash/debounce";
 import { ChangeEvent, createRef, useEffect, useRef, useState } from "react";
+import { useForm } from "../../context/FormContext";
 import { useI18n } from "../../context/I18nContext";
+import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import useSearchPaginatedResource from "../../hooks/useSearchPaginatedResource";
 import { Enumeration } from "../../types";
 import LoaderRow from "../LoaderRow";
@@ -21,6 +23,11 @@ export const Selector = ({
   options,
   selectedOptions,
 }: SelectorProps) => {
+  const formContext = useForm();
+  const containerRef = useCloseOnOutsideClick<HTMLDivElement>(() =>
+    formContext.setOpen(false, name)
+  );
+
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
   const { t } = useI18n();
@@ -76,7 +83,6 @@ export const Selector = ({
     currentQuery.current = e.target.value;
     runSearch(currentQuery.current, true);
   }, 300);
-  const containerRef = useRef<HTMLDivElement>(null);
 
   const onScroll = () => {
     // No need to do an infinite scroll for enums
