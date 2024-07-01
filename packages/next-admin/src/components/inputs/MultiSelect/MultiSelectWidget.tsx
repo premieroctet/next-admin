@@ -75,7 +75,7 @@ const MultiSelectWidget = (props: Props) => {
   );
 
   return (
-    <div ref={containerRef}>
+    <div className="relative" ref={containerRef}>
       {displayMode === "select" && (
         <div
           className={clsx(
