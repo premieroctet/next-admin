@@ -1,23 +1,24 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 
-const useCloseOnOutsideClick = <E extends HTMLElement = HTMLElement>(
+function useCloseOnOutsideClick(
+  ref: React.RefObject<HTMLElement>,
   close: () => void
-) => {
-  const ref: React.RefObject<E> = useRef(null);
-  const onWindowClick = (event: MouseEvent) => {
+) {
+  function onWindowClick(event: MouseEvent) {
     if (ref.current && !ref.current.contains(event.target as Node)) {
       close();
     }
-  };
-
-  useEffect(() => {
-    window.addEventListener("click", onWindowClick);
-    return () => {
-      window.removeEventListener("click", onWindowClick);
-    };
-  }, []);
-
-  return ref;
-};
+  }
+  useEffect(
+    () => {
+      window.addEventListener("click", onWindowClick);
+      return () => {
+        window.removeEventListener("click", onWindowClick);
+      };
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
+}
 
 export default useCloseOnOutsideClick;
