@@ -13,7 +13,4 @@ jobs:
       - name: Install dependencies
         run: yarn install
       - name: Reset database
-        env:
-          POSTGRES_URL_NON_POOLING: ${{ env.POSTGRES_URL_NON_POOLING }}
-          POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: yarn reset-database

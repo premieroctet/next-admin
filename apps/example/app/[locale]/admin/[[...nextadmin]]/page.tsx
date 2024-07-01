@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  icons: "/assets/logo.svg",
+  icons: "/favicon.ico",
 };
 
 export default async function AdminPage({

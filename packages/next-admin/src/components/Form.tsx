@@ -560,7 +560,6 @@ const Form = ({
                   onSubmit={(e) => console.log("onSubmit", e)}
                   onError={(e) => console.log("onError", e)}
                   ref={formRef}
-                  className="relative"
                 />
               )}
             </FormContext.Consumer>

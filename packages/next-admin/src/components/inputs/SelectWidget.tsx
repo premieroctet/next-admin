@@ -5,10 +5,11 @@ import {
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";
 import { useForm } from "../../context/FormContext";
+import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import { Enumeration } from "../../types";
 import { slugify } from "../../utils/tools";
 import { Selector } from "./Selector";
@@ -27,6 +28,8 @@ const SelectWidget = ({
   const enumOptions = options.enumOptions?.map(
     (option: any) => option.value as Enumeration
   );
+  const containerRef = useRef<HTMLDivElement>(null);
+  useCloseOnOutsideClick(containerRef, () => formContext.setOpen(false, name));
 
   const { basePath } = useConfig();
 
@@ -40,7 +43,7 @@ const SelectWidget = ({
   }, [value]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={containerRef}>
       <div
         className={clsx(
           "ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong dark:bg-dark-nextadmin-background-subtle flex w-full cursor-default justify-between rounded-md px-3 py-2 text-sm placeholder-gray-500 shadow-sm ring-1",
@@ -60,9 +63,6 @@ const SelectWidget = ({
             if (!disabled) {
               formContext.toggleOpen(name);
             }
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
           }}
         >
           <option value={value?.value} />
@@ -96,16 +96,7 @@ const SelectWidget = ({
             </button>
           )}
           {!disabled && (
-            <div
-              className="flex items-center"
-              onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
-                if (!disabled) {
-                  formContext.toggleOpen(name);
-                }
-              }}
-            >
+            <div className="flex items-center">
               <DoubleArrow />
             </div>
           )}

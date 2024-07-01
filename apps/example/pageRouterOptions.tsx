@@ -3,7 +3,7 @@ import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
   basePath: "/pagerouter/admin",
-  title: "⚡️ My Admin Page Router",
+  title: "⚡️ My Admin",
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
@@ -22,6 +22,7 @@ export const options: NextAdminOptions = {
               },
             },
           },
+          
         ],
         fields: {
           role: {
@@ -156,12 +157,6 @@ export const options: NextAdminOptions = {
       icon: "AdjustmentsHorizontalIcon",
     },
   },
-  externalLinks: [
-    {
-      label: "App Router",
-      url: "/ ",
-    },
-  ],
   sidebar: {
     groups: [
       {
