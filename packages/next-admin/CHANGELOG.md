@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.3
+
+### Patch Changes
+
+- Merge main branch
+
 ## 4.4.5
 
 ### Patch Changes
