@@ -1,7 +1,9 @@
 import { Transition } from "@headlessui/react";
 import debounce from "lodash/debounce";
 import { ChangeEvent, createRef, useEffect, useRef, useState } from "react";
+import { useForm } from "../../context/FormContext";
 import { useI18n } from "../../context/I18nContext";
+import useCloseOnOutsideClick from "../../hooks/useCloseOnOutsideClick";
 import useSearchPaginatedResource from "../../hooks/useSearchPaginatedResource";
 import { Enumeration } from "../../types";
 import LoaderRow from "../LoaderRow";
@@ -21,11 +23,14 @@ export const Selector = ({
   options,
   selectedOptions,
 }: SelectorProps) => {
+  const formContext = useForm();
+  const containerRef = useCloseOnOutsideClick<HTMLDivElement>(() =>
+    formContext.setOpen(false, name)
+  );
+
   const currentQuery = useRef("");
   const searchInput = createRef<HTMLInputElement>();
-  const loaderRowRef = useRef(null);
   const { t } = useI18n();
-  const [isLastRowReached, setIsLastRowReached] = useState(false);
   const {
     allOptions,
     isPending,
@@ -76,34 +81,8 @@ export const Selector = ({
 
     searchPage.current = 1;
     currentQuery.current = e.target.value;
-    setIsLastRowReached(false);
     runSearch(currentQuery.current, true);
   }, 300);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            setIsLastRowReached(true);
-            observer.disconnect();
-          }
-        });
-      },
-      { threshold: 1 }
-    );
-
-    const current = loaderRowRef.current;
-    if (current) {
-      observer.observe(current);
-    }
-    return () => {
-      if (current) {
-        observer.unobserve(current);
-      }
-    };
-  });
 
   const onScroll = () => {
     // No need to do an infinite scroll for enums
@@ -117,7 +96,8 @@ export const Selector = ({
     const offset = height - scrollY;
 
     if (
-      offset === 0 &&
+      offset >= -100 &&
+      offset <= 0 &&
       !isPending &&
       optionsLeft.length < totalSearchedItems.current
     ) {
@@ -167,13 +147,11 @@ export const Selector = ({
                 {option.label}
               </div>
             ))}
-
-          {optionsLeft && optionsLeft.length === 0 && !isPending ? (
+          {isPending && <LoaderRow />}
+          {optionsLeft && optionsLeft.length === 0 && !isPending && (
             <div className="dark:bg-dark-nextadmin-background-subtle dark:text-dark-nextadmin-content-inverted px-3 py-2 text-sm text-gray-700">
               No results found
             </div>
-          ) : (
-            !isLastRowReached && <LoaderRow ref={loaderRowRef} />
           )}
         </div>
       </Transition.Child>

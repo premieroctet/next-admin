@@ -12,14 +12,15 @@ const LoadingRow = forwardRef<
   return (
     <div
       className={clsx(
-        "flex items-center justify-start px-3 py-2 text-sm text-gray-400",
+        "flex items-center justify-start px-3 py-2",
+        "dark:bg-dark-nextadmin-background-subtle ",
         props.className
       )}
       {...props}
       ref={ref}
     >
-      <Loader className="h-5 w-5 animate-spin stroke-gray-400" />
-      <span className="ml-3">{t("selector.loading")}</span>
+      <Loader className="h-5 w-5 animate-spin stroke-nextadmin-content-default dark:stroke-dark-nextadmin-content-default dark:stroke-gray-400" />
+      <span className="ml-3 dark:text-dark-nextadmin-content-default text-sm text-gray-400">{t("selector.loading")}</span>
     </div>
   );
 });

@@ -2,7 +2,8 @@ import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
-  title: "⚡️ My Admin",
+  basePath: "/pagerouter/admin",
+  title: "⚡️ My Admin Page Router",
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
@@ -149,6 +150,12 @@ export const options: NextAdminOptions = {
       icon: "AdjustmentsHorizontalIcon",
     },
   },
+  externalLinks: [
+    {
+      label: "App Router",
+      url: "/ ",
+    },
+  ],
   sidebar: {
     groups: [
       {

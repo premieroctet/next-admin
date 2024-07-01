@@ -227,6 +227,10 @@ export const options: NextAdminOptions = {
       label: "Documentation",
       url: "https://next-admin.js.org",
     },
+    {
+      label: "Page Router",
+      url: "/pagerouter/admin",
+    },
   ],
   defaultColorScheme: "dark",
 };

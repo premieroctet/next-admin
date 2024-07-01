@@ -608,6 +608,7 @@ const Form = ({
                   }}
                   widgets={widgets}
                   ref={formRef}
+                  className="relative"
                 />
               )}
             </FormContext.Consumer>
