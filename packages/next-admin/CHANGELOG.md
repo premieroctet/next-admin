@@ -1,5 +1,13 @@
 # @premieroctet/next-admin
 
+## 4.4.5
+
+### Patch Changes
+
+- [e52ed18](https://github.com/premieroctet/next-admin/commit/e52ed18): Don't prefetch export Link in header
+- [8512b5e](https://github.com/premieroctet/next-admin/commit/8512b5e): Restore Buffer for `upload` function, add informations as second parameter
+- [6da22fc](https://github.com/premieroctet/next-admin/commit/6da22fc): Add loader on select
+
 ## 4.4.4
 
 ### Patch Changes
