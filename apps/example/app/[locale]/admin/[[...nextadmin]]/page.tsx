@@ -21,7 +21,7 @@ export default async function AdminPage({
   searchParams,
 }: Readonly<PageProps>) {
   const props = await getNextAdminProps({
-    params: params.nextadmin as string[],
+    params: params.nextadmin,
     searchParams,
     basePath: "/admin",
     apiBasePath: "/api/admin",

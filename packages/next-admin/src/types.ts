@@ -735,7 +735,7 @@ export type GetNextAdminPropsParams = {
   /**
    * `params` is an array of strings that represents the dynamic segments of your route. (e.g. `[[...params]]`)
    */
-  params?: string[];
+  params?: string | string[];
   /**
    * `searchParams` is an object that represents the query parameters of your route. (e.g. `?key=value`)
    */

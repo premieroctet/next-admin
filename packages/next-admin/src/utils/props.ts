@@ -1,32 +1,32 @@
 import { Prisma } from "@prisma/client";
 import { cloneDeep } from "lodash";
 import {
-    AdminComponentProps,
-    EditOptions,
-    Field,
-    GetMainLayoutPropsParams,
-    GetNextAdminPropsParams,
-    ListOptions,
-    MainLayoutProps,
-    ModelIcon,
-    ModelName,
-    NextAdminOptions,
+  AdminComponentProps,
+  EditOptions,
+  Field,
+  GetMainLayoutPropsParams,
+  GetNextAdminPropsParams,
+  ListOptions,
+  MainLayoutProps,
+  ModelIcon,
+  ModelName,
+  NextAdminOptions,
 } from "../types";
 import { getCustomInputs } from "./options";
 import {
-    getMappedDataList,
-    mapDataList,
-    selectPayloadForModel,
+  getMappedDataList,
+  mapDataList,
+  selectPayloadForModel,
 } from "./prisma";
 import {
-    getModelIdProperty,
-    getPrismaModelForResource,
-    getResourceFromParams,
-    getResourceIdFromParam,
-    getResources,
-    getToStringForModel,
-    transformData,
-    transformSchema,
+  getModelIdProperty,
+  getPrismaModelForResource,
+  getResourceFromParams,
+  getResourceIdFromParam,
+  getResources,
+  getToStringForModel,
+  transformData,
+  transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
 
@@ -271,6 +271,10 @@ export const getMainLayoutProps = ({
   params,
   isAppDir = true,
 }: GetMainLayoutPropsParams): MainLayoutProps => {
+  if (!Array.isArray(params)) {
+    throw new Error("`params` parameter in `getMainLayoutProps` should be an array of strings.");
+  }
+
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
 
