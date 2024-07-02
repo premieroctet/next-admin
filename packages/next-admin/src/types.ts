@@ -1,8 +1,8 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
-import type { ChangeEvent, ReactNode } from "react";
-import type { SearchPaginatedResourceParams } from "./actions";
+import { NextRequest, NextResponse } from "next/server";
+import type { ChangeEvent, HTMLAttributes, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
@@ -367,7 +367,8 @@ export type ActionStyle = "default" | "destructive";
 
 export type ModelAction = {
   title: string;
-  action: (resource: ModelName, ids: string[] | number[]) => Promise<void>;
+  id: string;
+  action: (ids: string[] | number[]) => Promise<void>;
   style?: ActionStyle;
   successMessage?: string;
   errorMessage?: string;
@@ -447,10 +448,6 @@ export type ExternalLink = {
 };
 
 export type NextAdminOptions = {
-  /**
-   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
-   */
-  basePath: string;
   /**
    * Global admin title
    *
@@ -601,6 +598,7 @@ export type AdminUser = {
 
 export type AdminComponentProps = {
   basePath: string;
+  apiBasePath: string;
   schema?: Schema;
   data?: ListData<ModelName>;
   resource?: ModelName;
@@ -619,7 +617,6 @@ export type AdminComponentProps = {
   dmmfSchema?: readonly Prisma.DMMF.Field[];
   isAppDir?: boolean;
   locale?: string;
-  action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   /**
    * Mandatory for page router
    */
@@ -633,16 +630,8 @@ export type AdminComponentProps = {
    */
   pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
-  actions?: ModelAction[];
-  deleteAction?: (model: ModelName, ids: string[] | number[]) => Promise<void>;
+  actions?: Omit<ModelAction, "action">[];
   translations?: Translations;
-  searchPaginatedResourceAction?: (
-    params: SearchPaginatedResourceParams
-  ) => Promise<{
-    data: Enumeration[];
-    total: number;
-    error: string | null;
-  }>;
   /**
    * Global admin title
    *
@@ -661,6 +650,7 @@ export type MainLayoutProps = Pick<
   | "resourcesTitles"
   | "customPages"
   | "basePath"
+  | "apiBasePath"
   | "isAppDir"
   | "translations"
   | "locale"
@@ -735,3 +725,96 @@ export type Translations = {
 export const colorSchemes = ["light", "dark", "system"] as const;
 export type ColorScheme = (typeof colorSchemes)[number];
 export type BasicColorScheme = Exclude<ColorScheme, "system">;
+
+export type PageProps = Readonly<{
+  params: { [key: string]: string[] | string };
+  searchParams: { [key: string]: string | string[] | undefined } | undefined;
+}>;
+
+export type GetNextAdminPropsParams = {
+  /**
+   * `params` is an array of strings that represents the dynamic segments of your route. (e.g. `[[...params]]`)
+   */
+  params?: string | string[];
+  /**
+   * `searchParams` is an object that represents the query parameters of your route. (e.g. `?key=value`)
+   */
+  searchParams: { [key: string]: string | string[] | undefined } | undefined;
+  /**
+   * `basePath` is a string that represents the base path of your admin. (e.g. `/admin`)
+   */
+  basePath: string;
+  /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api/admin`)
+   */
+  apiBasePath: string;
+  /**
+   * `options` is an object that represents the options of your admin.
+   *  @link https://next-admin.js.org/docs/api-docs#next-admin-options
+   */
+  options?: NextAdminOptions;
+  /**
+   * `schema` is an object that represents the JSON schema of your Prisma schema.
+   */
+  schema: any;
+  /**
+   * `prisma` is an instance of PrismaClient.
+   */
+  prisma: PrismaClient;
+  isAppDir?: boolean;
+  /**
+   * `locale` is a string that represents the locale of your admin. (e.g. `en`)
+   */
+  locale?: string;
+  /**
+   * `getMessages` is a function that returns a promise of an object that represents the translations of your admin.
+   * @param locale 
+   * @returns 
+   */
+  getMessages?: (locale: string) => Promise<Record<string, string>>;
+};
+
+export type GetMainLayoutPropsParams = Omit<GetNextAdminPropsParams, "schema" | "searchParams" | "prisma">;
+
+export type RequestContext<P extends string> = {
+  params: Record<P, string[]>;
+};
+
+export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
+  /**
+   * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
+   */
+  apiBasePath: string;
+  /**
+   * Next-admin options
+   */
+  options?: NextAdminOptions;
+  /**
+   * Prisma client instance
+   */
+  prisma: PrismaClient;
+  /**
+   * A function that acts as a middleware. Useful to add authentication logic for example.
+   */
+  onRequest?: (
+    req: NextRequest,
+    ctx: RequestContext<P>
+  ) =>
+    | ReturnType<NextResponse["json"]>
+    | ReturnType<NextResponse["text"]>
+    | Promise<void>;
+  /**
+   * A string indicating the name of the dynamic segment.
+   *
+   * Example:
+   * - If the dynamic segment is `[[...nextadmin]]`, then the `paramKey` should be `nextadmin`.
+   * - If the dynamic segment is `[[...admin]]`, then the `paramKey` should be `admin`.
+   *
+   * @default "nextadmin"
+   */
+  paramKey?: P;
+  /**
+   * Generated JSON schema from Prisma
+   */
+  schema: any;
+};

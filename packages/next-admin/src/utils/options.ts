@@ -7,9 +7,9 @@ import { Field, ModelName, NextAdminOptions } from "../types";
  */
 export const getCustomInputs = (
   model: ModelName,
-  options: NextAdminOptions
+  options?: NextAdminOptions
 ) => {
-  const editFields = options.model?.[model]?.edit?.fields;
+  const editFields = options?.model?.[model]?.edit?.fields;
 
   return Object.keys(editFields ?? {}).reduce(
     (acc, field) => {

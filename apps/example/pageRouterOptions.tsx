@@ -2,7 +2,6 @@ import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
-  basePath: "/pagerouter/admin",
   title: "⚡️ My Admin Page Router",
   model: {
     User: {
@@ -87,15 +86,9 @@ export const options: NextAdminOptions = {
       actions: [
         {
           title: "Send email",
-          action: async (model, ids) => {
-            const response = await fetch("/api/email", {
-              method: "POST",
-              body: JSON.stringify(ids),
-            });
-
-            if (!response.ok) {
-              throw new Error("Failed to send email");
-            }
+          id: "submit-email",
+          action: async (ids) => {
+            console.log("Sending email to " + ids.length + " users");
           },
           successMessage: "Email sent successfully",
           errorMessage: "Error while sending email",

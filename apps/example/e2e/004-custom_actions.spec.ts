@@ -14,8 +14,13 @@ test.describe("User's custom actions", () => {
     await page.getByTestId("actions-dropdown").click();
     await expect(page.getByText("Send email")).toBeVisible();
 
+    const response = page.waitForResponse(
+      (response) =>
+        response.url().includes("/submit-email") && response.status() === 200
+    );
     await page.getByText("Send email").click();
-    await page.waitForURL((url) => !!url.searchParams.get("message"));
+    await response;
+
     await expect(page.getByText("Email sent successfully")).toBeVisible();
   });
 
@@ -34,12 +39,15 @@ test.describe("User's custom actions", () => {
       page.getByTestId("actions-dropdown-content").getByText("Delete")
     ).toBeVisible();
 
+    const response = page.waitForResponse(
+      (response) =>
+        response.request().method() === "DELETE" && response.status() === 200
+    );
     await page
       .getByTestId("actions-dropdown-content")
       .getByText("Delete")
       .click();
-
-    await page.waitForURL((url) => !!url.searchParams.get("message"));
+    await response;
     await expect(page.getByText("Deleted successfully")).toBeVisible();
     await expect(page.locator("table tbody tr")).toHaveCount(3);
   });

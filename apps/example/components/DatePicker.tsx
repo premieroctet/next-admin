@@ -27,7 +27,7 @@ const DatePicker = ({ value, name, onChange, disabled, required }: Props) => {
         text-nextadmin-content-inverted
         dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-1 ring-inset ring-inset transition-all duration-300 placeholder:text-gray-400 focus:ring-1 focus:ring-2 focus:ring-inset focus:ring-inset focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6 [&>div]:border-none"
       />
-      <input type="hidden" name={name} value={value ?? ""} />
+      <input type="hidden" name={name} value={value ?? ""} step="0.001"/>
     </>
   );
 };

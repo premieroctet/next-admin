@@ -1,84 +1,78 @@
-"use server";
+import { PrismaClient } from "@prisma/client";
+import {
+  EditFieldsOptions,
+  ModelName,
+  NextAdminOptions,
+  Permission,
+  UploadParameters,
+} from "../types";
+import {
+  formattedFormData,
+  getModelIdProperty,
+  getPrismaModelForResource,
+  parseFormData,
+} from "../utils/server";
+import { uncapitalize } from "../utils/tools";
+import { validate } from "../utils/validator";
+import { hasPermission } from "../utils/permissions";
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
-import {
-  ActionFullParams,
-  EditFieldsOptions,
-  Permission,
-  SubmitFormResult,
-} from "../types";
-import {
-  formattedFormData,
-  getFormValuesFromFormData,
-  getModelIdProperty,
-  getPrismaModelForResource,
-  getResourceFromParams,
-  getResourceIdFromParam,
-  getResources,
-  parseFormData,
-} from "../utils/server";
-import { validate } from "../utils/validator";
 
-export const submitForm = async (
-  { options, params, schema, prisma }: ActionFullParams,
-  formData: FormData
-): Promise<SubmitFormResult | undefined> => {
-  if (!params) {
-    return;
-  }
+type DeleteResourceParams = {
+  prisma: PrismaClient;
+  resource: ModelName;
+  body: string[] | number[];
+};
 
-  const resources = getResources(options);
-  const resource = getResourceFromParams(params, resources);
+export const deleteResource = ({
+  prisma,
+  resource,
+  body,
+}: DeleteResourceParams) => {
+  const modelIdProperty = getModelIdProperty(resource);
 
-  if (!resource) {
-    return;
-  }
+  // @ts-expect-error
+  return prisma[uncapitalize(resource)].deleteMany({
+    where: {
+      [modelIdProperty]: {
+        in: body,
+      },
+    },
+  });
+};
 
-  const resourceIdField = getModelIdProperty(resource);
+type SubmitResourceParams = {
+  prisma: PrismaClient;
+  resource: ModelName;
+  body: Record<string, string | UploadParameters | null>;
+  id?: string | number;
+  options?: NextAdminOptions;
+  schema: any;
+};
 
-  const resourceId = getResourceIdFromParam(params[1], resource);
-
-  const {
-    __admin_redirect: redirect,
-    __admin_action: action,
-    ...formValues
-  } = await getFormValuesFromFormData(formData);
+export const submitResource = async ({
+  prisma,
+  resource,
+  body,
+  id,
+  options,
+  schema,
+}: SubmitResourceParams) => {
+  const { __admin_redirect: redirect, ...formValues } = body;
 
   const dmmfSchema = getPrismaModelForResource(resource);
   const parsedFormData = parseFormData(formValues, dmmfSchema?.fields!);
+  const resourceIdField = getModelIdProperty(resource);
+
+  let data;
+
+  const fields = options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
+    typeof resource
+  >;
 
   try {
-    if (action === "delete") {
-      if (resourceId !== undefined) {
-        if (
-          options?.model?.[resource]?.permissions &&
-          !options?.model?.[resource]?.permissions?.includes(Permission.DELETE)
-        ) {
-          return {
-            error: "Unable to delete items of this model",
-          };
-        }
-
-        // @ts-expect-error
-        await prisma[resource].delete({
-          where: {
-            [resourceIdField]: resourceId,
-          },
-        });
-      }
-      return { deleted: true };
-    }
-
-    // Update
-    let data;
-
-    const fields = options.model?.[resource]?.edit?.fields as EditFieldsOptions<
-      typeof resource
-    >;
-
-    // Validate
     validate(parsedFormData, fields);
 
     const { formattedData, complementaryFormattedData, errors } =
@@ -87,14 +81,14 @@ export const submitForm = async (
         dmmfSchema?.fields!,
         schema,
         resource,
-        resourceId,
+        id,
         fields
       );
 
     if (errors.length) {
       return {
         error:
-          options.model?.[resource]?.edit?.submissionErrorMessage ??
+          options?.model?.[resource]?.edit?.submissionErrorMessage ??
           "Submission error",
         validation: errors.map((error) => ({
           property: error.field,
@@ -103,11 +97,9 @@ export const submitForm = async (
       };
     }
 
-    if (resourceId !== undefined) {
-      if (
-        options?.model?.[resource]?.permissions &&
-        !options?.model?.[resource]?.permissions?.includes(Permission.EDIT)
-      ) {
+    // Edit
+    if (!!id) {
+      if (!hasPermission(options?.model?.[resource], Permission.EDIT)) {
         return {
           error: "Unable to update items of this model",
         };
@@ -116,7 +108,7 @@ export const submitForm = async (
       // @ts-expect-error
       data = await prisma[resource].update({
         where: {
-          [resourceIdField]: resourceId,
+          [resourceIdField]: id,
         },
         data: formattedData,
       });
@@ -124,11 +116,7 @@ export const submitForm = async (
       return { updated: true, redirect: redirect === "list" };
     }
 
-    // Create
-    if (
-      options?.model?.[resource]?.permissions &&
-      !options?.model?.[resource]?.permissions?.includes(Permission.CREATE)
-    ) {
+    if (!hasPermission(options?.model?.[resource], Permission.CREATE)) {
       return {
         error: "Unable to create items of this model",
       };
@@ -164,7 +152,7 @@ export const submitForm = async (
       if (error.name === "ValidationError") {
         error.errors.map((error: any) => {
           // @ts-expect-error
-          data[error.property] = formData[error.property];
+          data[error.property] = formValues[error.property];
         });
       }
 

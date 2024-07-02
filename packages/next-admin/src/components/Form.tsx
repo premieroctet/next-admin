@@ -21,29 +21,31 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import React, {
   ChangeEvent,
+  HTMLProps,
   cloneElement,
+  forwardRef,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
-  useTransition,
 } from "react";
 import { twMerge } from "tailwind-merge";
 import { useConfig } from "../context/ConfigContext";
 import { FormContext, FormProvider } from "../context/FormContext";
 import { useI18n } from "../context/I18nContext";
+import { MessageProvider, useMessage } from "../context/MessageContext";
 import { PropertyValidationError } from "../exceptions/ValidationError";
+import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
   EditFieldsOptions,
   Field,
-  ModelAction,
   ModelIcon,
   ModelName,
   ModelOptions,
   Permission,
-  SubmitFormResult,
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
 import { formatLabel, slugify } from "../utils/tools";
@@ -72,10 +74,6 @@ const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
 });
 
-class CustomForm extends RjsfForm {
-  onSubmit = (e: any) => {};
-}
-
 export type FormProps = {
   data: any;
   schema: any;
@@ -83,21 +81,19 @@ export type FormProps = {
   resource: ModelName;
   slug?: string;
   validation?: PropertyValidationError[];
-  action?: (formData: FormData) => Promise<SubmitFormResult | undefined>;
   title: string;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
-  actions?: ModelAction[];
-  searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
+  actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;
 };
 
-const fields: CustomForm["props"]["fields"] = {
+const fields: RjsfForm["props"]["fields"] = {
   ArrayField,
   NullField,
 };
 
-const widgets: CustomForm["props"]["widgets"] = {
+const widgets: RjsfForm["props"]["widgets"] = {
   DateWidget: DateWidget,
   DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
@@ -113,16 +109,14 @@ const Form = ({
   resource,
   slug,
   validation: validationProp,
-  action,
   title,
   customInputs,
   actions,
-  searchPaginatedResourceAction,
   icon,
   resourcesIdProperty,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
-  const { basePath, options } = useConfig();
+  const { basePath, options, apiBasePath } = useConfig();
   const modelOptions: ModelOptions<typeof resource>[typeof resource] =
     options?.model?.[resource];
   const canDelete =
@@ -142,9 +136,11 @@ const Form = ({
   );
   const { router } = useRouterInternal();
   const { t } = useI18n();
-  const formRef = useRef<CustomForm>(null);
-  const [isPending, startTransition] = useTransition();
+  const formRef = useRef<RjsfForm>(null);
+  const [isPending, setIsPending] = useState(false);
   const allDisabled = edit && !canEdit;
+  const { runDeletion } = useDeleteAction(resource);
+  const { showMessage, hideMessage } = useMessage();
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -193,16 +189,34 @@ const Form = ({
             <Button
               variant="destructiveOutline"
               className="flex gap-2"
-              name="__admin_action"
-              value="delete"
               formNoValidate
               tabIndex={-1}
-              onClick={(e) => {
+              onClick={async (e) => {
                 if (!confirm(t("form.delete.alert"))) {
                   e.preventDefault();
+                } else {
+                  try {
+                    setIsPending(true);
+                    await runDeletion([id!] as string[] | number[]);
+                    router.replace({
+                      pathname: `${basePath}/${slugify(resource)}`,
+                      query: {
+                        message: JSON.stringify({
+                          type: "success",
+                          message: "Deleted successfully",
+                        }),
+                      },
+                    });
+                  } catch (e) {
+                    showMessage({
+                      type: "error",
+                      message: (e as Error).message,
+                    });
+                  } finally {
+                    setIsPending(false);
+                  }
                 }
               }}
-              type="submit"
               loading={isPending}
             >
               <TrashIcon className="h-4 w-4" />
@@ -226,9 +240,17 @@ const Form = ({
     {} as ErrorSchema
   );
 
-  const onSubmit = async (formData: FormData) => {
-    if (action) {
-      const result = await action(formData);
+  const onSubmit = useCallback(
+    async (formData: FormData) => {
+      const response = await fetch(
+        `${apiBasePath}/${slugify(resource)}${id ? `/${id}` : ""}`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const result = await response.json();
 
       if (result?.validation) {
         setValidation(result.validation);
@@ -242,7 +264,7 @@ const Form = ({
           query: {
             message: JSON.stringify({
               type: "success",
-              content: "Deleted successfully",
+              message: "Deleted successfully",
             }),
           },
         });
@@ -257,7 +279,7 @@ const Form = ({
           query: {
             message: JSON.stringify({
               type: "success",
-              content: "Created successfully",
+              message: "Created successfully",
             }),
           },
         });
@@ -267,35 +289,67 @@ const Form = ({
         const pathname = result?.redirect
           ? `${basePath}/${slugify(resource)}`
           : location.pathname;
-        return router.replace({
-          pathname,
-          query: {
-            message: JSON.stringify({
-              type: "success",
-              content: "Updated successfully",
-            }),
-          },
-        });
+
+        if (pathname === location.pathname) {
+          showMessage({
+            type: "success",
+            message: "Updated successfully",
+          });
+        } else {
+          return router.replace({
+            pathname,
+            query: {
+              message: JSON.stringify({
+                type: "success",
+                message: "Updated successfully",
+              }),
+            },
+          });
+        }
       }
 
       if (result?.error) {
-        return router.replace({
-          pathname: location.pathname,
-          query: {
-            error: result.error,
-          },
+        showMessage({
+          type: "error",
+          message: result.error,
         });
       }
-    }
-  };
+    },
+    [apiBasePath, id]
+  );
 
-  const onSubmitAction = (formData: FormData) => {
-    startTransition(() => {
-      onSubmit(formData);
-    });
-  };
+  const onSubmitAction = useCallback(
+    async (formData: FormData) => {
+      try {
+        setIsPending(true);
+        await onSubmit(formData);
+      } finally {
+        setIsPending(false);
+      }
+    },
+    [onSubmit]
+  );
 
-  const templates: CustomForm["props"]["templates"] = useMemo(
+  const CustomForm = useMemo(() => {
+    return forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>(
+      (props, ref) => (
+        <form
+          {...props}
+          ref={ref}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const data = new FormData(e.target as HTMLFormElement);
+            // @ts-expect-error
+            const submitter = e.nativeEvent.submitter as HTMLButtonElement;
+            data.append(submitter.name, submitter.value);
+            onSubmitAction(data);
+          }}
+        />
+      )
+    );
+  }, [onSubmitAction]);
+
+  const templates: RjsfForm["props"]["templates"] = useMemo(
     () => ({
       FieldTemplate: (props: FieldTemplateProps) => {
         const {
@@ -495,7 +549,7 @@ const Form = ({
 
   return (
     <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default gap-4 dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex py-3 flex-row flex-wrap items-center justify-between gap-3 border-b px-4 shadow-sm">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex flex-row flex-wrap items-center justify-between gap-3 gap-4 border-b px-4 py-3 shadow-sm">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
         <div className="flex items-center gap-2">
           {!!actions && actions.length > 0 && !!id && (
@@ -527,7 +581,6 @@ const Form = ({
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <FormProvider
             initialValue={data}
-            searchPaginatedResourceAction={searchPaginatedResourceAction}
             dmmfSchema={dmmfSchema}
             resource={resource}
             options={options}
@@ -535,16 +588,13 @@ const Form = ({
           >
             <FormContext.Consumer>
               {({ formData, setFormData }) => (
-                <CustomForm
-                  // @ts-expect-error
-                  action={action ? onSubmitAction : ""}
-                  {...(!action ? { method: "post" } : {})}
+                <RjsfForm
+                  tagName={CustomForm}
                   onChange={(e) => {
                     setFormData(e.formData);
                   }}
                   idPrefix=""
                   idSeparator=""
-                  enctype={!action ? "multipart/form-data" : undefined}
                   {...schemas}
                   formData={formData}
                   validator={validator}
@@ -557,8 +607,6 @@ const Form = ({
                     ButtonTemplates: { SubmitButton: submitButton },
                   }}
                   widgets={widgets}
-                  onSubmit={(e) => console.log("onSubmit", e)}
-                  onError={(e) => console.log("onError", e)}
                   ref={formRef}
                   className="relative"
                 />
@@ -571,4 +619,12 @@ const Form = ({
   );
 };
 
-export default Form;
+const FormWrapper = (props: FormProps) => {
+  return (
+    <MessageProvider>
+      <Form {...props} />
+    </MessageProvider>
+  );
+};
+
+export default FormWrapper;

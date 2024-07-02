@@ -6,7 +6,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import { AdminComponentProps, ModelName, NextAdminOptions } from "../types";
+import { ModelName, NextAdminOptions } from "../types";
 import { Prisma } from "@prisma/client";
 
 type FormContextType = {
@@ -22,9 +22,7 @@ type FormContextType = {
   };
   setOpen: (open: boolean, name: string) => void;
   toggleOpen: (name: string) => void;
-  setSelectedValue: (selectedValue: any, name: string) => void;
   resource?: ModelName;
-  searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
   dmmfSchema?: readonly Prisma.DMMF.Field[];
   options?: NextAdminOptions;
   resourcesIdProperty: Record<ModelName, string> | null;
@@ -35,14 +33,12 @@ export const FormContext = createContext<FormContextType>({
   setFormData: (_formData: any) => {},
   relationState: {},
   setOpen: (_open: boolean, _name: string) => {},
-  setSelectedValue: (_selectedValue: any, _name: string) => {},
   toggleOpen: (_name: string) => {},
   resourcesIdProperty: null,
 });
 
 type Props = PropsWithChildren<{
   initialValue: any;
-  searchPaginatedResourceAction?: AdminComponentProps["searchPaginatedResourceAction"];
   dmmfSchema: readonly Prisma.DMMF.Field[];
   resource: ModelName;
   options?: NextAdminOptions;
@@ -61,7 +57,6 @@ type RelationState = {
 export const FormProvider = ({
   children,
   initialValue,
-  searchPaginatedResourceAction,
   resource,
   dmmfSchema,
   options,
@@ -105,17 +100,6 @@ export const FormProvider = ({
     }));
   };
 
-  const setSelectedValue = (selectedValue: any, name: string) => {
-    if (!relationState) return;
-    setRelationState((relationState) => ({
-      ...relationState,
-      [name]: {
-        ...relationState[name],
-        selectedValue,
-      },
-    }));
-  };
-
   return (
     <FormContext.Provider
       value={{
@@ -123,9 +107,7 @@ export const FormProvider = ({
         setFormData,
         relationState,
         setOpen,
-        setSelectedValue,
         toggleOpen,
-        searchPaginatedResourceAction,
         dmmfSchema,
         resource,
         options,

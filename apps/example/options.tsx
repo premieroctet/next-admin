@@ -2,8 +2,8 @@ import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
-  basePath: "/admin",
   title: "⚡️ My Admin",
+
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
@@ -126,11 +126,10 @@ export const options: NextAdminOptions = {
       },
       actions: [
         {
+          id: "submit-email",
           title: "actions.user.email.title",
-          action: async (...args) => {
-            "use server";
-            const { submitEmail } = await import("./actions/nextadmin");
-            await submitEmail(...args);
+          action: async (ids) => {
+            console.log("Sending email to " + ids.length + " users");
           },
           successMessage: "actions.user.email.success",
           errorMessage: "actions.user.email.error",

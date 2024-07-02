@@ -7,7 +7,11 @@ type Props = {
 };
 
 const I18nContext = createContext<{
-  t: (key: string, options?: { [key: string]: any }, fallback?: string) => string;
+  t: (
+    key: string,
+    options?: { [key: string]: any },
+    fallback?: string
+  ) => string;
 }>({
   t: () => "",
 });

@@ -1,12 +1,13 @@
 import { MainLayout } from "@premieroctet/next-admin";
-import { getMainLayoutProps } from "@premieroctet/next-admin/dist/mainLayout";
+import { getMainLayoutProps } from "@premieroctet/next-admin/dist/appRouter";
 import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";
 
 const CustomPage = async () => {
   const mainLayoutProps = getMainLayoutProps({
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
     options,
-    isAppDir: true,
   });
 
   const totalUsers = await prisma.user.count();
@@ -22,6 +23,7 @@ const CustomPage = async () => {
   return (
     <MainLayout
       {...mainLayoutProps}
+
       user={{
         data: {
           name: "John Doe",
