@@ -271,8 +271,10 @@ export const getMainLayoutProps = ({
   params,
   isAppDir = true,
 }: GetMainLayoutPropsParams): MainLayoutProps => {
-  if (!Array.isArray(params)) {
-    throw new Error("`params` parameter in `getMainLayoutProps` should be an array of strings.");
+  if (params !== undefined && !Array.isArray(params)) {
+    throw new Error(
+      "`params` parameter in `getMainLayoutProps` should be an array of strings."
+    );
   }
 
   const resources = getResources(options);

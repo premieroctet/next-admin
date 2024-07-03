@@ -1,21 +1,18 @@
 "use client";
 import {
+  ComputerDesktopIcon,
   MoonIcon,
   SunIcon,
-  ComputerDesktopIcon,
 } from "@heroicons/react/24/outline";
+import { useTheme } from "next-themes";
 import {
   ReactNode,
   createContext,
-  memo,
-  useCallback,
   useContext,
   useEffect,
   useState,
 } from "react";
 import { BasicColorScheme, ColorScheme, colorSchemes } from "../types";
-import { colorSchemeScript } from "../utils/colorSchemeScript";
-import { useConfig } from "./ConfigContext";
 
 const basicColorSchemeIcons: Record<BasicColorScheme | "system", JSX.Element> =
   {
@@ -43,113 +40,37 @@ type ProviderProps = {
 };
 
 export const ColorSchemeProvider = ({ children }: ProviderProps) => {
-  const { options } = useConfig();
-  const getInitialColorScheme = (): ColorScheme => {
-    if (options?.forceColorScheme) {
-      return options?.forceColorScheme;
-    }
-    let storedColorScheme: ColorScheme | null = null;
-    try {
-      storedColorScheme = localStorage.getItem(
-        "next-admin-theme"
-      ) as ColorScheme | null;
-      return storedColorScheme && colorSchemes.includes(storedColorScheme)
-        ? storedColorScheme
-        : options?.defaultColorScheme || "system";
-    } catch {
-      return options?.defaultColorScheme || "system";
-    }
-  };
+  const { theme: colorScheme, setTheme: setColorScheme } = useTheme();
 
-  const [colorScheme, setColorScheme] = useState<ColorScheme>(
-    getInitialColorScheme()
-  );
   const [colorSchemeIcon, setColorSchemeIcon] = useState<
     JSX.Element | undefined
   >(() => {
-    return basicColorSchemeIcons[colorScheme];
+    return basicColorSchemeIcons[colorScheme!];
   });
-  const [systemPreference, setSystemPreference] = useState<BasicColorScheme>();
-
-  const applyColorScheme = useCallback(() => {
-    document.documentElement.classList.remove("dark", "light");
-    const colorSchemeValue: BasicColorScheme | undefined =
-      colorScheme === "system" ? systemPreference : colorScheme;
-    colorSchemeValue && setColorSchemeIcon(basicColorSchemeIcons[colorScheme]);
-    colorSchemeValue &&
-      document.documentElement.classList.add(colorSchemeValue);
-  }, [colorScheme, systemPreference]);
 
   useEffect(() => {
-    localStorage.setItem("next-admin-theme", colorScheme);
-    applyColorScheme();
-  }, [colorScheme, applyColorScheme]);
+    setColorSchemeIcon(basicColorSchemeIcons[colorScheme!]);
+  }, [colorScheme]);
 
   const toggleColorScheme = () => {
-    const index = colorSchemes.indexOf(colorScheme);
+    const index = colorSchemes.indexOf(colorScheme!);
     const nextIndex = (index + 1) % colorSchemes.length;
     setColorScheme(colorSchemes[nextIndex]);
   };
 
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-    setSystemPreference(mediaQuery.matches ? "dark" : "light");
-
-    const handleChange = (e: MediaQueryListEvent) => {
-      const className = e.matches ? "dark" : "light";
-      setSystemPreference(className);
-    };
-
-    mediaQuery.addEventListener("change", handleChange);
-    return () => {
-      mediaQuery.removeEventListener("change", handleChange);
-    };
-  }, []);
-
   return (
     <ColorSchemeContext.Provider
       value={{
-        colorScheme,
+        colorScheme: colorScheme as ColorScheme,
         colorSchemeIcon,
         setColorScheme,
         toggleColorScheme,
       }}
     >
-      <ColorSchemeScript
-        {...{
-          forceColorScheme: options?.forceColorScheme,
-          defaultColorSchema: options?.defaultColorScheme,
-        }}
-      />
       {children}
     </ColorSchemeContext.Provider>
   );
 };
-
-const ColorSchemeScript = memo(
-  ({
-    forceColorScheme,
-    defaultColorScheme,
-  }: {
-    forceColorScheme?: ColorScheme;
-    defaultColorScheme?: ColorScheme;
-  }) => {
-    const scriptArgs = JSON.stringify([
-      forceColorScheme,
-      defaultColorScheme,
-    ]).slice(1, -1);
-    return (
-      <script
-        suppressHydrationWarning
-        nonce={typeof window === "undefined" ? "nonce" : ""}
-        dangerouslySetInnerHTML={{
-          __html: `
-          (${colorSchemeScript.toString()})(${scriptArgs});`,
-        }}
-      />
-    );
-  }
-);
 
 export const useColorScheme = () => {
   return useContext(ColorSchemeContext);

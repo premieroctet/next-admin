@@ -722,7 +722,7 @@ export type Translations = {
   [key: string]: string;
 };
 
-export const colorSchemes = ["light", "dark", "system"] as const;
+export const colorSchemes = ["light", "dark", "system"];
 export type ColorScheme = (typeof colorSchemes)[number];
 export type BasicColorScheme = Exclude<ColorScheme, "system">;
 
