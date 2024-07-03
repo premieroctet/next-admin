@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.7
+
+### Patch Changes
+
+- Redirect useEffect
+
 ## 5.0.0-rc.6
 
 ### Patch Changes
