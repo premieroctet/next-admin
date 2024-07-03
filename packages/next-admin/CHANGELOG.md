@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.4
+
+### Patch Changes
+
+- [f120d10](https://github.com/premieroctet/next-admin/commit/f120d10): Add `next-themes` to handle color scheme
+
 ## 5.0.0-rc.3
 
 ### Patch Changes
