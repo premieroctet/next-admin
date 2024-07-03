@@ -8,6 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useConfig } from "../context/ConfigContext";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 import { Field, ListData, ListDataItem, ModelIcon, ModelName } from "../types";
 import { slugify } from "../utils/tools";
 import EmptyState from "./EmptyState";
@@ -45,6 +46,9 @@ export function DataTable({
   deletable = false,
 }: DataTableProps) {
   const { basePath } = useConfig();
+  const searchParams = new URLSearchParams(window.location.search);
+  const pageNumber = Number(searchParams.get("page"));
+  const { router } = useRouterInternal();
 
   const columnsVisibility = columns.reduce(
     (acc, column) => {
@@ -74,6 +78,17 @@ export function DataTable({
     enableRowSelection: true,
     onRowSelectionChange: setRowSelection,
   });
+
+  if (!table.getRowModel().rows?.length && pageNumber && pageNumber > 1) {
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
+    router.replace({
+      pathname: location.pathname,
+      query: {
+        ...searchParamsObject,
+        page: 1,
+      },
+    });
+  }
 
   return (
     <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default overflow-hidden rounded-lg border">

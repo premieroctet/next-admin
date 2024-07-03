@@ -140,7 +140,7 @@ const Form = ({
   const [isPending, setIsPending] = useState(false);
   const allDisabled = edit && !canEdit;
   const { runDeletion } = useDeleteAction(resource);
-  const { showMessage, hideMessage } = useMessage();
+  const { showMessage } = useMessage();
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -274,7 +274,7 @@ const Form = ({
         const pathname = result?.redirect
           ? `${basePath}/${slugify(resource)}`
           : `${basePath}/${slugify(resource)}/${result.createdId}`;
-        return router.replace({
+        return router.push({
           pathname,
           query: {
             message: JSON.stringify({
@@ -296,7 +296,7 @@ const Form = ({
             message: "Updated successfully",
           });
         } else {
-          return router.replace({
+          return router.push({
             pathname,
             query: {
               message: JSON.stringify({
