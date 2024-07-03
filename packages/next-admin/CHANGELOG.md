@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.6
+
+### Patch Changes
+
+- [60afe2f](https://github.com/premieroctet/next-admin/commit/60afe2f): Add history on redirect `Save`
+
 ## 5.0.0-rc.5
 
 ### Patch Changes
