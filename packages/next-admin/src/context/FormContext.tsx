@@ -1,4 +1,5 @@
 "use client";
+import { Prisma } from "@prisma/client";
 import { isEqual } from "lodash";
 import React, {
   PropsWithChildren,
@@ -7,7 +8,6 @@ import React, {
   useState,
 } from "react";
 import { ModelName, NextAdminOptions } from "../types";
-import { Prisma } from "@prisma/client";
 
 type FormContextType = {
   formData: any;
@@ -91,13 +91,26 @@ export const FormProvider = ({
 
   const toggleOpen = (name: string) => {
     if (!relationState) return;
-    setRelationState((relationState) => ({
-      ...relationState,
-      [name]: {
-        ...relationState[name],
-        open: !relationState[name]?.open,
-      },
-    }));
+    setRelationState((relationState) => {
+      const isCurrentOpen = relationState[name]?.open;
+      const relationCopy = { ...relationState };
+
+      if (!isCurrentOpen) {
+        Object.keys(relationCopy).forEach((key) => {
+          if (key !== name) {
+            relationCopy[key].open = false;
+          }
+        });
+      }
+
+      return {
+        ...relationCopy,
+        [name]: {
+          ...relationCopy[name],
+          open: !relationCopy[name]?.open,
+        },
+      };
+    });
   };
 
   return (

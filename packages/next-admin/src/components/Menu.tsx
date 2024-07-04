@@ -11,6 +11,7 @@ import Link from "next/link";
 import { Fragment, useState } from "react";
 
 import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
+import { useTheme } from "next-themes";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
@@ -68,6 +69,7 @@ export default function Menu({
   const { basePath } = useConfig();
   const { pathname } = useRouterInternal();
   const { t } = useI18n();
+  const { forcedTheme } = useTheme();
 
   const customPagesNavigation = customPages?.map((page) => ({
     name: page.title,
@@ -279,7 +281,7 @@ export default function Menu({
             </ul>
             <div className="flex flex-col">
               {renderExternalLinks()}
-              {!forceColorScheme && <ColorSchemeSwitch />}
+              {!forcedTheme && <ColorSchemeSwitch />}
               {renderUser()}
             </div>
           </nav>

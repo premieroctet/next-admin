@@ -15,7 +15,7 @@ const Dashboard = ({ resources }: DashboardProps) => {
 
   useEffect(() => {
     router.replace({
-      pathname: `${basePath}/${resources[0]}`,
+      pathname: `${basePath}/${resources[0].toLowerCase()}`,
     });
   }, [router, basePath, resources]);
 

@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.8
+
+### Patch Changes
+
+- Small fixes (select, dark mode, dashboard, layout, doc)
+
 ## 5.0.0-rc.7
 
 ### Patch Changes

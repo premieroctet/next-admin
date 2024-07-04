@@ -228,15 +228,22 @@ const { run } = createHandler({
   schema,
 });
 
+/**
+ * context.params.nextadmin = ['{{model}}'] => CREATE
+ * context.params.nextadmin = ['{{model}}', '{{id}}'] => UPDATE
+ */
 export async function POST(req: NextRequest, context: any) {
   const userId = 1;
-  const formData = await req.formData();
-  if (context.params.nextadmin[1] === "new") {
+
+  if (context.params.nextadmin.length === 1) {
+    const formData = await req.formData();
     formData.append("createdBy", userId.toString());
+    req.formData = async () => formData;
   } else {
+    const formData = await req.formData();
     formData.append("updatedBy", userId.toString());
+    req.formData = async () => formData;
   }
-  req.formData = async () => formData;
 
   return run(req, context);
 }

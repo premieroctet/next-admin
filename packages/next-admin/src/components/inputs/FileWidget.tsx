@@ -74,7 +74,7 @@ const FileWidget = (props: WidgetProps) => {
       {
         <div
           className={clsx(
-            "border-nextadmin-border-default dark:border-dark-nextadmin-border-default hover:bg-dark-nextadmin-background-subtle relative flex w-full justify-center rounded-lg border-2 border-dashed px-6 py-10",
+            "border-nextadmin-border-default dark:border-dark-nextadmin-border-default hover:bg-nextadmin-background-subtle hover:dark:bg-dark-nextadmin-background-subtle relative flex w-full justify-center rounded-lg border-2 border-dashed px-6 py-10",
             {
               "bg-dark-nextadmin-background-subtle": isDragging,
               "opacity-50": props.disabled,

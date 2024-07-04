@@ -76,9 +76,9 @@ export function getSchemas<M extends ModelName>(
       if (
         dmmfProperty &&
         requiredFields?.includes(dmmfProperty.name) &&
-        !schema.required?.includes(dmmfProperty.name)
+        !schema.require?.includes(dmmfProperty.name)
       ) {
-        schema.required = [...schema.required, dmmfProperty.name];
+        schema.required = [...(schema.required ?? []), dmmfProperty.name];
       }
 
       if (
