@@ -98,6 +98,9 @@ export const options: NextAdminOptions = {
           avatar: {
             format: "file",
             handler: {
+              get: (url) => {
+                return "https://www.gratar.com/avatar/00000000000000000000000000000000";
+              },
               /*
                * Include your own upload handler here,
                * for example you can upload the file to an S3 bucket.

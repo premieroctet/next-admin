@@ -23,12 +23,11 @@ const CustomPage = async () => {
   return (
     <MainLayout
       {...mainLayoutProps}
-
       user={{
         data: {
           name: "John Doe",
         },
-        logoutUrl: "/",
+        logout: ["/"],
       }}
     >
       <div className="p-10">

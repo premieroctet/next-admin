@@ -169,7 +169,7 @@ export const fillRelationInSchema =
     let fields;
     if (model?.fields && display) {
       // @ts-expect-error
-      fields = model.fields.filter((field) => display.includes(field.name));
+      fields = model.fields?.filter((field) => display.includes(field.name));
     } else {
       fields = model?.fields;
     }
@@ -266,7 +266,7 @@ export const transformData = <M extends ModelName>(
   if (!model) return data;
 
   return Object.keys(data).reduce((acc, key) => {
-    const field = model.fields.find((field) => field.name === key);
+    const field = model.fields?.find((field) => field.name === key);
     const fieldKind = field?.kind;
     const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
     const explicitManyToManyRelationField =

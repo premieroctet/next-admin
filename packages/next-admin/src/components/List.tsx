@@ -6,6 +6,7 @@ import { ChangeEvent, useEffect, useState, useTransition } from "react";
 import { ITEMS_PER_PAGE } from "../config";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
+import { MessageProvider } from "../context/MessageContext";
 import useDataColumns from "../hooks/useDataColumns";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
@@ -38,7 +39,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
-import { MessageProvider } from "../context/MessageContext";
 
 export type ListProps = {
   resource: ModelName;
@@ -226,7 +226,7 @@ function List({
             icon={icon}
           />
           {data.length ? (
-            <div className="flex flex-1 items-center space-x-2 py-4">
+            <div className="flex flex-1 flex-wrap items-center justify-between gap-2 py-4">
               <div>
                 <TableRowsIndicator
                   pageIndex={pageIndex}
@@ -235,7 +235,7 @@ function List({
                   pageSize={pageSize}
                 />
               </div>
-              <div className="flex flex-1 items-center justify-end space-x-4">
+              <div className="flex flex-1 items-center justify-end gap-y-2 space-x-4">
                 <Select
                   onValueChange={(value) => {
                     if (isNaN(Number(value))) return;
@@ -249,7 +249,7 @@ function List({
                     });
                   }}
                 >
-                  <SelectTrigger className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle max-w-[100px]">
+                  <SelectTrigger className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle max-h-[36px] max-w-[100px]">
                     <SelectValue asChild>
                       <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
                         {pageSize}

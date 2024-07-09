@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.9
+
+### Patch Changes
+
+- Change logout system (Request or server action)
+
 ## 5.0.0-rc.8
 
 ### Patch Changes

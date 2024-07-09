@@ -91,8 +91,9 @@ const MultiSelectWidget = (props: Props) => {
               value && (
                 <MultiSelectItem
                   key={index}
-                  label={value.label}
-                  onRemoveClick={() => onRemoveClick(value.value)}
+                  item={value}
+                  schema={schema}
+                  onRemoveClick={onRemoveClick}
                   deletable={!props.disabled}
                 />
               )

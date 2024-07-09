@@ -2,7 +2,7 @@ import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
 import { NextRequest, NextResponse } from "next/server";
-import type { ChangeEvent, HTMLAttributes, ReactNode } from "react";
+import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
@@ -185,7 +185,7 @@ export type EditFieldsOptions<T extends ModelName> = {
      */
     handler?: Handler<T, P, Model<T>[P]>;
     /**
-     * a React Element that should receive `CustomInputProps`](#custominputprops)`. For App Router, this element must be a client component.
+     * a React Element that should receive [`CustomInputProps`](#custominputprops). For App Router, this element must be a client component. Don't set any props, they will be passed automatically to the component.
      */
     input?: React.ReactElement;
     /**
@@ -239,22 +239,28 @@ export type Handler<
    * @param file
    * @returns
    */
-  upload?: (buffer: Buffer, infos: {
-    name: string;
-    type: string | null;
-  }) => Promise<string>;
+  upload?: (
+    buffer: Buffer,
+    infos: {
+      name: string;
+      type: string | null;
+    }
+  ) => Promise<string>;
   /**
    * an optional string displayed in the input field as an error message in case of a failure during the upload handler.
    */
   uploadErrorMessage?: string;
 };
 
-export type UploadParameters =  Parameters<(buffer: Buffer, infos: {
-  name: string;
-  type: string | null;
-}) => Promise<string>>
-
-
+export type UploadParameters = Parameters<
+  (
+    buffer: Buffer,
+    infos: {
+      name: string;
+      type: string | null;
+    }
+  ) => Promise<string>
+>;
 
 export type RichTextFormat = "html" | "json";
 
@@ -593,7 +599,7 @@ export type UserData = {
 
 export type AdminUser = {
   data: UserData;
-  logoutUrl: string;
+  logout: [RequestInfo, RequestInit?] | (() => void | Promise<void>);
 };
 
 export type AdminComponentProps = {
@@ -768,13 +774,16 @@ export type GetNextAdminPropsParams = {
   locale?: string;
   /**
    * `getMessages` is a function that returns a promise of an object that represents the translations of your admin.
-   * @param locale 
-   * @returns 
+   * @param locale
+   * @returns
    */
   getMessages?: (locale: string) => Promise<Record<string, string>>;
 };
 
-export type GetMainLayoutPropsParams = Omit<GetNextAdminPropsParams, "schema" | "searchParams" | "prisma">;
+export type GetMainLayoutPropsParams = Omit<
+  GetNextAdminPropsParams,
+  "schema" | "searchParams" | "prisma"
+>;
 
 export type RequestContext<P extends string> = {
   params: Record<P, string[]>;

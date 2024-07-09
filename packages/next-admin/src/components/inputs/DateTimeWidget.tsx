@@ -36,7 +36,6 @@ export default function DateTimeWidget<
         name={name}
         defaultValue={hiddenValue}
         className="absolute inset-0 -z-10 h-full w-full opacity-0"
-        required={props.required}
         step="0.001"
       />
       <BaseInputTemplate
@@ -48,6 +47,7 @@ export default function DateTimeWidget<
         onChange={(value) => {
           onChange(localToUTC(value));
         }}
+        required={props.required}
         step="0.001"
       />
     </>

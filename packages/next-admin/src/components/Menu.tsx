@@ -12,6 +12,7 @@ import { Fragment, useState } from "react";
 
 import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
 import { useTheme } from "next-themes";
+import Image from "next/image";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
@@ -19,7 +20,6 @@ import {
   AdminComponentProps,
   ModelIcon,
   ModelName,
-  NextAdminOptions,
   SidebarConfiguration,
 } from "../types";
 import { slugify } from "../utils/tools";
@@ -50,7 +50,6 @@ export type MenuProps = {
   user?: AdminComponentProps["user"];
   externalLinks?: AdminComponentProps["externalLinks"];
   title?: string;
-  forceColorScheme?: NextAdminOptions["forceColorScheme"];
 };
 
 export default function Menu({
@@ -63,7 +62,6 @@ export default function Menu({
   user,
   externalLinks,
   title,
-  forceColorScheme,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
@@ -148,11 +146,21 @@ export default function Menu({
       return null;
     }
 
+    const logoutBind = async () => {
+      if (user.logout) {
+        if (typeof user.logout === "function") {
+          await user.logout();
+        } else {
+          await fetch(...user.logout);
+        }
+      }
+    };
+
     return (
       <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color flex flex-1 items-center gap-1 px-2 py-3 text-sm font-semibold leading-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {user.data.picture ? (
-            <img
+            <Image
               className="flex h-8 w-8 flex-shrink-0 rounded-full"
               src={user.data.picture}
               alt="User picture"
@@ -187,13 +195,14 @@ export default function Menu({
               </DropdownLabel>
               <DropdownSeparator className="bg-nextadmin-border-default dark:bg-dark-nextadmin-border-emphasis" />
               <DropdownItem asChild>
-                <Link
-                  href={user.logoutUrl}
+                <button
+                  type="button"
+                  onClick={logoutBind}
                   className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
                 >
                   <PowerIcon className="h-4 w-4" />
                   <span>{t("user.logout")}</span>
-                </Link>
+                </button>
               </DropdownItem>
             </DropdownContent>
           </DropdownBody>

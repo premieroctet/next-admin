@@ -35,6 +35,13 @@ export default async function AdminPage({
     locale: params.locale as string,
   });
 
+  const logoutRequest: [RequestInfo, RequestInit] = [
+    "/",
+    {
+      method: "POST",
+    },
+  ];
+
   return (
     <NextAdmin
       {...props}
@@ -43,7 +50,7 @@ export default async function AdminPage({
         data: {
           name: "John Doe",
         },
-        logoutUrl: "/",
+        logout: logoutRequest,
       }}
     />
   );

@@ -32,7 +32,7 @@ export default function Breadcrumb({
         </li>
         {breadcrumbItems.map((page) => (
           <li key={page.label}>
-            <div className="flex items-center">
+            <div className="flex items-center" title={page.label}>
               <svg
                 className="text-next-admin-menu-default dark:text-dark-nextadmin-menu-color h-5 w-5 flex-shrink-0"
                 fill="currentColor"
@@ -43,17 +43,20 @@ export default function Breadcrumb({
               </svg>
               <Link
                 href={page.href}
-                className={`hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis ml-2 flex min-w-max gap-2 text-sm font-medium ${
+                className={`hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis ml-2 flex gap-2 text-sm font-medium ${
                   page.current
                     ? "text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle"
                     : "text-nextadmin-menu-default dark:text-dark-nextadmin-menu-color"
-                }`}
+                }
+                `}
                 aria-current={page.current ? "page" : undefined}
               >
                 {!!page.icon && (
                   <ResourceIcon icon={page.icon} className="h-5 w-5 " />
                 )}
-                {page.label}
+                <span className="flex-basis-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                  {page.label}
+                </span>
               </Link>
             </div>
           </li>

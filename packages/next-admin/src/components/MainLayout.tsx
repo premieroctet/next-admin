@@ -57,7 +57,6 @@ export const MainLayout = ({
                 resourcesIcons={resourcesIcons}
                 user={user}
                 externalLinks={externalLinks}
-                forceColorScheme={options?.forceColorScheme}
               />
               <main className="lg:pl-72">{children}</main>
             </div>

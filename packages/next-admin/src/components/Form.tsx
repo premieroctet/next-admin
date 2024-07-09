@@ -157,7 +157,7 @@ const Form = ({
     }
 
     return (
-      <div className="mt-4 flex justify-between gap-2">
+      <div className="align-center mt-4 flex flex-wrap justify-between gap-2">
         {((edit && canEdit) || (!edit && canCreate)) && (
           <div className="order-2 flex gap-2">
             <Button
@@ -168,7 +168,7 @@ const Form = ({
               value="list"
               loading={isPending}
             >
-              <CheckCircleIcon className="h-6 w-6" />
+              {!isPending && <CheckCircleIcon className="h-6 w-6" />}
               {t("form.button.save.label")}
             </Button>
             <Button
@@ -219,7 +219,7 @@ const Form = ({
               }}
               loading={isPending}
             >
-              <TrashIcon className="h-4 w-4" />
+              {!isPending && <TrashIcon className="h-4 w-4" />}
               {t("form.button.delete.label")}
             </Button>
           )}
@@ -549,7 +549,7 @@ const Form = ({
 
   return (
     <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-0 z-10 flex flex-row flex-wrap items-center justify-between gap-3 gap-4 border-b px-4 py-3 shadow-sm">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-14 z-20 flex flex-row flex-wrap items-center justify-between gap-3 gap-4 border-b px-4 py-3 shadow-sm lg:top-0">
         <Breadcrumb breadcrumbItems={breadcrumItems} />
         <div className="flex items-center gap-2">
           {!!actions && actions.length > 0 && !!id && (
