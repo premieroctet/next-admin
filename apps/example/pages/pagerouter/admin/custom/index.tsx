@@ -35,7 +35,7 @@ const CustomPage = ({
         data: {
           name: "John Doe",
         },
-        logoutUrl: "/",
+        logout: ["/"],
       }}
     >
       <div className="p-10">

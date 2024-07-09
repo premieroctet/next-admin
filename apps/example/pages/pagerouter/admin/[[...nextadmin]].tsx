@@ -17,7 +17,7 @@ export default function Admin(props: AdminComponentProps) {
         data: {
           name: "John Doe",
         },
-        logoutUrl: "/",
+        logout: ["/"],
       }}
     />
   );
