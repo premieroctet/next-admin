@@ -26,11 +26,10 @@ export default function Cell({ cell, formatter, copyable }: Props) {
 
   if (cell && cell !== null) {
     if (React.isValidElement(cellValue)) {
-      const displayValue = getDisplayedValue(cellValue);
       return (
         <div className="flex gap-1">
           {cellValue}
-          {copyable && <Clipboard value={displayValue} />}
+          {copyable && <Clipboard value={getDisplayedValue(cellValue)} />}
         </div>
       );
     } else if (typeof cell === "object" && !isReactNode(cellValue)) {

@@ -476,7 +476,7 @@ export const formatId = (resource: ModelName, id: string) => {
   const model = models.find((model) => model.name === resource);
   const idProperty = getModelIdProperty(resource);
 
-  return model?.fields.find((field) => field.name === idProperty)?.type ===
+  return model?.fields?.find((field) => field.name === idProperty)?.type ===
     "Int"
     ? Number(id)
     : id;

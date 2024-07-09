@@ -150,8 +150,11 @@ export default function Menu({
       if (user.logout) {
         if (typeof user.logout === "function") {
           await user.logout();
+          location.reload();
         } else {
-          await fetch(...user.logout);
+          await fetch(...user.logout).then(() => {
+            location.reload();
+          });
         }
       }
     };
