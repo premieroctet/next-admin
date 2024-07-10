@@ -827,3 +827,18 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    */
   schema: any;
 };
+
+
+export type FormProps = {
+  data: any;
+  schema: any;
+  dmmfSchema: readonly Prisma.DMMF.Field[];
+  resource: ModelName;
+  slug?: string;
+  validation?: PropertyValidationError[];
+  title: string;
+  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  actions?: AdminComponentProps["actions"];
+  icon?: ModelIcon;
+  resourcesIdProperty: Record<ModelName, string>;
+};

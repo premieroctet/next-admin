@@ -3,21 +3,15 @@ import { cloneDeep } from "lodash";
 import {
   AdminComponentProps,
   EditOptions,
-  Field,
   GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
-  ListOptions,
   MainLayoutProps,
   ModelIcon,
   ModelName,
   NextAdminOptions,
 } from "../types";
 import { getCustomInputs } from "./options";
-import {
-  getMappedDataList,
-  mapDataList,
-  selectPayloadForModel,
-} from "./prisma";
+import { getDataItem, getMappedDataList } from "./prisma";
 import {
   getModelIdProperty,
   getPrismaModelForResource,
@@ -25,7 +19,6 @@ import {
   getResourceIdFromParam,
   getResources,
   getToStringForModel,
-  transformData,
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
@@ -151,7 +144,6 @@ export async function getPropsFromParams({
     }
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
-      const idProperty = getModelIdProperty(resource);
 
       const dmmfSchema = getPrismaModelForResource(resource);
       const edit = options?.model?.[resource]?.edit as EditOptions<
@@ -168,65 +160,13 @@ export async function getPropsFromParams({
         : undefined;
 
       if (resourceId !== undefined) {
-        const select = selectPayloadForModel(resource, edit, "object");
-
-        Object.entries(select).forEach(([key, value]) => {
-          const fieldTypeDmmf = dmmfSchema?.fields.find(
-            (field) => field.name === key
-          )?.type;
-
-          if (fieldTypeDmmf && dmmfSchema) {
-            const relatedResourceOptions =
-              options?.model?.[fieldTypeDmmf as ModelName]?.list;
-
-            if (
-              // @ts-expect-error
-              edit?.fields?.[key as Field<ModelName>]?.display === "table"
-            ) {
-              if (!relatedResourceOptions?.display) {
-                throw new Error(
-                  `'table' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
-                );
-              }
-
-              select[key] = {
-                select: selectPayloadForModel(
-                  fieldTypeDmmf as ModelName,
-                  relatedResourceOptions as ListOptions<ModelName>,
-                  "object"
-                ),
-              };
-            }
-          }
-        });
-
-        // @ts-expect-error
-        let data = await prisma[resource].findUniqueOrThrow({
-          select,
-          where: { [idProperty]: resourceId },
-        });
-
-        Object.entries(data).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            const fieldTypeDmmf = dmmfSchema?.fields.find(
-              (field) => field.name === key
-            )?.type;
-
-            if (fieldTypeDmmf && dmmfSchema) {
-              if (
-                // @ts-expect-error
-                edit?.fields?.[key as Field<ModelName>]?.display === "table"
-              ) {
-                data[key] = mapDataList({
-                  context: { locale },
-                  appDir: isAppDir,
-                  fetchData: value,
-                  options,
-                  resource: fieldTypeDmmf as ModelName,
-                });
-              }
-            }
-          }
+        const data = await getDataItem({
+          prisma,
+          resource,
+          resourceId,
+          options,
+          locale,
+          isAppDir,
         });
 
         const toStringFunction = getToStringForModel(
@@ -235,7 +175,7 @@ export async function getPropsFromParams({
         const slug = toStringFunction
           ? toStringFunction(data)
           : resourceId.toString();
-        data = transformData(data, resource, edit, options);
+
         return {
           ...defaultProps,
           resource,

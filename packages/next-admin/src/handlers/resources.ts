@@ -1,11 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 import {
+  PrismaClientKnownRequestError,
+  PrismaClientValidationError,
+} from "@prisma/client/runtime/library";
+import {
   EditFieldsOptions,
   ModelName,
   NextAdminOptions,
   Permission,
   UploadParameters,
 } from "../types";
+import { hasPermission } from "../utils/permissions";
+import { getDataItem } from "../utils/prisma";
 import {
   formattedFormData,
   getModelIdProperty,
@@ -14,11 +20,6 @@ import {
 } from "../utils/server";
 import { uncapitalize } from "../utils/tools";
 import { validate } from "../utils/validator";
-import { hasPermission } from "../utils/permissions";
-import {
-  PrismaClientKnownRequestError,
-  PrismaClientValidationError,
-} from "@prisma/client/runtime/library";
 
 type DeleteResourceParams = {
   prisma: PrismaClient;
@@ -106,14 +107,21 @@ export const submitResource = async ({
       }
 
       // @ts-expect-error
-      data = await prisma[resource].update({
+      await prisma[resource].update({
         where: {
           [resourceIdField]: id,
         },
         data: formattedData,
       });
 
-      return { updated: true, redirect: redirect === "list" };
+      const data = await getDataItem({
+        prisma,
+        resource,
+        resourceId: id,
+        options,
+      });
+
+      return { updated: true, data, redirect: redirect === "list" };
     }
 
     if (!hasPermission(options?.model?.[resource], Permission.CREATE)) {
@@ -123,7 +131,7 @@ export const submitResource = async ({
     }
 
     // @ts-expect-error
-    data = await prisma[resource].create({
+    const data = await prisma[resource].create({
       data: formattedData,
     });
 
@@ -135,9 +143,17 @@ export const submitResource = async ({
       data: complementaryFormattedData,
     });
 
+    const responseData = await getDataItem({
+      prisma,
+      resource,
+      resourceId: data[resourceIdField],
+      options,
+    });
+
     return {
       created: true,
       createdId: data[resourceIdField],
+      data: responseData,
       redirect: redirect === "list",
     };
   } catch (error: any) {

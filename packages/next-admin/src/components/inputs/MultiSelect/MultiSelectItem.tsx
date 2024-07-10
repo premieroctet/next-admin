@@ -28,9 +28,6 @@ const MultiSelectItem = ({
             // @ts-expect-error
             schema.items?.relation
         )}/${item.value}`}
-        onClick={(e) => {
-          console.log("Clicked on item", item);
-        }}
       >
         {item.label}
       </Link>

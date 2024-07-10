@@ -21,6 +21,7 @@ import {
   getPrismaModelForResource,
   getToStringForRelations,
   modelHasIdField,
+  transformData,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
@@ -435,4 +436,86 @@ export const selectPayloadForModel = <M extends ModelName>(
   );
 
   return selectedFields;
+};
+
+export const getDataItem = async <M extends ModelName>({
+  prisma,
+  resource,
+  options,
+
+  resourceId,
+  locale,
+  isAppDir,
+}: {
+  options?: NextAdminOptions;
+  prisma: PrismaClient;
+  isAppDir?: boolean;
+  locale?: string;
+  resource: M;
+
+  resourceId: string | number;
+}) => {
+  const dmmfSchema = getPrismaModelForResource(resource);
+  const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
+  const idProperty = getModelIdProperty(resource);
+  const select = selectPayloadForModel(resource, edit, "object");
+
+  Object.entries(select).forEach(([key, value]) => {
+    const fieldTypeDmmf = dmmfSchema?.fields.find((field) => field.name === key)
+      ?.type;
+
+    if (fieldTypeDmmf && dmmfSchema) {
+      const relatedResourceOptions =
+        options?.model?.[fieldTypeDmmf as ModelName]?.list;
+
+      if (
+        // @ts-expect-error
+        edit?.fields?.[key as Field<ModelName>]?.display === "table"
+      ) {
+        if (!relatedResourceOptions?.display) {
+          throw new Error(
+            `'table' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
+          );
+        }
+
+        select[key] = {
+          select: selectPayloadForModel(
+            fieldTypeDmmf as ModelName,
+            relatedResourceOptions as ListOptions<ModelName>,
+            "object"
+          ),
+        };
+      }
+    }
+  });
+
+  // @ts-expect-error
+  let data = await prisma[resource].findUniqueOrThrow({
+    select,
+    where: { [idProperty]: resourceId },
+  });
+  Object.entries(data).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      const fieldTypeDmmf = dmmfSchema?.fields.find(
+        (field) => field.name === key
+      )?.type;
+
+      if (fieldTypeDmmf && dmmfSchema) {
+        if (
+          // @ts-expect-error
+          edit?.fields?.[key as Field<ModelName>]?.display === "table"
+        ) {
+          data[key] = mapDataList({
+            context: { locale },
+            appDir: isAppDir,
+            fetchData: value,
+            options,
+            resource: fieldTypeDmmf as ModelName,
+          });
+        }
+      }
+    }
+  });
+  data = transformData(data, resource, edit ?? {}, options);
+  return data;
 };
