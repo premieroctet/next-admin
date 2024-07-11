@@ -23,12 +23,14 @@ import React, {
   HTMLProps,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
 import { useConfig } from "../context/ConfigContext";
-import FormProvider, { useFormState } from "../context/FormStateContext";
+import FormDataProvider, { useFormData } from "../context/FormDataContext";
+import FormStateProvider, { useFormState } from "../context/FormStateContext";
 import { useI18n } from "../context/I18nContext";
 import { MessageProvider, useMessage } from "../context/MessageContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
@@ -115,8 +117,8 @@ const Form = ({
   const allDisabled = edit && !canEdit;
   const { runDeletion } = useDeleteAction(resource);
   const { showMessage } = useMessage();
-  const [formData, setFormData] = useState(data);
   const { cleanAll } = useFormState();
+  const { setFormData } = useFormData();
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -124,85 +126,88 @@ const Form = ({
     }
   }, [canCreate, edit, router]);
 
-  const submitButton = (props: SubmitButtonProps) => {
-    const { uiSchema } = props;
-    const { norender, props: buttonProps } = getSubmitButtonOptions(uiSchema);
+  const submitButton = useMemo(
+    () => (props: SubmitButtonProps) => {
+      const { uiSchema } = props;
+      const { norender, props: buttonProps } = getSubmitButtonOptions(uiSchema);
 
-    if (norender) {
-      return null;
-    }
+      if (norender) {
+        return null;
+      }
 
-    return (
-      <div className="align-center mt-4 flex flex-wrap justify-between gap-2">
-        {((edit && canEdit) || (!edit && canCreate)) && (
-          <div className="order-2 flex gap-2">
-            <Button
-              {...buttonProps}
-              className="order-2 flex gap-2"
-              type="submit"
-              name="__admin_redirect"
-              value="list"
-              loading={isPending}
-            >
-              {!isPending && <CheckCircleIcon className="h-6 w-6" />}
-              {t("form.button.save.label")}
-            </Button>
-            <Button
-              {...buttonProps}
-              variant={"ghost"}
-              className="order-1 hidden sm:block"
-              tabIndex={-1}
-              type="submit"
-              loading={isPending}
-              name="save_edit"
-            >
-              {t("form.button.save_edit.label")}
-            </Button>
-          </div>
-        )}
-        <div className="order-1">
-          {edit && canDelete && (
-            <Button
-              variant="destructiveOutline"
-              className="flex gap-2"
-              formNoValidate
-              tabIndex={-1}
-              onClick={async (e) => {
-                if (!confirm(t("form.delete.alert"))) {
-                  e.preventDefault();
-                } else {
-                  try {
-                    setIsPending(true);
-                    await runDeletion([id!] as string[] | number[]);
-                    router.replace({
-                      pathname: `${basePath}/${slugify(resource)}`,
-                      query: {
-                        message: JSON.stringify({
-                          type: "success",
-                          message: "Deleted successfully",
-                        }),
-                      },
-                    });
-                  } catch (e) {
-                    showMessage({
-                      type: "error",
-                      message: (e as Error).message,
-                    });
-                  } finally {
-                    setIsPending(false);
-                  }
-                }
-              }}
-              loading={isPending}
-            >
-              {!isPending && <TrashIcon className="h-4 w-4" />}
-              {t("form.button.delete.label")}
-            </Button>
+      return (
+        <div className="align-center mt-4 flex flex-wrap justify-between gap-2">
+          {((edit && canEdit) || (!edit && canCreate)) && (
+            <div className="order-2 flex gap-2">
+              <Button
+                {...buttonProps}
+                className="order-2 flex gap-2"
+                type="submit"
+                name="__admin_redirect"
+                value="list"
+                loading={isPending}
+              >
+                {!isPending && <CheckCircleIcon className="h-6 w-6" />}
+                {t("form.button.save.label")}
+              </Button>
+              <Button
+                {...buttonProps}
+                variant={"ghost"}
+                className="order-1 hidden sm:block"
+                tabIndex={-1}
+                type="submit"
+                loading={isPending}
+                name="save_edit"
+              >
+                {t("form.button.save_edit.label")}
+              </Button>
+            </div>
           )}
+          <div className="order-1">
+            {edit && canDelete && (
+              <Button
+                variant="destructiveOutline"
+                className="flex gap-2"
+                formNoValidate
+                tabIndex={-1}
+                onClick={async (e) => {
+                  if (!confirm(t("form.delete.alert"))) {
+                    e.preventDefault();
+                  } else {
+                    try {
+                      setIsPending(true);
+                      await runDeletion([id!] as string[] | number[]);
+                      router.replace({
+                        pathname: `${basePath}/${slugify(resource)}`,
+                        query: {
+                          message: JSON.stringify({
+                            type: "success",
+                            message: "Deleted successfully",
+                          }),
+                        },
+                      });
+                    } catch (e) {
+                      showMessage({
+                        type: "error",
+                        message: (e as Error).message,
+                      });
+                    } finally {
+                      setIsPending(false);
+                    }
+                  }
+                }}
+                loading={isPending}
+              >
+                {!isPending && <TrashIcon className="h-4 w-4" />}
+                {t("form.button.delete.label")}
+              </Button>
+            )}
+          </div>
         </div>
-      </div>
-    );
-  };
+      );
+    },
+    [isPending, id]
+  );
 
   const extraErrors: ErrorSchema | undefined = validation?.reduce(
     (acc, curr) => {
@@ -505,16 +510,20 @@ const Form = ({
     }
   );
 
-  return (
-    <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
-        <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
-        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
+  const RjsfFormComponent = useMemo(
+    () =>
+      forwardRef<RjsfForm>((_props, ref) => {
+        const { formData } = useFormData();
+
+        return (
           <RjsfForm
             tagName={CustomForm}
             idPrefix=""
             idSeparator=""
             {...schemas}
+            onChange={(e) => {
+              setFormData(e.formData);
+            }}
             formData={formData}
             validator={validator}
             extraErrors={extraErrors}
@@ -526,9 +535,20 @@ const Form = ({
               ButtonTemplates: { SubmitButton: submitButton },
             }}
             widgets={widgets}
-            ref={formRef}
+            ref={ref}
             className="relative"
           />
+        );
+      }),
+    [submitButton]
+  );
+
+  return (
+    <div className="relative h-full">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
+        <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
+        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
+          <RjsfFormComponent ref={formRef} />
         </div>
       </div>
     </div>
@@ -540,9 +560,11 @@ const FormWrapper = (props: FormProps) => {
     <>
       <FormHeader {...props} />
       <MessageProvider>
-        <FormProvider>
-          <Form {...props} />
-        </FormProvider>
+        <FormDataProvider data={props.data}>
+          <FormStateProvider>
+            <Form {...props} />
+          </FormStateProvider>
+        </FormDataProvider>
       </MessageProvider>
     </>
   );

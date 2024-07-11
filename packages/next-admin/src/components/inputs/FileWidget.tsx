@@ -5,7 +5,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
-import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { ChangeEvent, memo, useEffect, useRef, useState } from "react";
 import Loader from "../../assets/icons/Loader";
 import { useFormState } from "../../context/FormStateContext";
 import { useI18n } from "../../context/I18nContext";

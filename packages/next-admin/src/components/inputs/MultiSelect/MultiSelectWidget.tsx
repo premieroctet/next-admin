@@ -2,6 +2,7 @@ import { RJSFSchema } from "@rjsf/utils";
 import clsx from "clsx";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
 import { useConfig } from "../../../context/ConfigContext";
+import { useFormState } from "../../../context/FormStateContext";
 import { useI18n } from "../../../context/I18nContext";
 import useClickOutside from "../../../hooks/useCloseOnOutsideClick";
 import { useDisclosure } from "../../../hooks/useDisclosure";
@@ -28,10 +29,12 @@ const MultiSelectWidget = (props: Props) => {
   const containerRef = useClickOutside<HTMLDivElement>(() => onClose());
   const { formData, onChange, options, name, schema } = props;
   const { t } = useI18n();
+  const { setFieldDirty } = useFormState();
   const fieldOptions =
     globalOptions?.model?.[resource!]?.edit?.fields?.[name as Field<ModelName>];
 
   const onRemoveClick = (value: any) => {
+    setFieldDirty(name);
     onChange(formData?.filter((item: Enumeration) => item.value !== value));
   };
 
@@ -114,7 +117,10 @@ const MultiSelectWidget = (props: Props) => {
             onRemoveClick={onRemoveClick}
             deletable={!props.disabled}
             sortable={fieldSortable}
-            onUpdateFormData={onChange}
+            onUpdateFormData={(value) => {
+              setFieldDirty(name);
+              onChange(value);
+            }}
           />
 
           <Button
@@ -155,6 +161,7 @@ const MultiSelectWidget = (props: Props) => {
         name={name}
         options={optionsLeft?.length ? optionsLeft : undefined}
         onChange={(option: Enumeration) => {
+          setFieldDirty(name);
           onChange([...(formData || []), option]);
         }}
         selectedOptions={selectedValues}
