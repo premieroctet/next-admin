@@ -121,6 +121,8 @@ export function NextAdmin({
         user={user}
         externalLinks={externalLinks}
         options={options}
+        dmmfSchema={dmmfSchema}
+        resourcesIdProperty={resourcesIdProperty!}
       >
         {renderMainComponent()}
       </MainLayout>

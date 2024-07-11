@@ -666,6 +666,8 @@ export type MainLayoutProps = Pick<
   | "user"
   | "externalLinks"
   | "options"
+  | "resourcesIdProperty"
+  | "dmmfSchema"
 >;
 
 export type CustomUIProps = {

@@ -9,26 +9,26 @@ import {
   BaseInputTemplateProps,
   ErrorSchema,
   FieldTemplateProps,
+  getSubmitButtonOptions,
   ObjectFieldTemplateProps,
   SubmitButtonProps,
-  getSubmitButtonOptions,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
 import React, {
   ChangeEvent,
-  HTMLProps,
   cloneElement,
   forwardRef,
+  HTMLProps,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
 import { useConfig } from "../context/ConfigContext";
-import { FormProvider, useForm } from "../context/FormContext";
 import { useI18n } from "../context/I18nContext";
 import { MessageProvider, useMessage } from "../context/MessageContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
@@ -115,7 +115,7 @@ const Form = ({
   const allDisabled = edit && !canEdit;
   const { runDeletion } = useDeleteAction(resource);
   const { showMessage } = useMessage();
-  const { setFormData, formData } = useForm();
+  const [formData, setFormData] = useState(data);
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -302,23 +302,6 @@ const Form = ({
     [apiBasePath, id]
   );
 
-  const CustomForm = forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>(
-    (props, ref) => (
-      <form
-        {...props}
-        ref={ref}
-        onSubmit={(e) => {
-          e.preventDefault();
-          const data = new FormData(e.target as HTMLFormElement);
-          // @ts-expect-error
-          const submitter = e.nativeEvent.submitter as HTMLButtonElement;
-          data.append(submitter.name, submitter.value);
-          onSubmit(data);
-        }}
-      />
-    )
-  );
-
   const templates: RjsfForm["props"]["templates"] = {
     FieldTemplate: (props: FieldTemplateProps) => {
       const {
@@ -493,6 +476,31 @@ const Form = ({
     },
   };
 
+  const CustomForm = useMemo(
+    () =>
+      forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>((props, ref) => {
+        console.log(props)
+        return (
+          <form
+            {...props}
+            ref={ref}
+            onChange={(e) => {
+              console.log(e.target);
+            }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const data = new FormData(e.target as HTMLFormElement);
+              // @ts-expect-error
+              const submitter = e.nativeEvent.submitter as HTMLButtonElement;
+              data.append(submitter.name, submitter.value);
+              onSubmit(data);
+            }}
+          />
+        );
+      }),
+    [onSubmit]
+  );
+
   return (
     <div className="relative h-full">
       <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
@@ -508,7 +516,6 @@ const Form = ({
             extraErrors={extraErrors}
             fields={fields}
             disabled={allDisabled}
-            focusOnFirstError={true}
             formContext={{ isPending }}
             templates={{
               ...templates,
@@ -525,21 +532,11 @@ const Form = ({
 };
 
 const FormWrapper = (props: FormProps) => {
-  const { data, dmmfSchema, resource, resourcesIdProperty } = props;
-  const { options } = useConfig();
   return (
     <>
       <FormHeader {...props} />
       <MessageProvider>
-        <FormProvider
-          initialValue={data}
-          dmmfSchema={dmmfSchema}
-          resource={resource}
-          options={options}
-          resourcesIdProperty={resourcesIdProperty}
-        >
-          <Form {...props} />
-        </FormProvider>
+        <Form {...props} />
       </MessageProvider>
     </>
   );

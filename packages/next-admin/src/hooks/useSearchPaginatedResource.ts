@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useConfig } from "../context/ConfigContext";
-import { useForm } from "../context/FormContext";
 import { Enumeration } from "../types";
 
 type UseSearchPaginatedResourceParams = {
@@ -13,8 +12,7 @@ const useSearchPaginatedResource = ({
   initialOptions,
 }: UseSearchPaginatedResourceParams) => {
   const [isPending, setIsPending] = useState(false);
-  const { dmmfSchema, resource } = useForm();
-  const { apiBasePath } = useConfig();
+  const { apiBasePath, dmmfSchema, resource } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
   const [allOptions, setAllOptions] = useState<Enumeration[]>(

@@ -8,7 +8,7 @@ const ArrayField = (props: FieldProps) => {
       onChange={onChange}
       formData={formData}
       name={name}
-      disabled={disabled}
+      disabled={disabled ?? false}
       required={required}
       schema={schema}
     />

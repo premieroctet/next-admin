@@ -210,6 +210,7 @@ export const getMainLayoutProps = ({
   options,
   params,
   isAppDir = true,
+  
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   if (params !== undefined && !Array.isArray(params)) {
     throw new Error(
@@ -219,6 +220,14 @@ export const getMainLayoutProps = ({
 
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
+  const dmmfSchema = getPrismaModelForResource(resource!);
+  const resourcesIdProperty = resources!.reduce(
+    (acc, resource) => {
+      acc[resource] = getModelIdProperty(resource);
+      return acc;
+    },
+    {} as Record<ModelName, string>
+  );
 
   const customPages = Object.keys(options?.pages ?? {}).map((path) => ({
     title: options?.pages![path as keyof typeof options.pages].title ?? path,
@@ -260,5 +269,7 @@ export const getMainLayoutProps = ({
     resourcesIcons,
     externalLinks: options?.externalLinks,
     options: extractSerializable(options),
+    dmmfSchema: dmmfSchema?.fields,
+    resourcesIdProperty: resourcesIdProperty,
   };
 };
