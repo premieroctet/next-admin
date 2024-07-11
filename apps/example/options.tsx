@@ -99,7 +99,8 @@ export const options: NextAdminOptions = {
             format: "file",
             handler: {
               get: (url) => {
-                return "https://www.gratar.com/avatar/00000000000000000000000000000000";
+                //return "https://github.com/rjsf-team/react-jsonschema-form/blob/main/docs/index.md";
+                return "https://shinework-dreambooth.s3.us-east-1.amazonaws.com/superbooth/1720011730062.jpeg";
               },
               /*
                * Include your own upload handler here,

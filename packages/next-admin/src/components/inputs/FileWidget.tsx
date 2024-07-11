@@ -7,6 +7,7 @@ import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Loader from "../../assets/icons/Loader";
+import { useFormState } from "../../context/FormStateContext";
 import { useI18n } from "../../context/I18nContext";
 
 const FileWidget = (props: WidgetProps) => {
@@ -20,11 +21,13 @@ const FileWidget = (props: WidgetProps) => {
   const [hasChanged, setHasChanged] = useState(false);
   const { t } = useI18n();
   const [isDragging, setIsDragging] = useState(false);
+  const { setFieldDirty } = useFormState();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files;
     if (selectedFile) {
       setHasChanged(true);
+      setFieldDirty(props.name);
       setFile(selectedFile[0]);
     }
   };
@@ -54,6 +57,7 @@ const FileWidget = (props: WidgetProps) => {
     setFile(undefined);
     setFileData(null);
     setErrors(undefined);
+    setFieldDirty(props.name);
   };
 
   const handleDrop = (event: React.DragEvent) => {

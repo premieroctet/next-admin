@@ -3,7 +3,7 @@ import clsx from "clsx";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
 import { useConfig } from "../../../context/ConfigContext";
 import { useI18n } from "../../../context/I18nContext";
-import useCloseOnOutsideClick from "../../../hooks/useCloseOnOutsideClick";
+import useClickOutside from "../../../hooks/useCloseOnOutsideClick";
 import { useDisclosure } from "../../../hooks/useDisclosure";
 import { Enumeration, Field, ModelName } from "../../../types";
 import Button from "../../radix/Button";
@@ -25,7 +25,7 @@ type Props = {
 const MultiSelectWidget = (props: Props) => {
   const { options: globalOptions, resource } = useConfig();
   const { onToggle, isOpen, onClose } = useDisclosure();
-  const containerRef = useCloseOnOutsideClick<HTMLDivElement>(() => onClose());
+  const containerRef = useClickOutside<HTMLDivElement>(() => onClose());
   const { formData, onChange, options, name, schema } = props;
   const { t } = useI18n();
   const fieldOptions =

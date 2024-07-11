@@ -23,12 +23,12 @@ import React, {
   HTMLProps,
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
 import { useConfig } from "../context/ConfigContext";
+import FormProvider, { useFormState } from "../context/FormStateContext";
 import { useI18n } from "../context/I18nContext";
 import { MessageProvider, useMessage } from "../context/MessageContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
@@ -116,6 +116,7 @@ const Form = ({
   const { runDeletion } = useDeleteAction(resource);
   const { showMessage } = useMessage();
   const [formData, setFormData] = useState(data);
+  const { cleanAll } = useFormState();
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -237,6 +238,7 @@ const Form = ({
 
         if (result?.data) {
           setFormData(result.data);
+          cleanAll();
         }
 
         if (result?.deleted) {
@@ -394,10 +396,12 @@ const Form = ({
       hideLabel,
       ...props
     }: BaseInputTemplateProps) => {
+      const { setFieldDirty } = useFormState();
       const onTextChange = ({
         target: { value: val },
       }: ChangeEvent<HTMLInputElement>) => {
         // Use the options.emptyValue if it is specified and newVal is also an empty string
+        setFieldDirty(props.name);
         onChange(val === "" ? options.emptyValue || "" : val);
       };
 
@@ -476,26 +480,29 @@ const Form = ({
     },
   };
 
-  const CustomForm = useMemo(
-    () =>
-      forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>((props, ref) => {
+  const CustomForm = forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>(
+    (props, ref) => {
+      const { dirtyFields } = useFormState();
+      return (
+        <form
+          {...props}
+          ref={ref}
+          onSubmit={(e) => {
+            e.preventDefault();
+            const formValues = new FormData(e.target as HTMLFormElement);
+            const data = new FormData();
+            dirtyFields.forEach((field) => {
+              data.append(field, formValues.get(field) as string);
+            });
 
-        return (
-          <form
-            {...props}
-            ref={ref}
-            onSubmit={(e) => {
-              e.preventDefault();
-              const data = new FormData(e.target as HTMLFormElement);
-              // @ts-expect-error
-              const submitter = e.nativeEvent.submitter as HTMLButtonElement;
-              data.append(submitter.name, submitter.value);
-              onSubmit(data);
-            }}
-          />
-        );
-      }),
-    [onSubmit]
+            // @ts-expect-error
+            const submitter = e.nativeEvent.submitter as HTMLButtonElement;
+            data.append(submitter.name, submitter.value);
+            onSubmit(data);
+          }}
+        />
+      );
+    }
   );
 
   return (
@@ -533,7 +540,9 @@ const FormWrapper = (props: FormProps) => {
     <>
       <FormHeader {...props} />
       <MessageProvider>
-        <Form {...props} />
+        <FormProvider>
+          <Form {...props} />
+        </FormProvider>
       </MessageProvider>
     </>
   );
