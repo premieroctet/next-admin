@@ -479,14 +479,11 @@ const Form = ({
   const CustomForm = useMemo(
     () =>
       forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>((props, ref) => {
-        console.log(props)
+
         return (
           <form
             {...props}
             ref={ref}
-            onChange={(e) => {
-              console.log(e.target);
-            }}
             onSubmit={(e) => {
               e.preventDefault();
               const data = new FormData(e.target as HTMLFormElement);
