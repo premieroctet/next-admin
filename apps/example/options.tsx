@@ -98,10 +98,6 @@ export const options: NextAdminOptions = {
           avatar: {
             format: "file",
             handler: {
-              get: (url) => {
-                //return "https://github.com/rjsf-team/react-jsonschema-form/blob/main/docs/index.md";
-                return "https://shinework-dreambooth.s3.us-east-1.amazonaws.com/superbooth/1720011730062.jpeg";
-              },
               /*
                * Include your own upload handler here,
                * for example you can upload the file to an S3 bucket.

@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.10
+
+### Patch Changes
+
+- Add `isDirty` for form to submit only fields touched
+
 ## 5.0.0-rc.9
 
 ### Patch Changes
