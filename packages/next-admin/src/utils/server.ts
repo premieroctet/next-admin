@@ -1,8 +1,8 @@
 import { Prisma } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { Writable } from "node:stream";
 import { NextApiRequest } from "next";
+import { Writable } from "node:stream";
 import {
   AdminFormData,
   EditFieldsOptions,
@@ -740,8 +740,9 @@ export const formattedFormData = async <M extends ModelName>(
             formattedData[dmmfPropertyName] =
               formData[dmmfPropertyName] === "on";
           } else if (dmmfPropertyType === "DateTime") {
-            formattedData[dmmfPropertyName] =
-              formData[dmmfPropertyName] || null;
+            formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
+              ? new Date(formData[dmmfPropertyName]!)
+              : null;
           } else if (dmmfPropertyType === "Json") {
             try {
               formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
@@ -994,10 +995,15 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               if (!file.originalFilename) {
                 files[name] = [null];
               } else {
-                files[name] = [[Buffer.concat(chunks), {
-                  name: file.originalFilename,
-                  type: file.mimetype,
-                }]];
+                files[name] = [
+                  [
+                    Buffer.concat(chunks),
+                    {
+                      name: file.originalFilename,
+                      type: file.mimetype,
+                    },
+                  ],
+                ];
               }
               callback();
             },
@@ -1044,10 +1050,13 @@ export const getFormValuesFromFormData = async (formData: FormData) => {
           return;
         }
         const buffer = await file.arrayBuffer();
-        formValues[key] = [Buffer.from(buffer), {
-          name: file.name,
-          type: file.type,
-        }];
+        formValues[key] = [
+          Buffer.from(buffer),
+          {
+            name: file.name,
+            type: file.type,
+          },
+        ];
       } else {
         formValues[key] = value as string;
       }

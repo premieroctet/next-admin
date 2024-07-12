@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.11
+
+### Patch Changes
+
+- Fix date input and add time-second format
+
 ## 5.0.0-rc.10
 
 ### Patch Changes

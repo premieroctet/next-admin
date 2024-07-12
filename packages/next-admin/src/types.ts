@@ -275,6 +275,7 @@ export type FormatOptions<T> = T extends string
       | "date"
       | "date-time"
       | "time"
+      | "time-second"
       | "alt-datetime"
       | "alt-date"
       | "file"
