@@ -1,4 +1,5 @@
-import { Tabs } from "nextra/components";
+import { Callout, Tabs } from "nextra/components";
+
 
 # API
 
@@ -144,7 +145,9 @@ import { Tabs } from "nextra/components";
 - `translations` used to customize some of the texts displayed in the UI. See [i18n](/docs/i18n) for more details.
 - `user` used to add some user information at the bottom of the menu. See [user properties](#user-properties) for more details.
 
-> ⚠️ : Do not override these `AdminComponentProps` props, they are used internally by Next Admin.
+<Callout emoji=" ⚠️">
+  Do not override these `AdminComponentProps` props, they are used internally by Next Admin.
+</Callout>
 
 This is an example of using the `NextAdmin` component with a custom Dashboard component and options:
 
@@ -231,7 +234,9 @@ This property determines how your data is displayed in the [List View](/docs/glo
 | `filters`               | define a set of Prisma filters that user can choose in list, see [below](#filters-property)            | undefined                                    |
 | `exports`               | an object or array of [export](#exports-property) - containing export url                              | undefined                                    |
 
-> Note that the `search` property is only available for `scalar` fields.
+<Callout type="info">
+  The `search` property is only available for `scalar` fields.
+</Callout>
 
 - ##### `edit` property
 
@@ -247,8 +252,10 @@ This property determines how your data is displayed in the [edit view](/docs/glo
 ##### `styles` property
 
 The `styles` property is available in the `edit` property.
+<Callout emoji="⚠️">
+  If your options are defined in a separate file, make sure to add the path to the `content` property of the `tailwind.config.js` file (see [TailwindCSS configuration](/docs/getting-started#tailwindcss-configuration)).
+</Callout>
 
-> ⚠️ If your options are defined in a separate file, make sure to add the path to the `content` property of the `tailwind.config.js` file
 
 | Name    | Description                                                                    |
 | ------- | ------------------------------------------------------------------------------ |
@@ -315,8 +322,9 @@ The `exports` property is available in the `list` property. It's an object or an
 | `format` | a string defining the format of the export. It's used to labeled the export button. | undefined     |
 | `url`    | a string defining the URL of the export action.                                     | undefined     |
 
-> Note that the `exports` property do not take care of active filters. If you want to export filtered data, you have to add the filters in the URL or in your export action.
-
+<Callout type="info">
+  The `exports` property does not account for active filters. If you want to export filtered data, you need to add the filters to the URL or in your export action.
+</Callout>
 ### `pages`
 
 `pages` is an object that allows you to add your own sub pages as a sidebar menu entry. It is an object where the key is the path (without the base path) and the value is an object with the following properties:
