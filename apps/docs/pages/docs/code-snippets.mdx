@@ -10,8 +10,7 @@ By using [exports](/docs/api-docs#exports-property) options, you can export data
 
 The API endpoint route must be defined in the `exports` property of the options object. This is an example of how to implement the export API endpoint:
 
-```typescript copy
-// app/api/users/export/route.ts
+```typescript copy filename="app/api/users/export/route.ts"
 import { prisma } from "@/prisma";
 
 export async function GET() {
@@ -32,8 +31,7 @@ export async function GET() {
 
 or with a stream response:
 
-```typescript copy
-// app/api/users/export/route.ts
+```typescript copy filename="app/api/users/export/route.ts"
 import { prisma } from "@/prisma";
 const BATCH_SIZE = 1000;
 
@@ -88,8 +86,7 @@ There is two example files in the example project:
 
 If you want to add data to the form data before submitting it, you can add logic to the `submitFormAction` function. This is an example of how to add `createdBy` and `updatedBy` fields based on the user id:
 
-```typescript copy
-// actions/nextadmin.ts
+```typescript copy filename="actions/nextadmin.ts"
 "use server";
 import { ActionParams } from "@premieroctet/next-admin";
 import { submitForm } from "@premieroctet/next-admin/dist/actions";
@@ -117,8 +114,7 @@ This snippet is not implemented in the example project.
 
 If you want to customize the input form, you can create a custom input component. This is an example of how to create a custom input component for the `birthDate` field:
 
-```typescript copy
-// components/inputs/BirthDateInput.tsx
+```typescript copy filename="/components/inputs/BirthDateInput.tsx"
 "use client";
 import { CustomInputProps } from "@premieroctet/next-admin";
 import DateTimePicker from "react-datepicker";

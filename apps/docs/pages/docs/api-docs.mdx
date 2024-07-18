@@ -32,8 +32,7 @@ import { Tabs } from "nextra/components";
 
     Usage example:
 
-    ```ts copy
-    // pages/api/admin/[[...nextadmin]].ts
+    ```ts copy filename="pages/api/admin/[[...nextadmin]].ts"
     export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       const { nextAdminRouter } = await import(
         "@premieroctet/next-admin/dist/router"
@@ -77,9 +76,7 @@ import { Tabs } from "nextra/components";
 
     > The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
 
-    ```ts
-    // app/admin/[[...nextadmin]]/page.tsx
-
+    ```ts copy filename="app/admin/[[...nextadmin]]/page.tsx"
     export default async function AdminPage({
       params,
       searchParams,
@@ -113,9 +110,7 @@ import { Tabs } from "nextra/components";
 
     > The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
 
-    ```ts
-    // pages/api/admin/[[...nextadmin]].ts
-
+    ```ts copy filename="pages/api/admin/[[...nextadmin]].ts"
     export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       const session = await getServerSession(req, res, authOptions);
       const isAdmin = session?.user?.role === "SUPERADMIN"; // your role check
@@ -153,8 +148,7 @@ import { Tabs } from "nextra/components";
 
 This is an example of using the `NextAdmin` component with a custom Dashboard component and options:
 
-```tsx
-// pages/admin/[[...nextadmin]].tsx
+```tsx copy filename="pages/admin/[[...nextadmin]].tsx"
 import Dashboard from "../../components/CustomDashboard";
 
 export default function Admin(props: AdminComponentProps) {
@@ -263,7 +257,7 @@ The `styles` property is available in the `edit` property.
 
 Here is an example of using `styles` property:
 
-```ts
+```ts copy
 styles: {
   _form: "form-classname",
   ... // all fields
@@ -372,8 +366,7 @@ Identical to `defaultColorScheme` but does not allow the user to change it.
 
 Here is an example of using `NextAdminOptions` for the following schema :
 
-```prisma
-// prisma/schema.prisma
+```prisma copy filename="prisma/schema.prisma"
 enum Role {
   USER
   ADMIN
@@ -393,8 +386,7 @@ model User {
 }
 ```
 
-```tsx
-// pages/api/admin/[[...nextadmin]].ts
+```tsx copy filename=" pages/api/admin/[[...nextadmin]].ts"
 const options: NextAdminOptions = {
   basePath: "/admin",
   model: {

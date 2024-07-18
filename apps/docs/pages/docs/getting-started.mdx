@@ -6,18 +6,18 @@ import { Callout, Tabs } from "nextra/components";
 
 <Tabs items={["yarn", "npm", "pnpm"]}>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 yarn add @premieroctet/next-admin prisma-json-schema-generator
     ```
 
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 npm install -S @premieroctet/next-admin prisma-json-schema-generator
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
     ```
   </Tabs.Tab>
@@ -27,7 +27,7 @@ pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
 
 Next-Admin relies on [TailwindCSS](https://tailwindcss.com/) for the style. If you do not have it, you can [install TailwindCSS](https://tailwindcss.com/docs/installation) with the following config :
 
-```typescript
+```typescript copy filename="tailwind.config.js"
 module.exports = {
   content: [
     "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
@@ -49,18 +49,18 @@ SuperJson is required to avoid errors related to invalid serialisation propertie
 
 <Tabs items={["yarn", "npm", "pnpm"]}>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 yarn add -D babel-plugin-superjson-next superjson@^1
     ```
 
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 npm install --save-dev babel-plugin-superjson-next superjson@^1
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 pnpm install -D babel-plugin-superjson-next superjson@^1
     ```
   </Tabs.Tab>
@@ -68,7 +68,7 @@ pnpm install -D babel-plugin-superjson-next superjson@^1
 
 Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
 
-```json
+```json copy
 {
   "presets": ["next/babel"],
   "plugins": ["superjson-next"]
@@ -79,18 +79,18 @@ Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
 
 <Tabs items={["yarn", "npm", "pnpm"]}>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 yarn add -E -D next-superjson-plugin@0.6.1 superjson
     ```
 
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 npm install --save-dev -E next-superjson-plugin@0.6.1 superjson
     ```
   </Tabs.Tab>
   <Tabs.Tab>
-    ```bash
+    ```bash copy
 pnpm install -E -D next-superjson-plugin@0.6.1 superjson
     ```
   </Tabs.Tab>
@@ -98,7 +98,7 @@ pnpm install -E -D next-superjson-plugin@0.6.1 superjson
 
 Add the `next-superjson-plugin` plugin to your `next.config.js` file:
 
-```js
+```js copy filename="next.config.js"
 module.exports = {
   // your current config
   experimental: {
@@ -118,7 +118,7 @@ module.exports = {
 
 Add the `prisma-json-schema-generator` generator to your `schema.prisma` file:
 
-```prisma
+```prisma copy filename="schema.prisma"
 generator jsonSchema {
   provider = "prisma-json-schema-generator"
   includeRequiredFields = "true"
@@ -127,7 +127,7 @@ generator jsonSchema {
 
 Then run the following command :
 
-```bash
+```bash copy
 yarn run prisma generate
 ```
 
@@ -135,8 +135,7 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
 
 <Tabs items={['App router', 'Page router']}>
   <Tabs.Tab>
-    ```tsx
-    // app/admin/[[...nextadmin]]/page.tsx
+    ```tsx copy filename="pages/admin/[[...nextadmin]].tsx"
     import { NextAdmin } from "@premieroctet/next-admin";
     import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
     import Dashboard from "../../../components/Dashboard";
@@ -182,8 +181,7 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
 
     You will also need to create the action:
 
-    ```tsx
-    // actions/nextadmin.ts
+    ```tsx copy filename="actions/nextadmin.ts"
     "use server";
     import { ActionParams } from "@premieroctet/next-admin";
     import { submitForm } from "@premieroctet/next-admin/dist/actions";
