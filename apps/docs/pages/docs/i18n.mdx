@@ -1,3 +1,5 @@
+import { Callout } from "nextra/components";
+
 # I18n
 
 Next Admin supports i18n with the `translations` prop of the `NextAdmin` component.
@@ -34,8 +36,9 @@ The following keys are accepted:
 
 There is two ways to translate these default keys, provide a function named `getMessages` inside the options or provide `translations` props to `NextAdmin` component.
 
-> Note that the function way allows you to provide an object with a multiple level structure to translate the keys, while the `translations` props only allows you to provide a flat object (`form.widgets.file_upload.delete` ex.)
-
+<Callout type="info">
+  The function way allows you to provide an object with a multiple level structure to translate the keys, while the `translations` props only allows you to provide a flat object (`form.widgets.file_upload.delete` ex.)
+</Callout>
 You can also pass your own set of translations. For example you can set a custom action name as a translation key, which will then be translated by the lib.
 
 ```js
@@ -81,4 +84,7 @@ By using the `model` key in the translations object, you can translate the model
 }
 ```
 
-> Note that if you only use one language for your admin, you should prefer to use the `alias` system ([more details](/docs/api-docs#model)) to customize field names.
+{/* > Note that if you only use one language for your admin, you should prefer to use the `alias` system ([more details](/docs/api-docs#model)) to customize field names. */}
+<Callout type="info">
+  If you only use one language for your admin, you should prefer to use the `alias` system ([more details](/docs/api-docs#model)) to customize field names.
+</Callout>
