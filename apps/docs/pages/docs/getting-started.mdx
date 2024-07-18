@@ -198,8 +198,7 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
 
   </Tabs.Tab>
   <Tabs.Tab>
-    ```tsx
-    // pages/admin/[[...nextadmin]].tsx
+    ```tsx copy filename="pages/admin/[[...nextadmin]].tsx"
     import { GetServerSideProps, GetServerSidePropsResult } from "next";
     import { NextAdmin, AdminComponentProps } from "@premieroctet/next-admin";
     import schema from "./../../prisma/json-schema/json-schema.json"; // import the json-schema.json file
