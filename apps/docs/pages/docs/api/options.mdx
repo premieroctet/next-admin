@@ -1,15 +1,15 @@
 import { Callout, Tabs } from "nextra/components";
 import OptionsTable from "../../../components/OptionsTable";
 
-# Next Admin options
+# Next Admin options parameter
 
 Next Admin options is a parameter that allows you to configure your admin panel to your needs.
 
-Next Admin options is the third parameter of the [router function](#nextadminrouter-function) and it's an object of options that has the following properties:
-
-<Callout type="warning" emoji="🚨">
-Refers to [this documentation](/docs/getting-started#create-the-next-admin-page) to see where you can pass the options object. Wether you're using the App Router or the Page Router, the options object is the same, but the way you pass it is different.
+<Callout type="info">
+Refers to [this documentation](/docs/api/next-admin-component) to see where you should use the options parameters. Wether you're using the App Router or the Page Router, the options object is the same, but the way you pass it is different.
 </Callout>
+
+The `NextAdminOptions` type is an object that can take the following properties:
 
 ## `title`
   The title of the admin panel. It is displayed in the browser tab and in the sidebar menu.
@@ -20,7 +20,7 @@ Refers to [this documentation](/docs/getting-started#create-the-next-admin-page)
 
 ## `model`
 
-`model` is a property that allows you to configure everything about how your models, their fields, their relations are displayed and edited. It's highly customizable you can read more about it [here](/docs/api/model-configuration).
+`model` is a property that allows you to configure everything about how your models, their fields, their relations are displayed and edited. It's highly configurable you can learn more about it [here](/docs/api/model-configuration).
 
 ## `pages`
 

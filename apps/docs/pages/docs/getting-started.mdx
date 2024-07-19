@@ -137,7 +137,6 @@ To get started with next-admin follow the steps below.
     import { NextAdmin } from "@premieroctet/next-admin";
     import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
     import Dashboard from "../../../components/Dashboard";
-    import { options } from "../../../options";
     import { prisma } from "../../../prisma";
     import schema from "../../../prisma/json-schema/json-schema.json";
     import { submitFormAction } from "../../../actions/nextadmin";
@@ -153,7 +152,6 @@ To get started with next-admin follow the steps below.
       const props = await getPropsFromParams({
         params: params.nextadmin,
         searchParams,
-        options,
         prisma,
         schema,
         action: submitFormAction,
@@ -162,19 +160,8 @@ To get started with next-admin follow the steps below.
       return <NextAdmin {...props} dashboard={Dashboard} />;
     }
     ```
-
     <Callout emoji="⚠️">
-
-      Passing the `options` prop like you'd do on Page router will result in an error in case you
-      have functions defined inside the options object (formatter, handlers, etc.).
-      Make sure to pass no `options` prop at all.
-
-    </Callout>
-
-    <Callout emoji="⚠️">
-
       Make sure to not use `"use client"` in the page.
-
     </Callout>
 
     You will also need to create the action:
@@ -201,7 +188,7 @@ To get started with next-admin follow the steps below.
     import { NextAdmin, AdminComponentProps } from "@premieroctet/next-admin";
     import schema from "./../../prisma/json-schema/json-schema.json"; // import the json-schema.json file
     import { PrismaClient } from "@prisma/client";
-     import "../../../styles.css" // .css file containing tailiwnd rules
+    import "../../../styles.css" // .css file containing tailiwnd rules
 
     const prisma = new PrismaClient();
 

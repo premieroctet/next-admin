@@ -3,7 +3,7 @@ import OptionsTable from "../../../components/OptionsTable";
 
 # Model configuration
 
-To configure your models, you can use the `model` property of the [NextAdmin options](/docs/api/next-admin-options).
+To configure your models, you can use the `model` property of the [NextAdmin options](/docs/api/options) parameter.
 
 This property allows you to configure everything about how your models, their fields, their relations are displayed and edited.
 
@@ -456,8 +456,7 @@ The object can take the following properties:
       ]}
 />
 
-Here is an example of using the `notice` property:
-
+Here is a quick example of usage.
 
 Considering you have a model `User` with the following configuration:
 
@@ -467,7 +466,9 @@ export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
   model: {
     User: {
-      /** ... some configuration */
+      /**
+        ...some configuration 
+      **/
       edit: {
         display: [
           "id",
@@ -504,5 +505,5 @@ export const options: NextAdminOptions = {
 ```
 
 In this example, the `email-notice` notice will be displayed in the form before the `email` field.
-![Notice example](/docs/notice-example.png)
+![Notice example](/docs/notice-exemple.png)
 
