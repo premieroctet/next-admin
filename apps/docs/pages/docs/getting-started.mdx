@@ -3,6 +3,9 @@ import { Callout, Steps, Tabs } from "nextra/components";
 # Getting Started
 
 To get started with next-admin follow the steps below.
+<Callout type="info">
+  next-admin is a tool that works only with **Prisma** (for now) so in this guide we will assume you already have a Next.js app with Prisma set up.
+</Callout>
 <Steps>
 
   ### Install next-admin and prisma-json-schema-generator
@@ -128,7 +131,7 @@ To get started with next-admin follow the steps below.
   This will create a `json-schema.json` file in the `prisma/json-schema` directory.
 
   ### Create the Next-Admin page
-  <Tabs items={['App router', 'Page router']}>
+  <Tabs items={['App router', 'Pages router']}>
     <Tabs.Tab>
     ```tsx copy filename="app/admin/[[...nextadmin]]/page.tsx"
     import { NextAdmin } from "@premieroctet/next-admin";
@@ -216,8 +219,9 @@ To get started with next-admin follow the steps below.
       >;
     };
     ```
-
-    The `nextAdminRouter` function accepts a third optional parameter, which is a Next Admin [options](/docs/api-docs#next-admin-options) object.
+    <Callout type="info">
+    The `nextAdminRouter` function accepts a third optional parameter, which is a Next Admin [options](/docs/api/options) object.
+    </Callout>
 
     </Tabs.Tab>
   </Tabs>

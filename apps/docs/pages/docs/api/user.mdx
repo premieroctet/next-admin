@@ -1,0 +1,26 @@
+import OptionsTable from "../../../components/OptionsTable";
+
+# User properties
+
+The `user` property allows you to define the user displayed in the sidebar menu.
+Its an object that can take the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "data.name",
+      type: "String",
+      description: "the name of the user displayed in the sidebar menu. This is required",
+    },
+    {
+      name: "data.picture",
+      type: "String",
+      description: "the URL of the user's avatar displayed in the sidebar menu",
+    },
+    {
+      name: "logoutUrl",
+      type: "String",
+      description: "an URL or path to logout the user. This is required.",
+    },
+  ]}  
+/>

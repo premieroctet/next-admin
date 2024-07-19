@@ -1,0 +1,17 @@
+{
+  "next-admin-component": {
+    "title": "<Next Admin />"
+  },
+  "get-props-from-params": {
+    "title": "getPropsFromParams()"
+  },
+  "next-admin-router": {
+    "title": "nextAdminRouter()"
+  },
+  "options": {
+    "title": "Options"
+  },
+  "model-configuration": {
+    "title": "Model configuration"
+  }
+}

@@ -9,8 +9,7 @@
   },
   "docs": {
     "title": "Documentation",
-    "type": "page",
-    "display": "hidden"
+    "type": "page"
   },
   "changelog": {
     "title": "Changelog",

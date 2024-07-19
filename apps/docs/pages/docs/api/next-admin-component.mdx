@@ -1,0 +1,139 @@
+import { Callout, Tabs } from "nextra/components";
+
+# `<NextAdmin />`
+
+`<NextAdmin />` is a React component that contains the entire UI of Next Admin. It can take several props:
+- `options`: used to customize the UI, like field formatters for example. Do not use with App router. See [Options](/docs/api/options) for more details.
+- `dashboard`: used to customize the rendered dashboard. You can provide your own dashboard component. Dashboard is rendered in your base url (e.g. `/admin`).
+- `translations`: used to customize some of the texts displayed in the UI. See [i18n](/docs/i18n) for more details.
+- `user`: used to add some user information at the bottom of the menu. See [user properties](/docs/api/user) for more details.
+- Some other props that are used internally by Next Admin that are not documented here and that you should pass as is. Depending on the type of Next Router you're using (App or Pages) you will get this props differently.
+
+<Callout emoji="⚠️">
+  Do not override any `AdminComponentProps` props that are not documented here. They are used internally by Next Admin. You can only override these props: 
+  `options` / `dashboard` / `translations` / `user`, and they're optional.
+</Callout>
+
+This is an example of using the `NextAdmin` component with a custom Dashboard component and options:
+<Tabs items={['App router', 'Pages router']}>
+  <Tabs.Tab>
+  ```tsx copy filename="app/admin/[[...nextadmin]]/page.tsx"
+  import Dashboard from "../../components/CustomDashboard";
+  
+  export default async function AdminPage({
+    params,
+    searchParams,
+  }: {
+    params: { [key: string]: string[] | string };
+    searchParams: { [key: string]: string | string[] | undefined } | undefined;
+  }) {
+    const props = await getPropsFromParams({
+      params: params.nextadmin as string[],
+      searchParams,
+      options: {
+        basePath: "/[locale]/admin",
+        model: {
+          User: {
+            list: {
+              display: ["id", "name", "email", "posts", "role", "birthDate"],
+              search: ["name", "email"],
+              fields: {
+                role: {
+                  formatter: (role) => {
+                    return <strong>{role.toString()}</strong>;
+                  },
+                },
+                birthDate: {
+                  formatter: (date) => {
+                    return new Date(date as unknown as string)
+                      ?.toLocaleString()
+                      .split(" ")[0];
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+      prisma,
+      schema,
+      action: submitFormAction,
+      deleteAction: deleteItem,
+      getMessages: () =>
+        getMessages({ locale: params.locale as string }).then(
+          (messages) => messages.admin as Record<string, string>
+        ),
+      locale: params.locale as string,
+      searchPaginatedResourceAction: searchResource,
+    });
+
+    return (
+      <NextAdmin
+        {...props}
+        locale={params.locale as string}
+        dashboard={Dashboard}
+        user={{
+          data: {
+            name: "John Doe",
+          },
+          logoutUrl: "/",
+        }}
+      />
+    );
+  }
+
+  ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+  ```tsx copy filename="pages/admin/[[...nextadmin]].tsx"
+  import Dashboard from "../../components/CustomDashboard";
+
+  export default function Admin(props: AdminComponentProps) {
+    return (
+      <NextAdmin
+        {...props} // Do not forget to spread the AdminComponentProps to the NextAdmin component.
+        // Then you can override the props you want
+        basePath="/admin"
+        dashboard={Dashboard}
+        options={{
+          model: {
+            User: {
+              list: {
+                display: ["id", "name", "email", "posts", "role", "birthDate"],
+                search: ["name", "email"],
+                fields: {
+                  role: {
+                    formatter: (role) => {
+                      return <strong>{role.toString()}</strong>;
+                    },
+                  },
+                  birthDate: {
+                    formatter: (date) => {
+                      return new Date(date as unknown as string)
+                        ?.toLocaleString()
+                        .split(" ")[0];
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }}
+      />
+    );
+  }
+
+  export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+    const { nextAdminRouter } = await import(
+      "@premieroctet/next-admin/dist/router"
+    );
+
+    const adminRouter = await nextAdminRouter(prisma, schema, pageOptions);
+    return adminRouter.run(req, res) as Promise<
+      GetServerSidePropsResult<{ [key: string]: any }>
+    >;
+  };
+
+  ```
+  </Tabs.Tab>
+</Tabs>
