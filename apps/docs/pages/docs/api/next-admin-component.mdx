@@ -7,7 +7,7 @@ import { Callout, Tabs } from "nextra/components";
 - `dashboard`: used to customize the rendered dashboard. You can provide your own dashboard component. Dashboard is rendered in your base url (e.g. `/admin`).
 - `translations`: used to customize some of the texts displayed in the UI. See [i18n](/docs/i18n) for more details.
 - `user`: used to add some user information at the bottom of the menu. See [user properties](/docs/api/user) for more details.
-- Some other props that are used internally by Next Admin that are not documented here and that you should pass as is. Depending on the type of Next Router you're using (App or Pages) you will get this props differently.
+- Some other props that are used internally by Next Admin that are not documented here and that you should pass as is. Depending on the type of Next Router you're using (App or Pages) you will get these props differently.
 
 <Callout emoji="⚠️" type="warning">
   Do not override any `AdminComponentProps` props that are not documented here. They are used internally by Next Admin. You can only override these props: 
@@ -82,7 +82,7 @@ This is an example of using the `NextAdmin` component with a custom Dashboard co
 
     ```
     <Callout type="info">
-      In the Pages Router, `options` needs to be passed in the `<NextAdmin />` component. But also as a third argument to the `nextAdminRouter` function.
+      In the Pages Router, `options` parameter needs to be passed in the `<NextAdmin />` component. But also as a third argument to the `nextAdminRouter` function.
     </Callout>
   </Tabs.Tab>
 </Tabs>

@@ -33,17 +33,17 @@ By default if no models are defined, they will all be displayed in the admin. If
         {
           name: "list",
           type: "Object",
-          description: <>an object containing the list options (see <a href="#list-property">below</a>)</>
+          description: <>an object containing the list options (see <a href="#modelnamelist">list property</a>)</>
         },
         {
           name: "edit",
           type: "Object",
-          description: <>an object containing the edit options (see <a href="#edit-property">below</a>)</>
+          description: <>an object containing the edit options (see <a href="#modelnameedit">edit property</a>)</>
         },
         {
           name: "actions",
           type: "Array",
-          description: "an array of actions",
+          description: <> an array of actions (see <a href="#modelnameactions">actions property</a>)</>
         },
         {
           name: "icon",
@@ -104,12 +104,12 @@ This property determines how your data is displayed in the [list view](/docs/glo
     {
       name: "filters",
       type: "Array",
-      description: "define a set of Prisma filters that user can choose in list",
+      description: <> define a set of Prisma filters that user can choose in list (see <a href="#modelnamelistfilters-property">filters</a>)</>,
     },
     {
       name: "exports",
       type: "Object",
-      description: "an object or array of export - containing export url",
+      description: <>an object or array of export - containing export url (see <a href="#modelnamelistexports-property">exports</a>)</>,
     },
   ]}
 />
@@ -119,7 +119,7 @@ This property determines how your data is displayed in the [list view](/docs/glo
 
 #### `model[name].list.filters` property
 
-The `filters` property allow you to define a set of Prisma filters that user can apply on list page. It's an array of the type below:
+The `filters` property allow you to define a set of [Prisma filters](https://www.prisma.io/docs/orm/prisma-client/queries/filtering-and-sorting) that users can apply on the [list view](/docs/glossary#list-view). It's an array of the type below:
 
 <OptionsTable
   options={[
@@ -266,7 +266,7 @@ The `fields` property is available in both `list` and `edit` properties.
         {
           name: "handler.upload",
           type: "Function",
-          description: <>an async function that is used only for formats `file` and `data-url`. It takes a Buffer object and and informations object containing `name` and `type` property as parameter and must return a string. Useful to upload a file to a remote provider</>,
+          description: <>an async function that is used only for formats `file` and `data-url`. It takes a Buffer object and an information object containing `name` and `type` property as parameters and must return a string. Useful to upload a file to a remote provider</>,
         },
         {
           name: "handler.uploadErrorMessage",

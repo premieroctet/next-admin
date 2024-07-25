@@ -155,7 +155,7 @@ Next Admin supports i18n with the `translations` prop of the `NextAdmin` compone
     {
       name: "model",
       type: "object",
-      description: <>Object to custom model and fields names. <a href="#translate-model-name-and-fields">More details</a></>,
+      description: <>Object to custom model and field names. <a href="#translate-model-name-and-fields">More details</a></>,
       defaultValue: "{}"
     }
   ]}
@@ -164,7 +164,7 @@ Next Admin supports i18n with the `translations` prop of the `NextAdmin` compone
 There is two ways to translate these default keys, provide a function named `getMessages` inside the options or provide `translations` props to `NextAdmin` component.
 
 <Callout type="info">
-  The function way allows you to provide an object with a multiple level structure to translate the keys, while the `translations` props only allows you to provide a flat object (`form.widgets.file_upload.delete` ex.)
+  Using `getMessages` allows you to provide an object with a multiple level structure to translate the keys, while the `translations` props only allows you to provide a flat object (`form.widgets.file_upload.delete` ex.)
 </Callout>
 You can also pass your own set of translations. For example you can set a custom action name as a translation key, which will then be translated by the lib.
 
@@ -183,7 +183,7 @@ actions: [
 ],
 ```
 
-Here, the `actions.user.email` key will be translated by the lib, and the value will be used as the action title, aswell as the success and error messages after the action's execution.
+Here, the `actions.user.email` key will be translated by the lib, and the value will be used as the action title, as well as the success and error messages after the action's execution.
 
 Currently, you can only translate the following:
 
