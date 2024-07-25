@@ -17,6 +17,11 @@
     "type": "page",
     "display": "hidden"
   },
+  "old-v4": {
+    "title": "old-v4",
+    "type": "page",
+    "display": "hidden"
+  },
   "changelog": {
     "title": "Changelog",
     "type": "page"

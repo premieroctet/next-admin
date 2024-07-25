@@ -1,156 +1,207 @@
-import { Callout, Tabs } from "nextra/components";
+import { Callout, Steps, Tabs } from "nextra/components";
 
 # Getting Started
-
 <Callout type="default">
   This documentation covers an older version of Next Admin. If you are using the
   latest version (`>=5.0.0` and above), please refer to the [current
   documentation](/docs/getting-started).
 </Callout>
 
-## Installation
+<Callout type="info">
+  next-admin is a tool that works only with **Prisma** (for now) so in this guide we will assume you already have a Next.js app with Prisma set up.
+</Callout>
+To get started with next-admin follow the steps below.
 
-<Tabs items={["yarn", "npm", "pnpm"]}>
-  <Tabs.Tab>
-    ```bash
-yarn add @premieroctet/next-admin prisma-json-schema-generator
-    ```
+<Steps>
 
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash
-npm install -S @premieroctet/next-admin prisma-json-schema-generator
-    ```
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash
-pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
-    ```
-  </Tabs.Tab>
-</Tabs>
+  ### Install next-admin and prisma-json-schema-generator
+  <Tabs items={["yarn", "npm", "pnpm"]}>
+    <Tabs.Tab>
+      ```bash copy
+  yarn add @premieroctet/next-admin prisma-json-schema-generator
+      ```
 
-## TailwindCSS configuration
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash copy
+  npm install -S @premieroctet/next-admin prisma-json-schema-generator
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash copy
+  pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
+      ```
+    </Tabs.Tab>
+  </Tabs>
 
-Next-Admin relies on [TailwindCSS](https://tailwindcss.com/) for the style. If you do not have it, you can [install TailwindCSS](https://tailwindcss.com/docs/installation) with the following config :
+  ### Setup TailwindCSS
+  Next-Admin relies on [TailwindCSS](https://tailwindcss.com/) for the style. If you do not have it, you can [install TailwindCSS](https://tailwindcss.com/docs/installation) with the following config :
 
-```typescript
-module.exports = {
-  content: [
-    "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
-  ],
-  darkMode: "class",
-  presets: [require("@premieroctet/next-admin/dist/preset")],
-};
-```
-
-Then import your `.css` file containing Tailwind rules into a page file or a parent layout.
-
-You can find more information about theming [here](/docs/theming)
-
-## SuperJson configuration
-
-SuperJson is required to avoid errors related to invalid serialisation properties that can occur when passing data from server to client.
-
-### With Babel
-
-<Tabs items={["yarn", "npm", "pnpm"]}>
-  <Tabs.Tab>
-    ```bash
-yarn add -D babel-plugin-superjson-next superjson@^1
-    ```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash
-npm install --save-dev babel-plugin-superjson-next superjson@^1
-    ```
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash
-pnpm install -D babel-plugin-superjson-next superjson@^1
-    ```
-  </Tabs.Tab>
-</Tabs>
-
-Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
-
-```json
-{
-  "presets": ["next/babel"],
-  "plugins": ["superjson-next"]
-}
-```
-
-## With SWC (Experimental)
-
-<Tabs items={["yarn", "npm", "pnpm"]}>
-  <Tabs.Tab>
-    ```bash
-yarn add -E -D next-superjson-plugin@0.6.1 superjson
-    ```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash
-npm install --save-dev -E next-superjson-plugin@0.6.1 superjson
-    ```
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```bash
-pnpm install -E -D next-superjson-plugin@0.6.1 superjson
-    ```
-  </Tabs.Tab>
-</Tabs>
-
-Add the `next-superjson-plugin` plugin to your `next.config.js` file:
-
-```js
-module.exports = {
-  // your current config
-  experimental: {
-    swcPlugins: [
-      [
-        "next-superjson-plugin",
-        {
-          excluded: [],
-        },
-      ],
+  ```typescript copy filename="tailwind.config.js"
+  module.exports = {
+    content: [
+      "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
     ],
-  },
-};
-```
+    darkMode: "class",
+    presets: [require("@premieroctet/next-admin/dist/preset")],
+  };
+  ```
+  
+  ### Setup SuperJson
+  SuperJson is required to avoid errors related to invalid serialization properties that can occur when passing data from server to client.
 
-## Quick Start
+  #### With Babel
+  <Tabs items={["yarn", "npm", "pnpm"]}>
+    <Tabs.Tab>
+      ```bash copy
+  yarn add -D babel-plugin-superjson-next superjson@^1
+      ```
 
-Add the `prisma-json-schema-generator` generator to your `schema.prisma` file:
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash copy
+  npm install --save-dev babel-plugin-superjson-next superjson@^1
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash copy
+  pnpm install -D babel-plugin-superjson-next superjson@^1
+      ```
+    </Tabs.Tab>
+  </Tabs>
+  Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
 
-```prisma
-generator jsonSchema {
-  provider = "prisma-json-schema-generator"
-  includeRequiredFields = "true"
-}
-```
+  ```json copy
+  {
+    "presets": ["next/babel"],
+    "plugins": ["superjson-next"]
+  }
+  ```
 
-Then run the following command :
+  #### With SWC (Experimental)
 
-```bash
-yarn run prisma generate
-```
+  <Tabs items={["yarn", "npm", "pnpm"]}>
+    <Tabs.Tab>
+      ```bash copy
+  yarn add -E -D next-superjson-plugin@0.6.1 superjson
+      ```
 
-This will create a `json-schema.json` file in the `prisma/json-schema` directory.
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash copy
+  npm install --save-dev -E next-superjson-plugin@0.6.1 superjson
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash copy
+  pnpm install -E -D next-superjson-plugin@0.6.1 superjson
+      ```
+    </Tabs.Tab>
+  </Tabs>
 
-<Tabs items={['App router', 'Page router']}>
-  <Tabs.Tab>
-    ```tsx
-    // app/admin/[[...nextadmin]]/page.tsx
+  Add the `next-superjson-plugin` plugin to your `next.config.js` file:
+
+  ```js copy filename="next.config.js"
+  module.exports = {
+    // your current config
+    experimental: {
+      swcPlugins: [
+        [
+          "next-superjson-plugin",
+          {
+            excluded: [],
+          },
+        ],
+      ],
+    },
+  };
+  ```
+
+
+  ### Generate Prisma JSON schema
+  <Callout type="info">
+    Next-Admin relies on [Prisma](https://www.prisma.io/). If you do not have it, you can [install Prisma](https://www.prisma.io/docs/getting-started/setup-prisma/start-from-scratch-typescript-postgres).
+  </Callout>
+  
+  Add the `prisma-json-schema-generator` generator to your `schema.prisma` file:
+
+  ```prisma copy filename="schema.prisma"
+  generator jsonSchema {
+    provider = "prisma-json-schema-generator"
+    includeRequiredFields = "true"
+  }
+  ```
+
+  Then run the following command :
+
+  ```bash copy
+  yarn run prisma generate
+  ```
+
+  This will create a `json-schema.json` file in the `prisma/json-schema` directory.
+
+  ### Create the Next-Admin page
+
+  First, create an `options.ts` file (see [Options parameter](/v4/docs/api/options) for more details):
+      
+    ```tsx copy filename="options.ts"
+    import { NextAdminOptions } from "@premieroctet/next-admin";
+
+    export const options: NextAdminOptions = {
+      basePath: "/admin",
+      title: "⚡️ My Admin",
+    }
+    ```
+
+  <Tabs items={['App router', 'Pages router']}>
+    <Tabs.Tab>
+    Then create an `nextadmin.ts` action file:
+    ```tsx copy filename="app/actions/nextadmin.ts"
+    import { ActionParams, ModelName } from "@premieroctet/next-admin";
+    import {
+      SearchPaginatedResourceParams,
+      deleteResourceItems,
+      searchPaginatedResource,
+      submitForm,
+    } from "@premieroctet/next-admin/dist/actions";
+    import { options } from "path/to/options";
+    import { prisma } from "path/to/prisma";
+
+    const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+    export const submitFormAction = async (
+      params: ActionParams,
+      formData: FormData
+    ) => {
+      return submitForm({ ...params, options, prisma }, formData);
+    };
+
+    export const deleteItem = async (
+      model: ModelName,
+      ids: string[] | number[]
+    ) => {
+      return deleteResourceItems(prisma, model, ids);
+    };
+
+    export const searchResource = async (
+      actionParams: ActionParams,
+      params: SearchPaginatedResourceParams
+    ) => {
+      return searchPaginatedResource({ ...actionParams, options, prisma }, params);
+    };
+
+    ```
+
+    Finally, create the `page.tsx` file:
+
+    ```tsx copy filename="app/admin/[[...nextadmin]]/page.tsx"
     import { NextAdmin } from "@premieroctet/next-admin";
     import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
-    import Dashboard from "../../../components/Dashboard";
-    import { options } from "../../../options";
-    import { prisma } from "../../../prisma";
-    import schema from "../../../prisma/json-schema/json-schema.json";
-    import { submitFormAction } from "../../../actions/nextadmin";
-    import "../../../styles.css" // .css file containing tailiwnd rules
+    import { prisma } from "path/to/prisma";
+    import schema from "path/to/prisma/json-schema/json-schema.json";
+    import { submitFormAction, deleteItem, searchResource } from "path/to/actions/nextadmin";
+    import "path/to/styles.css"; // .css file containing tailiwnd rules
+    import { options } from "path/to/options";
 
     export default async function AdminPage({
       params,
@@ -166,53 +217,30 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
         prisma,
         schema,
         action: submitFormAction,
+        deleteAction: deleteItem,
+        searchPaginatedResourceAction: searchResource,
       });
 
-      return <NextAdmin {...props} dashboard={Dashboard} />;
+      return <NextAdmin {...props} />;
     }
     ```
 
     <Callout emoji="⚠️">
-
-      Passing the `options` prop like you'd do on Page router will result in an error in case you
-      have functions defined inside the options object (formatter, handlers, etc.).
-      Make sure to pass no `options` prop at all.
-
-    </Callout>
-
-    <Callout emoji="⚠️">
-
       Make sure to not use `"use client"` in the page.
-
     </Callout>
 
-    You will also need to create the action:
+    </Tabs.Tab>
+    <Tabs.Tab>
 
-    ```tsx
-    // actions/nextadmin.ts
-    "use server";
-    import { ActionParams } from "@premieroctet/next-admin";
-    import { submitForm } from "@premieroctet/next-admin/dist/actions";
-    import { prisma } from "../prisma";
-    import { options } from "../options";
+    Then create the catch-all route file `[[...nextadmin]].tsx`:
 
-    export const submitFormAction = async (
-      params: ActionParams,
-      formData: FormData
-    ) => {
-      return submitForm({ ...params, options, prisma }, formData);
-    };
-    ```
-
-  </Tabs.Tab>
-  <Tabs.Tab>
-    ```tsx
-    // pages/admin/[[...nextadmin]].tsx
+    ```tsx copy filename="pages/admin/[[...nextadmin]].tsx"
     import { GetServerSideProps, GetServerSidePropsResult } from "next";
     import { NextAdmin, AdminComponentProps } from "@premieroctet/next-admin";
-    import schema from "./../../prisma/json-schema/json-schema.json"; // import the json-schema.json file
+    import schema from "path/to/prisma/json-schema/json-schema.json"; // import the json-schema.json file
+    import { options } from "path/to/options";
     import { PrismaClient } from "@prisma/client";
-     import "../../../styles.css" // .css file containing tailiwnd rules
+    import "path/to/styles.css"; // .css file containing tailiwnd rules
 
     const prisma = new PrismaClient();
 
@@ -224,20 +252,19 @@ This will create a `json-schema.json` file in the `prisma/json-schema` directory
       const { nextAdminRouter } = await import(
         "@premieroctet/next-admin/dist/router"
       );
-      const adminRouter = await nextAdminRouter(prisma, schema);
+      const adminRouter = await nextAdminRouter(prisma, schema, options)
       return adminRouter.run(req, res) as Promise<
         GetServerSidePropsResult<{ [key: string]: any }>
       >;
     };
     ```
 
-The `nextAdminRouter` function accepts a third optional parameter, which is a Next Admin [options](/docs/api-docs#next-admin-options) object.
+    </Tabs.Tab>
+  </Tabs>
 
-  </Tabs.Tab>
-</Tabs>
+  ### Run the app
 
-## Usage
+  Once done, you can navigate to the `/admin` route.
 
-Once done, you can navigate to the `/admin` route.
-
-You should be able to see the admin dashboard.
+  You should be able to see the admin dashboard.
+</Steps>

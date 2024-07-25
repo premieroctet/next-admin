@@ -1,12 +1,12 @@
-import { Callout, FileTree, Tabs } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # Code snippets
+
 <Callout type="default">
   This documentation covers an older version of Next Admin. If you are using the
   latest version (`>=5.0.0` and above), please refer to the [current
-  documentation](/docs).
+  documentation](/docs/code-snippets).
 </Callout>
-
 
 This page contains code snippets that you can use in your projects. These are not a part of Next Admin, but may be useful for your projects.
 
@@ -14,11 +14,12 @@ Some of the snippets are implemented in the example project. You can check them 
 
 ## Export data
 
-By using [exports](/v4/docs/api-docs#exports-property) options, you can export data. Next Admin only implements the CSV export button, it's actually a link pointing to a provided url.
+By using [exports](/docs/api-docs#exports-property) options, you can export data. Next Admin only implements the CSV export button, it's actually a link pointing to a provided url.
 
 The API endpoint route must be defined in the `exports` property of the options object. This is an example of how to implement the export API endpoint:
 
-```typescript copy filename="app/api/users/export/route.ts"
+```typescript copy
+// app/api/users/export/route.ts
 import { prisma } from "@/prisma";
 
 export async function GET() {
@@ -39,7 +40,8 @@ export async function GET() {
 
 or with a stream response:
 
-```typescript copy filename="app/api/users/export/route.ts"
+```typescript copy
+// app/api/users/export/route.ts
 import { prisma } from "@/prisma";
 const BATCH_SIZE = 1000;
 
@@ -94,7 +96,8 @@ There is two example files in the example project:
 
 If you want to add data to the form data before submitting it, you can add logic to the `submitFormAction` function. This is an example of how to add `createdBy` and `updatedBy` fields based on the user id:
 
-```typescript copy filename="actions/nextadmin.ts"
+```typescript copy
+// actions/nextadmin.ts
 "use server";
 import { ActionParams } from "@premieroctet/next-admin";
 import { submitForm } from "@premieroctet/next-admin/dist/actions";
@@ -122,7 +125,8 @@ This snippet is not implemented in the example project.
 
 If you want to customize the input form, you can create a custom input component. This is an example of how to create a custom input component for the `birthDate` field:
 
-```typescript copy filename="/components/inputs/BirthDateInput.tsx"
+```typescript copy
+// components/inputs/BirthDateInput.tsx
 "use client";
 import { CustomInputProps } from "@premieroctet/next-admin";
 import DateTimePicker from "react-datepicker";

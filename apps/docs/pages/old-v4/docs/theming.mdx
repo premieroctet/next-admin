@@ -1,18 +1,18 @@
-import { Callout, FileTree, Tabs } from 'nextra/components'
+import { Callout } from "nextra/components";
 
 # Theming
+
 <Callout type="default">
   This documentation covers an older version of Next Admin. If you are using the
   latest version (`>=5.0.0` and above), please refer to the [current
-  documentation](/docs).
+  documentation](/docs/theming).
 </Callout>
-
 
 Next Admin comes with a preset that is used to theme the different components of the pages.
 
 You can add the preset to your Tailwind config presets :
 
-```js copy filename="tailwind.config.js"
+```js
 module.exports = {
   content: [
     // your own content
@@ -30,7 +30,7 @@ The preset sets the `darkMode` option to `class` by default. However, if you wis
 
 You can override the default theme by extending the color palette in your Tailwind config.
 
-```typescript copy filename="tailwind.config.js"
+```typescript
 module.exports = {
   content: [
     // your own content
