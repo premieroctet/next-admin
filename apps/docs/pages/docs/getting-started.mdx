@@ -131,16 +131,67 @@ To get started with next-admin follow the steps below.
   This will create a `json-schema.json` file in the `prisma/json-schema` directory.
 
   ### Create the Next-Admin page
+
+  First, create an `options.ts` file (see [Options parameter](/docs/api/options) for more details):
+      
+    ```tsx copy filename="options.ts"
+    import { NextAdminOptions } from "@premieroctet/next-admin";
+
+    export const options: NextAdminOptions = {
+      basePath: "/admin",
+      title: "⚡️ My Admin",
+    }
+    ```
+
   <Tabs items={['App router', 'Pages router']}>
     <Tabs.Tab>
+    Then create an `nextadmin.ts` action file:
+    ```tsx copy filename="app/actions/nextadmin.ts"
+    import { ActionParams, ModelName } from "@premieroctet/next-admin";
+    import {
+      SearchPaginatedResourceParams,
+      deleteResourceItems,
+      searchPaginatedResource,
+      submitForm,
+    } from "@premieroctet/next-admin/dist/actions";
+    import { options } from "path/to/options";
+    import { prisma } from "path/to/prisma";
+
+    const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
+    export const submitFormAction = async (
+      params: ActionParams,
+      formData: FormData
+    ) => {
+      return submitForm({ ...params, options, prisma }, formData);
+    };
+
+    export const deleteItem = async (
+      model: ModelName,
+      ids: string[] | number[]
+    ) => {
+      return deleteResourceItems(prisma, model, ids);
+    };
+
+    export const searchResource = async (
+      actionParams: ActionParams,
+      params: SearchPaginatedResourceParams
+    ) => {
+      return searchPaginatedResource({ ...actionParams, options, prisma }, params);
+    };
+
+    ```
+
+    Finally, create the `page.tsx` file:
+
     ```tsx copy filename="app/admin/[[...nextadmin]]/page.tsx"
     import { NextAdmin } from "@premieroctet/next-admin";
     import { getPropsFromParams } from "@premieroctet/next-admin/dist/appRouter";
-    import Dashboard from "../../../components/Dashboard";
-    import { prisma } from "../../../prisma";
-    import schema from "../../../prisma/json-schema/json-schema.json";
-    import { submitFormAction } from "../../../actions/nextadmin";
-    import "../../../styles.css" // .css file containing tailiwnd rules
+    import { prisma } from "path/to/prisma";
+    import schema from "path/to/prisma/json-schema/json-schema.json";
+    import { submitFormAction, deleteItem, searchResource } from "path/to/actions/nextadmin";
+    import "path/to/styles.css"; // .css file containing tailiwnd rules
+    import { options } from "path/to/options";
 
     export default async function AdminPage({
       params,
@@ -152,43 +203,34 @@ To get started with next-admin follow the steps below.
       const props = await getPropsFromParams({
         params: params.nextadmin,
         searchParams,
+        options,
         prisma,
         schema,
         action: submitFormAction,
+        deleteAction: deleteItem,
+        searchPaginatedResourceAction: searchResource,
       });
 
-      return <NextAdmin {...props} dashboard={Dashboard} />;
+      return <NextAdmin {...props} />;
     }
     ```
+
     <Callout emoji="⚠️">
       Make sure to not use `"use client"` in the page.
     </Callout>
 
-    You will also need to create the action:
-
-    ```tsx copy filename="actions/nextadmin.ts"
-    "use server";
-    import { ActionParams } from "@premieroctet/next-admin";
-    import { submitForm } from "@premieroctet/next-admin/dist/actions";
-    import { prisma } from "../prisma";
-    import { options } from "../options";
-
-    export const submitFormAction = async (
-      params: ActionParams,
-      formData: FormData
-    ) => {
-      return submitForm({ ...params, options, prisma }, formData);
-    };
-    ```
-
     </Tabs.Tab>
     <Tabs.Tab>
+
+    Then create the catch-all route file `[[...nextadmin]].tsx`:
+
     ```tsx copy filename="pages/admin/[[...nextadmin]].tsx"
     import { GetServerSideProps, GetServerSidePropsResult } from "next";
     import { NextAdmin, AdminComponentProps } from "@premieroctet/next-admin";
-    import schema from "./../../prisma/json-schema/json-schema.json"; // import the json-schema.json file
+    import schema from "path/to/prisma/json-schema/json-schema.json"; // import the json-schema.json file
+    import { options } from "path/to/options";
     import { PrismaClient } from "@prisma/client";
-    import "../../../styles.css" // .css file containing tailiwnd rules
+    import "path/to/styles.css"; // .css file containing tailiwnd rules
 
     const prisma = new PrismaClient();
 
@@ -200,15 +242,12 @@ To get started with next-admin follow the steps below.
       const { nextAdminRouter } = await import(
         "@premieroctet/next-admin/dist/router"
       );
-      const adminRouter = await nextAdminRouter(prisma, schema);
+      const adminRouter = await nextAdminRouter(prisma, schema, options)
       return adminRouter.run(req, res) as Promise<
         GetServerSidePropsResult<{ [key: string]: any }>
       >;
     };
     ```
-    <Callout type="info">
-    The `nextAdminRouter` function accepts a third optional parameter, which is a Next Admin [options](/docs/api/options) object.
-    </Callout>
 
     </Tabs.Tab>
   </Tabs>
