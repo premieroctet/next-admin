@@ -1,12 +1,12 @@
 import { Callout, Tabs } from "nextra/components";
 
-# `<NextAdmin />`
+# `<NextAdmin/>`
 
-`<NextAdmin />` is a React component that contains the entire UI of Next Admin. It can take several props:
+`<NextAdmin/>` is a React component that contains the entire UI of Next Admin. It can take several props:
 - `options`: used to customize the UI, like field formatters for example. Do not use with App router (see [Options](/docs/api/options) for more details).
 - `dashboard`: used to customize the rendered dashboard. You can provide your own dashboard component. Dashboard is rendered in your base url (e.g. `/admin`).
 - `translations`: used to customize some of the texts displayed in the UI. See [i18n](/docs/i18n) for more details.
-- `user`: used to add some user information at the bottom of the menu. See [user properties](/docs/api/user) for more details.
+- `user`: used to add some user information at the bottom of the menu. See [user](/docs/api/user) for more details.
 - Some other props that are used internally by Next Admin that are not documented here and that you should pass as is. Depending on the type of Next Router you're using (App or Pages) you will get these props differently.
 
 <Callout emoji="⚠️" type="warning">

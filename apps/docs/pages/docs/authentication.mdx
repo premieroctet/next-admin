@@ -46,7 +46,7 @@ import { Callout, Tabs } from "nextra/components";
       The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
     </Callout>
 
-    ```ts copy filename="pages/api/admin/[[...nextadmin]].ts" {2-3, 6-14}
+    ```ts copy filename="pages/api/admin/[[...nextadmin]].ts" {2-3, 5-12}
     export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       const session = await getServerSession(req, res, authOptions);
       const isAdmin = session?.user?.role === "SUPERADMIN"; // your role check

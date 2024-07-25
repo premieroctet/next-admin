@@ -1,6 +1,6 @@
 {
   "next-admin-component": {
-    "title": "<Next Admin />"
+    "title": "<NextAdmin/>"
   },
   "get-props-from-params": {
     "title": "getPropsFromParams()"

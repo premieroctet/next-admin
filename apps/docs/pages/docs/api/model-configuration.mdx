@@ -7,7 +7,83 @@ To configure your models, you can use the `model` property of the [NextAdmin opt
 
 This property allows you to configure everything about how your models, their fields, their relations are displayed and edited.
 
-It takes as **_key_** a model name of your schema as **_value_** an object to configure it.
+Example for a schema with a `User`, `Post` and `Category` model:
+
+```tsx copy
+import { NextAdminOptions } from "@premieroctet/next-admin";
+
+export const options: NextAdminOptions = {
+  /* Your other options here */
+  model: {
+    User: {
+      toString: (user) => `${user.name} (${user.email})`,
+      title: "Users",
+      icon: "UsersIcon",
+      list: {
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        search: ["name", "email"],
+        filters: [
+          {
+            name: "is Admin",
+            active: false,
+            value: {
+              role: {
+                equals: "ADMIN",
+              },
+            },
+          },
+        ],
+      },
+      edit: {
+        display: [
+          "id",
+          "name",
+          "email",
+          "posts",
+          "role",
+          "birthDate",
+          "avatar",
+        ],
+      },
+      actions: [
+        {
+          title: "Send email",
+          action: async (model, ids) => {
+            const response = await fetch("/api/email", {
+              method: "POST",
+              body: JSON.stringify(ids),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to send email");
+            }
+          },
+          successMessage: "Email sent successfully",
+          errorMessage: "Error while sending email",
+        },
+      ],
+    },
+    Post: {
+      toString: (post) => `${post.title}`,
+    },
+    Category: {
+      title: "Categories",
+      icon: "InboxStackIcon",
+      toString: (category) => `${category.name}`,
+      list: {
+        display: ["name", "posts"],
+      },
+      edit: {
+        display: ["name", "posts"],
+      },
+    },
+  },
+};
+
+```
+## `model`
+
+It takes as **key** a model name of your schema as **value** an object to configure it.
 
 By default if no models are defined, they will all be displayed in the admin. If you want more control, you have to define each model individually as empty objects or with the following properties:
 
@@ -33,22 +109,22 @@ By default if no models are defined, they will all be displayed in the admin. If
         {
           name: "list",
           type: "Object",
-          description: <>an object containing the list options (see <a href="#modelnamelist">list property</a>)</>
+          description: <>an object containing the list options (see <a href="#list-property">list property</a>)</>
         },
         {
           name: "edit",
           type: "Object",
-          description: <>an object containing the edit options (see <a href="#modelnameedit">edit property</a>)</>
+          description: <>an object containing the edit options (see <a href="#edit-property">edit property</a>)</>
         },
         {
           name: "actions",
           type: "Array",
-          description: <> an array of actions (see <a href="#modelnameactions">actions property</a>)</>
+          description: <> an array of actions (see <a href="#actions-property">actions property</a>)</>
         },
         {
           name: "icon",
           type: "String",
-          description: "the outline HeroIcon name displayed in the sidebar and pages title",
+          description: <>the outline <a href="https://heroicons.com/" target="_blank">HeroIcon</a> name displayed in the sidebar and pages title</>,
         },
         {
           name: "permissions",
@@ -57,8 +133,7 @@ By default if no models are defined, they will all be displayed in the admin. If
         },
   ]} />
 
-## `model[name].list`
-
+## `list` property 
 This property determines how your data is displayed in the [list view](/docs/glossary#list-view)
 
 <OptionsTable 
@@ -78,7 +153,7 @@ This property determines how your data is displayed in the [list view](/docs/glo
     {
       name: "fields",
       type: "Object",
-      description: <>an object containing the model fields as keys, and customization values (see <a href="#fields-editlist-property">fields</a>)</>,
+      description: <>an object containing the model fields as keys, and customization values (see <a href="#editfields--listfields-property">fields property</a>)</>,
     },
     {
       name: "copy",
@@ -104,22 +179,22 @@ This property determines how your data is displayed in the [list view](/docs/glo
     {
       name: "filters",
       type: "Array",
-      description: <> define a set of Prisma filters that user can choose in list (see <a href="#modelnamelistfilters-property">filters</a>)</>,
+      description: <> define a set of Prisma filters that user can choose in list (see <a href="#listfilters-property">filters</a>)</>,
     },
     {
       name: "exports",
       type: "Object",
-      description: <>an object or array of export - containing export url (see <a href="#modelnamelistexports-property">exports</a>)</>,
+      description: <>an object or array of export - containing export url (see <a href="#listexports-property">exports</a>)</>,
     },
   ]}
 />
 <Callout type="info">
-  The `search` property is only available for `scalar` fields.
+  The `search` property is only available for [`scalar` fields](https://www.prisma.io/docs/orm/reference/prisma-schema-reference#model-field-scalar-types).
 </Callout>
 
-#### `model[name].list.filters` property
+#### `list.filters` property
 
-The `filters` property allow you to define a set of [Prisma filters](https://www.prisma.io/docs/orm/prisma-client/queries/filtering-and-sorting) that users can apply on the [list view](/docs/glossary#list-view). It's an array of the type below:
+The `filters` property allow you to define a set of [Prisma filters](https://www.prisma.io/docs/orm/prisma-client/queries/filtering-and-sorting) that users can apply on the [list view](/docs/glossary#list-view). It's an array of the following object:
 
 <OptionsTable
   options={[
@@ -142,9 +217,10 @@ The `filters` property allow you to define a set of [Prisma filters](https://www
   ]}
 />
 
-#### `model[name].list.exports` property
+#### `list.exports` property
 
-The `exports` property is available in the `list` property. It's an object or an array of objects that can take the following properties:
+The `exports` property allows you to define a set of export actions that users can apply on the [list view](/docs/glossary#list-view).
+It's an object or an array of objects that can take the following properties:
 
 <OptionsTable
   options={[
@@ -168,7 +244,7 @@ The `exports` property is available in the `list` property. It's an object or an
 </Callout>
 
 
-## `model[name].edit`
+## `edit` property
 
 This property determines how your data is displayed in the [edit view](/docs/glossary#edit-view)
 
@@ -183,12 +259,12 @@ This property determines how your data is displayed in the [edit view](/docs/glo
   {
     name: "styles",
     type: "Object",
-    description: <>an object containing the styles of the form (see <a href="#styles-edit-property">styles</a>) </>,
+    description: <>an object containing the styles of the form (see <a href="#editstyles-property">styles</a>) </>,
   },
   {
     name: "fields",
     type: "Object",
-    description: <>an object containing the model fields as keys, and customization values (see <a href="#fields-edit-property">fields</a>)</>,
+    description: <>an object containing the model fields as keys, and customization values (see <a href="#editfields--listfields-property">fields property</a>)</>,
   },
   {
     name: "submissionErrorMessage",
@@ -199,7 +275,7 @@ This property determines how your data is displayed in the [edit view](/docs/glo
 ]}
     />
 
-#### `model[name].edit.styles` property
+#### `edit.styles` property
 
 The `styles` property is available in the `edit` property.
 <Callout emoji="⚠️">
@@ -230,7 +306,7 @@ styles: {
 };
 ```
 
-#### `model[name].edit.fields` & `model[name].list.fields` property
+#### `edit.fields` & `list.fields` property
 
 The `fields` property is available in both `list` and `edit` properties.
 <Tabs items={["edit", "list"]}>
@@ -346,7 +422,7 @@ The `fields` property is available in both `list` and `edit` properties.
 </Tabs>
 
 
-## `model[name].actions`
+## `actions` property
 The `actions` property is an array of objects that allows you to define a set of actions that can be executed on one or more records of the resource. On the list view, there is a default action for deletion. The object can take the following properties:
 
 <OptionsTable
@@ -414,7 +490,7 @@ Represents the props that are passed to the custom input component.
 />
 
 ## NextAdmin Context type 
-Represents the context that is passed to the formatter function in the list view.
+Represents the context that is passed to the formatter function in the [list.fields](#modelnameeditfields--modelnamelistfields-property) property.
 <OptionsTable
   options={[
     {
