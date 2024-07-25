@@ -193,7 +193,7 @@ export type EditFieldsOptions<T extends ModelName> = {
      */
     helperText?: string;
     /**
-     * The tooltip text to display for the field.
+     * a tooltip content to show for the field.
      */
     tooltip?: string;
     /**
