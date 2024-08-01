@@ -1,4 +1,5 @@
-import { Callout } from "nextra/components";
+import { Callout, FileTree, Tabs } from 'nextra/components'
+
 
 # Customize the admin route name
 
@@ -18,3 +19,43 @@ Examples:
 `pages/prisma/[[...nextadmin]]/page.tsx` => `basePath` will be `/admin` (App Router)
 
 `pages/prisma/[[...nextadmin]]/route.ts` => `apiBasePath` will be `/api/admin` (API App Router)
+
+  You want to have your next admin panel at `https://website.com/foo`: 
+    - apiBasePath will be `/api/foo`
+    - and basePath will be `/foo`
+
+<Tabs items={["Pages Router", "App Router"]}>
+  <Tabs.Tab>
+  
+    <FileTree>
+      <FileTree.Folder name="pages" defaultOpen>
+        <FileTree.Folder name="foo" defaultOpen>
+          <FileTree.File name="[[...nextadmin]].tsx" />
+        </FileTree.Folder>
+        <FileTree.Folder name="api" defaultOpen>
+          <FileTree.Folder name="foo" defaultOpen>
+            <FileTree.File name="[[...nextadmin]].tsx" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <FileTree>
+      <FileTree.Folder name="app" defaultOpen>
+        <FileTree.Folder name="foo" defaultOpen>
+          <FileTree.Folder name="[[...nextadmin]]" defaultOpen>
+            <FileTree.File name="page.tsx" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="api" defaultOpen>
+          <FileTree.Folder name="foo" defaultOpen>
+            <FileTree.Folder name="[[...nextadmin]]" defaultOpen>
+              <FileTree.File name="route.ts" />
+            </FileTree.Folder>
+          </FileTree.Folder>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree>
+  </Tabs.Tab>
+</Tabs>
