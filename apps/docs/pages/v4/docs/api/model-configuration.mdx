@@ -328,7 +328,7 @@ The `fields` property is available in both `list` and `edit` properties.
         {
           name: "format",
           type: "String",
-          description: <>a string defining an OpenAPI field format, overriding the one set in the generator. An extra `file` format can be used to be able to have a file input</>,
+          description: <>a string defining an OpenAPI field format, overriding the one set in the generator. An extra <code>file</code> format can be used to be able to have a file input</>,
         },
         {
           name: "input",
@@ -348,7 +348,7 @@ The `fields` property is available in both `list` and `edit` properties.
         {
           name: "handler.upload",
           type: "Function",
-          description: <>an async function that is used only for formats `file` and `data-url`. It takes a Buffer object and an information object containing `name` and `type` property as parameters and must return a string. Useful to upload a file to a remote provider</>,
+          description: <>an async function that is used only for formats <code>file</code> and <code>data-url</code>. It takes a Buffer object and an information object containing <code>name</code> and <code>type</code> property as parameters and must return a string. Useful to upload a file to a remote provider</>,
         },
         {
           name: "handler.uploadErrorMessage",
@@ -363,7 +363,7 @@ The `fields` property is available in both `list` and `edit` properties.
         {
           name: "tooltip",
           type: "String",
-          description: "The tooltip text to display for the field",
+          description: "A tooltip content to display for the field ",
         },
         {
           name: "helperText",
@@ -378,32 +378,28 @@ The `fields` property is available in both `list` and `edit` properties.
         {
           name: "display",
           type: "String",
-          description: <> only for relation fields, indicate which display format to use between `list`, `table` or `select`. Default `select`</>, 
+          description: <> only for relation fields, indicate which display format to use between <code>list</code>, <code>table</code> or <code>select</code></>, 
+          defaultValue: "select",
         },
         {
           name: "required",
           type: "Boolean",
-          description: <>a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false</>,
+          description: <>a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set <code>required</code> to false</>,
         },
         {
           name: "relationOptionFormatter",
           type: "Function",
-          description: <>same as `optionFormatter`, but used to format data that comes from an <a href="https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations#explicit-many-to-many-relations">explicit many-to-many</a> relationship</>,
+          description: <>same as <code>optionFormatter</code>, but used to format data that comes from an <a href="https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations#explicit-many-to-many-relations">explicit many-to-many</a> relationship</>,
             },
         {
           name: "orderField",
           type: "String",
-          description: <>the field to use for relationship sorting. This allow to drag and drop the related records in the `list` display</>,
+          description: <>the field to use for relationship sorting. This allow to drag and drop the related records in the <code>list</code> display</>,
         },
         {
           name: "relationshipSearchField",
           type: "String",
           description: <>a field name of the explicit many-to-many relation table to apply the search on. See <a href="https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations#explicit-many-to-many-relations">handling explicit many-to-many</a></>,
-            },
-            {
-              name: "notice",
-              type: "Object",
-              description: <>an object containing the notice options (see <a href="#notice-type">here</a>)</>,
             },
       ]}
     />
