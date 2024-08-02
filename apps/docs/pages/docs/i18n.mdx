@@ -142,10 +142,10 @@ The following keys are accepted:
 
 ### Translate model name and fields
 
-There is two ways to translate these default keys, provide a function named `getMessages` inside the options or provide `translations` props to `NextAdmin` component.
+There are two ways to translate these default keys, provide a function named `getMessages` inside the options or provide `translations` props to `NextAdmin` component.
 
 <Callout type="info">
-  Using `getMessages` allows you to provide an object with a multiple level structure to translate the keys, while the `translations` props only allows you to provide a flat object (`form.widgets.file_upload.delete` ex.)
+  Using `getMessages` allows you to provide an object with a multiple level structure to translate the keys, while the `translations` props only allow you to provide a flat object (`form.widgets.file_upload.delete` ex.)
 </Callout>
 
 You can also pass your own set of translations. For example you can set a custom action name as a translation key, which will then be translated by the lib.
@@ -165,14 +165,14 @@ actions: [
 ],
 ```
 
-Here, the `actions.user.email` key will be translated by the lib, and the value will be used as the action title, aswell as the success and error messages after the action's execution.
+Here, the `actions.user.email` key will be translated by the lib, and the value will be used as the action title, as well as the success and error messages after the action's execution.
 
 Currently, you can only translate the following:
 
 - action title, success and error message
 - field validation error message
 
-Check the example app for more details on the usage.
+Check out the example app for more details on its usage.
 
 ### Translate model name and fields
 

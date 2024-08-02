@@ -175,7 +175,7 @@ This property determines how your data is displayed in the [list view](/v4/docs/
     {
       name: "defaultSort.field",
       type: "String",
-      description: "the model's field name on which the sort is applied. It is mandatory",
+      description: "the model's field name to which the sort is applied. It is mandatory",
     },
     {
       name: "defaultSort.direction",
@@ -207,18 +207,18 @@ The `filters` property allow you to define a set of [Prisma filters](https://www
     {
       name: "name",
       type: "String",
-      description: "an unique name for the filter",
+      description: "a unique name for the filter",
     },
     {
       name: "active",
       type: "Boolean",
-      description: "a boolean to set filter active by default",
+      description: "a boolean to set the filter active by default",
       defaultValue: "false",
     },
     {
       name: "value",
       type: "String",
-      description: <>a where clause Prisma filter of the related model (e.g <a href="https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators">Prisma operators</a>)</>,
+      description: <>a where clause Prisma filter of the related model (e.g. <a href="https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators">Prisma operators</a>)</>,
     },
   ]}
 />
@@ -226,14 +226,14 @@ The `filters` property allow you to define a set of [Prisma filters](https://www
 #### `list.exports` property
 
 The `exports` property allows you to define a set of export actions that users can apply on the [list view](/v4/docs/glossary#list-view).
-It's an object or an array of objects that can take the following properties:
+It's an object or an array of objects that can have the following properties:
 
 <OptionsTable
   options={[
     {
       name: "format",
       type: "String",
-      description: "a string defining the format of the export. It's used to labeled the export button",
+      description: "a string defining the format of the export. It's used to label the export button",
       defaultValue: "undefined",
     },
     {
@@ -298,7 +298,7 @@ The `styles` property is available in the `edit` property.
     {
       name: "...",
       type: "String",
-      description: "all fields of the model, with the field name as key and the classname as value",
+      description: "all fields of the model, with the field name as the key and the classname as the value",
     },
   ]}
 />
@@ -323,7 +323,7 @@ The `fields` property is available in both `list` and `edit` properties.
         {
           name: "validate",
           type: "Function",
-          description: "a function that takes the field value as a parameter, and that returns a boolean",
+          description: "a function that takes the field value as a parameter, and returns a boolean",
         },
         {
           name: "format",
@@ -348,7 +348,7 @@ The `fields` property is available in both `list` and `edit` properties.
         {
           name: "handler.upload",
           type: "Function",
-          description: <>an async function that is used only for formats <code>file</code> and <code>data-url</code>. It takes a Buffer object and an information object containing <code>name</code> and <code>type</code> property as parameters and must return a string. Useful to upload a file to a remote provider</>,
+          description: <>an async function that is used only for formats <code>file</code> and <code>data-url</code>. It takes a Buffer object and an information object containing <code>name</code> and <code>type</code> properties as parameters and must return a string. It can be useful to upload a file to a remote provider</>,
         },
         {
           name: "handler.uploadErrorMessage",
@@ -394,7 +394,7 @@ The `fields` property is available in both `list` and `edit` properties.
         {
           name: "orderField",
           type: "String",
-          description: <>the field to use for relationship sorting. This allow to drag and drop the related records in the <code>list</code> display</>,
+          description: <>the field to use for relationship sorting. This allows to drag and drop the related records in the <code>list</code> display</>,
         },
         {
           name: "relationshipSearchField",
@@ -411,12 +411,12 @@ The `fields` property is available in both `list` and `edit` properties.
                 {
                   name: "formatter",
                   type: "Function",
-                  description: <>a function that takes the field value as a parameter, and that return a JSX node. It also accepts a second argument which is the <a href="#nextadmin-context-type">NextAdmin context</a></>,
+                  description: <>a function that takes the field value as a parameter, and returns a JSX node. It also accepts a second argument which is the <a href="#nextadmin-context-type">NextAdmin context</a></>,
                 },
                 {
                   name: "sortBy",
                   type: "String",
-                  description: "available only on many-to-one models. The name of a field of the related model to apply the sort on. Defaults to the id field of the related model",
+                  description: "available only on many-to-one models. The name of a field in the related model to apply the sort to. Defaults to the id field of the related model",
                 },
           ]}
     />
@@ -425,7 +425,7 @@ The `fields` property is available in both `list` and `edit` properties.
 
 
 ## `actions` property
-The `actions` property is an array of objects that allows you to define a set of actions that can be executed on one or more records of the resource. On the list view, there is a default action for deletion. The object can take the following properties:
+The `actions` property is an array of objects that allows you to define a set of actions that can be executed on one or more records of the resource. On the list view, there is a default action for deletion. The object can have the following properties:
 
 <OptionsTable
   options={[
@@ -512,7 +512,7 @@ Represents the context that is passed to the formatter function in the [list.fie
 This type represents the notice object that can be used in the `edit` property of a model.
 If you pass a Notice object in the `display` array, it will be displayed in the form. 
 This can be useful to display alerts or information to the user when editing a record. 
-The object can take the following properties:
+The object can have the following properties:
 
 <OptionsTable
   options={[

@@ -13,8 +13,8 @@ The admin panel route name is set by your folder name.
 Examples:
 
   You want to have your next admin panel at `https://website.com/foo`: 
-    - `apiBasePathù will be `/api/foo`
-    - and `basePathù` will be `/foo`
+    - `apiBasePath` will be `/api/foo`
+    - and `basePath` will be `/foo`
 
 <Tabs items={["Pages Router", "App Router"]}>
   <Tabs.Tab>
@@ -26,7 +26,7 @@ Examples:
         </FileTree.Folder>
         <FileTree.Folder name="api" defaultOpen>
           <FileTree.Folder name="foo" defaultOpen>
-            <FileTree.File name="[[...nextadmin]].tsx" />
+            <FileTree.File name="[[...nextadmin]].ts" />
           </FileTree.Folder>
         </FileTree.Folder>
       </FileTree.Folder>

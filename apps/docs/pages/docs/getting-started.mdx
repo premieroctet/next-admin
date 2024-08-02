@@ -32,9 +32,9 @@ pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
 
 ### TailwindCSS
 
-Next-Admin relies on [TailwindCSS](https://tailwindcss.com/) for the style. If you do not have it, you can [install TailwindCSS](https://tailwindcss.com/docs/installation) with the following config :
+Next-Admin relies on [TailwindCSS](https://tailwindcss.com/) for the style. If you do not have it, you can [install TailwindCSS](https://tailwindcss.com/docs/installation) with the following configuration :
 
-```typescript copy
+```typescript copy filename="tailwind.config.js"
 module.exports = {
   content: [
     "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
@@ -54,8 +54,7 @@ Next-Admin relies on [Prisma](https://www.prisma.io/) for the database. If you d
 
 You have to add the `jsonSchema` generator to your `schema.prisma` file:
 
-```prisma copy
-// prisma/schema.prisma
+```prisma copy filename="schema.prisma"
 generator jsonSchema {
   provider = "prisma-json-schema-generator"
   includeRequiredFields = "true"
@@ -75,10 +74,9 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
 <Tabs items={['App router', 'Page router']}>
   <Tabs.Tab>
 
-    #### Create file : `app/api/admin/[[...nextadmin]]/page.ts`
+    #### Create file : `page.tsx`
 
-    ```tsx copy
-    // app/admin/[[...nextadmin]]/page.tsx
+    ```tsx copy filename="app/admin/[[...nextadmin]]/page.tsx"
     import { NextAdmin, PageProps } from "@premieroctet/next-admin";
     import { getNextAdminProps } from "@premieroctet/next-admin/dist/appRouter";
     import { prisma } from "@/prisma";
@@ -118,10 +116,9 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
   </Tabs.Tab>
   <Tabs.Tab>
 
-    #### Create file : `pages/api/admin/[[...nextadmin]].ts`
+    #### Create file : `[[...nextadmin]].ts`
 
-    ```tsx copy
-    // pages/admin/[[...nextadmin]].tsx
+    ```tsx copy filename="pages/admin/[[...nextadmin]].ts"
     import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
 
     import { getNextAdminProps } from "@premieroctet/next-admin/dist/pageRouter";
@@ -150,11 +147,9 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
       });
     ```
 
-    <Callout type="info" emoji="⚠️">
-
-Do not forget to add the `options` prop to the `NextAdmin` component.
-
-</Callout>
+    <Callout type="info">
+      Do not forget to add the `options` prop to `<NextAdmin />` component and `getNextAdminProps` function, if you are using it.
+    </Callout>
 
     #### SuperJson configuration
 
@@ -242,8 +237,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
 <Tabs items={['App router', 'Page router']}>
   <Tabs.Tab>
 
-    ```ts copy
-    // app/api/admin/[[...nextadmin]]/route.ts
+    ```ts copy filename="app/api/admin/[[...nextadmin]]/route.ts"
     import { prisma } from "@/prisma";
     import schema from "@/prisma/json-schema/json-schema.json";
     import { createHandler } from "@premieroctet/next-admin/dist/appHandler";
@@ -261,8 +255,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
   </Tabs.Tab>
   <Tabs.Tab>
 
-      ```ts copy
-      // pages/api/admin/[[...nextadmin]].ts
+      ```ts copy filename="pages/api/admin/[[...nextadmin]].ts"
       import { prisma } from "@/prisma";
       import { createApiRouter } from "@premieroctet/next-admin/dist/pageHandler";
       import schema from "@/prisma/json-schema/json-schema.json";
@@ -284,13 +277,8 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
       ```
 
       <Callout emoji="⚠️">
-
         Make sure to export the config object to define no `bodyParser`. This is required to be able to parse FormData.
-
       </Callout>
-
-    The `nextAdminRouter` function accepts a third optional parameter, which is a Next Admin [options](/docs/api/options) object.
-
   </Tabs.Tab>
 
   More information about the `createHandler` function [here](/docs/api/create-handler-function).
@@ -303,7 +291,7 @@ The `NextAdmin` component accepts an optional `options` prop. In the blocks abov
 <Callout type="info">
   The `options` parameter can be set to function/component, if you are using
   options, be sure to pass the same options to the handler and the router
-  function
+  function.
 </Callout>
 
 </Steps>

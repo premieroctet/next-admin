@@ -7,13 +7,13 @@ import OptionsTable from "../../../components/OptionsTable";
   This is the documentation for the latest version of Next Admin. If you are using an older version (`<5.0.0`), please refer to the [documentation](/v4/docs)
 </Callout>
 
-`createHandler` is a function that returns an object that allow you to catch all API access. It accepts an object with the following properties:
+`createHandler` is a function that returns an object that allows you to catch all API access. It accepts an object with the following properties:
 
 <OptionsTable
   options={[
     {
       name: 'prisma',
-      description: 'Your Prisma client instance. This is mandatory'
+      description: 'Your Prisma client instance. This is mandatory.'
     },
     {
       name: 'schema',
@@ -25,7 +25,8 @@ import OptionsTable from "../../../components/OptionsTable";
     },
     {
       name: 'options',
-      description: 'Your Next-Admin options'
-    }
+      description: <>Your Next Admin <a href="/docs/api/options">options</a>  </>
+    },
+    
   ]}
 />

@@ -45,6 +45,10 @@ export const options: NextAdminOptions = {
 };
 ```
 
+<Callout type="info">
+  It is recommended to centralize your options in a single file, as it might be used in multiple places.
+</Callout>
+
 
 ## `title`
 
@@ -52,11 +56,11 @@ The `title` property is a string that represents the title of the admin dashboar
 
 ## `model`
 
-`model` is a property that allows you to configure everything about how your models, their fields, their relations are displayed and edited. It's highly configurable you can learn more about it [here](/v4/docs/api/model-configuration).
+`model` is a property that allows you to configure everything about how your models, their fields, their relations are displayed and edited. It's highly configurable you can learn more about it [here](/docs/api/model-configuration).
 
 ## `pages`
 
-`pages` is an object that allows you to add your own sub pages as a sidebar menu entry. It is an object where the key is the path (without the base path) and the value is an object with the following properties:
+`pages` is an object that allows you to add your own sub-pages as a sidebar menu entry. It is an object where the key is the path (without the base path) and the value is an object with the following properties:
 
 <OptionsTable
       options={[
@@ -75,7 +79,7 @@ The `title` property is a string that represents the title of the admin dashboar
 
 ## `sidebar`
 
-The `sidebar` property allows you to customise the aspect of the sidebar menu. It is an object that can take the following properties:
+The `sidebar` property allows you to customize the aspect of the sidebar menu. It is an object that can have the following properties:
 
 <OptionsTable
   options={[
@@ -99,7 +103,7 @@ The `sidebar` property allows you to customise the aspect of the sidebar menu. I
 
 ## `externalLinks`
 
-The `externalLinks` property allows you to add external links to the sidebar menu. It is an array of objects that can take the following properties:
+The `externalLinks` property allows you to add external links to the sidebar menu. It is an array of objects that can have the following properties:
 
 <OptionsTable 
   options={[
