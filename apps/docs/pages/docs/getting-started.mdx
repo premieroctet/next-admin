@@ -71,7 +71,7 @@ yarn run prisma generate
 
 Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin routes.
 
-<Tabs items={['App router', 'Page router']}>
+<Tabs items={['App router', 'Pages router']}>
   <Tabs.Tab>
 
     #### Create file : `page.tsx`
@@ -103,7 +103,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
 
     <Callout emoji="⚠️">
 
-      Passing the `options` prop like you'd do on Page router will result in an error in case you
+      Passing the `options` prop like you'd do on Pages router will result in an error in case you
       have functions defined inside the options object (formatter, handlers, etc.).
       Make sure to pass no `options` prop to `NextAdmin` component in App router.
 
@@ -234,7 +234,7 @@ module.exports = {
 
 Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
 
-<Tabs items={['App router', 'Page router']}>
+<Tabs items={['App router', 'Pages router']}>
   <Tabs.Tab>
 
     ```ts copy filename="app/api/admin/[[...nextadmin]]/route.ts"
@@ -257,7 +257,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
 
       ```ts copy filename="pages/api/admin/[[...nextadmin]].ts"
       import { prisma } from "@/prisma";
-      import { createApiRouter } from "@premieroctet/next-admin/dist/pageHandler";
+      import { createHandler } from "@premieroctet/next-admin/dist/pageHandler";
       import schema from "@/prisma/json-schema/json-schema.json";
 
       export const config = {
