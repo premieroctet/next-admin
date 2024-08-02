@@ -131,7 +131,7 @@ Some of the snippets are implemented in the example project. You can check them 
 
 ## Export data
 
-By using [exports](/docs/api-docs#exports-property) options, you can export data. Next Admin only implements the CSV export button, it's actually a link pointing to a provided url.
+By using [exports](/docs/api/model-configuration#listexports-property) options, you can export data. Next Admin only implements the CSV export button, it's actually a link pointing to a provided url.
 
 The API endpoint route must be defined in the `exports` property of the options object. This is an example of how to implement the export API endpoint:
 
@@ -204,7 +204,7 @@ export async function GET() {
 
 > Note that you must secure the export route if you don't want to expose your data to the public by adding authentication middleware.
 
-There is two example files in the example project:
+There are two example files in the example project:
 
 - [app/api/users/export/route.ts](https://github.com/premieroctet/next-admin/tree/main/apps/example/app/api/users/export/route.ts)
 - [app/api/posts/export/route.ts](https://github.com/premieroctet/next-admin/tree/main/apps/example/app/api/posts/export/route.ts)
@@ -398,7 +398,7 @@ const CustomPage = async () => {
 export default CustomPage;
 ```
 
-Then, if you want that route to be available on the sidebar, you can add a new route - [more info](/docs/api-docs#pages):
+Then, if you want that route to be available on the sidebar, you can add a new route - [more info](/docs/api/options#pages):
 
 ```typescript copy
 {

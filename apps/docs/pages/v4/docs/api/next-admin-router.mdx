@@ -1,0 +1,50 @@
+import { Callout } from "nextra/components";
+
+# `nextAdminRouter` function
+<Callout type="default">
+  This documentation covers an older version of Next Admin. If you are using the
+  latest version (`>=5.0.0` and above), please refer to the [current
+  documentation](/docs).
+</Callout>
+
+
+<Callout type="info">
+    The following function should be used only for Pages Router.
+</Callout>
+
+`nextAdminRouter` is a function that returns a promise of a _Node Router_ that you can use in your getServerSideProps function to start using Next Admin. Its usage is only related to Pages Router.
+
+Usage example:
+
+```ts copy filename="pages/api/admin/[[...nextadmin]].ts"
+export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+  const { nextAdminRouter } = await import(
+    "@premieroctet/next-admin/dist/router"
+  );
+  const adminRouter = await nextAdminRouter(prisma, schema);
+  return adminRouter.run(req, res) as Promise<
+    GetServerSidePropsResult<{ [key: string]: any }>
+  >;
+};
+```
+
+It takes 3 parameters:
+
+- Your Prisma client instance, _required_
+- Your Prisma schema, _required_
+
+- and an _optional_ object of type [`NextAdminOptions`](/v4/docs/api/options) to customize your admin with the following properties:
+
+```ts
+import { NextAdminOptions } from "@premieroctet/next-admin";
+
+const options: NextAdminOptions = {
+  model: {
+    User: {
+      toString: (user) => `${user.email} / ${user.name}`,
+    },
+  },
+};
+
+const adminRouter = await nextAdminRouter(prisma, schema, options);
+```
