@@ -19,7 +19,7 @@ const FileWidget = (props: WidgetProps) => {
   const [file, setFile] = useState<File>();
   const [errors, setErrors] = useState(props.rawErrors);
   const [fileIsImage, setFileIsImage] = useState(false);
-  const [fileName, setFileName] = useState<string | null>(null);
+  const [filename, setFilename] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(props.value);
   const [isPending, setIsPending] = useState(false);
 
@@ -40,7 +40,7 @@ const FileWidget = (props: WidgetProps) => {
     if (props.value) {
       setIsPending(true);
       setFileUrl(props.value);
-      setFileName(getFilenameFromUrl(props.value) ?? null);
+      setFilename(getFilenameFromUrl(props.value) ?? null);
       const mime = getMimeTypeFromUrl(props.value);
       if (mime) {
         setFileIsImage(isImageMimeType(mime));
@@ -54,7 +54,7 @@ const FileWidget = (props: WidgetProps) => {
   const handleDelete = () => {
     setFile(undefined);
     setFileUrl(null);
-    setFileName(null);
+    setFilename(null);
     setErrors(undefined);
     setFieldDirty(props.name);
   };
@@ -76,7 +76,7 @@ const FileWidget = (props: WidgetProps) => {
         reader.onload = () => {
           setFileIsImage(file.type.includes("image"));
           setFileUrl(reader.result as string);
-          setFileName(file.name);
+          setFilename(file.name);
         };
 
         reader.readAsDataURL(file);
@@ -176,9 +176,9 @@ const FileWidget = (props: WidgetProps) => {
                 <DocumentIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-10 w-10" />
               ))}
 
-            {!!fileName && (
+            {!!filename && (
               <span className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-sm">
-                {fileName}
+                {filename}
               </span>
             )}
           </a>
