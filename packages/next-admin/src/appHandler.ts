@@ -163,12 +163,18 @@ export const createHandler = <P extends string = "nextadmin">({
           { status: 403 }
         );
       }
+      try {
+        const body = await req.json();
 
-      const body = await req.json();
+        await deleteResource({ body, prisma, resource });
 
-      await deleteResource({ body, prisma, resource });
-
-      return NextResponse.json({ ok: true });
+        return NextResponse.json({ ok: true });
+      } catch (e) {
+        return NextResponse.json(
+          { error: (e as Error).message },
+          { status: 500 }
+        );
+      }
     });
 
   const executeRouteHandler = (
