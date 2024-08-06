@@ -176,7 +176,7 @@ const FileWidget = (props: WidgetProps) => {
                 <DocumentIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-10 w-10" />
               ))}
 
-            {fileName !== undefined && (
+            {!!fileName && (
               <span className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-sm">
                 {fileName}
               </span>
