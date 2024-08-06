@@ -18,8 +18,7 @@ Some of the snippets are implemented in the example project. You can check them 
 
     > The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
 
-    ```ts
-    // app/api/admin/[[...nextadmin]]/route.ts
+    ```ts copy filename="app/api/admin/[[...nextadmin]]/route.ts"
     const { run } = createHandler({
       options,
       prisma,
@@ -38,8 +37,7 @@ Some of the snippets are implemented in the example project. You can check them 
     export { run as POST, run as GET, run as DELETE };
     ```
 
-    ```tsx
-    // app/admin/[[...nextadmin]]/page.tsx
+    ```tsx copy filename="pages/admin/[[...nextadmin]].tsx"
     export default async function AdminPage({
       params,
       searchParams,
@@ -73,7 +71,7 @@ Some of the snippets are implemented in the example project. You can check them 
 
     > The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
 
-    ```ts
+    ```ts copy
     export const config = {
       api: {
         bodyParser: false,
@@ -100,8 +98,7 @@ Some of the snippets are implemented in the example project. You can check them 
     export default run;
     ```
 
-    ```ts
-    // pages/api/admin/[[...nextadmin]].ts
+    ```ts copy filename="pages/api/admin/[[...nextadmin]].ts"
     export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
       const session = await getServerSession(req, res, authOptions);
       const isAdmin = session?.user?.role === "SUPERADMIN"; // your role check
@@ -135,8 +132,7 @@ By using [exports](/docs/api/model-configuration#listexports-property) options, 
 
 The API endpoint route must be defined in the `exports` property of the options object. This is an example of how to implement the export API endpoint:
 
-```typescript copy
-// app/api/users/export/route.ts
+```typescript copy filename="app/api/admin/[[...nextadmin]]/route.ts"
 import { prisma } from "@/prisma";
 
 export async function GET() {
@@ -157,8 +153,7 @@ export async function GET() {
 
 or with a stream response:
 
-```typescript copy
-// app/api/users/export/route.ts
+```typescript copy filename="app/api/admin/[[...nextadmin]]/route.ts"
 import { prisma } from "@/prisma";
 const BATCH_SIZE = 1000;
 
@@ -213,8 +208,7 @@ There are two example files in the example project:
 
 If you want to add data to the form data before submitting it, you can add logic to the `submitFormAction` function. This is an example of how to add `createdBy` and `updatedBy` fields based on the user id:
 
-```typescript copy
-// /api/admin/[[...nextadmin]]/route.ts
+```typescript copy filename="app/api/admin/[[...nextadmin]]/route.ts"
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import schema from "@/prisma/json-schema/json-schema.json";
@@ -259,8 +253,7 @@ This snippet is not implemented in the example project.
 
 If you want to customize the input form, you can create a custom input component. This is an example of how to create a custom input component for the `birthDate` field:
 
-```typescript copy
-// components/inputs/BirthDateInput.tsx
+```typescript copy filename="app/components/inputs/BirthDateInput.tsx"
 "use client";
 import { CustomInputProps } from "@premieroctet/next-admin";
 import DateTimePicker from "react-datepicker";
@@ -373,8 +366,7 @@ With the `list` display, if the `orderField` property is defined, you will be ab
 
 You can create custom pages in the Next Admin UI. By reusing the `MainLayout` component, you can create a new page with the same layout as the Next Admin pages. This is an example of how to create a custom page:
 
-```typescript copy
-// app/custom/page.tsx
+```typescript copy filename="app/custom/page.tsx"
 
 import { MainLayout } from "@premieroctet/next-admin";
 import { getMainLayoutProps } from "@premieroctet/next-admin/dist/appRouter";
