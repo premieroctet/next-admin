@@ -84,14 +84,14 @@ Actions are removed in v5 and replaced by a catch-all API route `[[...nextadmin]
   </Tabs>
 
   ### Remove `basePath` property
-  The `options` property is now fully optional, so we moved the `basePath` to the `<NextAdmin />` component. You can remove it from the options object.
+  The `options` property is not required anymore, so we moved the `basePath` (required) to the `<NextAdmin />` component. You can remove it from your `options` object.
 
   ### Remove server actions
   If you were using App Router you had to create server actions to perform some operations.
-  In v5 these actions are removed and replaced by the `[[...nextadmin]]` route you just created. So you can remove them from your project.
+  In v5 these actions are no longer needed. You can remove them from your project.
 
   ### Update your Next-Admin page 
-  Update your Next-Admin page to use the new `getNextAdminProps` function (more details [here](/docs/api/get-next-admin-props-function)).
+  Update your Next-Admin page to use the **new** `getNextAdminProps` **function** (more details [here](/docs/api/get-next-admin-props-function)).
 
   <Tabs items={['App Router', 'Pages Router']}>
     <Tabs.Tab>
@@ -114,7 +114,7 @@ Actions are removed in v5 and replaced by a catch-all API route `[[...nextadmin]
           apiBasePath: '/api/admin', 
           prisma,
           schema,
-          options,
+          options, // optional
         });
       
         return <NextAdmin {...props}/>;
@@ -135,7 +135,7 @@ Actions are removed in v5 and replaced by a catch-all API route `[[...nextadmin]
         return (
           <NextAdmin
             {...props}
-            options={options}
+            options={options} // optional
           />
         );
       }
@@ -146,7 +146,7 @@ Actions are removed in v5 and replaced by a catch-all API route `[[...nextadmin]
           apiBasePath: '/api/admin',
           prisma,
           schema,
-          options,
+          options, // optional
           req,
         });
     ```
