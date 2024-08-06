@@ -47,94 +47,78 @@ To use the library in your Next.js application, follow these steps:
 
 Bonus: Customize the admin dashboard by passing the `NextAdminOptions` options to the router and customize the admin dashboard by passing `dashboard` props to `NextAdmin` component. (More details in the [documentation](http://next-admin-docs.vercel.app/docs/getting-started#next-admin-options---optional))
 
-## Example
+## What does it look like?
 
-Here's a basic example of how to use the library:
+An example of `next-admin` options:
 
-#### TailwindCSS
+```tsx 
+// app/admin/options.ts
+import { NextAdminOptions } from "@premieroctet/next-admin";
 
-Add the following configuration to your `tailwind.config.js` file
-
-```typescript copy
-module.exports = {
-  content: [
-    "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
+export const options: NextAdminOptions = {
+  title: "⚡️ My Admin Page",
+  model: {
+    User: {
+      toString: (user) => `${user.name} (${user.email})`,
+      title: "Users",
+      icon: "UsersIcon",
+      list: {
+        search: ["name", "email"],
+        filters: [
+          {
+            name: "is Admin",
+            active: false,
+            value: {
+              role: {
+                equals: "ADMIN",
+              },
+            },
+          },
+        ],
+      },
+    },
+    Post: {
+      toString: (post) => `${post.title}`,
+    },
+    Category: {
+      title: "Categories",
+      icon: "InboxStackIcon",
+      toString: (category) => `${category.name}`,
+      list: {
+        display: ["name", "posts"],
+      },
+      edit: {
+        display: ["name", "posts"],
+      },
+    },
+  },
+  pages: {
+    "/custom": {
+      title: "Custom page",
+      icon: "AdjustmentsHorizontalIcon",
+    },
+  },
+  externalLinks: [
+    {
+      label: "Website",
+      url: "https://www.myblog.com",
+    },
   ],
-  darkMode: "class",
-  presets: [require("@premieroctet/next-admin/dist/preset")],
+  sidebar: {
+    groups: [
+      {
+        title: "Users",
+        models: ["User"],
+      },
+      {
+        title: "Categories",
+        models: ["Category"],
+      },
+    ],
+  },
 };
 ```
 
-#### Prisma
-
-Add the `jsonSchema` generator to your `schema.prisma` file
-
-```prisma copy
-// prisma/schema.prisma
-generator jsonSchema {
-  provider = "prisma-json-schema-generator"
-  includeRequiredFields = "true"
-}
-```
-
-Then run the following command :
-
-```bash copy
-yarn run prisma generate
-```
-
-#### App router
-
-Configure `page.tsx` in the `app/admin/[[...nextadmin]]` folder
-
-```tsx copy
-// app/admin/[[...nextadmin]]/page.tsx
-import { NextAdmin, PageProps } from "@premieroctet/next-admin";
-import { getNextAdminProps } from "@premieroctet/next-admin/dist/appRouter";
-import { prisma } from "@/prisma";
-import schema from "@/prisma/json-schema/json-schema.json";
-import "@/styles.css"; // .css file containing tailiwnd rules
-
-export default async function AdminPage({ params, searchParams }: PageProps) {
-  const props = await getNextAdminProps({
-    params: params.nextadmin,
-    searchParams,
-    basePath: "/admin",
-    apiBasePath: "/api/admin",
-    prisma,
-    schema,
-    /*options*/
-  });
-
-  return <NextAdmin {...props} />;
-}
-```
-
-Configure `route.ts` in the `app/api/[[...nextadmin]]` folder
-
-```ts copy
-// app/api/admin/[[...nextadmin]]/route.ts
-import { prisma } from "@/prisma";
-import schema from "@/prisma/json-schema/json-schema.json";
-import { createHandler } from "@premieroctet/next-admin/dist/appHandler";
-
-const { run } = createHandler({
-  apiBasePath: "/api/admin",
-  prisma,
-  schema,
-  /*options*/
-});
-
-export { run as DELETE, run as GET, run as POST };
-```
-
-#### Start the server
-
-Run the following command to start the server:
-
-```bash copy
-yarn dev
-```
 
 ## 📄 Documentation
 
