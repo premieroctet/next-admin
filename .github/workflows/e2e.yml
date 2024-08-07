@@ -19,8 +19,6 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
-      - name: Check docker-compose
-        run: docker-compose --version
       - name: Start docker-compose
         run: docker-compose up -d
       - name: Install dependencies
