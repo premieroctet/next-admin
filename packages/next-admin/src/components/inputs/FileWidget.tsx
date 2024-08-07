@@ -9,12 +9,7 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Loader from "../../assets/icons/Loader";
 import { useFormState } from "../../context/FormStateContext";
 import { useI18n } from "../../context/I18nContext";
-import {
-  getFilenameFromUrl,
-  getMimeTypeFromUrl,
-  isImageMimeType,
-} from "../../utils/file";
-
+import { getFilenameFromUrl, isImageType } from "../../utils/file";
 
 const FileWidget = (props: WidgetProps) => {
   const [file, setFile] = useState<File>();
@@ -38,7 +33,6 @@ const FileWidget = (props: WidgetProps) => {
   };
 
   useEffect(() => {
-    console.log("props.value", props.value);
     if (props.value) {
       setIsPending(true);
       setFileUrl(props.value);
@@ -46,10 +40,7 @@ const FileWidget = (props: WidgetProps) => {
       if (filename) {
         setFilename(filename);
       }
-      const mime = getMimeTypeFromUrl(props.value);
-      if (mime) {
-        setFileIsImage(isImageMimeType(mime));
-      }
+      setFileIsImage(isImageType(props.value));
       setIsPending(false);
     } else {
       setIsPending(false);

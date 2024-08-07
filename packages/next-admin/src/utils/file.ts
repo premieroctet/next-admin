@@ -1,25 +1,22 @@
-export function isImageMimeType(mimeType: string) {
-  if (mimeType.startsWith("image")) {
-    return true;
-  } else if (
-    [
-      "jpg",
-      "jpeg",
-      "png",
-      "gif",
-      "bmp",
-      "webp",
-      "svg",
-      "ico",
-      "tiff",
-      "tif",
-    ].includes(mimeType)
-  ) {
-    return true;
-  } else {
-    return false;
-  }
-}
+const SUPPORTED_IMG_EXTENSIONS = [
+  ".apng",
+  ".avif",
+  ".png",
+  ".gif",
+  ".jpg",
+  ".jpeg",
+  ".jfif",
+  ".pjpeg",
+  ".pjp",
+  ".png",
+  ".svg",
+  ".webp",
+  ".bmp",
+  ".ico",
+  ".cur",
+  ".tif",
+  ".tiff",
+];
 
 export function isBase64Url(url: string) {
   return url.startsWith("data:");
@@ -35,21 +32,21 @@ export function getFilenameAndExtensionFromUrl(url: string) {
     };
   } else {
     return {
-      fileName: "",
-      extension: "",
+      fileName: undefined,
+      extension: undefined,
     };
   }
 }
 
-export function getMimeTypeFromUrl(url: string) {
+export function isImageType(url: string) {
   if (isBase64Url(url)) {
-    return url.split(":")[1].split(";")[0];
+    return url.split(":")[1].split(";")[0].includes("image");
   } else {
     const { extension } = getFilenameAndExtensionFromUrl(url);
     if (!!extension) {
-      return extension.replace(".", "");
+      return SUPPORTED_IMG_EXTENSIONS.includes(extension);
     } else {
-      return undefined;
+      return false;
     }
   }
 }
