@@ -104,7 +104,7 @@ export const options: NextAdminOptions = {
                * Make sure to return a string.
                */
               upload: async (buffer, infos) => {
-                return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
+                return "https://raw.githubusercontent.com/premieroctet/next-admin/33fcd755a34f1ec5ad53ca8e293029528af814ca/apps/example/public/assets/logo.svg";
               },
             },
           },
