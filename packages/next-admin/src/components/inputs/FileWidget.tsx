@@ -15,6 +15,7 @@ import {
   isImageMimeType,
 } from "../../utils/file";
 
+
 const FileWidget = (props: WidgetProps) => {
   const [file, setFile] = useState<File>();
   const [errors, setErrors] = useState(props.rawErrors);
@@ -37,10 +38,14 @@ const FileWidget = (props: WidgetProps) => {
   };
 
   useEffect(() => {
+    console.log("props.value", props.value);
     if (props.value) {
       setIsPending(true);
       setFileUrl(props.value);
-      setFilename(getFilenameFromUrl(props.value) ?? null);
+      const filename = getFilenameFromUrl(props.value);
+      if (filename) {
+        setFilename(filename);
+      }
       const mime = getMimeTypeFromUrl(props.value);
       if (mime) {
         setFileIsImage(isImageMimeType(mime));
