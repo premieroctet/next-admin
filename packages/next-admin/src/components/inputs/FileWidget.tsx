@@ -5,20 +5,21 @@ import {
 } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
-import { ChangeEvent, memo, useEffect, useRef, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Loader from "../../assets/icons/Loader";
 import { useFormState } from "../../context/FormStateContext";
 import { useI18n } from "../../context/I18nContext";
+import { getFilenameFromUrl, isImageType } from "../../utils/file";
 
 const FileWidget = (props: WidgetProps) => {
   const [file, setFile] = useState<File>();
   const [errors, setErrors] = useState(props.rawErrors);
   const [fileIsImage, setFileIsImage] = useState(false);
-  const [fileData, setFileData] = useState<string | null>(props.value);
+  const [filename, setFilename] = useState<string | null>(null);
+  const [fileUrl, setFileUrl] = useState<string | null>(props.value);
   const [isPending, setIsPending] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const [hasChanged, setHasChanged] = useState(false);
   const { t } = useI18n();
   const [isDragging, setIsDragging] = useState(false);
   const { setFieldDirty } = useFormState();
@@ -26,7 +27,6 @@ const FileWidget = (props: WidgetProps) => {
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files;
     if (selectedFile) {
-      setHasChanged(true);
       setFieldDirty(props.name);
       setFile(selectedFile[0]);
     }
@@ -35,19 +35,13 @@ const FileWidget = (props: WidgetProps) => {
   useEffect(() => {
     if (props.value) {
       setIsPending(true);
-      fetch(props.value)
-        .then((res) => {
-          return res.blob();
-        })
-        .then((blob) => {
-          setFile(new File([blob], blob.name, { type: blob.type }));
-        })
-        .catch((error) => {
-          setErrors([error.message]);
-        })
-        .finally(() => {
-          setIsPending(false);
-        });
+      setFileUrl(props.value);
+      const filename = getFilenameFromUrl(props.value);
+      if (filename) {
+        setFilename(filename);
+      }
+      setFileIsImage(isImageType(props.value));
+      setIsPending(false);
     } else {
       setIsPending(false);
     }
@@ -55,7 +49,8 @@ const FileWidget = (props: WidgetProps) => {
 
   const handleDelete = () => {
     setFile(undefined);
-    setFileData(null);
+    setFileUrl(null);
+    setFilename(null);
     setErrors(undefined);
     setFieldDirty(props.name);
   };
@@ -76,9 +71,8 @@ const FileWidget = (props: WidgetProps) => {
         const reader = new FileReader();
         reader.onload = () => {
           setFileIsImage(file.type.includes("image"));
-          if (hasChanged) {
-            setFileData(reader.result as string);
-          }
+          setFileUrl(reader.result as string);
+          setFilename(file.name);
         };
 
         reader.readAsDataURL(file);
@@ -97,7 +91,7 @@ const FileWidget = (props: WidgetProps) => {
               "bg-dark-nextadmin-background-subtle": isDragging,
               "opacity-50": props.disabled,
             },
-            (file || isPending || errors) && "hidden"
+            (fileUrl || isPending || errors) && "hidden"
           )}
           onDrop={handleDrop}
           onDragOver={(evt) => {
@@ -151,7 +145,7 @@ const FileWidget = (props: WidgetProps) => {
           </div>
         </div>
       }
-      {(isPending || file || errors) && (
+      {(isPending || errors || fileUrl) && (
         <div
           className={clsx(
             "ring-nextadmin-border-default dark:ring-dark-nextadmin-border-default relative flex cursor-default items-center justify-between rounded-md px-3 px-8 py-2 text-sm placeholder-gray-500 shadow-sm ring-1",
@@ -159,7 +153,7 @@ const FileWidget = (props: WidgetProps) => {
           )}
         >
           <a
-            href={fileData ?? undefined}
+            href={fileUrl ?? undefined}
             className="relative flex flex-1 cursor-pointer flex-col items-center gap-2"
             target="_blank"
             rel="noopener noreferrer"
@@ -173,14 +167,14 @@ const FileWidget = (props: WidgetProps) => {
             {!isPending &&
               (fileIsImage ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={fileData!} alt="file" className="h-32" />
+                <img src={fileUrl!} alt="file" className="h-32" />
               ) : (
                 <DocumentIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-10 w-10" />
               ))}
 
-            {file && file.name && file.name !== "undefined" && (
+            {!!filename && (
               <span className="text-nextadmin-content-inverted/50 dark:text-dark-nextadmin-content-inverted/50 text-sm">
-                {file.name}
+                {filename}
               </span>
             )}
           </a>

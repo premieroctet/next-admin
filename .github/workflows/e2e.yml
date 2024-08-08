@@ -20,7 +20,7 @@ jobs:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
       - name: Start docker-compose
-        run: docker-compose up -d
+        run: docker compose up -d
       - name: Install dependencies
         run: yarn install
       - name: Run linter

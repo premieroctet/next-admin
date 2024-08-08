@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.12
+
+### Patch Changes
+
+- [170a48b](https://github.com/premieroctet/next-admin/commit/170a48b): Fix images CORS issues
+
 ## 5.0.0-rc.11
 
 ### Patch Changes
