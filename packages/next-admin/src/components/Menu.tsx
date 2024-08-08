@@ -161,6 +161,8 @@ export default function Menu({
       }
     };
 
+    const hasDropdown = user.logout; // Add more conditions here if needed
+
     return (
       <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color flex flex-1 items-center gap-1 px-2 py-3 text-sm font-semibold leading-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -183,35 +185,37 @@ export default function Menu({
             {user.data.name}
           </span>
         </div>
-        <Dropdown>
-          <DropdownTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
-            >
-              <Cog6ToothIcon className="h-6 w-6" />
-            </Button>
-          </DropdownTrigger>
-          <DropdownBody>
-            <DropdownContent side="top" sideOffset={5} className="px-1 py-2">
-              <DropdownLabel className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted px-4 py-1 font-normal">
-                {user.data.name}
-              </DropdownLabel>
-              <DropdownSeparator className="bg-nextadmin-border-default dark:bg-dark-nextadmin-border-emphasis" />
-              <DropdownItem asChild>
-                <button
-                  type="button"
-                  onClick={logoutBind}
-                  className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
-                >
-                  <PowerIcon className="h-4 w-4" />
-                  <span>{t("user.logout")}</span>
-                </button>
-              </DropdownItem>
-            </DropdownContent>
-          </DropdownBody>
-        </Dropdown>
+        {hasDropdown && (
+          <Dropdown>
+            <DropdownTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
+              >
+                <Cog6ToothIcon className="h-6 w-6" />
+              </Button>
+            </DropdownTrigger>
+            <DropdownBody>
+              <DropdownContent side="top" sideOffset={5} className="px-1 py-2">
+                <DropdownLabel className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted px-4 py-1 font-normal">
+                  {user.data.name}
+                </DropdownLabel>
+                <DropdownSeparator className="bg-nextadmin-border-default dark:bg-dark-nextadmin-border-emphasis" />
+                <DropdownItem asChild>
+                  <button
+                    type="button"
+                    onClick={logoutBind}
+                    className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
+                  >
+                    <PowerIcon className="h-4 w-4" />
+                    <span>{t("user.logout")}</span>
+                  </button>
+                </DropdownItem>
+              </DropdownContent>
+            </DropdownBody>
+          </Dropdown>
+        )}
       </div>
     );
   };

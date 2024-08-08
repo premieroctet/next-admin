@@ -600,7 +600,7 @@ export type UserData = {
 
 export type AdminUser = {
   data: UserData;
-  logout: [RequestInfo, RequestInit?] | (() => void | Promise<void>) | string;
+  logout?: [RequestInfo, RequestInit?] | (() => void | Promise<void>) | string;
 };
 
 export type AdminComponentProps = {
