@@ -53,7 +53,6 @@ export function isImageType(url: string) {
     return url.split(":")[1].split(";")[0].includes("image");
   } else {
     const { extension } = getFilenameAndExtensionFromUrl(url);
-    console.log("extension", extension);
     if (!!extension) {
       return SUPPORTED_IMG_EXTENSIONS.includes(extension.toLocaleLowerCase());
     } else {
