@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.13
+
+### Patch Changes
+
+- add URL redirect support for logout
+
 ## 5.0.0-rc.12
 
 ### Patch Changes

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
-    "@premieroctet/next-admin": "5.0.0-rc.12",
+    "@premieroctet/next-admin": "5.0.0-rc.13",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.8",
     "mini-svg-data-uri": "^1.4.4",
