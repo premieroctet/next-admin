@@ -23,8 +23,8 @@ Its an object that can have the following properties:
     },
     {
       name: "logout",
-      type: "[RequestInfo, RequestInit?] | Function (server action)",
-      description: <>either a request tuple (<code>[RequestInfo, RequestInit?]</code>) to fetch the logout API or a server action. This is required.</>,
+      type: "[RequestInfo, RequestInit?] | Function (server action) | String",
+      description: <>either a request tuple (<code>[RequestInfo, RequestInit?]</code>) to fetch the logout API, a function to call on logout (server action), or a string to redirect to a logout page</>,
     },
   ]}  
 />

@@ -151,6 +151,8 @@ export default function Menu({
         if (typeof user.logout === "function") {
           await user.logout();
           location.reload();
+        } else if (typeof user.logout === "string") {
+          location.href = user.logout;
         } else {
           await fetch(...user.logout).then(() => {
             location.reload();
