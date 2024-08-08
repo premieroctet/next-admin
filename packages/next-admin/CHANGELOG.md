@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.14
+
+### Patch Changes
+
+- add dist
+
 ## 5.0.0-rc.13
 
 ### Patch Changes
