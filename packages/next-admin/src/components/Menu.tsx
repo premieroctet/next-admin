@@ -11,6 +11,8 @@ import Link from "next/link";
 import { Fragment, useState } from "react";
 
 import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
+import { useTheme } from "next-themes";
+import Image from "next/image";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
@@ -18,7 +20,6 @@ import {
   AdminComponentProps,
   ModelIcon,
   ModelName,
-  NextAdminOptions,
   SidebarConfiguration,
 } from "../types";
 import { slugify } from "../utils/tools";
@@ -49,7 +50,6 @@ export type MenuProps = {
   user?: AdminComponentProps["user"];
   externalLinks?: AdminComponentProps["externalLinks"];
   title?: string;
-  forceColorScheme?: NextAdminOptions["forceColorScheme"];
 };
 
 export default function Menu({
@@ -62,12 +62,12 @@ export default function Menu({
   user,
   externalLinks,
   title,
-  forceColorScheme,
 }: MenuProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
   const { pathname } = useRouterInternal();
   const { t } = useI18n();
+  const { forcedTheme } = useTheme();
 
   const customPagesNavigation = customPages?.map((page) => ({
     name: page.title,
@@ -146,11 +146,28 @@ export default function Menu({
       return null;
     }
 
+    const logoutBind = async () => {
+      if (user.logout) {
+        if (typeof user.logout === "function") {
+          await user.logout();
+          location.reload();
+        } else if (typeof user.logout === "string") {
+          location.href = user.logout;
+        } else {
+          await fetch(...user.logout).then(() => {
+            location.reload();
+          });
+        }
+      }
+    };
+
+    const hasDropdown = user.logout; // Add more conditions here if needed
+
     return (
       <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color flex flex-1 items-center gap-1 px-2 py-3 text-sm font-semibold leading-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {user.data.picture ? (
-            <img
+            <Image
               className="flex h-8 w-8 flex-shrink-0 rounded-full"
               src={user.data.picture}
               alt="User picture"
@@ -168,34 +185,37 @@ export default function Menu({
             {user.data.name}
           </span>
         </div>
-        <Dropdown>
-          <DropdownTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
-            >
-              <Cog6ToothIcon className="h-6 w-6" />
-            </Button>
-          </DropdownTrigger>
-          <DropdownBody>
-            <DropdownContent side="top" sideOffset={5} className="px-1 py-2">
-              <DropdownLabel className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted px-4 py-1 font-normal">
-                {user.data.name}
-              </DropdownLabel>
-              <DropdownSeparator className="bg-nextadmin-border-default dark:bg-dark-nextadmin-border-emphasis" />
-              <DropdownItem asChild>
-                <Link
-                  href={user.logoutUrl}
-                  className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
-                >
-                  <PowerIcon className="h-4 w-4" />
-                  <span>{t("user.logout")}</span>
-                </Link>
-              </DropdownItem>
-            </DropdownContent>
-          </DropdownBody>
-        </Dropdown>
+        {hasDropdown && (
+          <Dropdown>
+            <DropdownTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
+              >
+                <Cog6ToothIcon className="h-6 w-6" />
+              </Button>
+            </DropdownTrigger>
+            <DropdownBody>
+              <DropdownContent side="top" sideOffset={5} className="px-1 py-2">
+                <DropdownLabel className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted px-4 py-1 font-normal">
+                  {user.data.name}
+                </DropdownLabel>
+                <DropdownSeparator className="bg-nextadmin-border-default dark:bg-dark-nextadmin-border-emphasis" />
+                <DropdownItem asChild>
+                  <button
+                    type="button"
+                    onClick={logoutBind}
+                    className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
+                  >
+                    <PowerIcon className="h-4 w-4" />
+                    <span>{t("user.logout")}</span>
+                  </button>
+                </DropdownItem>
+              </DropdownContent>
+            </DropdownBody>
+          </Dropdown>
+        )}
       </div>
     );
   };
@@ -223,10 +243,10 @@ export default function Menu({
     return (
       <>
         <div className="bg-nextadmin-menu-background dark:bg-dark-nextadmin-menu-background border-r-nextadmin-border-default dark:border-r-dark-nextadmin-border-default flex grow flex-col overflow-y-auto border-r pb-2">
-          <div className="flex py-3 items-center px-2">
+          <div className="flex items-center px-2 py-3">
             <Link
               href={basePath}
-              className="flex items-center gap-2 overflow-hidden h-[40px]"
+              className="flex h-[40px] items-center gap-2 overflow-hidden"
             >
               <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
                 {title}
@@ -279,7 +299,7 @@ export default function Menu({
             </ul>
             <div className="flex flex-col">
               {renderExternalLinks()}
-              {!forceColorScheme && <ColorSchemeSwitch />}
+              {!forcedTheme && <ColorSchemeSwitch />}
               {renderUser()}
             </div>
           </nav>

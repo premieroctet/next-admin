@@ -1,0 +1,34 @@
+import { Callout, Tabs } from "nextra/components";
+
+# `<NextAdmin/>` component  
+<Callout type="info">
+  This is the documentation for the latest version of Next Admin. If you are using an older version (`<5.0.0`), please refer to the [documentation](/v4/docs)
+</Callout>
+
+`<NextAdmin />` is a React component that contains the entire UI of Next Admin. It can take several props from `getNextAdminProps` function, but also some additional props:
+
+- `options` used to customize the UI, like field formatters for example. Do not use with App router (see [Options](/docs/api/options) for more details).
+- `dashboard` used to customize the rendered dashboard. 
+- `user` used to add some user information at the bottom of the menu. See [user properties](/docs/api/options) for more details.
+
+This is an example using the `NextAdmin` component with a custom Dashboard component and options:
+
+```tsx
+import Dashboard from "path/to/CustomDashboard";
+
+export default function Admin(props: AdminComponentProps) {
+  /* Props are passed from getNextAdminProps function */
+  return (
+    <NextAdmin
+      {...props}
+      dashboard={Dashboard}
+      user={{
+        data: {
+          name: "John Doe",
+        },
+        logout: "/api/auth/logout",
+      }}
+    />
+  );
+}
+```

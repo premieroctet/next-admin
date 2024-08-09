@@ -1,23 +1,24 @@
-import { useEffect, useRef } from "react";
+import { RefObject, useEffect, useRef } from "react";
 
-const useCloseOnOutsideClick = <E extends HTMLElement = HTMLElement>(
-  close: () => void
+const useClickOutside = <E extends HTMLElement = HTMLElement>(
+  callback: () => void
 ) => {
-  const ref: React.RefObject<E> = useRef(null);
-  const onWindowClick = (event: MouseEvent) => {
-    if (ref.current && !ref.current.contains(event.target as Node)) {
-      close();
-    }
-  };
+  const ref: RefObject<E> = useRef(null);
 
   useEffect(() => {
-    window.addEventListener("click", onWindowClick);
-    return () => {
-      window.removeEventListener("click", onWindowClick);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        callback();
+      }
     };
-  }, []);
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [callback]);
 
   return ref;
 };
 
-export default useCloseOnOutsideClick;
+export default useClickOutside;

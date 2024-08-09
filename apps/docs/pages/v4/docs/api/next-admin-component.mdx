@@ -1,0 +1,94 @@
+import { Callout, Tabs } from "nextra/components";
+
+# `<NextAdmin/>`
+<Callout type="default">
+  This documentation covers an older version of Next Admin. If you are using the
+  latest version (`>=5.0.0` and above), please refer to the [current
+  documentation](/docs).
+</Callout>
+
+
+`<NextAdmin/>` is a React component that contains the entire UI of Next Admin. It can take several props:
+- `options`: used to customize the UI, like field formatters for example. Do not use with App router (see [Options](/v4/docs/api/options) for more details).
+- `dashboard`: used to customize the rendered dashboard. You can provide your own dashboard component. Dashboard is rendered in your base url (e.g. `/admin`).
+- `translations`: used to customize some of the texts displayed in the UI. See [i18n](/v4/docs/i18n) for more details.
+- `user`: used to add some user information at the bottom of the menu. See [user](/v4/docs/api/user) for more details.
+- Some other props that are used internally by Next Admin that are not documented here and that you should pass as is. Depending on the type of Next Router you're using (App or Pages) you will get these props differently.
+
+<Callout emoji="⚠️" type="warning">
+  Do not override any `AdminComponentProps` props that are not documented here. They are used internally by Next Admin. You can only override these props: 
+  `options` / `dashboard` / `translations` / `user`, and they're optional.
+</Callout>
+
+This is an example using the `NextAdmin` component with a custom Dashboard component and options:
+<Tabs items={['App router', 'Pages router']}>
+  <Tabs.Tab>
+  ```tsx copy filename="app/admin/[[...nextadmin]]/page.tsx"
+  import Dashboard from "path/to/CustomDashboard";
+  import { options } from "@/options";
+  
+  export default async function AdminPage({
+    params,
+    searchParams,
+  }: {
+    params: { [key: string]: string[] | string };
+    searchParams: { [key: string]: string | string[] | undefined } | undefined;
+  }) {
+    const props = await getPropsFromParams({
+        params: params.nextadmin as string[],
+        searchParams,
+        options,
+        prisma,
+        schema,
+      });
+
+    return (
+      <NextAdmin
+        {...props}
+        // Do not forget to spread the AdminComponentProps to the NextAdmin component.
+        // Then you can override the props you want
+        dashboard={Dashboard}
+      />
+    );
+  }
+  ```
+  <Callout emoji="⚠️" type="warning">
+    Passing the `options` prop like you'd do on Pages router will result in an error in case you
+    have functions defined inside the options object (formatter, handlers, etc.). You should pass the options object in the `getPropsFromParams` function only.
+  </Callout>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```tsx copy filename="pages/admin/[[...nextadmin]].tsx"
+    import Dashboard from "path/to/CustomDashboard";
+    import { options } from "path/to/options";
+
+    export default function Admin(props: AdminComponentProps) {
+      return (
+        <NextAdmin
+          {...props} 
+          // Do not forget to spread the AdminComponentProps to the NextAdmin component.
+          // Then you can override the props you want
+          dashboard={Dashboard}
+          options={options}
+        />
+      );
+    }
+    
+
+    export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+      const { nextAdminRouter } = await import(
+        "@premieroctet/next-admin/dist/router"
+      );
+
+      const adminRouter = await nextAdminRouter(prisma, schema, options);
+      return adminRouter.run(req, res) as Promise<
+        GetServerSidePropsResult<{ [key: string]: any }>
+      >;
+    };
+
+    ```
+    <Callout type="info">
+      In the Pages Router, `options` parameter needs to be passed in the `<NextAdmin />` component. But also as a third argument to the `nextAdminRouter` function.
+    </Callout>
+  </Tabs.Tab>
+</Tabs>

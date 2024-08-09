@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { useConfig } from "../context/ConfigContext";
-import { useForm } from "../context/FormContext";
 import { Enumeration } from "../types";
 
 type UseSearchPaginatedResourceParams = {
@@ -13,8 +12,7 @@ const useSearchPaginatedResource = ({
   initialOptions,
 }: UseSearchPaginatedResourceParams) => {
   const [isPending, setIsPending] = useState(false);
-  const { dmmfSchema, searchPaginatedResourceAction, resource } = useForm();
-  const { isAppDir, basePath, options } = useConfig();
+  const { apiBasePath, dmmfSchema, resource } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
   const [allOptions, setAllOptions] = useState<Enumeration[]>(
@@ -35,55 +33,33 @@ const useSearchPaginatedResource = ({
 
     try {
       setIsPending(true);
-      if (isAppDir) {
-        const response = await searchPaginatedResourceAction?.({
+      const response = await fetch(`${apiBasePath}/options`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
           originModel: resource!,
           property: fieldName,
           model,
           query,
           page: searchPage.current,
           perPage,
-        });
+        }),
+      });
 
-        if (response && !response.error) {
-          totalSearchedItems.current = response.total;
+      if (response.ok) {
+        const responseJson = await response.json();
+
+        if (!responseJson.error) {
+          totalSearchedItems.current = responseJson.total;
           setAllOptions((old) => {
             if (resetOptions) {
-              return response.data;
+              return responseJson.data;
             }
 
-            return [...old, ...response.data] as Enumeration[];
+            return [...old, ...responseJson.data];
           });
-        }
-      } else {
-        const response = await fetch(`${basePath}/api/options`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            originModel: resource!,
-            property: fieldName,
-            model,
-            query,
-            page: searchPage.current,
-            perPage,
-          }),
-        });
-
-        if (response.ok) {
-          const responseJson = await response.json();
-
-          if (!responseJson.error) {
-            totalSearchedItems.current = responseJson.total;
-            setAllOptions((old) => {
-              if (resetOptions) {
-                return responseJson.data;
-              }
-
-              return [...old, ...responseJson.data];
-            });
-          }
         }
       }
     } finally {

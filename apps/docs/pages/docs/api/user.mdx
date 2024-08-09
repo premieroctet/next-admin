@@ -1,0 +1,30 @@
+import { Callout, Tabs } from "nextra/components";
+import OptionsTable from "../../../components/OptionsTable";
+
+# User
+<Callout type="info">
+  This is the documentation for the latest version of Next Admin. If you are using an older version (`<5.0.0`), please refer to the [documentation](/v4/docs)
+</Callout>
+
+The `user` property allows you to define the user displayed in the sidebar menu.
+Its an object that can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "data.name",
+      type: "String",
+      description: "the name of the user displayed in the sidebar menu. This is required",
+    },
+    {
+      name: "data.picture",
+      type: "String",
+      description: "the URL of the user's avatar displayed in the sidebar menu",
+    },
+    {
+      name: "logout",
+      type: "[RequestInfo, RequestInit?] | Function (server action) | String",
+      description: <>either a request tuple (<code>[RequestInfo, RequestInit?]</code>) to fetch the logout API, a function to call on logout (server action), or a string to redirect to a logout page</>,
+    },
+  ]}  
+/>

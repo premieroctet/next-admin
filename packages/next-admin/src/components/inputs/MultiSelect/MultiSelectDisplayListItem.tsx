@@ -52,6 +52,7 @@ const MultiSelectDisplayListItem = ({
       ref={setNodeRef}
       style={style}
       {...attributes}
+      aria-describedby="sortable-list"
     >
       <div className="flex items-center gap-2">
         {sortable && (

@@ -1,10 +1,53 @@
+import { Callout, FileTree, Tabs } from 'nextra/components'
+
+
 # Customize the admin route name
+
+<Callout type="info">
+  This is the documentation for the latest version of Next Admin. If you are using an older version (`<5.0.0`), please refer to the [documentation](/v4/docs/route)
+</Callout>
 
 When setting up `next-admin` you can set the admin panel route name to whatever you want.
 The admin panel route name is set by your folder name.
 
 Examples:
 
-`pages/admin/[[...nextadmin]].tsx` will be `/admin`
+  You want to have your next admin panel at `https://website.com/foo`: 
+    - `apiBasePath` will be `/api/foo`
+    - and `basePath` will be `/foo`
 
-`pages/prisma/[[...nextadmin]].tsx` will be `/prisma`
+<Tabs items={["Pages Router", "App Router"]}>
+  <Tabs.Tab>
+  
+    <FileTree>
+      <FileTree.Folder name="pages" defaultOpen>
+        <FileTree.Folder name="foo" defaultOpen>
+          <FileTree.File name="[[...nextadmin]].tsx" />
+        </FileTree.Folder>
+        <FileTree.Folder name="api" defaultOpen>
+          <FileTree.Folder name="foo" defaultOpen>
+            <FileTree.File name="[[...nextadmin]].ts" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree>
+  </Tabs.Tab>
+  <Tabs.Tab>
+    <FileTree>
+      <FileTree.Folder name="app" defaultOpen>
+        <FileTree.Folder name="foo" defaultOpen>
+          <FileTree.Folder name="[[...nextadmin]]" defaultOpen>
+            <FileTree.File name="page.tsx" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+        <FileTree.Folder name="api" defaultOpen>
+          <FileTree.Folder name="foo" defaultOpen>
+            <FileTree.Folder name="[[...nextadmin]]" defaultOpen>
+              <FileTree.File name="route.ts" />
+            </FileTree.Folder>
+          </FileTree.Folder>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree>
+  </Tabs.Tab>
+</Tabs>

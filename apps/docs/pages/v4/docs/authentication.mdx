@@ -1,0 +1,77 @@
+import { Callout, Tabs } from "nextra/components";
+
+# Authentication
+<Callout type="default">
+  This documentation covers an older version of Next Admin. If you are using the
+  latest version (`>=5.0.0` and above), please refer to the [current
+  documentation](/docs).
+</Callout>
+
+
+<Tabs items={['App router', 'Pages router']}>
+    <Tabs.Tab>
+    The library does not provide an authentication system. If you want to add your own, you can do so by adding a role check in the page:
+
+    <Callout type="info">
+      The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
+    </Callout>
+
+    ```ts copy filename="app/admin/[[...nextadmin]]/page.tsx" {8-9, 11-13}
+    export default async function AdminPage({
+      params,
+      searchParams,
+    }: {
+      params: { [key: string]: string[] };
+      searchParams: { [key: string]: string | string[] | undefined } | undefined;
+    }) {
+      const session = await getServerSession(authOptions);
+      const isAdmin = session?.user?.role === "SUPERADMIN"; // your role check
+
+      if (!isAdmin) {
+        redirect('/', { permanent: false })
+      }
+
+      const props = await getPropsFromParams({
+        params: params.nextadmin,
+        searchParams,
+        options,
+        prisma,
+        schema,
+        action: submitFormAction,
+      });
+
+      return <NextAdmin {...props} dashboard={Dashboard} />;
+    }
+    ```
+
+  </Tabs.Tab>
+  <Tabs.Tab>
+    The library does not provide an authentication system. If you want to add your own, you can do so by adding a role check to the `getServerSideProps` function:
+
+    <Callout type="info">
+      The following example uses [next-auth](https://next-auth.js.org/) to handle authentication
+    </Callout>
+
+    ```ts copy filename="pages/api/admin/[[...nextadmin]].ts" {2-3, 5-12}
+    export const getServerSideProps: GetServerSideProps = async ({ req, res }) => {
+      const session = await getServerSession(req, res, authOptions);
+      const isAdmin = session?.user?.role === "SUPERADMIN"; // your role check
+
+      if (!isAdmin) {
+        return {
+          redirect: {
+            destination: "/",
+            permanent: false,
+          },
+        };
+      }
+
+      const { nextAdminRouter } = await import(
+        "@premieroctet/next-admin/dist/nextAdminRouter"
+      );
+      return nextAdminRouter(client).run(req, res);
+    };
+    ```
+
+  </Tabs.Tab>
+</Tabs>

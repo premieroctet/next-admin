@@ -60,7 +60,7 @@ describe("optionsFromResource", () => {
         author: 1,
         authorId: 1,
         rate: new Decimal(5),
-        order: 0
+        order: 0,
       },
       {
         id: 2,
@@ -70,7 +70,7 @@ describe("optionsFromResource", () => {
         author: 1,
         authorId: 1,
         rate: new Decimal(5),
-        order: 1
+        order: 1,
       },
     ];
 

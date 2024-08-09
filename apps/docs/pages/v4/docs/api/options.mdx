@@ -1,0 +1,213 @@
+import { Callout, Tabs } from "nextra/components";
+import OptionsTable from "../../../../components/OptionsTable";
+
+# Next Admin options parameter
+<Callout type="default">
+  This documentation covers an older version of Next Admin. If you are using the
+  latest version (`>=5.0.0` and above), please refer to the [current
+  documentation](/docs).
+</Callout>
+
+
+Next Admin `options` is a parameter that allows you to configure your admin panel to your needs.
+
+<Callout type="info">
+Refers to [this documentation](/v4/docs/api/next-admin-component) to see where you should use the options parameters. Wether you're using the App Router or the Pages Router, the options object is the same. But the way you pass it to `<NextAdmin/>` is different.
+</Callout>
+
+Example:
+
+```tsx copy
+import { NextAdminOptions } from "@premieroctet/next-admin";
+
+export const options: NextAdminOptions = {
+  basePath: "/admin",
+  title: "⚡️ My Admin Page",
+  model: {
+    /* Your model configuration here */
+  },
+  pages: {
+    "/custom": {
+      title: "Custom page",
+      icon: "AdjustmentsHorizontalIcon",
+    },
+  },
+  externalLinks: [
+    {
+      label: "App Router",
+      url: "/ ",
+    },
+  ],
+  sidebar: {
+    groups: [
+      {
+        title: "Users",
+        models: ["User"],
+      },
+      {
+        title: "Categories",
+        models: ["Category"],
+      },
+    ],
+  },
+};
+```
+--- 
+The `NextAdminOptions` type is an object that can have the following properties:
+
+## `title`
+  The title of the admin panel. It is displayed in the browser tab and in the sidebar menu.
+
+## `basePath`
+
+`basePath` is a string that represents the base path of your admin. (e.g. `/admin`) - optional.
+
+## `model`
+
+`model` is a property that allows you to configure everything about how your models, their fields, their relations are displayed and edited. It's highly configurable you can learn more about it [here](/v4/docs/api/model-configuration).
+
+## `pages`
+
+`pages` is an object that allows you to add your own sub-pages as a sidebar menu entry. It is an object where the key is the path (without the base path) and the value is an object with the following properties:
+
+<OptionsTable
+      options={[
+        {
+          name: "title",
+          type: "String",
+          description: "The title of the page displayed on the sidebar",
+        },
+        {
+          name: "icon",
+          type: "String",
+          description: <>The <a href="https://heroicons.com/outline">outline HeroIcon name</a> of the page displayed on the sidebar</>,
+        },
+  ]}
+/>
+
+
+
+## `sidebar`
+
+The `sidebar` property allows you to customize the aspect of the sidebar menu. It is an object that can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "groups",
+      type: "Array",
+      description: "an array of objects that creates groups for specific resources",
+    },
+    {
+      name: "groups[].title",
+      type: "String",
+      description: "the name of the group",
+    },
+    {
+      name: "groups[].models",
+      type: "Array",
+      description: "the model names to display in the group",
+    },
+  ]}
+/>
+  
+
+## `externalLinks`
+
+The `externalLinks` property allows you to add external links to the sidebar menu. It is an array of objects that can have the following properties:
+
+<OptionsTable 
+  options={[
+    {
+      name: "label",
+      type: "String",
+      description: "the label of the link displayed on the sidebar. This is mandatory",
+    },
+    {
+      name: "url",
+      type: "String",
+      description: "the URL of the link. This is mandatory",
+    },
+  ]}
+/>
+  
+
+## `defaultColorScheme`
+
+The `defaultColorScheme` property defines a default color palette between `light`, `dark` and `system`, but allows the user to modify it. Default to `system`.
+
+## `forceColorScheme`
+
+Identical to `defaultColorScheme` but does not allow the user to change it.
+
+Here is an example of using `NextAdminOptions` for the following schema :
+
+```prisma copy filename="schema.prisma"
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  password  String   @default("")
+  posts     Post[]   @relation("author") // One-to-many relation
+  profile   Profile? @relation("profile") // One-to-one relation
+  birthDate DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  role      Role     @default(USER)
+}
+```
+
+```tsx copy filename=" pages/api/admin/[[...nextadmin]].ts"
+const options: NextAdminOptions = {
+  basePath: "/admin",
+  model: {
+    User: {
+      toString: (user) => `${user.name} (${user.email})`,
+      list: {
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        search: ["name", "email"],
+        fields: {
+          role: {
+            formatter: (role) => {
+              return <strong>{role.toString()}</strong>;
+            },
+          },
+          birthDate: {
+            formatter: (date) => {
+              return new Date(date as unknown as string)
+                ?.toLocaleString()
+                .split(" ")[0];
+            },
+          },
+        },
+      },
+      edit: {
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        fields: {
+          email: {
+            validate: (email) => email.includes("@") || "Invalid email",
+          },
+          birthDate: {
+            format: "date",
+          },
+          avatar: {
+            format: "file",
+            handler: {
+              upload: async (buffer, infos) => {
+                return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
+              },
+            },
+          },
+        },
+      },
+    },
+  },
+};
+
+const adminRouter = await nextAdminRouter(prisma, schema, options);
+```

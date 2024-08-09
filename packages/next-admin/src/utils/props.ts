@@ -1,26 +1,17 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { cloneDeep } from "lodash";
-import type { SearchPaginatedResourceParams } from "../actions";
 import {
-  ActionParams,
   AdminComponentProps,
   EditOptions,
-  Field,
-  ListOptions,
+  GetMainLayoutPropsParams,
+  GetNextAdminPropsParams,
   MainLayoutProps,
   ModelIcon,
   ModelName,
   NextAdminOptions,
-  SubmitFormResult,
 } from "../types";
-import { createBoundServerAction } from "./actions";
 import { getCustomInputs } from "./options";
-import {
-  getMappedDataList,
-  mapDataList,
-  includeOrderByPayloadForModel,
-  selectPayloadForModel,
-} from "./prisma";
+import { getDataItem, getMappedDataList } from "./prisma";
 import {
   getModelIdProperty,
   getPrismaModelForResource,
@@ -28,37 +19,9 @@ import {
   getResourceIdFromParam,
   getResources,
   getToStringForModel,
-  transformData,
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
-
-export type GetPropsFromParamsParams = {
-  params?: string[];
-  searchParams: { [key: string]: string | string[] | undefined } | undefined;
-  options: NextAdminOptions;
-  schema: any;
-  prisma: PrismaClient;
-  action?: (
-    params: ActionParams,
-    formData: FormData
-  ) => Promise<SubmitFormResult | undefined>;
-  isAppDir?: boolean;
-  deleteAction?: (
-    resource: ModelName,
-    ids: string[] | number[]
-  ) => Promise<void>;
-  locale?: string;
-  getMessages?: () => Promise<Record<string, string>>;
-  searchPaginatedResourceAction?: (
-    actionBaseParams: ActionParams,
-    params: SearchPaginatedResourceParams
-  ) => Promise<{
-    data: any[];
-    total: number;
-    error: string | null;
-  }>;
-};
 
 enum Page {
   LIST = 1,
@@ -71,19 +34,19 @@ export async function getPropsFromParams({
   options,
   schema,
   prisma,
-  action,
-  isAppDir = false,
-  deleteAction,
+  isAppDir = true,
   locale,
   getMessages,
-  searchPaginatedResourceAction,
-}: GetPropsFromParamsParams): Promise<
+  basePath,
+  apiBasePath,
+}: GetNextAdminPropsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
   | Pick<
       AdminComponentProps,
       | "pageComponent"
       | "basePath"
+      | "apiBasePath"
       | "isAppDir"
       | "message"
       | "resources"
@@ -94,13 +57,12 @@ export async function getPropsFromParams({
     resource,
     resources,
     resourcesTitles,
-    basePath,
     customPages,
     title,
     sidebar,
     resourcesIcons,
     externalLinks,
-  } = getMainLayoutProps({ options, params, isAppDir });
+  } = getMainLayoutProps({ basePath, apiBasePath, options, params, isAppDir });
 
   const resourcesIdProperty = resources!.reduce(
     (acc, resource) => {
@@ -110,51 +72,36 @@ export async function getPropsFromParams({
     {} as Record<ModelName, string>
   );
 
-  if (isAppDir && !action) {
-    throw new Error("action is required when using App router");
-  }
-
-  if (isAppDir && !deleteAction) {
-    throw new Error("deleteAction must be provided");
-  }
-
-  if (isAppDir && !searchPaginatedResourceAction) {
-    throw new Error("searchPaginatedResourceAction must be provided");
-  }
-
-  const clientOptions: NextAdminOptions = extractSerializable(options);
+  const clientOptions: NextAdminOptions | undefined =
+    extractSerializable(options);
   let defaultProps: AdminComponentProps = {
     resources,
     basePath,
+    apiBasePath,
     isAppDir,
-    action: action
-      ? createBoundServerAction({ schema, params }, action)
-      : undefined,
     customPages,
     resourcesTitles,
     resourcesIdProperty,
-    deleteAction,
     options: clientOptions,
-    searchPaginatedResourceAction: searchPaginatedResourceAction
-      ? createBoundServerAction(
-          { schema, params },
-          searchPaginatedResourceAction
-        )
-      : undefined,
     title,
     sidebar,
     resourcesIcons,
     externalLinks,
+    locale,
   };
 
   if (!params) return defaultProps;
 
   if (!resource) return defaultProps;
 
-  const actions = options?.model?.[resource]?.actions;
+  // We don't need to pass the action function to the component
+  const actions = options?.model?.[resource]?.actions?.map((action) => {
+    const { action: _, ...actionRest } = action;
+    return actionRest;
+  });
 
   if (getMessages) {
-    const messages = await getMessages();
+    const messages = await getMessages(locale!);
     const dottedProperty = {} as any;
     const dot = (obj: object, prefix = "") => {
       Object.entries(obj).forEach(([key, value]) => {
@@ -197,7 +144,6 @@ export async function getPropsFromParams({
     }
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
-      const idProperty = getModelIdProperty(resource);
 
       const dmmfSchema = getPrismaModelForResource(resource);
       const edit = options?.model?.[resource]?.edit as EditOptions<
@@ -214,65 +160,13 @@ export async function getPropsFromParams({
         : undefined;
 
       if (resourceId !== undefined) {
-        const select = selectPayloadForModel(resource, edit, "object");
-
-        Object.entries(select).forEach(([key, value]) => {
-          const fieldTypeDmmf = dmmfSchema?.fields.find(
-            (field) => field.name === key
-          )?.type;
-
-          if (fieldTypeDmmf && dmmfSchema) {
-            const relatedResourceOptions =
-              options.model?.[fieldTypeDmmf as ModelName]?.list;
-
-            if (
-              // @ts-expect-error
-              edit?.fields?.[key as Field<ModelName>]?.display === "table"
-            ) {
-              if (!relatedResourceOptions?.display) {
-                throw new Error(
-                  `'table' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
-                );
-              }
-
-              select[key] = {
-                select: selectPayloadForModel(
-                  fieldTypeDmmf as ModelName,
-                  relatedResourceOptions as ListOptions<ModelName>,
-                  "object"
-                ),
-              };
-            }
-          }
-        });
-
-        // @ts-expect-error
-        let data = await prisma[resource].findUniqueOrThrow({
-          select,
-          where: { [idProperty]: resourceId },
-        });
-
-        Object.entries(data).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            const fieldTypeDmmf = dmmfSchema?.fields.find(
-              (field) => field.name === key
-            )?.type;
-
-            if (fieldTypeDmmf && dmmfSchema) {
-              if (
-                // @ts-expect-error
-                edit?.fields?.[key as Field<ModelName>]?.display === "table"
-              ) {
-                data[key] = mapDataList({
-                  context: { locale },
-                  appDir: isAppDir,
-                  fetchData: value,
-                  options,
-                  resource: fieldTypeDmmf as ModelName,
-                });
-              }
-            }
-          }
+        const data = await getDataItem({
+          prisma,
+          resource,
+          resourceId,
+          options,
+          locale,
+          isAppDir,
         });
 
         const toStringFunction = getToStringForModel(
@@ -281,7 +175,7 @@ export async function getPropsFromParams({
         const slug = toStringFunction
           ? toStringFunction(data)
           : resourceId.toString();
-        data = transformData(data, resource, edit, options);
+
         return {
           ...defaultProps,
           resource,
@@ -310,30 +204,41 @@ export async function getPropsFromParams({
   }
 }
 
-type GetMainLayoutPropsParams = {
-  options: NextAdminOptions;
-  params?: string[];
-  isAppDir?: boolean;
-};
-
 export const getMainLayoutProps = ({
+  basePath,
+  apiBasePath,
   options,
   params,
-  isAppDir = false,
+  isAppDir = true,
+  
 }: GetMainLayoutPropsParams): MainLayoutProps => {
+  if (params !== undefined && !Array.isArray(params)) {
+    throw new Error(
+      "`params` parameter in `getMainLayoutProps` should be an array of strings."
+    );
+  }
+
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
+  const dmmfSchema = getPrismaModelForResource(resource!);
+  const resourcesIdProperty = resources!.reduce(
+    (acc, resource) => {
+      acc[resource] = getModelIdProperty(resource);
+      return acc;
+    },
+    {} as Record<ModelName, string>
+  );
 
-  const customPages = Object.keys(options.pages ?? {}).map((path) => ({
-    title: options.pages![path as keyof typeof options.pages].title,
+  const customPages = Object.keys(options?.pages ?? {}).map((path) => ({
+    title: options?.pages![path as keyof typeof options.pages].title ?? path,
     path: path,
-    icon: options.pages![path as keyof typeof options.pages].icon,
+    icon: options?.pages![path as keyof typeof options.pages].icon,
   }));
 
   const resourcesTitles = resources.reduce(
     (acc, resource) => {
       acc[resource as Prisma.ModelName] =
-        options.model?.[resource as keyof typeof options.model]?.title ??
+        options?.model?.[resource as keyof typeof options.model]?.title ??
         resource;
       return acc;
     },
@@ -342,7 +247,7 @@ export const getMainLayoutProps = ({
 
   const resourcesIcons = resources.reduce(
     (acc, resource) => {
-      if (!options.model?.[resource as keyof typeof options.model]?.icon)
+      if (!options?.model?.[resource as keyof typeof options.model]?.icon)
         return acc;
       acc[resource as Prisma.ModelName] =
         options.model?.[resource as keyof typeof options.model]?.icon!;
@@ -354,14 +259,17 @@ export const getMainLayoutProps = ({
   return {
     resources,
     resource,
-    basePath: options.basePath,
+    basePath,
+    apiBasePath,
     customPages,
     resourcesTitles,
     isAppDir,
-    title: options.title ?? "Admin",
-    sidebar: options.sidebar,
+    title: options?.title ?? "Admin",
+    sidebar: options?.sidebar,
     resourcesIcons,
-    externalLinks: options.externalLinks,
+    externalLinks: options?.externalLinks,
     options: extractSerializable(options),
+    dmmfSchema: dmmfSchema?.fields,
+    resourcesIdProperty: resourcesIdProperty,
   };
 };

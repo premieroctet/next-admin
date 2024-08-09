@@ -2,8 +2,8 @@ import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 
 export const options: NextAdminOptions = {
-  basePath: "/admin",
   title: "⚡️ My Admin",
+
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
@@ -74,7 +74,7 @@ export const options: NextAdminOptions = {
           "email-notice": "col-span-4 row-start-3",
           email: "col-span-4 md:col-span-2 row-start-4",
           posts: "col-span-4 md:col-span-2 row-start-5",
-          role: "col-span-4 md:col-span-2 row-start-6",
+          role: "col-span-4 md:col-span-3 row-start-6",
           birthDate: "col-span-3 row-start-7",
           avatar: "col-span-4 row-start-8",
           metadata: "col-span-4 row-start-9",
@@ -104,7 +104,7 @@ export const options: NextAdminOptions = {
                * Make sure to return a string.
                */
               upload: async (buffer, infos) => {
-                return "https://www.gravatar.com/avatar/00000000000000000000000000000000";
+                return "https://raw.githubusercontent.com/premieroctet/next-admin/33fcd755a34f1ec5ad53ca8e293029528af814ca/apps/example/public/assets/logo.svg";
               },
             },
           },
@@ -126,11 +126,10 @@ export const options: NextAdminOptions = {
       },
       actions: [
         {
+          id: "submit-email",
           title: "actions.user.email.title",
-          action: async (...args) => {
-            "use server";
-            const { submitEmail } = await import("./actions/nextadmin");
-            await submitEmail(...args);
+          action: async (ids) => {
+            console.log("Sending email to " + ids.length + " users");
           },
           successMessage: "actions.user.email.success",
           errorMessage: "actions.user.email.error",

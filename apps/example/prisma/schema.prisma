@@ -67,9 +67,9 @@ model Category {
 
 model CategoriesOnPosts {
   id         Int      @default(autoincrement())
-  post       Post     @relation(fields: [postId], references: [id])
+  post       Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
   postId     Int
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   categoryId Int
   order      Int      @default(0)
 

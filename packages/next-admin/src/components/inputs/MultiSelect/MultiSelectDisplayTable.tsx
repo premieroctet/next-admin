@@ -1,5 +1,5 @@
 import { RJSFSchema } from "@rjsf/utils";
-import { useForm } from "../../../context/FormContext";
+import { useConfig } from "../../../context/ConfigContext";
 import useDataColumns from "../../../hooks/useDataColumns";
 import { Enumeration } from "../../../types";
 import { DataTable } from "../../DataTable";
@@ -17,7 +17,7 @@ const MultiSelectDisplayTable = ({
   deletable,
   onRemoveClick,
 }: Props) => {
-  const { resourcesIdProperty } = useForm();
+  const { resourcesIdProperty } = useConfig();
   const columns = useDataColumns({
     data: formData?.map((data) => data.data),
     sortable: false,

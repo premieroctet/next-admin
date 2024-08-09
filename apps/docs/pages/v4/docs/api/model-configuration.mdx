@@ -1,0 +1,587 @@
+import { Callout, Tabs } from "nextra/components";
+import OptionsTable from "../../../../components/OptionsTable";
+
+# Model configuration
+<Callout type="default">
+  This documentation covers an older version of Next Admin. If you are using the
+  latest version (`>=5.0.0` and above), please refer to the [current
+  documentation](/docs).
+</Callout>
+
+
+To configure your models, you can use the `model` property of the [NextAdmin options](/v4/docs/api/options) parameter.
+
+This property allows you to configure everything about how your models, their fields, their relations are displayed and edited.
+
+Example for a schema with a `User`, `Post` and `Category` model:
+
+```tsx copy
+import { NextAdminOptions } from "@premieroctet/next-admin";
+
+export const options: NextAdminOptions = {
+  /* Your other options here */
+  model: {
+    User: {
+      toString: (user) => `${user.name} (${user.email})`,
+      title: "Users",
+      icon: "UsersIcon",
+      list: {
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        search: ["name", "email"],
+        filters: [
+          {
+            name: "is Admin",
+            active: false,
+            value: {
+              role: {
+                equals: "ADMIN",
+              },
+            },
+          },
+        ],
+      },
+      edit: {
+        display: [
+          "id",
+          "name",
+          "email",
+          "posts",
+          "role",
+          "birthDate",
+          "avatar",
+        ],
+      },
+      actions: [
+        {
+          title: "Send email",
+          action: async (model, ids) => {
+            const response = await fetch("/api/email", {
+              method: "POST",
+              body: JSON.stringify(ids),
+            });
+
+            if (!response.ok) {
+              throw new Error("Failed to send email");
+            }
+          },
+          successMessage: "Email sent successfully",
+          errorMessage: "Error while sending email",
+        },
+      ],
+    },
+    Post: {
+      toString: (post) => `${post.title}`,
+    },
+    Category: {
+      title: "Categories",
+      icon: "InboxStackIcon",
+      toString: (category) => `${category.name}`,
+      list: {
+        display: ["name", "posts"],
+      },
+      edit: {
+        display: ["name", "posts"],
+      },
+    },
+  },
+};
+
+```
+## `model`
+
+It takes as **key** a model name of your schema as **value** an object to configure it.
+
+By default if no models are defined, they will all be displayed in the admin. If you want more control, you have to define each model individually as empty objects or with the following properties:
+
+<OptionsTable
+      options={[
+        {
+          name: "toString",
+          type: "Function",
+          description: "a function that is used to display your record in related list",
+          defaultValue: "id field",
+        },
+        {
+          name: "aliases",
+          type: "Object",
+          description: "an object containing the aliases of the model fields as keys, and the field name"
+        },
+        {
+          name: "title",
+          type: "String",
+          description: "a string used to display the model name in the sidebar and in the section title",
+          defaultValue: "Model name",
+        },
+        {
+          name: "list",
+          type: "Object",
+          description: <>an object containing the list options (see <a href="#list-property">list property</a>)</>
+        },
+        {
+          name: "edit",
+          type: "Object",
+          description: <>an object containing the edit options (see <a href="#edit-property">edit property</a>)</>
+        },
+        {
+          name: "actions",
+          type: "Array",
+          description: <> an array of actions (see <a href="#actions-property">actions property</a>)</>
+        },
+        {
+          name: "icon",
+          type: "String",
+          description: <>the outline <a href="https://heroicons.com/" target="_blank">HeroIcon</a> name displayed in the sidebar and pages title</>,
+        },
+        {
+          name: "permissions",
+          type: "Array",
+          description: "an array to specify restricted permissions on model",
+        },
+  ]} />
+
+## `list` property 
+This property determines how your data is displayed in the [list view](/v4/docs/glossary#list-view)
+
+<OptionsTable 
+  options={[
+    {
+      name: "search",
+      type: "Array",
+      description: "an array of searchable fields",
+      defaultValue: 'All scalar fields are searchable by default',
+    },
+    {
+      name: "display",
+      type: "Array",
+      description: "an array of fields that are displayed in the list",
+      defaultValue: 'All scalar fields are displayed by default',
+    },
+    {
+      name: "fields",
+      type: "Object",
+      description: <>an object containing the model fields as keys, and customization values (see <a href="#editfields--listfields-property">fields property</a>)</>,
+    },
+    {
+      name: "copy",
+      type: "Array",
+      description: "an array of fields that are copyable into the clipboard",
+      defaultValue: "undefined - no field is copyable by default",
+    },
+    {
+      name: "defaultSort",
+      type: "Object",
+      description: "an optional object to determine the default sort to apply on the list",
+    },
+    {
+      name: "defaultSort.field",
+      type: "String",
+      description: "the model's field name to which the sort is applied. It is mandatory",
+    },
+    {
+      name: "defaultSort.direction",
+      type: "String",
+      description: "the sort direction to apply. It is optional",
+    },
+    {
+      name: "filters",
+      type: "Array",
+      description: <> define a set of Prisma filters that user can choose in list (see <a href="#listfilters-property">filters</a>)</>,
+    },
+    {
+      name: "exports",
+      type: "Object",
+      description: <>an object or array of export - containing export url (see <a href="#listexports-property">exports</a>)</>,
+    },
+  ]}
+/>
+<Callout type="info">
+  The `search` property is only available for [`scalar` fields](https://www.prisma.io/docs/orm/reference/prisma-schema-reference#model-field-scalar-types).
+</Callout>
+
+#### `list.filters` property
+
+The `filters` property allow you to define a set of [Prisma filters](https://www.prisma.io/docs/orm/prisma-client/queries/filtering-and-sorting) that users can apply on the [list view](/v4/docs/glossary#list-view). It's an array of the following object:
+
+<OptionsTable
+  options={[
+    {
+      name: "name",
+      type: "String",
+      description: "a unique name for the filter",
+    },
+    {
+      name: "active",
+      type: "Boolean",
+      description: "a boolean to set the filter active by default",
+      defaultValue: "false",
+    },
+    {
+      name: "value",
+      type: "String",
+      description: <>a where clause Prisma filter of the related model (e.g. <a href="https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators">Prisma operators</a>)</>,
+    },
+  ]}
+/>
+
+#### `list.exports` property
+
+The `exports` property allows you to define a set of export actions that users can apply on the [list view](/v4/docs/glossary#list-view).
+It's an object or an array of objects that can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "format",
+      type: "String",
+      description: "a string defining the format of the export. It's used to label the export button",
+      defaultValue: "undefined",
+    },
+    {
+      name: "url",
+      type: "String",
+      description: "a string defining the URL of the export action",
+      defaultValue: "undefined",
+    },
+  ]}
+/>
+
+<Callout type="info">
+  The `exports` property does not account for active filters. If you want to export filtered data, you need to add the filters to the URL or in your export action.
+</Callout>
+
+
+## `edit` property
+
+This property determines how your data is displayed in the [edit view](/v4/docs/glossary#edit-view)
+
+<OptionsTable
+      options={[
+  {
+    name: "display",
+    type: "Array",
+          description: <> an array of fields that are displayed in the form. It can also be an object that will be displayed in the form of a notice (see <a href="#notice-type">notice</a>)</>,
+    defaultValue: "all scalar fields are displayed",
+  },
+  {
+    name: "styles",
+    type: "Object",
+    description: <>an object containing the styles of the form (see <a href="#editstyles-property">styles</a>) </>,
+  },
+  {
+    name: "fields",
+    type: "Object",
+    description: <>an object containing the model fields as keys, and customization values (see <a href="#editfields--listfields-property">fields property</a>)</>,
+  },
+  {
+    name: "submissionErrorMessage",
+    type: "String",
+    description: "a message displayed if an error occurs during the form submission",
+    defaultValue: "'Submission error'",
+  },
+]}
+    />
+
+#### `edit.styles` property
+
+The `styles` property is available in the `edit` property.
+<Callout emoji="⚠️">
+  If your options are defined in a separate file, make sure to add the path to the `content` property of the `tailwind.config.js` file (see [TailwindCSS configuration](/docs/getting-started#tailwindcss-configuration)).
+</Callout>
+
+<OptionsTable 
+  options={[
+    {
+      name: "_form",
+      type: "String",
+      description: "a string defining the classname of the form",
+    },
+    {
+      name: "...",
+      type: "String",
+      description: "all fields of the model, with the field name as the key and the classname as the value",
+    },
+  ]}
+/>
+
+Here is an example of using `styles` property:
+
+```ts copy
+styles: {
+  _form: "form-classname",
+  ... // all fields
+};
+```
+
+#### `edit.fields` & `list.fields` property
+
+The `fields` property is available in both `list` and `edit` properties.
+<Tabs items={["edit", "list"]}>
+  <Tabs.Tab> 
+    For the `edit` property, it can take the following:
+    <OptionsTable
+      options={[
+        {
+          name: "validate",
+          type: "Function",
+          description: "a function that takes the field value as a parameter, and returns a boolean",
+        },
+        {
+          name: "format",
+          type: "String",
+          description: <>a string defining an OpenAPI field format, overriding the one set in the generator. An extra <code>file</code> format can be used to be able to have a file input</>,
+        },
+        {
+          name: "input",
+          type: "React Element",
+          description: <>a React Element that should receive <a href="#custominputprops-type">CustomInputProps</a>. For App Router, this element must be a client component</>,
+        },
+        {
+          name: "handler",
+          type: "Object",
+          description: "",
+        },
+        {
+          name: "handler.get",
+          type: "Function",
+          description: "a function that takes the field value as a parameter and returns a transformed value displayed in the form",
+        },
+        {
+          name: "handler.upload",
+          type: "Function",
+          description: <>an async function that is used only for formats <code>file</code> and <code>data-url</code>. It takes a Buffer object and an information object containing <code>name</code> and <code>type</code> properties as parameters and must return a string. It can be useful to upload a file to a remote provider</>,
+        },
+        {
+          name: "handler.uploadErrorMessage",
+          type: "String",
+          description: "an optional string displayed in the input field as an error message in case of a failure during the upload handler",
+        },
+        {
+          name: "optionFormatter",
+          type: "Function",
+          description: "only for relation fields, a function that takes the field values as a parameter and returns a string. Useful to display your record in related list",
+        },
+        {
+          name: "tooltip",
+          type: "String",
+          description: "A tooltip content to display for the field ",
+        },
+        {
+          name: "helperText",
+          type: "String",
+          description: "a helper text that is displayed underneath the input",
+        },
+        {
+          name: "disabled",
+          type: "Boolean",
+          description: "a boolean to indicate that the field is read only",
+        },
+        {
+          name: "display",
+          type: "String",
+          description: <> only for relation fields, indicate which display format to use between <code>list</code>, <code>table</code> or <code>select</code></>, 
+          defaultValue: "select",
+        },
+        {
+          name: "required",
+          type: "Boolean",
+          description: <>a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set <code>required</code> to false</>,
+        },
+        {
+          name: "relationOptionFormatter",
+          type: "Function",
+          description: <>same as <code>optionFormatter</code>, but used to format data that comes from an <a href="https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations#explicit-many-to-many-relations">explicit many-to-many</a> relationship</>,
+            },
+        {
+          name: "orderField",
+          type: "String",
+          description: <>the field to use for relationship sorting. This allows to drag and drop the related records in the <code>list</code> display</>,
+        },
+        {
+          name: "relationshipSearchField",
+          type: "String",
+          description: <>a field name of the explicit many-to-many relation table to apply the search on. See <a href="https://www.prisma.io/docs/orm/prisma-schema/data-model/relations/many-to-many-relations#explicit-many-to-many-relations">handling explicit many-to-many</a></>,
+            },
+      ]}
+    />
+  </Tabs.Tab>
+  <Tabs.Tab> 
+    For the `list` property, it can take the following:
+    <OptionsTable
+          options={[
+                {
+                  name: "formatter",
+                  type: "Function",
+                  description: <>a function that takes the field value as a parameter, and returns a JSX node. It also accepts a second argument which is the <a href="#nextadmin-context-type">NextAdmin context</a></>,
+                },
+                {
+                  name: "sortBy",
+                  type: "String",
+                  description: "available only on many-to-one models. The name of a field in the related model to apply the sort to. Defaults to the id field of the related model",
+                },
+          ]}
+    />
+  </Tabs.Tab> 
+</Tabs>
+
+
+## `actions` property
+The `actions` property is an array of objects that allows you to define a set of actions that can be executed on one or more records of the resource. On the list view, there is a default action for deletion. The object can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "title",
+      type: "String",
+      description: "action title that will be shown in the action dropdown",
+        },
+    {
+      name: "action",
+      type: "Function",
+      description: <>an async function that will be triggered when selecting the action in the dropdown. For App Router, it must be defined as a server action</>,
+    },
+    {
+      name: "successMessage",
+      type: "String",
+      description: "a message that will be displayed when the action is successful",
+    },
+    {
+      name: "errorMessage",
+      type: "String",
+      description: "a message that will be displayed when the action fails",
+    },
+  ]}
+/>
+
+
+
+## CustomInputProps type
+Represents the props that are passed to the custom input component.
+<OptionsTable
+  options={[
+    {
+      name: "name",
+      type: "String",
+      description: "the field name",
+    },
+    {
+      name: "value",
+      type: "any",
+      description: "the field value",
+    },
+    {
+      name: "onChange",
+      type: "Function",
+      description: <> a function taking a <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event">ChangeEvent</a> as a parameter</>,
+    },
+    {
+      name: "readonly",
+      type: "Boolean",
+      description: "boolean indicating if the field is editable or not",
+    },
+    {
+      name: "rawErrors",
+      type: "Array",
+      description: "array of strings containing the field errors",
+    },
+    {
+      name: "disabled",
+      type: "Boolean",
+      description: "boolean indicating if the field is disabled",
+    },
+  ]}
+/>
+
+## NextAdmin Context type 
+Represents the context that is passed to the formatter function in the [list.fields](#editfields--listfields-property) property.
+<OptionsTable
+  options={[
+    {
+      name: "locale",
+      type: "String",
+      description: <>The locale used by the calling page. (refers to the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language">accept-language</a> header)</>,
+    },
+    {
+      name: "row",
+      type: "Object",
+      description: "The current row of the list view",
+    },
+  ]}
+/>
+
+## Notice type
+This type represents the notice object that can be used in the `edit` property of a model.
+If you pass a Notice object in the `display` array, it will be displayed in the form. 
+This can be useful to display alerts or information to the user when editing a record. 
+The object can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "title",
+      type: "String",
+      description: "The title of the notice. This is mandatory",
+    },
+    {
+      name: "id",
+      type: "String",
+      description: <>A unique identifier for the notice that can be used to style it with the <code>styles</code> property. This is mandatory</>,
+    },
+    {
+      name: "description",
+      type: "String",
+      description: "The description of the notice. This is optional",
+    },
+      ]}
+/>
+
+Here is a quick example of usage.
+
+Considering you have a model `User` with the following configuration:
+
+```typescript filename=".../options.ts" copy {13-17}
+export const options: NextAdminOptions = {
+  basePath: "/admin",
+  title: "⚡️ My Admin",
+  model: {
+    User: {
+      /**
+        ...some configuration 
+      **/
+      edit: {
+        display: [
+          "id",
+          "name",
+          {
+            title: "Email is mandatory",
+            id: "email-notice",
+            description: "You must add an email from now on",
+          } as const,
+          "email",
+          "posts",
+          "role",
+          "birthDate",
+          "avatar",
+          "metadata",
+        ],
+        styles: {
+          _form: "grid-cols-3 gap-4 md:grid-cols-4",
+          id: "col-span-2 row-start-1",
+          name: "col-span-2 row-start-1",
+          "email-notice": "col-span-4 row-start-3",
+          email: "col-span-4 md:col-span-2 row-start-4",
+          posts: "col-span-4 md:col-span-2 row-start-5",
+          role: "col-span-4 md:col-span-2 row-start-6",
+          birthDate: "col-span-3 row-start-7",
+          avatar: "col-span-4 row-start-8",
+          metadata: "col-span-4 row-start-9",
+        },
+        /** ... some configuration */
+      },
+    },
+  },
+};
+```
+
+In this example, the `email-notice` notice will be displayed in the form before the `email` field.
+![Notice example](/docs/notice-exemple.png)
+

@@ -1,10 +1,11 @@
 import React, { ReactNode } from "react";
 
-import Clipboard from "./common/Clipboard";
-import { ListDataFieldValue } from "../types";
-import Link from "next/link";
 import clsx from "clsx";
+import Link from "next/link";
 import { useConfig } from "../context/ConfigContext";
+import { ListDataFieldValue } from "../types";
+import { getDisplayedValue } from "../utils/tools";
+import Clipboard from "./common/Clipboard";
 
 type Props = {
   cell: ListDataFieldValue;
@@ -25,7 +26,12 @@ export default function Cell({ cell, formatter, copyable }: Props) {
 
   if (cell && cell !== null) {
     if (React.isValidElement(cellValue)) {
-      return cellValue;
+      return (
+        <div className="flex gap-1">
+          {cellValue}
+          {copyable && <Clipboard value={getDisplayedValue(cellValue)} />}
+        </div>
+      );
     } else if (typeof cell === "object" && !isReactNode(cellValue)) {
       if (formatter) {
         cellValue = formatter(cell?.value);

@@ -1,11 +1,12 @@
-import { useCallback } from "react";
 import {
-  getTemplate,
   FormContextType,
+  getTemplate,
   RJSFSchema,
   StrictRJSFSchema,
   WidgetProps,
 } from "@rjsf/utils";
+import { useCallback } from "react";
+import { useFormState } from "../../context/FormStateContext";
 
 /** The `DateWidget` component uses the `BaseInputTemplate` changing the type to `date` and transforms
  * the value to undefined when it is falsy during the `onChange` handling.
@@ -23,8 +24,13 @@ export default function DateWidget<
     registry,
     options
   );
+  const { setFieldDirty } = useFormState();
+
   const handleChange = useCallback(
-    (value: any) => onChange(value || undefined),
+    (value: any) => {
+      setFieldDirty(props.name);
+      onChange(value || undefined);
+    },
     [onChange]
   );
 

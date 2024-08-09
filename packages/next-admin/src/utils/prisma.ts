@@ -21,10 +21,11 @@ import {
   getPrismaModelForResource,
   getToStringForRelations,
   modelHasIdField,
+  transformData,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
-export const createWherePredicate = (
+const createWherePredicate = (
   fieldsFiltered?: readonly Prisma.DMMF.Field[],
   search?: string,
   otherFilters?: Filter<ModelName>[]
@@ -76,7 +77,7 @@ export const createWherePredicate = (
   return { AND: [...externalFilters, searchFilter] };
 };
 
-export const getFieldsFiltered = <M extends ModelName>(
+const getFieldsFiltered = <M extends ModelName>(
   resource: M,
   options?: NextAdminOptions
 ): readonly Prisma.DMMF.Field[] => {
@@ -95,7 +96,7 @@ export const getFieldsFiltered = <M extends ModelName>(
   return fieldsFiltered as readonly Prisma.DMMF.Field[];
 };
 
-export const preparePrismaListRequest = <M extends ModelName>(
+const preparePrismaListRequest = <M extends ModelName>(
   resource: M,
   searchParams: any,
   options?: NextAdminOptions,
@@ -182,7 +183,7 @@ export const preparePrismaListRequest = <M extends ModelName>(
 type GetMappedDataListParams = {
   prisma: PrismaClient;
   resource: ModelName;
-  options: NextAdminOptions;
+  options?: NextAdminOptions;
   searchParams: URLSearchParams;
   context: NextAdminContext;
   appDir?: boolean;
@@ -199,7 +200,7 @@ export const optionsFromResource = async ({
   ...args
 }: OptionsFromResourceParams) => {
   const relationshipField =
-    args.options.model?.[originResource]?.edit?.fields?.[
+    args.options?.model?.[originResource]?.edit?.fields?.[
       property as Field<typeof originResource>
       // @ts-expect-error
     ]?.relationshipSearchField;
@@ -260,11 +261,11 @@ export const optionsFromResource = async ({
 type FetchDataListParams = {
   prisma: PrismaClient;
   resource: ModelName;
-  options: NextAdminOptions;
+  options?: NextAdminOptions;
   searchParams: URLSearchParams;
 };
 
-export const fetchDataList = async (
+const fetchDataList = async (
   { prisma, resource, options, searchParams }: FetchDataListParams,
   skipFilters: boolean = false
 ) => {
@@ -317,7 +318,7 @@ export const mapDataList = ({
   const { resource, options } = args;
   const dmmfSchema = getPrismaModelForResource(resource);
   const data = findRelationInData(fetchData, dmmfSchema?.fields);
-  const listFields = options.model?.[resource]?.list?.fields ?? {};
+  const listFields = options?.model?.[resource]?.list?.fields ?? {};
   const originalData = cloneDeep(data);
   data.forEach((item, index) => {
     context.row = originalData[index];
@@ -437,27 +438,84 @@ export const selectPayloadForModel = <M extends ModelName>(
   return selectedFields;
 };
 
-export const includeOrderByPayloadForModel = <M extends ModelName>(
-  resource: M,
-  options: EditOptions<M>
-) => {
-  const model = getPrismaModelForResource(resource);
+export const getDataItem = async <M extends ModelName>({
+  prisma,
+  resource,
+  options,
 
-  let orderedFields = model?.fields.reduce(
-    (acc, field) => {
-      // @ts-expect-error
-      if (options.fields?.[field.name as Field<M>]?.orderField) {
-        acc[field.name] = {
-          orderBy: {
-            // @ts-expect-error
-            [options.fields[field.name as Field<M>].orderField]: "asc",
-          },
+  resourceId,
+  locale,
+  isAppDir,
+}: {
+  options?: NextAdminOptions;
+  prisma: PrismaClient;
+  isAppDir?: boolean;
+  locale?: string;
+  resource: M;
+
+  resourceId: string | number;
+}) => {
+  const dmmfSchema = getPrismaModelForResource(resource);
+  const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
+  const idProperty = getModelIdProperty(resource);
+  const select = selectPayloadForModel(resource, edit, "object");
+
+  Object.entries(select).forEach(([key, value]) => {
+    const fieldTypeDmmf = dmmfSchema?.fields.find((field) => field.name === key)
+      ?.type;
+
+    if (fieldTypeDmmf && dmmfSchema) {
+      const relatedResourceOptions =
+        options?.model?.[fieldTypeDmmf as ModelName]?.list;
+
+      if (
+        // @ts-expect-error
+        edit?.fields?.[key as Field<ModelName>]?.display === "table"
+      ) {
+        if (!relatedResourceOptions?.display) {
+          throw new Error(
+            `'table' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
+          );
+        }
+
+        select[key] = {
+          select: selectPayloadForModel(
+            fieldTypeDmmf as ModelName,
+            relatedResourceOptions as ListOptions<ModelName>,
+            "object"
+          ),
         };
       }
-      return acc;
-    },
-    {} as Record<string, any>
-  );
+    }
+  });
 
-  return orderedFields;
+  // @ts-expect-error
+  let data = await prisma[resource].findUniqueOrThrow({
+    select,
+    where: { [idProperty]: resourceId },
+  });
+  Object.entries(data).forEach(([key, value]) => {
+    if (Array.isArray(value)) {
+      const fieldTypeDmmf = dmmfSchema?.fields.find(
+        (field) => field.name === key
+      )?.type;
+
+      if (fieldTypeDmmf && dmmfSchema) {
+        if (
+          // @ts-expect-error
+          edit?.fields?.[key as Field<ModelName>]?.display === "table"
+        ) {
+          data[key] = mapDataList({
+            context: { locale },
+            appDir: isAppDir,
+            fetchData: value,
+            options,
+            resource: fieldTypeDmmf as ModelName,
+          });
+        }
+      }
+    }
+  });
+  data = transformData(data, resource, edit ?? {}, options);
+  return data;
 };

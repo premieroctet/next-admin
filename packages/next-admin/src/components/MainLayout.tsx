@@ -1,4 +1,5 @@
 import { merge } from "lodash";
+import { ThemeProvider } from "next-themes";
 import { PropsWithChildren } from "react";
 import { ColorSchemeProvider } from "../context/ColorSchemeContext";
 import { ConfigProvider } from "../context/ConfigContext";
@@ -25,6 +26,9 @@ export const MainLayout = ({
   externalLinks,
   title,
   options,
+  apiBasePath,
+  resourcesIdProperty,
+  dmmfSchema,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
@@ -34,25 +38,35 @@ export const MainLayout = ({
       options={options}
       basePath={`${localePath}${basePath}`}
       isAppDir={isAppDir}
+      apiBasePath={apiBasePath}
+      dmmfSchema={dmmfSchema}
+      resource={resource}
+      resourcesIdProperty={resourcesIdProperty!}
     >
       <I18nProvider translations={mergedTranslations}>
-        <ColorSchemeProvider>
-          <div className="next-admin__root">
-            <Menu
-              title={title}
-              resources={resources}
-              resource={resource}
-              resourcesTitles={resourcesTitles}
-              customPages={customPages}
-              configuration={sidebar}
-              resourcesIcons={resourcesIcons}
-              user={user}
-              externalLinks={externalLinks}
-              forceColorScheme={options?.forceColorScheme}
-            />
-            <main className="lg:pl-72">{children}</main>
-          </div>
-        </ColorSchemeProvider>
+        <ThemeProvider
+          forcedTheme={options?.forceColorScheme}
+          storageKey="theme-next-admin"
+          defaultTheme={options?.defaultColorScheme}
+          attribute="class"
+        >
+          <ColorSchemeProvider>
+            <div className="next-admin__root">
+              <Menu
+                title={title}
+                resources={resources}
+                resource={resource}
+                resourcesTitles={resourcesTitles}
+                customPages={customPages}
+                configuration={sidebar}
+                resourcesIcons={resourcesIcons}
+                user={user}
+                externalLinks={externalLinks}
+              />
+              <main className="lg:pl-72">{children}</main>
+            </div>
+          </ColorSchemeProvider>
+        </ThemeProvider>
       </I18nProvider>
     </ConfigProvider>
   );

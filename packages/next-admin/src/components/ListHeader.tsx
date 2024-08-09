@@ -10,7 +10,9 @@ import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
+import { SPECIFIC_IDS_TO_RUN_ACTION } from "../hooks/useAction";
 import {
+  AdminComponentProps,
   ModelAction,
   ModelIcon,
   ModelName,
@@ -28,7 +30,7 @@ type Props = {
   isPending: boolean;
   onSearchChange?: (e: ChangeEvent<HTMLInputElement>) => void;
   search: string;
-  actions?: ModelAction[];
+  actions?: AdminComponentProps["actions"];
   selectedRows: RowSelectionState;
   getSelectedRowsIds: () => string[] | number[];
   onDelete: () => Promise<void>;
@@ -63,10 +65,11 @@ export default function ListHeader({
 
   const selectedRowsCount = Object.keys(selectedRows).length;
 
-  const actions = useMemo<ModelAction[]>(() => {
+  const actions = useMemo(() => {
     const defaultActions: ModelAction[] = canDelete
       ? [
           {
+            id: SPECIFIC_IDS_TO_RUN_ACTION.DELETE,
             title: t("actions.delete.label"),
             style: "destructive",
             action: async () => {
@@ -83,7 +86,7 @@ export default function ListHeader({
 
   return (
     <>
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-14 z-10 flex h-auto w-full flex-row flex-wrap items-start justify-between gap-3 border-b px-4 py-4 shadow-sm sm:w-auto sm:items-center md:py-3 lg:top-0">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default dark:border-b-dark-nextadmin-border-default border-b-nextadmin-border-default sticky top-14 z-20 flex h-auto w-full flex-row flex-wrap items-start justify-between gap-3 border-b px-4 py-4 shadow-sm sm:w-auto sm:items-center md:py-3 lg:top-0">
         <Breadcrumb
           breadcrumbItems={[
             {
@@ -105,14 +108,14 @@ export default function ListHeader({
             </span>
           )}
           {onSearchChange && (
-            <div className="bg-nextadmin-background-subtle dark:bg-dark-nextadmin-background-subtle ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong flex items-center justify-end gap-2 rounded-md px-3 py-1 ring-1 ">
+            <div className="bg-nextadmin-background-subtle dark:bg-dark-nextadmin-background-subtle ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong flex min-w-0 items-center justify-end gap-2 rounded-md px-3 py-1 ring-1">
               <input
                 id="search"
                 name="search"
                 onInput={onSearchChange}
                 defaultValue={search}
                 type="search"
-                className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle rounded-md bg-[transparent] py-1.5 text-sm focus:outline-none focus:ring-0 focus:ring-offset-0"
+                className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle rounded-md bg-[transparent] py-1.5 text-sm focus:outline-none focus:ring-0 focus:ring-offset-0 min-w-0 w-full"
                 placeholder={`${t(
                   "list.header.search.placeholder"
                 )} ${resourcePluralName.toLowerCase()}`}

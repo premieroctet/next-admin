@@ -1,5 +1,5 @@
 import { MainLayout, MainLayoutProps } from "@premieroctet/next-admin";
-import { getMainLayoutProps } from "@premieroctet/next-admin/dist/mainLayout";
+import { getMainLayoutProps } from "@premieroctet/next-admin/dist/pageRouter";
 import { GetServerSideProps } from "next";
 import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";
@@ -35,7 +35,7 @@ const CustomPage = ({
         data: {
           name: "John Doe",
         },
-        logoutUrl: "/",
+        logout: ["/"],
       }}
     >
       <div className="p-10">
@@ -72,8 +72,9 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({
   req,
 }) => {
   const mainLayoutProps = getMainLayoutProps({
+    basePath: "/pagerouter/admin",
+    apiBasePath: "/api/pagerouter/admin",
     options: pageOptions,
-    isAppDir: false,
   });
 
   if (req.method === "POST") {

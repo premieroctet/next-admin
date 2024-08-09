@@ -4,10 +4,9 @@ import {
   StrictRJSFSchema,
   WidgetProps,
   getTemplate,
-  localToUTC,
   utcToLocal,
 } from "@rjsf/utils";
-import { useMemo } from "react";
+import { useFormState } from "../../context/FormStateContext";
 
 /** The `DateTimeWidget` component uses the `BaseInputTemplate` changing the type to `datetime-local` and transforms
  * the value to/from utc using the appropriate utility functions.
@@ -18,36 +17,24 @@ export default function DateTimeWidget<
   T = any,
   S extends StrictRJSFSchema = RJSFSchema,
   F extends FormContextType = any,
->({ name, ...props }: WidgetProps<T, S, F>) {
+>(props: WidgetProps<T, S, F>) {
   const { onChange, value, options, registry } = props;
   const BaseInputTemplate = getTemplate<"BaseInputTemplate", T, S, F>(
     "BaseInputTemplate",
     registry,
     options
   );
-
-  const hiddenValue = useMemo(() => {
-    return value ? new Date(value).toISOString() : "";
-  }, [value]);
+  const { setFieldDirty } = useFormState();
 
   return (
-    <>
-      <input
-        name={name}
-        defaultValue={hiddenValue}
-        className="absolute inset-0 -z-10 h-full w-full opacity-0"
-        required={props.required}
-      />
-      <BaseInputTemplate
-        type="datetime-local"
-        {...props}
-        // @ts-expect-error
-        name={undefined}
-        value={utcToLocal(value)}
-        onChange={(value) => {
-          onChange(localToUTC(value));
-        }}
-      />
-    </>
+    <BaseInputTemplate
+      type="datetime-local"
+      {...props}
+      value={utcToLocal(value)}
+      onChange={(value) => {
+        setFieldDirty(props.name);
+        onChange(value);
+      }}
+    />
   );
 }

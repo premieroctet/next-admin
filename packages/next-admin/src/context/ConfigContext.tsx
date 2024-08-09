@@ -1,11 +1,16 @@
 "use client";
-import React, { useContext } from "react";
-import { NextAdminOptions } from "../types";
+import { Prisma } from "@prisma/client";
+import React, { useContext, useMemo } from "react";
+import { ModelName, NextAdminOptions } from "../types";
 
 export type ConfigContextType = {
   options?: NextAdminOptions;
   basePath: string;
-  isAppDir: boolean;
+  isAppDir?: boolean;
+  apiBasePath: string;
+  resource?: ModelName;
+  dmmfSchema?: readonly Prisma.DMMF.Field[];
+  resourcesIdProperty: Record<ModelName, string> | null;
 };
 
 const ConfigContext = React.createContext<ConfigContextType>(
@@ -14,25 +19,20 @@ const ConfigContext = React.createContext<ConfigContextType>(
 
 type ProviderProps = {
   basePath: string;
+  apiBasePath: string;
   options?: NextAdminOptions;
   children: React.ReactNode;
   isAppDir?: boolean;
+  resource?: ModelName;
+  dmmfSchema?: readonly Prisma.DMMF.Field[];
+  resourcesIdProperty: Record<ModelName, string> | null;
 };
 
-export const ConfigProvider = ({
-  children,
-  options,
-  basePath,
-  isAppDir = false,
-}: ProviderProps) => {
+export const ConfigProvider = ({ children, ...props }: ProviderProps) => {
+  const contextValue = useMemo(() => ({ ...props }), [props]);
+
   return (
-    <ConfigContext.Provider
-      value={{
-        options,
-        basePath,
-        isAppDir,
-      }}
-    >
+    <ConfigContext.Provider value={contextValue}>
       {children}
     </ConfigContext.Provider>
   );

@@ -8,7 +8,9 @@ import Link from "next/link";
 import { useMemo } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";
-import { useForm } from "../../context/FormContext";
+import { useFormState } from "../../context/FormStateContext";
+import useClickOutside from "../../hooks/useCloseOnOutsideClick";
+import { useDisclosure } from "../../hooks/useDisclosure";
 import { Enumeration } from "../../types";
 import { slugify } from "../../utils/tools";
 import { Selector } from "./Selector";
@@ -21,18 +23,23 @@ const SelectWidget = ({
   required,
   ...props
 }: WidgetProps) => {
-  const formContext = useForm();
+  const { isOpen, onToggle, onClose } = useDisclosure();
+  const containerRef = useClickOutside<HTMLDivElement>(() => {
+    onClose();
+  });
   const name = props.name;
   options as { enumOptions: Enumeration[] };
   const enumOptions = options.enumOptions?.map(
     (option: any) => option.value as Enumeration
   );
+  const { setFieldDirty } = useFormState();
 
   const { basePath } = useConfig();
 
   const handleChange = (option: Enumeration) => {
+    setFieldDirty(props.name);
     onChange(option);
-    formContext.setOpen(false, name);
+    onClose();
   };
 
   const hasValue = useMemo(() => {
@@ -57,12 +64,11 @@ const SelectWidget = ({
           required={required && !hasValue}
           onMouseDown={(e) => {
             e.preventDefault();
-            if (!disabled) {
-              formContext.toggleOpen(name);
-            }
           }}
-          onClick={(e) => {
-            e.stopPropagation();
+          onClick={() => {
+            if (!disabled) {
+              onToggle();
+            }
           }}
         >
           <option value={value?.value} />
@@ -99,10 +105,8 @@ const SelectWidget = ({
             <div
               className="flex items-center"
               onClick={(e) => {
-                e.stopPropagation();
-                e.preventDefault();
                 if (!disabled) {
-                  formContext.toggleOpen(name);
+                  onToggle();
                 }
               }}
             >
@@ -112,7 +116,8 @@ const SelectWidget = ({
         </div>
       </div>
       <Selector
-        open={!!formContext.relationState?.[name]?.open!}
+        ref={containerRef}
+        open={isOpen}
         options={enumOptions?.length ? enumOptions : undefined}
         name={props.name}
         onChange={handleChange}

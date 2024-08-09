@@ -1,3 +1,4 @@
+import React from "react";
 import { UploadParameters } from "../types";
 
 export const capitalize = <T extends string>(str: T): Capitalize<T> => {
@@ -69,10 +70,27 @@ export const formatLabel = (label: string) => {
 //Create a function that check if object satifies UploadParameters
 export const isUploadParameters = (obj: any): obj is UploadParameters => {
   return (
-    obj.length === 2 &&
+    obj?.length === 2 &&
     Buffer.isBuffer(obj[0]) &&
-    typeof obj[1] === 'object' &&
-    'name' in obj[1] &&
-    'type' in obj[1]
+    typeof obj[1] === "object" &&
+    "name" in obj[1] &&
+    "type" in obj[1]
   );
-}
+};
+
+export const getDisplayedValue = (
+  element: React.ReactElement<any> | string
+): string => {
+  if (typeof element === "string") {
+    return element;
+  } else if (React.isValidElement(element)) {
+    return Array.prototype.map
+      .call(
+        (element.props as any).children,
+        (child: React.ReactElement<any> | string) => getDisplayedValue(child)
+      )
+      .join("");
+  } else {
+    return "";
+  }
+};

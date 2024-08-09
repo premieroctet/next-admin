@@ -1,8 +1,11 @@
 import { RJSFSchema } from "@rjsf/utils";
 import clsx from "clsx";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
-import { useForm } from "../../../context/FormContext";
+import { useConfig } from "../../../context/ConfigContext";
+import { useFormState } from "../../../context/FormStateContext";
 import { useI18n } from "../../../context/I18nContext";
+import useClickOutside from "../../../hooks/useCloseOnOutsideClick";
+import { useDisclosure } from "../../../hooks/useDisclosure";
 import { Enumeration, Field, ModelName } from "../../../types";
 import Button from "../../radix/Button";
 import { Selector } from "../Selector";
@@ -21,15 +24,17 @@ type Props = {
 };
 
 const MultiSelectWidget = (props: Props) => {
-  const formContext = useForm();
+  const { options: globalOptions, resource } = useConfig();
+  const { onToggle, isOpen, onClose } = useDisclosure();
+  const containerRef = useClickOutside<HTMLDivElement>(() => onClose());
   const { formData, onChange, options, name, schema } = props;
   const { t } = useI18n();
+  const { setFieldDirty } = useFormState();
   const fieldOptions =
-    formContext.options?.model?.[formContext.resource!]?.edit?.fields?.[
-      name as Field<ModelName>
-    ];
+    globalOptions?.model?.[resource!]?.edit?.fields?.[name as Field<ModelName>];
 
   const onRemoveClick = (value: any) => {
+    setFieldDirty(name);
     onChange(formData?.filter((item: Enumeration) => item.value !== value));
   };
 
@@ -59,12 +64,11 @@ const MultiSelectWidget = (props: Props) => {
       required={props.required}
       onMouseDown={(e) => {
         e.preventDefault();
-        if (!props.disabled) {
-          formContext.toggleOpen(name);
-        }
       }}
-      onClick={(e) => {
-        e.stopPropagation();
+      onClick={() => {
+        if (!props.disabled) {
+          onToggle();
+        }
       }}
     >
       {!(props.required && selectedValues.length === 0) && (
@@ -91,8 +95,9 @@ const MultiSelectWidget = (props: Props) => {
               value && (
                 <MultiSelectItem
                   key={index}
-                  label={value.label}
-                  onRemoveClick={() => onRemoveClick(value.value)}
+                  item={value}
+                  schema={schema}
+                  onRemoveClick={onRemoveClick}
                   deletable={!props.disabled}
                 />
               )
@@ -112,7 +117,10 @@ const MultiSelectWidget = (props: Props) => {
             onRemoveClick={onRemoveClick}
             deletable={!props.disabled}
             sortable={fieldSortable}
-            onUpdateFormData={onChange}
+            onUpdateFormData={(value) => {
+              setFieldDirty(name);
+              onChange(value);
+            }}
           />
 
           <Button
@@ -148,10 +156,12 @@ const MultiSelectWidget = (props: Props) => {
       )}
 
       <Selector
-        open={!!formContext.relationState?.[name]?.open!}
+        ref={containerRef}
+        open={isOpen}
         name={name}
         options={optionsLeft?.length ? optionsLeft : undefined}
         onChange={(option: Enumeration) => {
+          setFieldDirty(name);
           onChange([...(formData || []), option]);
         }}
         selectedOptions={selectedValues}

@@ -1,0 +1,63 @@
+import { Callout, FileTree, Tabs } from 'nextra/components'
+
+# Customize the admin route name
+<Callout type="default">
+  This documentation covers an older version of Next Admin. If you are using the
+  latest version (`>=5.0.0` and above), please refer to the [current
+  documentation](/docs).
+</Callout>
+
+
+
+When setting up `next-admin` you can set the admin panel route name to whatever you want.
+The admin panel route name is set by your folder name.
+
+
+
+Examples:
+
+<Tabs items={["Pages Router", "App Router"]}>
+  <Tabs.Tab>
+    You want to have your next admin panel at `https://website.com/admin`
+    <FileTree>
+      <FileTree.Folder name="pages" defaultOpen>
+        <FileTree.Folder name="admin" defaultOpen>
+          <FileTree.File name="[[...nextadmin]].tsx" />
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree>
+
+    You want to have your next admin panel at `https://website.com/prisma`
+    <FileTree>
+      <FileTree.Folder name="pages" defaultOpen>
+        <FileTree.Folder name="prisma" defaultOpen>
+          <FileTree.File name="[[...nextadmin]].tsx" />
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree>
+  </Tabs.Tab>
+
+  <Tabs.Tab>
+    You want to have your next admin panel at `https://website.com/admin`
+    <FileTree>
+      <FileTree.Folder name="app" defaultOpen>
+        <FileTree.Folder name="admin" defaultOpen>
+          <FileTree.Folder name="[[...nextadmin]]" defaultOpen>
+            <FileTree.File name="page.tsx" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree>
+
+    You want to have your next admin panel at `https://website.com/prisma`
+    <FileTree>
+      <FileTree.Folder name="app" defaultOpen>
+        <FileTree.Folder name="prisma" defaultOpen>
+          <FileTree.Folder name="[[...nextadmin]]" defaultOpen>
+            <FileTree.File name="page.tsx" />
+          </FileTree.Folder>
+        </FileTree.Folder>
+      </FileTree.Folder>
+    </FileTree>
+  </Tabs.Tab>
+</Tabs>

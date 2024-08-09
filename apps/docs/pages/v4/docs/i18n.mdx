@@ -1,0 +1,224 @@
+import { Callout } from "nextra/components";
+import OptionsTable from "../../../components/OptionsTable";
+
+# I18n
+<Callout type="default">
+  This documentation covers an older version of Next Admin. If you are using the
+  latest version (`>=5.0.0` and above), please refer to the [current
+  documentation](/docs).
+</Callout>
+
+
+Next Admin supports i18n with the `translations` prop of the `NextAdmin` component.
+
+
+<OptionsTable 
+  options={[
+    {
+      name: "list.header.add.label",
+      type: "string",
+      description: "The \"Add\" button in the list header",
+      defaultValue: "Add"
+    },
+    {
+      name: "list.header.search.placeholder",
+      type: "string",
+      description: "The placeholder used in the search input",
+      defaultValue: "Search"
+    },
+    {
+      name: "list.footer.indicator.showing",
+      type: "string",
+      description: <>The "Showing from" text in the list indicator, e.g: <u>Showing from</u> 1 to 10 of 25</>,
+      defaultValue: "Showing from"
+    },
+    {
+      name: "list.footer.indicator.to",
+      type: "string",
+      description: <>The "to" text in the list indicator, e.g: Showing from 1 <u>to</u> 10 of 25</>,
+      defaultValue: "to"
+    },
+    {
+      name: "list.footer.indicator.of",
+      type: "string",
+      description: <>The "of" text in the list indicator, e.g: Showing from 1 to 10 <u>of</u> 25</>,
+      defaultValue: "of"
+    },
+    {
+      name: "list.row.actions.delete.label",
+      type: "string",
+      description: "The text in the delete button displayed at the end of each row",
+      defaultValue: "Delete"
+    },
+    {
+      name: "list.row.actions.delete.alert",
+      type: "string",
+      description: "The text in the native alert when the delete action is called in the list",
+      defaultValue: "Are you sure you want to delete {{count}} element(s)?"
+    },
+    {
+      name: "list.row.actions.delete.success",
+      type: "string",
+      description: "The text appearing after a successful deletion from the list",
+      defaultValue: "Deleted successfully"
+    },
+    {
+      name: "list.row.actions.delete.error",
+      type: "string",
+      description: "The text appearing after an error during the deletion from the list",
+      defaultValue: "An error occured while deleting"
+    },
+    {
+      name: "list.empty.label",
+      type: "string",
+      description: "The text displayed when there is no row in the list",
+      defaultValue: "No {{resource}} found"
+    },
+    {
+      name: "list.empty.caption",
+      type: "string",
+      description: "The caption displayed when there is no row in the list",
+      defaultValue: "Get started by creating a new {{resource}}"
+    },
+    {
+      name: "form.button.save.label",
+      type: "string",
+      description: "The text displayed in the form submit button",
+      defaultValue: "Submit"
+    },
+    {
+      name: "form.button.delete.label",
+      type: "string",
+      description: "The text displayed in the form delete button",
+      defaultValue: "Delete"
+    },
+    {
+      name: "form.delete.alert",
+      type: "string",
+      description: "The text displayed on the alert when the delete button is clicked",
+      defaultValue: "Are you sure you want to delete this?"
+    },
+    {
+      name: "form.widgets.file_upload.label",
+      type: "string",
+      description: "The text displayed in file upload widget to select a file",
+      defaultValue: "Choose a file"
+    },
+    {
+      name: "form.widgets.file_upload.drag_and_drop",
+      type: "string",
+      description: "The text displayed in file upload widget to indicate a drag & drop is possible",
+      defaultValue: "or drag and drop"
+    },
+    {
+      name: "form.widgets.file_upload.delete",
+      type: "string",
+      description: "The text displayed in file upload widget to delete the current file",
+      defaultValue: "Delete"
+    },
+    {
+      name: "form.widgets.multiselect.select",
+      type: "string",
+      description: "The text displayed in the multiselect widget in list display mode to toggle the select dialog",
+      defaultValue: "Select items"
+    },
+    {
+      name: "actions.label",
+      type: "string",
+      description: "The text displayed in the dropdown button for the actions list",
+      defaultValue: "Action"
+    },
+    {
+      name: "actions.edit.label",
+      type: "string",
+      description: "The text displayed for the default edit action in the actions dropdown",
+      defaultValue: "Edit"
+    },
+    {
+      name: "actions.create.label",
+      type: "string",
+      description: "The text displayed for the default create action in the actions dropdown",
+      defaultValue: "Create"
+    },
+    {
+      name: "actions.delete.label",
+      type: "string",
+      description: "The text displayed for the default delete action in the actions dropdown",
+      defaultValue: "Delete"
+    },
+    {
+      name: "selector.loading",
+      type: "string",
+      description: "The text displayed in the selector widget while loading the options",
+      defaultValue: "Loading..."
+    },
+    {
+      name: "user.logout",
+      type: "string",
+      description: "The text displayed in the logout button",
+      defaultValue: "Logout"
+    },
+    {
+      name: "model",
+      type: "object",
+      description: <>Object to custom model and field names. <a href="#translate-model-name-and-fields">More details</a></>,
+      defaultValue: "{}"
+    }
+  ]}
+/>
+
+### Translate model name and fields
+
+There are two ways to translate these default keys, provide a function named `getMessages` inside the options or provide `translations` props to `NextAdmin` component.
+
+<Callout type="info">
+  Using `getMessages` allows you to provide an object with a multiple level structure to translate the keys, while the `translations` props only allow you to provide a flat object (`form.widgets.file_upload.delete` ex.)
+</Callout>
+You can also pass your own set of translations. For example you can set a custom action name as a translation key, which will then be translated by the lib.
+
+```js
+actions: [
+  {
+    title: "actions.user.email",
+    action: async (...args) => {
+      "use server";
+      const { submitEmail } = await import("./actions/nextadmin");
+      await submitEmail(...args);
+    },
+    successMessage: "actions.user.email.success",
+    errorMessage: "actions.user.email.error",
+  },
+],
+```
+
+Here, the `actions.user.email` key will be translated by the lib, and the value will be used as the action title, as well as the success and error messages after the action's execution.
+
+Currently, you can only translate the following:
+
+- action title, success and error message
+- field validation error message
+
+Check out the example app for more details on its usage.
+
+### Translate model name and fields
+
+By using the `model` key in the translations object, you can translate the model name and fields.
+
+```json
+{
+  "model": {
+    "User": { // Keep the case sensitive name of the model
+      "name": "User",
+      "plural": "Users",
+      "fields": {
+        "email": "Email",
+        "password": "Password"
+      }
+    }
+  }
+}
+```
+
+<Callout type="info">
+  If you only use one language for your admin, you should prefer to use the `alias` system ([more details](/v4/docs/api/model-configuration)) to customize field names.
+</Callout>

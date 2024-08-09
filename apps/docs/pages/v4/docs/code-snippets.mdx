@@ -1,0 +1,232 @@
+import { Callout, FileTree, Tabs } from 'nextra/components'
+
+# Code snippets
+<Callout type="default">
+  This documentation covers an older version of Next Admin. If you are using the
+  latest version (`>=5.0.0` and above), please refer to the [current
+  documentation](/docs).
+</Callout>
+
+
+This page contains code snippets that you can use in your projects. These are not a part of Next Admin, but may be useful for your projects.
+
+Some of the snippets are implemented in the example project. You can check them out in the [example project](https://next-admin-po.vercel.app) or in the [source code](https://github.com/premieroctet/next-admin/tree/main/apps/example).
+
+## Export data
+
+By using [exports](/v4/docs/api/model-configuration#listexports-property) options, you can export data. Next Admin only implements the CSV export button, it's actually a link pointing to a provided url.
+
+The API endpoint route must be defined in the `exports` property of the options object. This is an example of how to implement the export API endpoint:
+
+```typescript copy filename="app/api/users/export/route.ts"
+import { prisma } from "@/prisma";
+
+export async function GET() {
+  const users = await prisma.user.findMany();
+  const csv = users.map((user) => {
+    return `${user.id},${user.name},${user.email},${user.role},${user.birthDate}`;
+  });
+
+  const headers = new Headers();
+  headers.set("Content-Type", "text/csv");
+  headers.set("Content-Disposition", `attachment; filename="users.csv"`);
+
+  return new Response(csv.join("\n"), {
+    headers,
+  });
+}
+```
+
+or with a stream response:
+
+```typescript copy filename="app/api/users/export/route.ts"
+import { prisma } from "@/prisma";
+const BATCH_SIZE = 1000;
+
+export async function GET() {
+  const headers = new Headers();
+  headers.set("Content-Type", "text/csv");
+  headers.set("Content-Disposition", `attachment; filename="users.csv"`);
+
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        const batchSize = BATCH_SIZE;
+        let skip = 0;
+        let users;
+
+        do {
+          users = await prisma.user.findMany({
+            skip,
+            take: batchSize,
+          });
+
+          const csv = users
+            .map((user) => {
+              return `${user.id},${user.name},${user.email},${user.role},${user.birthDate}\n`;
+            })
+            .join("");
+
+          controller.enqueue(Buffer.from(csv));
+
+          skip += batchSize;
+        } while (users.length === batchSize);
+      } catch (error) {
+        controller.error(error);
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, { headers });
+}
+```
+
+> Note that you must secure the export route if you don't want to expose your data to the public by adding authentication middleware.
+
+There are two example files in the example project:
+
+- [app/api/users/export/route.ts](https://github.com/premieroctet/next-admin/tree/main/apps/example/app/api/users/export/route.ts)
+- [app/api/posts/export/route.ts](https://github.com/premieroctet/next-admin/tree/main/apps/example/app/api/posts/export/route.ts)
+
+## Add data to formData before submitting
+
+If you want to add data to the form data before submitting it, you can add logic to the `submitFormAction` function. This is an example of how to add `createdBy` and `updatedBy` fields based on the user id:
+
+```typescript copy filename="actions/nextadmin.ts"
+"use server";
+import { ActionParams } from "@premieroctet/next-admin";
+import { submitForm } from "@premieroctet/next-admin/dist/actions";
+
+export const submitFormAction = async (
+  params: ActionParams,
+  formData: FormData
+) => {
+  const userId = /* get the user id */;
+  if (params.params[1] === "new") {
+    formData.append("createdBy", userId);
+  } else {
+    formData.append("updatedBy", userId);
+  }
+
+  return submitForm({ ...params, options, prisma }, formData);
+};
+```
+
+> Note that this example assumes that you have a `createdBy` and `updatedBy` field on each model, if you need to check the model name, you can use `params.params[0]`.
+
+This snippet is not implemented in the example project.
+
+## Custom input form
+
+If you want to customize the input form, you can create a custom input component. This is an example of how to create a custom input component for the `birthDate` field:
+
+```typescript copy filename="/components/inputs/BirthDateInput.tsx"
+"use client";
+import { CustomInputProps } from "@premieroctet/next-admin";
+import DateTimePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+
+type Props = CustomInputProps;
+
+const BirthDateInput = ({ value, name, onChange, disabled, required }: Props) => {
+  return (
+    <>
+      <DateTimePicker
+        selected={value ? new Date(value) : null}
+        onChange={(date) =>
+          onChange?.({
+            // @ts-expect-error
+            target: { value: date?.toISOString() ?? new Date().toISOString() },
+          })
+        }
+        showTimeSelect
+        dateFormat="dd/MM/yyyy HH:mm"
+        timeFormat="HH:mm"
+        wrapperClassName="w-full"
+        disabled={disabled}
+        required={required}
+        className="dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6 [&>div]:border-none"
+      />
+      <input type="hidden" name={name} value={value ?? ""} />
+    </>
+  );
+};
+
+export default BirthDateInput;
+```
+
+The `CustomInputProps` type is provided by Next Admin.
+
+> Note that we use a hidden input to store the value because the `DateTimePicker` component needs a different value format than what is expected by the form submission.
+
+You can find an example of this component in the example project:
+
+- [app/components/inputs/DatePicker.tsx](https://github.com/premieroctet/next-admin/blob/main/apps/example/components/DatePicker.tsx)
+
+# Explicit many-to-many
+
+You might want to add sorting on a relationship, for example sort the categories of a post in a specific order. To achieve this, you have to explicitly define a model in the Prisma schema that will act as the join table. This is an example of how to implement this:
+
+```prisma {8,16,21,22,23,24,25,26,27,28,29,30}
+model Post {
+  id         Int                 @id @default(autoincrement())
+  title      String
+  content    String?
+  published  Boolean             @default(false)
+  author     User                @relation("author", fields: [authorId], references: [id]) // Many-to-one relation
+  authorId   Int
+  categories CategoriesOnPosts[]
+  rate       Decimal?            @db.Decimal(5, 2)
+  order      Int                 @default(0)
+}
+
+model Category {
+  id        Int                 @id @default(autoincrement())
+  name      String
+  posts     CategoriesOnPosts[]
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @default(now()) @updatedAt
+}
+
+model CategoriesOnPosts {
+  id         Int      @default(autoincrement())
+  post       Post     @relation(fields: [postId], references: [id])
+  postId     Int
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  order      Int      @default(0)
+
+  @@id([postId, categoryId])
+}
+```
+
+In the Next Admin options, you will then need to define, on a specific field, which field in the join table will be used for sorting:
+
+```typescript {11,12} copy
+{
+  model: {
+    Post: {
+      edit: {
+        fields: {
+          categories: {
+            relationOptionFormatter: (category) => {
+              return `${category.name} Cat.${category.id}`;
+            },
+            display: "list",
+            orderField: "order", // The field used in CategoriesOnPosts for sorting
+            relationshipSearchField: "category", // The field to use in CategoriesOnPosts
+          },
+        }
+      }
+    }
+  }
+}
+```
+
+Note that you will need to use `relationOptionFormatter` instead of `optionFormatter` to format the content of the select input.
+
+With the `list` display, if the `orderField` property is defined, you will be able to apply drag and drop sorting on the categories. Upon form submission, the order will be updated accordingly, starting from 0.
+
+> The `orderField` property can also be applied for one-to-many relationships. In that case, drag and drop will also be available.

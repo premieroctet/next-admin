@@ -1,10 +1,82 @@
 # @premieroctet/next-admin
 
+## 5.0.0-rc.14
+
+### Patch Changes
+
+- add dist
+
+## 5.0.0-rc.13
+
+### Patch Changes
+
+- add URL redirect support for logout
+
+## 5.0.0-rc.12
+
+### Patch Changes
+
+- [170a48b](https://github.com/premieroctet/next-admin/commit/170a48b): Fix images CORS issues
+
+## 5.0.0-rc.11
+
+### Patch Changes
+
+- Fix date input and add time-second format
+
+## 5.0.0-rc.10
+
+### Patch Changes
+
+- Add `isDirty` for form to submit only fields touched
+
+## 5.0.0-rc.9
+
+### Patch Changes
+
+- Change logout system (Request or server action)
+
+## 5.0.0-rc.8
+
+### Patch Changes
+
+- Small fixes (select, dark mode, dashboard, layout, doc)
+
+## 5.0.0-rc.7
+
+### Patch Changes
+
+- Redirect useEffect
+
+## 5.0.0-rc.6
+
+### Patch Changes
+
+- [60afe2f](https://github.com/premieroctet/next-admin/commit/60afe2f): Add history on redirect `Save`
+
+## 5.0.0-rc.5
+
+### Patch Changes
+
+- Dependency `next-themes`
+
+## 5.0.0-rc.4
+
+### Patch Changes
+
+- [f120d10](https://github.com/premieroctet/next-admin/commit/f120d10): Add `next-themes` to handle color scheme
+
+## 5.0.0-rc.3
+
+### Patch Changes
+
+- Merge main branch
+
 ## 4.4.5
 
 ### Patch Changes
 
-- [e52ed18](https://github.com/premieroctet/next-admin/commit/e52ed18): Don't prefetch export Link in header
+- - [e52ed18](https://github.com/premieroctet/next-admin/commit/e52ed18): Don't prefetch export Link in header
 - [8512b5e](https://github.com/premieroctet/next-admin/commit/8512b5e): Restore Buffer for `upload` function, add informations as second parameter
 - [6da22fc](https://github.com/premieroctet/next-admin/commit/6da22fc): Add loader on select
 
