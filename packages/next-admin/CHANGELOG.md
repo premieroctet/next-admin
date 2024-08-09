@@ -1,5 +1,33 @@
 # @premieroctet/next-admin
 
+## 5.0.0
+
+### Major Changes
+
+- [a005fdf](https://github.com/premieroctet/next-admin/commit/a005fdf): ## Major Changes
+
+  - **Breaking Change**:
+
+    - New implementation of `NextAdmin`. Usage of `API route` instead of `server actions`.
+    - Configuration of `page.tsx` and `route.ts` files in the `app/admin/[[...nextadmin]]` and `app/api/[[...nextadmin]]` folders respectively.
+    - `createHandler` function now available in `appHandler` and `pageHandler` modules to configure the API route.
+    - `getNextAdminProps` function now available in `appRouter` and `pageRouter` modules to configure the page route.
+
+### Patch Changes
+
+- [f120d10](https://github.com/premieroctet/next-admin/commit/f120d10): Add `next-themes` to handle color scheme
+- [119a053](https://github.com/premieroctet/next-admin/commit/119a053): Redirect useEffect
+- [5b295bb](https://github.com/premieroctet/next-admin/commit/5b295bb): add dist
+- [12de962](https://github.com/premieroctet/next-admin/commit/12de962): Change logout system (Request or server action)
+- [170a48b](https://github.com/premieroctet/next-admin/commit/170a48b): Fix images CORS issues
+- [f3636ad](https://github.com/premieroctet/next-admin/commit/f3636ad): Small fixes (select, dark mode, dashboard, layout, doc)
+- [60afe2f](https://github.com/premieroctet/next-admin/commit/60afe2f): Add history on redirect `Save`
+- [0221476](https://github.com/premieroctet/next-admin/commit/0221476): Fix date input and add time-second format
+- [4e0e774](https://github.com/premieroctet/next-admin/commit/4e0e774): Add `isDirty` for form to submit only fields touched
+- [ed78f46](https://github.com/premieroctet/next-admin/commit/ed78f46): Dependency `next-themes`
+- [b5322db](https://github.com/premieroctet/next-admin/commit/b5322db): add URL redirect support for logout
+- [818f1e4](https://github.com/premieroctet/next-admin/commit/818f1e4): Merge main branch
+
 ## 5.0.0-rc.14
 
 ### Patch Changes
