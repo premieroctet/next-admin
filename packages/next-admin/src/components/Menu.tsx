@@ -258,7 +258,7 @@ export default function Menu({
             <ul role="list" className="flex flex-1 flex-col gap-y-4">
               {configuration?.groups?.map((group) => (
                 <li key={group.title}>
-                  <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color mb-2 text-xs uppercase tracking-wider">
+                  <div className={clsx("text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color mb-2 text-xs uppercase tracking-wider", group.className)}>
                     {group.title}
                   </div>
                   <ul role="list" className="-ml-2 mt-1 flex flex-col gap-y-1">
