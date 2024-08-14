@@ -1,4 +1,4 @@
-import Head from "next/head";
+import dynamic from 'next/dynamic'
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getCustomInputs } from "../utils/options";
@@ -7,6 +7,8 @@ import Form from "./Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
 import PageLoader from "./PageLoader";
+
+const Head = dynamic(() => import('next/head'));
 
 // Components
 export function NextAdmin({
