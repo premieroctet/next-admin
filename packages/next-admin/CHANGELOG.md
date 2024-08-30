@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.1.0
+
+### Minor Changes
+
+- [9f5affb](https://github.com/premieroctet/next-admin/commit/9f5affb): 1. Avoid importing Head in app router project 2. Allow to change styles of sidebar group title
+
 ## 5.0.0
 
 ### Major Changes
