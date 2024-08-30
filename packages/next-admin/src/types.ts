@@ -427,6 +427,10 @@ export type ModelOptions<T extends ModelName> = {
 
 export type SidebarGroup = {
   /**
+   * Some optional css classes to improve appearance of group title.
+   */
+    className?: string;
+  /**
    * the name of the group.
    */
   title: string;
