@@ -111,6 +111,10 @@ export const fillForm = async (
         'input[id="author-search"]',
         dataTest.Post.author.slice(0, 6)
       );
+
+      await page.waitForTimeout(2000);
+      await page.getByText(dataTest.Post.author).click();
+
       const hasTags = await page.isVisible(
         'input[name="tags"] ~ li:first-of-type'
       );
@@ -123,8 +127,6 @@ export const fillForm = async (
         );
       }
 
-      await page.waitForTimeout(2000);
-      await page.getByText(dataTest.Post.author).click();
       break;
     }
     case "Category":
