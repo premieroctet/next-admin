@@ -337,6 +337,8 @@ export const transformData = <M extends ModelName>(
             }
           : null;
       }
+    } else if (field?.isList && field.kind === "scalar") {
+      acc[key] = data[key];
     } else {
       const fieldTypes = field?.type;
       if (fieldTypes === "DateTime") {
@@ -407,6 +409,18 @@ export const findRelationInData = (
       }
     }
 
+    if (dmmfPropertyKind === "scalar" && dmmfProperty.isList) {
+      data.forEach((item) => {
+        if (item[dmmfPropertyName]) {
+          item[dmmfPropertyName] = {
+            type: "count",
+            value: item[dmmfPropertyName].length,
+          };
+        }
+        return item;
+      });
+    }
+
     if (
       dmmfPropertyType === "DateTime" ||
       dmmfPropertyType === "Decimal" ||
@@ -454,6 +468,10 @@ export const parseFormData = <M extends ModelName>(
           parsedData[dmmfPropertyName] =
             null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         }
+      } else if (dmmfProperty.isList && dmmfProperty.kind === "scalar") {
+        parsedData[dmmfPropertyName] = JSON.parse(
+          formData[dmmfPropertyName]!
+        ) as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else if (dmmfPropertyType === "Int") {
         const value = Number(formData[dmmfPropertyName]) as number;
         parsedData[dmmfPropertyName] = isNaN(value)
@@ -721,6 +739,29 @@ export const formattedFormData = async <M extends ModelName>(
             } else if (!creating) {
               formattedData[dmmfPropertyName] = { disconnect: true };
             }
+          }
+        } else if (dmmfPropertyKind === "scalar" && dmmfProperty.isList) {
+          const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
+          const formDataValue = JSON.parse(formData[dmmfPropertyName]!) as
+            | string[]
+            | number[];
+
+          if (
+            dmmfPropertyType === "Int" ||
+            dmmfPropertyType === "Float" ||
+            dmmfPropertyType === "Decimal"
+          ) {
+            formattedData[dmmfPropertyName] = {
+              set: formDataValue
+                .map((item) =>
+                  !isNaN(Number(item)) ? Number(item) : undefined
+                )
+                .filter(Boolean),
+            };
+          } else {
+            formattedData[dmmfPropertyName] = {
+              set: formDataValue,
+            };
           }
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;

@@ -113,11 +113,18 @@
         "order": {
           "type": "integer",
           "default": 0
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "required": [
         "title",
-        "authorId"
+        "authorId",
+        "tags"
       ]
     },
     "Profile": {

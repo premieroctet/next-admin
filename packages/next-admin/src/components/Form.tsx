@@ -64,6 +64,7 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
+import BaseInput from "./inputs/BaseInput";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
@@ -450,7 +451,7 @@ const Form = ({
       if (["time", "time-second"].includes(schema?.format as string)) {
         return (
           // @ts-expect-error
-          <input
+          <BaseInput
             type="time"
             onChange={onChangeOverride || onTextChange}
             {...props}
@@ -460,24 +461,18 @@ const Form = ({
                 .slice(0, schema?.format === "time-second" ? 3 : 2)
                 .join(":") ?? ""
             }
-            className={clsx(
-              "dark:bg-dark-nextadmin-background-subtle text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default dark:ring-dark-nextadmin-border-strong block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-colors duration-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6",
-              { "ring-red-600 dark:ring-red-400": rawErrors }
-            )}
+            className={clsx({ "ring-red-600 dark:ring-red-400": rawErrors })}
             step={schema?.format === "time-second" ? 1 : undefined}
           />
         );
       }
       return (
         // @ts-expect-error
-        <input
+        <BaseInput
           onChange={onChangeOverride || onTextChange}
           {...props}
           value={props.value ?? ""}
-          className={clsx(
-            "dark:bg-dark-nextadmin-background-subtle text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted ring-nextadmin-border-default focus:ring-nextadmin-brand-default dark:focus:ring-dark-nextadmin-brand-default dark:ring-dark-nextadmin-border-strong block w-full rounded-md border-0 px-2 py-1.5 text-sm shadow-sm ring-1 ring-inset transition-colors duration-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:leading-6",
-            { "ring-red-600 dark:ring-red-400": rawErrors }
-          )}
+          className={clsx({ "ring-red-600 dark:ring-red-400": rawErrors })}
         />
       );
     },
@@ -550,7 +545,7 @@ const Form = ({
             extraErrors={extraErrors}
             fields={fields}
             disabled={allDisabled}
-            formContext={{ isPending }}
+            formContext={{ isPending, dmmfSchema }}
             templates={{
               ...templates,
               ButtonTemplates: { SubmitButton: submitButton },
