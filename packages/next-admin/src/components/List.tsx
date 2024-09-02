@@ -39,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
+import ActionDropdownItem from "./ActionDropdownItem";
 
 export type ListProps = {
   resource: ModelName;
@@ -154,13 +155,24 @@ function List({
           <DropdownBody>
             <DropdownContent
               side="left"
+              align="start"
               sideOffset={5}
-              className="z-50 px-1 py-2"
+              className="z-50 space-y-1.5 px-2 py-2"
             >
+              {actions?.map((action) => {
+                return (
+                  <ActionDropdownItem
+                    key={action.id}
+                    action={action}
+                    resourceIds={[row.original[idProperty].value as string]}
+                    resource={resource}
+                  />
+                );
+              })}
               <DropdownItem asChild>
                 <Button
                   variant="destructiveOutline"
-                  className="h-6 px-1"
+                  className="h-6 w-full"
                   onClick={(evt) => {
                     evt.stopPropagation();
                     deleteItems([row.original[idProperty].value as string]);

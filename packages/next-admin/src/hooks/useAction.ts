@@ -1,4 +1,3 @@
-import { useRouterInternal } from "./useRouterInternal";
 import { ModelAction, ModelName } from "../types";
 import { useI18n } from "../context/I18nContext";
 import { useConfig } from "../context/ConfigContext";
@@ -9,7 +8,6 @@ export const SPECIFIC_IDS_TO_RUN_ACTION = {
 };
 
 export const useAction = (resource: ModelName, ids: string[] | number[]) => {
-  const { router } = useRouterInternal();
   const { t } = useI18n();
   const { apiBasePath } = useConfig();
   const { showMessage } = useMessage();
