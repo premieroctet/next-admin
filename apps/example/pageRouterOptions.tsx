@@ -100,8 +100,8 @@ export const options: NextAdminOptions = {
       title: "Posts",
       icon: "NewspaperIcon",
       list: {
-        display: ["id", "title", "published", "author", "categories"],
-        search: ["title"],
+        display: ["id", "title", "published", "author", "categories", "tags"],
+        search: ["title", "tags"],
         fields: {
           author: {
             formatter: (author) => {
@@ -123,6 +123,7 @@ export const options: NextAdminOptions = {
           "published",
           "author",
           "categories",
+          "tags",
         ],
         fields: {
           content: {
