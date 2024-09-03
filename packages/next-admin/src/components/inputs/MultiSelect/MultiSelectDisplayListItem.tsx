@@ -22,6 +22,9 @@ const MultiSelectDisplayListItem = ({
   const { basePath } = useConfig();
   const { value, label } = item;
 
+  // @ts-expect-error
+  const relationModel = item?.data?.modelName ?? schema.items?.relation;
+
   return (
     <DndItem
       sortable={sortable}
@@ -29,11 +32,11 @@ const MultiSelectDisplayListItem = ({
       value={item.value}
       label={label}
       onRemoveClick={() => onRemoveClick(value)}
-      href={`${basePath}/${slugify(
-        item?.data?.modelName ??
-          // @ts-expect-error
-          schema.items?.relation
-      )}/${value}`}
+      href={
+        relationModel
+          ? `${basePath}/${slugify(relationModel)}/${value}`
+          : undefined
+      }
     />
   );
 };

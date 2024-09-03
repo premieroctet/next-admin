@@ -10,6 +10,11 @@ declare type JSONSchema7Definition = JSONSchema7 & {
 };
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
+type ExtendsStringButIsNotString<T> = T extends string
+  ? string extends T
+    ? false
+    : true
+  : false;
 
 /** Type for Model */
 
@@ -220,7 +225,13 @@ export type EditFieldsOptions<T extends ModelName> = {
             }
           | { display?: "list"; orderField?: keyof ModelFromProperty<T, P> }
         )
-    : {});
+    : P extends keyof ScalarField<T>
+      ? ScalarField<T>[P] extends (infer Q)[]
+        ? ExtendsStringButIsNotString<Q> extends true
+          ? { display?: "list" | "select" }
+          : {}
+        : {}
+      : {});
 };
 
 export type Handler<
@@ -429,7 +440,7 @@ export type SidebarGroup = {
   /**
    * Some optional css classes to improve appearance of group title.
    */
-    className?: string;
+  className?: string;
   /**
    * the name of the group.
    */
@@ -834,7 +845,6 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    */
   schema: any;
 };
-
 
 export type FormProps = {
   data: any;

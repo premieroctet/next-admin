@@ -276,7 +276,14 @@ export const transformData = <M extends ModelName>(
     if (get) {
       acc[key] = get(data[key]);
     } else if (fieldKind === "enum") {
-      acc[key] = data[key] ? { label: data[key], value: data[key] } : null;
+      const value = data[key];
+      if (Array.isArray(value)) {
+        acc[key] = value.map((item) => {
+          return { label: item, value: item };
+        });
+      } else {
+        acc[key] = value ? { label: value, value } : null;
+      }
     } else if (fieldKind === "object") {
       const modelRelation = field!.type as ModelName;
       const modelRelationIdField = getModelIdProperty(modelRelation);
@@ -301,6 +308,7 @@ export const transformData = <M extends ModelName>(
           : modelRelation,
         options
       );
+
       if (Array.isArray(data[key])) {
         acc[key] = data[key].map((item: any) => {
           if (
@@ -409,7 +417,7 @@ export const findRelationInData = (
       }
     }
 
-    if (dmmfPropertyKind === "scalar" && dmmfProperty.isList) {
+    if (["scalar", "enum"].includes(dmmfPropertyKind) && dmmfProperty.isList) {
       data.forEach((item) => {
         if (item[dmmfPropertyName]) {
           item[dmmfPropertyName] = {
@@ -742,6 +750,7 @@ export const formattedFormData = async <M extends ModelName>(
           }
         } else if (dmmfPropertyKind === "scalar" && dmmfProperty.isList) {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
+
           const formDataValue = JSON.parse(formData[dmmfPropertyName]!) as
             | string[]
             | number[];
@@ -763,6 +772,13 @@ export const formattedFormData = async <M extends ModelName>(
               set: formDataValue,
             };
           }
+        } else if (dmmfPropertyKind === "enum" && dmmfProperty.isList) {
+          const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
+
+          const data = JSON.parse(formData[dmmfPropertyName] ?? "[]");
+          formattedData[dmmfPropertyName] = {
+            set: data,
+          };
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
           if (formData[dmmfPropertyName] === "") {
