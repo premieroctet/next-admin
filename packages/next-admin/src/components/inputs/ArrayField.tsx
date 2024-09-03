@@ -1,7 +1,7 @@
 import { FieldProps } from "@rjsf/utils";
 import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import ScalarArrayField from "./ScalarArray/ScalarArrayField";
-import type { FormProps } from "../../types";
+import type { Enumeration, FormProps } from "../../types";
 
 const ArrayField = (props: FieldProps) => {
   const { formData, onChange, name, disabled, schema, required, formContext } =
@@ -23,6 +23,9 @@ const ArrayField = (props: FieldProps) => {
     );
   }
 
+  const options =
+    dmmfField?.kind === "enum" ? (schema.enum as Enumeration[]) : undefined;
+
   return (
     <MultiSelectWidget
       onChange={onChange}
@@ -31,6 +34,7 @@ const ArrayField = (props: FieldProps) => {
       disabled={disabled ?? false}
       required={required}
       schema={schema}
+      options={options}
     />
   );
 };

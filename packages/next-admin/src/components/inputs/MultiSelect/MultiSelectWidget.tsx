@@ -40,18 +40,14 @@ const MultiSelectWidget = (props: Props) => {
 
   const selectedValues = formData?.map((item: any) => item?.value) ?? [];
 
-  const optionsLeft = options?.filter(
-    (option) =>
-      !formData?.find((item: Enumeration) => item.value === option.value)
-  );
-
   const displayMode =
     !!fieldOptions && "display" in fieldOptions
       ? fieldOptions.display ?? "select"
       : "select";
 
-  // @ts-expect-error
-  const fieldSortable = displayMode === "list" && !!fieldOptions?.orderField;
+  const fieldSortable =
+    // @ts-expect-error
+    displayMode === "list" && (!!fieldOptions?.orderField || !!schema.enum);
 
   const select = (
     <select
@@ -159,7 +155,7 @@ const MultiSelectWidget = (props: Props) => {
         ref={containerRef}
         open={isOpen}
         name={name}
-        options={optionsLeft?.length ? optionsLeft : undefined}
+        options={options?.length ? options : undefined}
         onChange={(option: Enumeration) => {
           setFieldDirty(name);
           onChange([...(formData || []), option]);
