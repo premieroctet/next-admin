@@ -4,6 +4,7 @@ import type { JSONSchema7 } from "json-schema";
 import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
+import { NextApiRequest } from "next";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -356,6 +357,70 @@ export type ListOptions<T extends ModelName> = {
   filters?: FilterWrapper<T>[];
 };
 
+export type SubmitResourceResponse =
+  | {
+      error: string;
+      updated?: undefined;
+      data?: undefined;
+      redirect?: undefined;
+      created?: undefined;
+      createdId?: undefined;
+      validation?: undefined;
+    }
+  | {
+      error: string;
+      updated?: undefined;
+      data?: undefined;
+      redirect?: undefined;
+      created?: undefined;
+      createdId?: undefined;
+      validation: PropertyValidationError[];
+    }
+  | {
+      error?: undefined;
+      updated: true;
+      data: any;
+      redirect: boolean;
+      created?: undefined;
+      createdId?: undefined;
+      validation?: undefined;
+    }
+  | {
+      error?: undefined;
+      updated?: undefined;
+      data: any;
+      redirect: boolean;
+      created: true;
+      createdId: any;
+      validation?: undefined;
+    };
+
+export type EditModelHooks = {
+  /**
+   * a function that is called before the form data is sent to the database.
+   *
+   * @param data - the form data as a record
+   * @param mode - the mode of the form, either "create" or "edit"
+   * @param request - the request object. Note: on App Router, it will not be possible to call `formData` as the handler already calls it once
+   * @returns the transformed form data record or a Response or NextApiResponse.
+   * @throws HookError - if the hook fails, the status and message will be sent in the handler's response
+   */
+  beforeDb?: (
+    data: Record<string, string | UploadParameters | null>,
+    mode: "create" | "edit",
+    request: NextRequest | NextApiRequest
+  ) => Promise<Record<string, string | UploadParameters | null>>;
+  /**
+   * a function that is called after the form submission. It takes the response of the db insertion as a parameter.
+   * @param data
+   */
+  afterDb?: (
+    data: SubmitResourceResponse,
+    mode: "create" | "edit",
+    request: NextRequest | NextApiRequest
+  ) => Promise<void>;
+};
+
 export type EditOptions<T extends ModelName> = {
   /**
    * an array of fields that are displayed in the form. It can also be an object that will be displayed in the form of a notice.
@@ -383,6 +448,10 @@ export type EditOptions<T extends ModelName> = {
    * a message displayed if an error occurs during the form submission, after the form validation and before any call to prisma.
    */
   submissionErrorMessage?: string;
+  /**
+   * a set of hooks to call before and after the form data insertion into the database.
+   */
+  hooks?: EditModelHooks;
 };
 
 export type ActionStyle = "default" | "destructive";

@@ -12,6 +12,7 @@ import {
   getResourceFromParams,
   getResources,
 } from "./utils/server";
+import { HookError } from "./exceptions/HookError";
 
 type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**
@@ -132,11 +133,21 @@ export const createHandler = <P extends string = "nextadmin">({
           ? formatId(resource, req.query[paramKey]!.at(-1)!)
           : undefined;
 
+      const editOptions = options?.model?.[resource]?.edit;
+
+      const mode = !!id ? "edit" : "create";
+
       try {
+        const transformedBody = await editOptions?.hooks?.beforeDb?.(
+          body,
+          mode,
+          req
+        );
+
         const response = await submitResource({
           prisma,
           resource,
-          body,
+          body: transformedBody ?? body,
           id,
           options,
           schema,
@@ -149,8 +160,14 @@ export const createHandler = <P extends string = "nextadmin">({
           });
         }
 
+        await editOptions?.hooks?.afterDb?.(response, mode, req);
+
         return res.status(id ? 200 : 201).json(response);
       } catch (e) {
+        if (e instanceof HookError) {
+          return res.status(e.status).json(e.data);
+        }
+
         return res.status(500).json({ error: (e as Error).message });
       }
     })

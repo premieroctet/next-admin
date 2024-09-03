@@ -8,6 +8,7 @@ import {
   ModelName,
   NextAdminOptions,
   Permission,
+  SubmitResourceResponse,
   UploadParameters,
 } from "../types";
 import { hasPermission } from "../utils/permissions";
@@ -60,14 +61,12 @@ export const submitResource = async ({
   id,
   options,
   schema,
-}: SubmitResourceParams) => {
+}: SubmitResourceParams): Promise<SubmitResourceResponse> => {
   const { __admin_redirect: redirect, ...formValues } = body;
 
   const dmmfSchema = getPrismaModelForResource(resource);
   const parsedFormData = parseFormData(formValues, dmmfSchema?.fields!);
   const resourceIdField = getModelIdProperty(resource);
-
-  let data;
 
   const fields = options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
     typeof resource

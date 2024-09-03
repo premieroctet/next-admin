@@ -204,45 +204,46 @@ There are two example files in the example project:
 - [app/api/users/export/route.ts](https://github.com/premieroctet/next-admin/tree/main/apps/example/app/api/users/export/route.ts)
 - [app/api/posts/export/route.ts](https://github.com/premieroctet/next-admin/tree/main/apps/example/app/api/posts/export/route.ts)
 
-## Add data to formData before submitting
+## Intercepting data submission
 
-If you want to add data to the form data before submitting it, you can add logic to the `submitFormAction` function. This is an example of how to add `createdBy` and `updatedBy` fields based on the user id:
+If you want to add data to the form data before submitting it, you can make use of the `edit.hooks` field of a model options. This is an example of how to add `createdBy` and `updatedBy` fields on a post based on the user id, and submit an email to inform the creation or edition of the post:
 
-```typescript copy filename="app/api/admin/[[...nextadmin]]/route.ts"
-import { options } from "@/options";
-import { prisma } from "@/prisma";
-import schema from "@/prisma/json-schema/json-schema.json";
-import { createHandler } from "@premieroctet/next-admin/dist/appHandler";
-import { NextRequest } from "next/server";
+```typescript copy"
+{
+  model: {
+    Post: {
+      edit: {
+        hooks: {
+          async beforeDb(data, mode, request) {
+            const userId = 1 // retrieve from the request / cookies, etc
 
-const { run } = createHandler({
-  apiBasePath: "/api/admin",
-  options,
-  prisma,
-  schema,
-});
+            // your own permission check
+            if (!userHasPermission(userId)) {
+              throw new HookError(403, { error: "Forbidden" });
+            }
 
-/**
- * context.params.nextadmin = ['{{model}}'] => CREATE
- * context.params.nextadmin = ['{{model}}', '{{id}}'] => UPDATE
- */
-export async function POST(req: NextRequest, context: any) {
-  const userId = 1;
+            if (mode === "create") {
+              data.createdBy = userId;
+            } else {
+              data.updatedBy = userId;
+            }
 
-  if (context.params.nextadmin.length === 1) {
-    const formData = await req.formData();
-    formData.append("createdBy", userId.toString());
-    req.formData = async () => formData;
-  } else {
-    const formData = await req.formData();
-    formData.append("updatedBy", userId.toString());
-    req.formData = async () => formData;
+            return data
+          },
+          async afterDb(data, mode, request) {
+            const userId = 1 // retrieve from the request / cookies, etc
+
+            sendMail({
+              to: "some@email.com",
+              subject: "Post updated",
+              text: `Post ${data.title} has been ${mode === "create" ? "created" : "updated"} by ${userId}`,
+            })
+          }
+        }
+      }
+    }
   }
-
-  return run(req, context);
 }
-
-export { run as DELETE, run as GET };
 ```
 
 > Note that this example assumes that you have a `createdBy` and `updatedBy` field on each model, if you need to check the model name, you can use `params.params[0]`.
