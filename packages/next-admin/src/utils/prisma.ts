@@ -25,18 +25,120 @@ import {
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
-const createWherePredicate = (
-  fieldsFiltered?: readonly Prisma.DMMF.Field[],
-  search?: string,
-  otherFilters?: Filter<ModelName>[]
+type CreateNestedWherePredicateParams<M extends ModelName> = {
+  field: Prisma.DMMF.Field;
+  options?: NextAdminOptions;
+  search: string;
+  searchOptions?: Field<M>[];
+};
+
+const createNestedWherePredicate = <M extends ModelName>(
+  {
+    field,
+    options,
+    search,
+    searchOptions,
+  }: CreateNestedWherePredicateParams<M>,
+  acc: Record<string, any> = {}
 ) => {
+  const resource = getPrismaModelForResource(field.type as ModelName);
+
+  acc[field.name] = {
+    OR: searchOptions
+      ?.map((searchOption) => {
+        const [_, subFieldName, ...rest] = searchOption.toString().split(".");
+        const subField = resource?.fields.find(
+          ({ name }) => name === subFieldName
+        );
+
+        if (!subField) {
+          return null;
+        } else if (subField.kind === "scalar") {
+          if (subField.isList) {
+            let searchTerm: string | number = search;
+
+            if (subField.type !== "String" && !isNaN(Number(search))) {
+              searchTerm = Number(search);
+            }
+
+            return {
+              has: searchTerm,
+            };
+          }
+
+          if (subField.type === "String") {
+            // @ts-ignore
+            const mode = Prisma?.QueryMode
+              ? { mode: Prisma.QueryMode.insensitive }
+              : {};
+            return {
+              [subFieldName]: { contains: search, ...mode },
+            };
+          }
+          if (subField.type === "Int" && !isNaN(Number(search))) {
+            return { [subFieldName]: Number(search) };
+          }
+        } else if (subField.kind === "object") {
+          const predicate = createNestedWherePredicate({
+            field: subField,
+            options,
+            search,
+            searchOptions: [[subFieldName, ...rest].join(".")] as Field<M>[],
+          });
+
+          if (subField.isList) {
+            predicate[subField.name] = {
+              some: predicate[subField.name],
+            };
+          }
+
+          return predicate;
+        }
+      })
+      .filter(Boolean),
+  };
+
+  return acc;
+};
+
+type CreateWherePredicateParams<M extends ModelName> = {
+  resource: M;
+  options?: NextAdminOptions;
+  search?: string;
+  otherFilters?: Filter<M>[];
+};
+
+export const createWherePredicate = <M extends ModelName>({
+  resource,
+  options,
+  search,
+  otherFilters,
+}: CreateWherePredicateParams<M>) => {
+  let fieldsFiltered = getFieldsFiltered(resource, options);
+
   const searchFilter = search
     ? {
         OR: fieldsFiltered
           ?.filter((field) => {
-            return field.kind === "scalar" || field.kind === "enum";
+            return (
+              field.kind === "scalar" ||
+              field.kind === "enum" ||
+              field.kind === "object"
+            );
           })
           .map((field) => {
+            if (field.kind === "object") {
+              return createNestedWherePredicate({
+                field,
+                options,
+                search,
+                searchOptions: options?.model?.[resource]?.list?.search?.filter(
+                  (searchOption) =>
+                    searchOption.toString().startsWith(field.name)
+                ),
+              });
+            }
+
             if (field.kind === "enum") {
               const enumValueForSearchTerm = enumValueForEnumType(
                 field.type,
@@ -95,12 +197,17 @@ const getFieldsFiltered = <M extends ModelName>(
 ): readonly Prisma.DMMF.Field[] => {
   const model = getPrismaModelForResource(resource);
 
-  let fieldsFiltered = model?.fields;
+  let fieldsFiltered = model?.fields.filter((field) => field.kind === "scalar");
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
     fieldsFiltered = list?.search
       ? model?.fields.filter(
-          ({ name }) => list.search?.includes(name as Field<M>)
+          ({ name }) =>
+            list.search?.some((search) => {
+              const [searchName] = search.toString().split(".");
+
+              return searchName === name;
+            })
         )
       : fieldsFiltered;
   }
@@ -178,10 +285,14 @@ const preparePrismaListRequest = <M extends ModelName>(
 
   let select: Select<M> | undefined;
   let where = {};
-  let fieldsFiltered = getFieldsFiltered(resource, options);
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   select = selectPayloadForModel(resource, list, "object");
-  where = createWherePredicate(fieldsFiltered, search, fieldFilters);
+  where = createWherePredicate({
+    resource,
+    options,
+    search,
+    otherFilters: fieldFilters,
+  });
 
   return {
     select,
