@@ -13,6 +13,7 @@ import {
 import { getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList } from "./prisma";
 import {
+  applyVisiblePropertiesInSchema,
   getModelIdProperty,
   getPrismaModelForResource,
   getResourceFromParams,
@@ -176,6 +177,8 @@ export async function getPropsFromParams({
           ? toStringFunction(data)
           : resourceId.toString();
 
+        applyVisiblePropertiesInSchema(resource, edit, data, deepCopySchema);
+
         return {
           ...defaultProps,
           resource,
@@ -210,7 +213,6 @@ export const getMainLayoutProps = ({
   options,
   params,
   isAppDir = true,
-  
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   if (params !== undefined && !Array.isArray(params)) {
     throw new Error(

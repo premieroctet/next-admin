@@ -854,6 +854,31 @@ export const transformSchema = <M extends ModelName>(
     orderSchema(resource, options)
   );
 
+export const applyVisiblePropertiesInSchema = <M extends ModelName>(
+  resource: M,
+  edit: EditOptions<M>,
+  data: any,
+  schema: Schema
+) => {
+  const modelName = resource;
+  const model = models.find((model) => model.name === modelName);
+  if (!model) return schema;
+  const display = edit?.display;
+  const fields = edit?.fields;
+  if (display) {
+    display.forEach((property) => {
+      if (
+        schema.definitions?.[modelName]?.properties &&
+        fields?.[property]?.visible?.(data) === false
+      ) {
+        // @ts-expect-error
+        delete schema.definitions[modelName].properties[property];
+      }
+    });
+  }
+  return schema;
+};
+
 const fillDescriptionInSchema = <M extends ModelName>(
   resource: M,
   editOptions: EditOptions<M>
