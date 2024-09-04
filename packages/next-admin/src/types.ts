@@ -85,6 +85,68 @@ export type NoticeField = {
   description?: string;
 };
 
+type GreaterThan<
+  A extends number,
+  B extends number,
+  S extends any[] = [],
+> = S["length"] extends A
+  ? false
+  : S["length"] extends B
+    ? true
+    : GreaterThan<A, B, [...S, any]>;
+
+type LessThan<
+  A extends number,
+  B extends number,
+  S extends any[] = [],
+> = S["length"] extends B
+  ? false
+  : S["length"] extends A
+    ? true
+    : LessThan<A, B, [...S, any]>;
+
+type Substract<
+  A extends number,
+  B extends number,
+  I extends any[] = [],
+  O extends any[] = [],
+> = LessThan<A, B> extends true
+  ? never
+  : LessThan<I["length"], A> extends true
+    ? Substract<
+        A,
+        B,
+        [...I, any],
+        LessThan<I["length"], B> extends true ? O : [...O, any]
+      >
+    : O["length"];
+
+type Leaves<T> = T extends object
+  ? {
+      [K in keyof T]: `${Exclude<K, symbol>}${Leaves<T[K]> extends never
+        ? ""
+        : `.${Leaves<Exclude<T[K], undefined>>}`}`;
+    }[keyof T]
+  : never;
+
+export type NestableField<P extends Payload, S extends number = 8> = {
+  [K in keyof P["scalars"]]: true;
+} & {
+  [K in keyof P["objects"]]: P["objects"][K] extends infer T | null
+    ? T extends Payload
+      ? GreaterThan<S, 0> extends true
+        ? NestableField<T, Substract<S, 1>>
+        : never
+      : T extends Array<infer U>
+        ? U extends Payload
+          ? GreaterThan<S, 0> extends true
+            ? NestableField<U, Substract<S, 1>>
+            : never
+          : never
+        : never
+    : never;
+};
+
 export type Field<P extends ModelName> = keyof Model<P>;
 
 /** Type for Form */
@@ -327,7 +389,7 @@ export type ListOptions<T extends ModelName> = {
    * an array of searchable fields.
    * @default all scalar
    */
-  search?: Field<T>[];
+  search?: Leaves<NestableField<Prisma.TypeMap["model"][T]["payload"]>>[];
   /**
    * an array of fields that are copyable into the clipboard.
    * @default none

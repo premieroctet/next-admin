@@ -132,10 +132,12 @@ export const createWherePredicate = <M extends ModelName>({
                 field,
                 options,
                 search,
-                searchOptions: options?.model?.[resource]?.list?.search?.filter(
+                searchOptions: (
+                  options?.model?.[resource]?.list?.search as string[]
+                )?.filter(
                   (searchOption) =>
-                    searchOption.toString().startsWith(field.name)
-                ),
+                    searchOption?.toString().startsWith(field.name)
+                ) as Field<M>[],
               });
             }
 
@@ -203,10 +205,10 @@ const getFieldsFiltered = <M extends ModelName>(
     fieldsFiltered = list?.search
       ? model?.fields.filter(
           ({ name }) =>
-            list.search?.some((search) => {
-              const [searchName] = search.toString().split(".");
+            (list.search as string[])?.some((search) => {
+              const searchNameSplit = search?.toString().split(".");
 
-              return searchName === name;
+              return searchNameSplit?.[0] === name;
             })
         )
       : fieldsFiltered;

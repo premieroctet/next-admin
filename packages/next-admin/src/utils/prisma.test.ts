@@ -5,7 +5,6 @@ const options: NextAdminOptions = {
   model: {
     Post: {
       list: {
-        // @ts-expect-error
         search: ["title", "author.name", "author.email", "author.posts.title"],
       },
     },
