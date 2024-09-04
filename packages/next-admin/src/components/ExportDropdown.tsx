@@ -1,11 +1,11 @@
-import { Transition } from "@headlessui/react";
+import { Transition, TransitionChild } from "@headlessui/react";
 import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useI18n } from "../context/I18nContext";
 import { ListExport } from "../types";
 import {
@@ -46,8 +46,8 @@ const ExportDropdown = ({ exports }: Props) => {
         </button>
       </DropdownTrigger>
       <DropdownBody forceMount>
-        <Transition.Root as={Fragment} show={isOpen}>
-          <Transition.Child
+        <Transition show={isOpen}>
+          <TransitionChild
             as={DropdownContent}
             className="min-w-[10rem] p-2"
             sideOffset={4}
@@ -71,8 +71,8 @@ const ExportDropdown = ({ exports }: Props) => {
                 </DropdownItem>
               );
             })}
-          </Transition.Child>
-        </Transition.Root>
+          </TransitionChild>
+        </Transition>
       </DropdownBody>
     </Dropdown>
   );

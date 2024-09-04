@@ -1,4 +1,4 @@
-import { Transition } from "@headlessui/react";
+import { Transition, TransitionChild } from "@headlessui/react";
 import debounce from "lodash/debounce";
 import {
   ChangeEvent,
@@ -111,8 +111,8 @@ export const Selector = forwardRef<HTMLDivElement, SelectorProps>(
     };
 
     return (
-      <Transition.Root show={open} as="div">
-        <Transition.Child
+      <Transition show={open} as="div">
+        <TransitionChild
           as="div"
           className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong absolute z-20 mt-2 max-h-60 w-full overflow-auto rounded-md shadow-2xl ring-1"
           enter="transition-all ease-linear"
@@ -158,8 +158,8 @@ export const Selector = forwardRef<HTMLDivElement, SelectorProps>(
               </div>
             )}
           </div>
-        </Transition.Child>
-      </Transition.Root>
+        </TransitionChild>
+      </Transition>
     );
   }
 );

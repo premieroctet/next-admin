@@ -1,10 +1,10 @@
-import { Transition } from "@headlessui/react";
+import { Transition, TransitionChild } from "@headlessui/react";
 import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { useI18n } from "../context/I18nContext";
 import { useAction } from "../hooks/useAction";
 import { ModelAction, ModelName } from "../types";
@@ -62,8 +62,8 @@ const ActionsDropdown = ({
         </button>
       </DropdownTrigger>
       <DropdownBody forceMount>
-        <Transition.Root as={Fragment} show={isOpen}>
-          <Transition.Child
+        <Transition show={isOpen}>
+          <TransitionChild
             as={DropdownContent}
             className="min-w-[10rem] p-2"
             sideOffset={4}
@@ -90,8 +90,8 @@ const ActionsDropdown = ({
                 </DropdownItem>
               );
             })}
-          </Transition.Child>
-        </Transition.Root>
+          </TransitionChild>
+        </Transition>
       </DropdownBody>
     </Dropdown>
   );
