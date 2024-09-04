@@ -129,7 +129,7 @@ type Leaves<T> = T extends object
     }[keyof T]
   : never;
 
-export type NestableField<P extends Payload, S extends number = 8> = {
+export type NestableField<P extends Payload, S extends number = 4> = {
   [K in keyof P["scalars"]]: true;
 } & {
   [K in keyof P["objects"]]: P["objects"][K] extends infer T | null
