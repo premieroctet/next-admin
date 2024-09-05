@@ -385,9 +385,15 @@ export const findRelationInData = (
     const dmmfPropertyRelationToFields = dmmfProperty.relationToFields;
 
     if (dmmfPropertyKind === "object") {
+      /**
+       * Handle one-to-one relation
+       * Make sure that we are in a relation that is not a list
+       * because one side of a one-to-one relation will not have relationFromFields
+       */
       if (
-        dmmfPropertyRelationFromFields!.length > 0 &&
-        dmmfPropertyRelationToFields!.length > 0
+        (dmmfPropertyRelationFromFields!.length > 0 &&
+          dmmfPropertyRelationToFields!.length > 0) ||
+        !dmmfProperty.isList
       ) {
         const idProperty = getModelIdProperty(dmmfProperty.type as ModelName);
         data.forEach((item) => {

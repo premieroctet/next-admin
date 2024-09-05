@@ -20,7 +20,15 @@ export const options: NextAdminOptions = {
           format: "CSV",
           url: "/api/users/export",
         },
-        display: ["id", "name", "email", "posts", "role", "birthDate"],
+        display: [
+          "id",
+          "name",
+          "email",
+          "posts",
+          "role",
+          "birthDate",
+          "profile",
+        ],
         search: ["name", "email", "role"],
         copy: ["email"],
         filters: [
@@ -212,6 +220,16 @@ export const options: NextAdminOptions = {
         },
       },
     },
+    Profile: {
+      title: "Profiles",
+      icon: "UserIcon",
+      list: {
+        display: ["id", "user"],
+      },
+      edit: {
+        display: ["user", "bio"],
+      },
+    },
   },
   pages: {
     "/custom": {
@@ -223,7 +241,7 @@ export const options: NextAdminOptions = {
     groups: [
       {
         title: "Users",
-        models: ["User"],
+        models: ["User", "Profile"],
       },
       {
         title: "Categories",
