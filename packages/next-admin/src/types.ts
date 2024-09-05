@@ -418,7 +418,7 @@ export type EditModelHooks = {
     data: SubmitResourceResponse,
     mode: "create" | "edit",
     request: NextRequest | NextApiRequest
-  ) => Promise<void>;
+  ) => Promise<SubmitResourceResponse>;
 };
 
 export type EditOptions<T extends ModelName> = {

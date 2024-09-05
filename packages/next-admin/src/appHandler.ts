@@ -109,7 +109,7 @@ export const createHandler = <P extends string = "nextadmin">({
           req
         );
 
-        const response = await submitResource({
+        let response = await submitResource({
           prisma,
           resource,
           body: transformedBody ?? body,
@@ -125,7 +125,7 @@ export const createHandler = <P extends string = "nextadmin">({
           );
         }
 
-        await editOptions?.hooks?.afterDb?.(response, mode, req);
+        response = (await editOptions?.hooks?.afterDb?.(response, mode, req)) ?? response;
 
         return NextResponse.json(response, { status: id ? 200 : 201 });
       } catch (e) {
