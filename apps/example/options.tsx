@@ -163,7 +163,7 @@ export const options: NextAdminOptions = {
           "rate",
           "tags",
         ],
-        search: ["title", "content", "tags"],
+        search: ["title", "content", "tags", "author.name"],
         fields: {
           author: {
             formatter: (author) => {
