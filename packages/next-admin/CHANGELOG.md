@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.3.0
+
+### Minor Changes
+
+- [7dda967](https://github.com/premieroctet/next-admin/commit/7dda967): feat: add hooks to model edition ([#386](https://github.com/premieroctet/next-admin/issues/386))
+
 ## 5.2.0
 
 ### Minor Changes
