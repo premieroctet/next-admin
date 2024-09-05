@@ -551,6 +551,28 @@ When you define a field, use the field's name as the key and the following objec
   ]}
 />
 
+### `edit.hooks` property
+
+The `hooks` property allows you to intercept the values of a form, before and after its insertion in the database.
+It is an object that can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "beforeDb",
+      type: "Function",
+      description:
+        "a function that takes the form values, the insertion mode (create or edit) and the request object as parameters. It must return a promise with the form values. You can throw a [HookError]() in case of an error, which will cause an early return in the handler with the appropriate response status and error message.",
+    },
+    {
+      name: "afterDb",
+      type: "Function",
+      description:
+        "a function that takes the insertion response, the insertion mode (create or edit) and the request as parameters. It returns the same data as the insertion response.",
+    },
+  ]}
+/>
+
 ## `actions` property
 
 The `actions` property is an array of objects that allows you to define a set of actions that can be executed on one or more records of the resource. On the list view, there is a default action for deletion. The object can have the following properties:
@@ -730,6 +752,26 @@ Represents the props that are passed to the custom input component.
       name: "disabled",
       type: "Boolean",
       description: "boolean indicating if the field is disabled",
+    },
+  ]}
+/>
+
+## HookError
+
+The `HookError` is an error that can be thrown in the `beforeDb` hook of the `edit` property. It takes the following arguments in its constructor:
+
+<OptionsTable
+  options={[
+    {
+      name: "status",
+      type: "Number",
+      description: "the HTTP status code",
+    },
+    {
+      name: "data",
+      type: "Object",
+      description:
+        "an error object that must contain at least an error property which is a string",
     },
   ]}
 />

@@ -37,5 +37,6 @@
     "reset-database": {
       "cache": false
     }
-  }
+  },
+  "ui": "stream"
 }

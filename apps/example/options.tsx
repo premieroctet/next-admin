@@ -201,6 +201,18 @@ export const options: NextAdminOptions = {
           "rate",
           "tags",
         ],
+        hooks: {
+          async beforeDb(data, mode, request) {
+            console.log("intercept beforedb", data, mode, request);
+
+            return data;
+          },
+          async afterDb(response, mode, request) {
+            console.log("intercept afterdb", response, mode, request);
+
+            return response
+          },
+        },
       },
     },
     Category: {
