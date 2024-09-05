@@ -1,5 +1,20 @@
 # @premieroctet/next-admin
 
+## 5.2.0
+
+### Minor Changes
+
+- [2bf5933](https://github.com/premieroctet/next-admin/commit/2bf5933): eat: allow controlling the visibility of an edit field ([#372](https://github.com/premieroctet/next-admin/issues/372))
+- [d16560a](https://github.com/premieroctet/next-admin/commit/d16560a): fix: fix one-to-one display for one side ([#393](https://github.com/premieroctet/next-admin/issues/393))
+- [b013f25](https://github.com/premieroctet/next-admin/commit/b013f25): add support to arrays of enums
+- [5fb2889](https://github.com/premieroctet/next-admin/commit/5fb2889): feat: add search by relation ([#385](https://github.com/premieroctet/next-admin/issues/385))
+- [e161e99](https://github.com/premieroctet/next-admin/commit/e161e99): chore: upgrade to headlessui v2 ([#396](https://github.com/premieroctet/next-admin/issues/396))
+- [b013f25](https://github.com/premieroctet/next-admin/commit/b013f25): feat: add support for scalar array ([#322](https://github.com/premieroctet/next-admin/issues/322))
+
+### Patch Changes
+
+- [2fa281d](https://github.com/premieroctet/next-admin/commit/2fa281d): feat: display actions in table rows ([#387](https://github.com/premieroctet/next-admin/issues/387))
+
 ## 5.1.0
 
 ### Minor Changes
