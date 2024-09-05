@@ -209,6 +209,10 @@ export type EditFieldsOptions<T extends ModelName> = {
      * a true value to force a field to be required in the form, note that if the field is required by the Prisma schema, you cannot set `required` to false
      */
     required?: true;
+    /**
+     * a function that takes the field value as parameter and returns a boolean to determine if the field is displayed in the form.
+     */
+    visible?: (value: ModelWithoutRelationships<T>) => boolean;
   } & (P extends keyof ObjectField<T>
     ? OptionFormatterFromRelationshipSearch<T, P> &
         (

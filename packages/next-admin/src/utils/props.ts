@@ -13,6 +13,7 @@ import {
 import { getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList } from "./prisma";
 import {
+  applyVisiblePropertiesInSchema,
   getModelIdProperty,
   getPrismaModelForResource,
   getResourceFromParams,
@@ -175,6 +176,8 @@ export async function getPropsFromParams({
         const slug = toStringFunction
           ? toStringFunction(data)
           : resourceId.toString();
+
+        applyVisiblePropertiesInSchema(resource, edit, data, deepCopySchema);
 
         return {
           ...defaultProps,
