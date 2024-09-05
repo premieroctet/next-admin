@@ -80,7 +80,7 @@ export default function ListHeader({
       : [];
 
     return [...(actionsProp || []), ...defaultActions];
-  }, [actionsProp, onDelete, t]);
+  }, [actionsProp, onDelete, t, canDelete]);
 
   const resourcePluralName = t(`model.${resource}.plural`, {}, title);
 
@@ -115,7 +115,7 @@ export default function ListHeader({
                 onInput={onSearchChange}
                 defaultValue={search}
                 type="search"
-                className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle rounded-md bg-[transparent] py-1.5 text-sm focus:outline-none focus:ring-0 focus:ring-offset-0 min-w-0 w-full"
+                className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle w-full min-w-0 rounded-md bg-[transparent] py-1.5 text-sm focus:outline-none focus:ring-0 focus:ring-offset-0"
                 placeholder={`${t(
                   "list.header.search.placeholder"
                 )} ${resourcePluralName.toLowerCase()}`}

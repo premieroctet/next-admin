@@ -3,16 +3,14 @@ import {
   ChevronDownIcon,
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
-import clsx from "clsx";
 import { useState } from "react";
 import { useI18n } from "../context/I18nContext";
-import { useAction } from "../hooks/useAction";
 import { ModelAction, ModelName } from "../types";
+import ActionDropdownItem from "./ActionDropdownItem";
 import {
   Dropdown,
   DropdownBody,
   DropdownContent,
-  DropdownItem,
   DropdownTrigger,
 } from "./radix/Dropdown";
 
@@ -29,13 +27,8 @@ const ActionsDropdown = ({
   resource,
   selectedCount,
 }: Props) => {
-  const { runAction } = useAction(resource, selectedIds);
   const { t } = useI18n();
   const [isOpen, setIsOpen] = useState(false);
-
-  const onActionClick = (action: ModelAction | Omit<ModelAction, "action">) => {
-    runAction(action);
-  };
 
   return (
     <Dropdown onOpenChange={setIsOpen}>
@@ -77,17 +70,12 @@ const ActionsDropdown = ({
           >
             {actions?.map((action) => {
               return (
-                <DropdownItem
-                  key={action.title}
-                  className={clsx("cursor-pointer rounded-md px-2 py-1", {
-                    "text-red-700 dark:text-red-400":
-                      action.style === "destructive",
-                    "hover:bg-red-50": action.style === "destructive",
-                  })}
-                  onClick={() => onActionClick(action)}
-                >
-                  {t(action.title)}
-                </DropdownItem>
+                <ActionDropdownItem
+                  key={action.id}
+                  action={action}
+                  resourceIds={selectedIds}
+                  resource={resource}
+                />
               );
             })}
           </TransitionChild>
