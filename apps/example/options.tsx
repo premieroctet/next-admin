@@ -207,8 +207,10 @@ export const options: NextAdminOptions = {
 
             return data;
           },
-          async afterDb(response, mode) {
-            console.log("intercept afterdb", response, mode);
+          async afterDb(response, mode, request) {
+            console.log("intercept afterdb", response, mode, request);
+
+            return response
           },
         },
       },
