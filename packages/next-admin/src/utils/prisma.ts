@@ -54,6 +54,18 @@ const createWherePredicate = (
               }
             }
 
+            if (field.kind === "scalar" && field.isList) {
+              if (field.type !== "String" && Number.isNaN(Number(search))) {
+                return null;
+              }
+
+              return {
+                [field.name]: {
+                  has: field.type === "String" ? search : Number(search),
+                },
+              };
+            }
+
             if (field.type === "String") {
               // @ts-ignore
               const mode = Prisma?.QueryMode

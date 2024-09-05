@@ -210,7 +210,6 @@ export const getMainLayoutProps = ({
   options,
   params,
   isAppDir = true,
-  
 }: GetMainLayoutPropsParams): MainLayoutProps => {
   if (params !== undefined && !Array.isArray(params)) {
     throw new Error(

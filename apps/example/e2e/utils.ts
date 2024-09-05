@@ -19,6 +19,7 @@ export const dataTest: DataTest = {
   Post: {
     title: "MY_POST",
     author: "User 0 (user0@nextadmin.io)",
+    tag: "Tag test",
   },
   Category: {
     name: "MY_CATEGORY",
@@ -33,6 +34,7 @@ const dataTestUpdate: DataTest = {
   Post: {
     title: "UPDATE_MY_POST",
     author: "User 1 (user1@nextadmin.io)",
+    tag: "Tag test",
   },
   Category: {
     name: "UPDATE_MY_CATEGORY",
@@ -101,7 +103,7 @@ export const fillForm = async (
         buffer: Buffer.from("test"),
       });
       break;
-    case "Post":
+    case "Post": {
       await page.fill('input[id="title"]', dataTest.Post.title);
       await page.click('select[name="author"]');
       /* Search for relationship test */
@@ -109,9 +111,24 @@ export const fillForm = async (
         'input[id="author-search"]',
         dataTest.Post.author.slice(0, 6)
       );
+
       await page.waitForTimeout(2000);
       await page.getByText(dataTest.Post.author).click();
+
+      const hasTags = await page.isVisible(
+        'input[name="tags"] ~ li:first-of-type'
+      );
+
+      if (!hasTags) {
+        await page.click('input[name="tags"] ~ button');
+        await page.fill(
+          'input[name="tags"] ~ li:first-of-type input',
+          dataTest.Post.tag
+        );
+      }
+
       break;
+    }
     case "Category":
       await page.fill('input[id="name"]', dataTest.Category.name);
       break;
@@ -146,6 +163,10 @@ export const readForm = async (
       expect(await page.innerText('span[id="author"]')).toBe(
         dataTest.Post.author
       );
+      const tagInput = page.locator(
+        "input[name='tags'] ~ li:first-of-type input"
+      );
+      expect(await tagInput.inputValue()).toBe(dataTest.Post.tag);
       break;
     case "Category":
       expect(await page.inputValue('input[id="name"]')).toBe(

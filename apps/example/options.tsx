@@ -146,8 +146,16 @@ export const options: NextAdminOptions = {
           { format: "CSV", url: "/api/posts/export?format=csv" },
           { format: "JSON", url: "/api/posts/export?format=json" },
         ],
-        display: ["id", "title", "published", "author", "categories", "rate"],
-        search: ["title", "content"],
+        display: [
+          "id",
+          "title",
+          "published",
+          "author",
+          "categories",
+          "rate",
+          "tags",
+        ],
+        search: ["title", "content", "tags"],
         fields: {
           author: {
             formatter: (author) => {
@@ -183,6 +191,7 @@ export const options: NextAdminOptions = {
           "categories",
           "author",
           "rate",
+          "tags",
         ],
       },
     },

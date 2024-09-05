@@ -276,7 +276,14 @@ export const transformData = <M extends ModelName>(
     if (get) {
       acc[key] = get(data[key]);
     } else if (fieldKind === "enum") {
-      acc[key] = data[key] ? { label: data[key], value: data[key] } : null;
+      const value = data[key];
+      if (Array.isArray(value)) {
+        acc[key] = value.map((item) => {
+          return { label: item, value: item };
+        });
+      } else {
+        acc[key] = value ? { label: value, value } : null;
+      }
     } else if (fieldKind === "object") {
       const modelRelation = field!.type as ModelName;
       const modelRelationIdField = getModelIdProperty(modelRelation);
@@ -301,6 +308,7 @@ export const transformData = <M extends ModelName>(
           : modelRelation,
         options
       );
+
       if (Array.isArray(data[key])) {
         acc[key] = data[key].map((item: any) => {
           if (
@@ -337,6 +345,8 @@ export const transformData = <M extends ModelName>(
             }
           : null;
       }
+    } else if (field?.isList && field.kind === "scalar") {
+      acc[key] = data[key];
     } else {
       const fieldTypes = field?.type;
       if (fieldTypes === "DateTime") {
@@ -407,6 +417,18 @@ export const findRelationInData = (
       }
     }
 
+    if (["scalar", "enum"].includes(dmmfPropertyKind) && dmmfProperty.isList) {
+      data.forEach((item) => {
+        if (item[dmmfPropertyName]) {
+          item[dmmfPropertyName] = {
+            type: "count",
+            value: item[dmmfPropertyName].length,
+          };
+        }
+        return item;
+      });
+    }
+
     if (
       dmmfPropertyType === "DateTime" ||
       dmmfPropertyType === "Decimal" ||
@@ -454,6 +476,10 @@ export const parseFormData = <M extends ModelName>(
           parsedData[dmmfPropertyName] =
             null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
         }
+      } else if (dmmfProperty.isList && dmmfProperty.kind === "scalar") {
+        parsedData[dmmfPropertyName] = JSON.parse(
+          formData[dmmfPropertyName]!
+        ) as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
       } else if (dmmfPropertyType === "Int") {
         const value = Number(formData[dmmfPropertyName]) as number;
         parsedData[dmmfPropertyName] = isNaN(value)
@@ -722,6 +748,37 @@ export const formattedFormData = async <M extends ModelName>(
               formattedData[dmmfPropertyName] = { disconnect: true };
             }
           }
+        } else if (dmmfPropertyKind === "scalar" && dmmfProperty.isList) {
+          const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
+
+          const formDataValue = JSON.parse(formData[dmmfPropertyName]!) as
+            | string[]
+            | number[];
+
+          if (
+            dmmfPropertyType === "Int" ||
+            dmmfPropertyType === "Float" ||
+            dmmfPropertyType === "Decimal"
+          ) {
+            formattedData[dmmfPropertyName] = {
+              set: formDataValue
+                .map((item) =>
+                  !isNaN(Number(item)) ? Number(item) : undefined
+                )
+                .filter(Boolean),
+            };
+          } else {
+            formattedData[dmmfPropertyName] = {
+              set: formDataValue,
+            };
+          }
+        } else if (dmmfPropertyKind === "enum" && dmmfProperty.isList) {
+          const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
+
+          const data = JSON.parse(formData[dmmfPropertyName] ?? "[]");
+          formattedData[dmmfPropertyName] = {
+            set: data,
+          };
         } else {
           const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
           if (formData[dmmfPropertyName] === "") {

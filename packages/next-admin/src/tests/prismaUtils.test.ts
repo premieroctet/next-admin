@@ -15,6 +15,7 @@ describe("getMappedDataList", () => {
         authorId: 1,
         rate: new Decimal(5),
         order: 0,
+        tags: [],
       },
       {
         id: 2,
@@ -25,6 +26,7 @@ describe("getMappedDataList", () => {
         authorId: 1,
         rate: new Decimal(5),
         order: 1,
+        tags: [],
       },
     ];
 
@@ -61,6 +63,7 @@ describe("optionsFromResource", () => {
         authorId: 1,
         rate: new Decimal(5),
         order: 0,
+        tags: [],
       },
       {
         id: 2,
@@ -71,6 +74,7 @@ describe("optionsFromResource", () => {
         authorId: 1,
         rate: new Decimal(5),
         order: 1,
+        tags: [],
       },
     ];
 
