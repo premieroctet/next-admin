@@ -18,12 +18,14 @@ import {
   ModelName,
   Permission,
   PermissionType,
+  Schema,
 } from "../types";
 import { slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
 import ExportDropdown from "./ExportDropdown";
 import { buttonVariants } from "./radix/Button";
+import AdvancedSearchButton from "./AdvancedSearchButton";
 
 type Props = {
   resource: ModelName;
@@ -37,6 +39,7 @@ type Props = {
   title: string;
   icon?: ModelIcon;
   totalCount?: number;
+  schema: Schema;
 };
 
 export default function ListHeader({
@@ -51,6 +54,7 @@ export default function ListHeader({
   title,
   icon,
   totalCount,
+  schema,
 }: Props) {
   const { basePath, options } = useConfig();
   const { t } = useI18n();
@@ -132,6 +136,7 @@ export default function ListHeader({
               </label>
             </div>
           )}
+          <AdvancedSearchButton resource={resource} schema={schema} />
           {Boolean(selectedRowsCount) && !!actions.length && (
             <ActionsDropdown
               actions={actions}

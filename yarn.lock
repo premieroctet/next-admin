@@ -2588,10 +2588,24 @@
   resolved "https://registry.npmjs.org/@types/katex/-/katex-0.16.0.tgz"
   integrity sha512-hz+S3nV6Mym5xPbT9fnO8dDhBFQguMYpY0Ipxv06JMi1ORgnEM4M1ymWDUhUNer3ElLmT583opRo4RzxKmh9jw==
 
+"@types/lodash.get@^4.4.9":
+  version "4.4.9"
+  resolved "https://registry.yarnpkg.com/@types/lodash.get/-/lodash.get-4.4.9.tgz#6390714bf688321d9a445cbc8e90220635649713"
+  integrity sha512-J5dvW98sxmGnamqf+/aLP87PYXyrha9xIgc2ZlHl6OHMFR2Ejdxep50QfU0abO1+CH6+ugx+8wEUN1toImAinA==
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash.range@^3.2.7":
   version "3.2.7"
   resolved "https://registry.npmjs.org/@types/lodash.range/-/lodash.range-3.2.7.tgz"
   integrity sha512-sq3eRZWspMKGAE0QLH+tIE/EWeSEVKlFqaUoqmgR/c4keXiTP8ob24TUzclYKihw/ojftz6vBb632NRmxR4qrQ==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.set@^4.3.9":
+  version "4.3.9"
+  resolved "https://registry.yarnpkg.com/@types/lodash.set/-/lodash.set-4.3.9.tgz#55d95bce407b42c6655f29b2d0811fd428e698f0"
+  integrity sha512-KOxyNkZpbaggVmqbpr82N2tDVTx05/3/j0f50Es1prxrWB0XYf9p3QNxqcbWb7P1Q9wlvsUSlCFnwlPCIJ46PQ==
   dependencies:
     "@types/lodash" "*"
 
@@ -6701,7 +6715,7 @@ lodash.debounce@^4.0.8:
 
 lodash.get@^4.4.2:
   version "4.4.2"
-  resolved "https://registry.npmjs.org/lodash.get/-/lodash.get-4.4.2.tgz"
+  resolved "https://registry.yarnpkg.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
   integrity sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==
 
 lodash.memoize@4.x:
@@ -6718,6 +6732,11 @@ lodash.range@^3.2.0:
   version "3.2.0"
   resolved "https://registry.npmjs.org/lodash.range/-/lodash.range-3.2.0.tgz"
   integrity sha512-Fgkb7SinmuzqgIhNhAElo0BL/R1rHCnhwSZf78omqSwvWqD0kD2ssOAutQonDKH/ldS8BxA72ORYI09qAY9CYg==
+
+lodash.set@^4.3.2:
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/lodash.set/-/lodash.set-4.3.2.tgz#d8757b1da807dde24816b0d6a84bea1a76230b23"
+  integrity sha512-4hNPN5jlm/N/HLMCO43v8BXKq9Z7QdAGc/VGrRD61w8gN9g/6jF9A4L1pbUgBLCffi0w9VsXfTOij5x8iTyFvg==
 
 lodash.sortby@^4.7.0:
   version "4.7.0"
@@ -10539,6 +10558,11 @@ zod@^3.22.3:
   version "3.22.4"
   resolved "https://registry.yarnpkg.com/zod/-/zod-3.22.4.tgz#f31c3a9386f61b1f228af56faa9255e845cf3fff"
   integrity sha512-iC+8Io04lddc+mVqQ9AZ7OQ2MrUKGN+oIQyq1vemgt46jwCwLfhq7/pwnBnNXXXZb8VTVLKwp9EDkx+ryxIWmg==
+
+zod@^3.23.8:
+  version "3.23.8"
+  resolved "https://registry.yarnpkg.com/zod/-/zod-3.23.8.tgz#e37b957b5d52079769fb8097099b592f0ef4067d"
+  integrity sha512-XBx9AXhXktjUqnepgTiE5flcKIYWi/rme0Eaj+5Y0lftuGBq+jyRu/md4WnuxqgP1ubdpNCsYEYPxrzVHD8d6g==
 
 zwitch@^2.0.0:
   version "2.0.4"
