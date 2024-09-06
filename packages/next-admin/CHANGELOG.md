@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.3.1
+
+### Patch Changes
+
+- [a554eaf](https://github.com/premieroctet/next-admin/commit/a554eaf): default resource names to title before the resource in lowercase
+
 ## 5.3.0
 
 ### Minor Changes
