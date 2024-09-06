@@ -21,7 +21,11 @@ const EmptyState = ({
   const hasCreatePermission =
     !modelOptions?.permissions || modelOptions?.permissions?.includes("create");
 
-  const resourceName = t(`model.${resource}.name`, {}, resource.toLowerCase());
+  const resourceName = t(
+    `model.${resource}.name`,
+    {},
+    modelOptions?.title ?? resource.toLowerCase()
+  );
 
   return (
     <div className="py-10 text-center">
