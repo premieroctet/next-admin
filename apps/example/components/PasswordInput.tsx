@@ -4,19 +4,9 @@ import { useEffect, useState } from "react";
 import type { CustomInputProps } from "@premieroctet/next-admin";
 
 const PasswordInput = (props: CustomInputProps) => {
-  const { onChange, mode } = props;
   const [changePassword, setChangePassword] = useState(false);
 
-  useEffect(() => {
-    if (changePassword === false) {
-      onChange?.({
-        // @ts-expect-error next-admin
-        target: { value: undefined },
-      });
-    }
-  }, [changePassword, onChange]);
-
-  if (mode === "create") {
+  if (props.mode === "create") {
     return <PasswordBaseInput {...props} />;
   }
 
@@ -24,7 +14,11 @@ const PasswordInput = (props: CustomInputProps) => {
     <div className="flex flex-col items-start gap-4">
       {changePassword && <PasswordBaseInput {...props} />}
       <button
-        onClick={() => setChangePassword((value) => !value)}
+        onClick={() => {
+          setChangePassword((value) => !value);
+          // @ts-expect-error
+          props?.onChange({ target: { value: undefined } });
+        }}
         type="button"
         className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
       >
