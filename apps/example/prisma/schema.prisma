@@ -23,17 +23,18 @@ enum Role {
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
-  email     String    @unique
-  name      String?
-  posts     Post[]    @relation("author") // One-to-many relation
-  profile   Profile?  @relation("profile") // One-to-one relation
-  birthDate DateTime?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  role      Role      @default(USER)
-  avatar    String?
-  metadata  Json?
+  id             Int       @id @default(autoincrement())
+  email          String    @unique
+  hashedPassword String
+  name           String?
+  posts          Post[]    @relation("author") // One-to-many relation
+  profile        Profile?  @relation("profile") // One-to-one relation
+  birthDate      DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @default(now()) @updatedAt
+  role           Role      @default(USER)
+  avatar         String?
+  metadata       Json?
 }
 
 model Post {

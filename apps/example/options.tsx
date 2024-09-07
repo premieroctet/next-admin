@@ -1,5 +1,6 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
+import PasswordInput from "./components/PasswordInput";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
@@ -14,6 +15,7 @@ export const options: NextAdminOptions = {
         id: "ID",
         name: "Full name",
         birthDate: "Date of birth",
+        newPassword: "Password",
       },
       list: {
         exports: {
@@ -74,6 +76,7 @@ export const options: NextAdminOptions = {
           "birthDate",
           "avatar",
           "metadata",
+          "newPassword",
         ],
         styles: {
           _form: "grid-cols-3 gap-4 md:grid-cols-4",
@@ -83,9 +86,10 @@ export const options: NextAdminOptions = {
           email: "col-span-4 md:col-span-2 row-start-4",
           posts: "col-span-4 md:col-span-2 row-start-5",
           role: "col-span-4 md:col-span-3 row-start-6",
-          birthDate: "col-span-3 row-start-7",
-          avatar: "col-span-4 row-start-8",
-          metadata: "col-span-4 row-start-9",
+          birthDate: "col-span-3 row-start-8",
+          avatar: "col-span-4 row-start-9",
+          metadata: "col-span-4 row-start-10",
+          newPassword: "col-span-4 row-start-7",
         },
         fields: {
           name: {
@@ -129,6 +133,22 @@ export const options: NextAdminOptions = {
                 return "Invalid JSON";
               }
             },
+          },
+        },
+        customFields: {
+          newPassword: {
+            input: <PasswordInput />,
+            required: true,
+          },
+        },
+        hooks: {
+          beforeDb: async (data, mode, request) => {
+            const newPassword = data.newPassword;
+            if (newPassword) {
+              data.hashedPassword = `hashed-${newPassword}`;
+            }
+
+            return data;
           },
         },
       },
@@ -210,7 +230,7 @@ export const options: NextAdminOptions = {
           async afterDb(response, mode, request) {
             console.log("intercept afterdb", response, mode, request);
 
-            return response
+            return response;
           },
         },
       },
