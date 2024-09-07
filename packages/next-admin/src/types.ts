@@ -519,11 +519,9 @@ export type EditOptions<T extends ModelName> = {
 
 type CustomFieldsType = {
   [key: string]: {
-    /**
-     * For custom fields it is mandatory to define a custom Input Component.
-     */
-    input: React.ReactElement;
+    input?: React.ReactElement;
     tooltip?: string;
+    format?: FormatOptions<any>;
     helperText?: string;
     required?: boolean;
   };

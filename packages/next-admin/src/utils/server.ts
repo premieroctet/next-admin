@@ -1024,6 +1024,7 @@ export const addCustomProperties =
         ] = {
           type: "string",
           description: fieldOptions?.helperText ?? "",
+          format: fieldOptions?.format,
         };
 
         if (fieldOptions.required) {
