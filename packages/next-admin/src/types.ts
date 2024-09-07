@@ -488,7 +488,7 @@ export type EditOptions<T extends ModelName> = {
    * an array of fields that are displayed in the form. It can also be an object that will be displayed in the form of a notice.
    * @default all scalar
    */
-  display?: Array<Field<T> | NoticeField>;
+  display?: Array<Field<T> | NoticeField | (string & {})>;
   /**
    * an object containing the styles of the form.
    */
@@ -514,6 +514,19 @@ export type EditOptions<T extends ModelName> = {
    * a set of hooks to call before and after the form data insertion into the database.
    */
   hooks?: EditModelHooks;
+  customFields?: CustomFieldsType;
+};
+
+type CustomFieldsType = {
+  [key: string]: {
+    /**
+     * For custom fields it is mandatory to define a custom Input Component.
+     */
+    input: React.ReactElement;
+    tooltip?: string;
+    helperText?: string;
+    required?: boolean;
+  };
 };
 
 export type ActionStyle = "default" | "destructive";
@@ -559,7 +572,7 @@ export type ModelOptions<T extends ModelName> = {
     /**
      * an object containing the aliases of the model fields as keys, and the field name.
      */
-    aliases?: Partial<Record<Field<P>, string>>;
+    aliases?: Partial<Record<Field<P>, string>> & { [key: string]: string };
     actions?: ModelAction[];
     /**
      * the outline HeroIcon name displayed in the sidebar and pages title
@@ -858,6 +871,7 @@ export type CustomInputProps = Partial<{
   rawErrors: string[];
   disabled: boolean;
   required?: boolean;
+  mode: "create" | "edit";
 }>;
 
 export type TranslationKeys =

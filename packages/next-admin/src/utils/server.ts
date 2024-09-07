@@ -136,7 +136,8 @@ const orderSchema =
       const propertiesOrdered = {} as Record<string, any>;
       display.forEach((property) => {
         if (typeof property === "string") {
-          propertiesOrdered[property] = properties[property];
+          propertiesOrdered[property] =
+            properties[property as Field<typeof modelName>];
         } else {
           propertiesOrdered[property.id] = {
             type: "null",
@@ -168,7 +169,6 @@ export const fillRelationInSchema =
     const display = options?.model?.[modelName]?.edit?.display;
     let fields;
     if (model?.fields && display) {
-      // @ts-expect-error
       fields = model.fields?.filter((field) => display.includes(field.name));
     } else {
       fields = model?.fields;
@@ -914,6 +914,7 @@ export const transformSchema = <M extends ModelName>(
     changeFormatInSchema(resource, edit),
     fillRelationInSchema(resource, options),
     fillDescriptionInSchema(resource, edit),
+    addCustomProperties(resource, edit),
     orderSchema(resource, options)
   );
 
@@ -1007,6 +1008,30 @@ export const removeHiddenProperties =
         delete properties[property as Field<M>];
       }
     });
+    return schema;
+  };
+
+export const addCustomProperties =
+  <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
+  (schema: Schema) => {
+    const customFieldKeys = Object.keys(editOptions.customFields ?? {});
+
+    customFieldKeys.forEach((property) => {
+      const fieldOptions = editOptions?.customFields?.[property];
+      if (fieldOptions) {
+        schema.definitions[resource].properties[
+          property as Field<typeof resource>
+        ] = {
+          type: "string",
+          description: fieldOptions?.helperText ?? "",
+        };
+
+        if (fieldOptions.required) {
+          schema.definitions[resource].required?.push(property);
+        }
+      }
+    });
+
     return schema;
   };
 
