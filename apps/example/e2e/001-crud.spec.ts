@@ -36,6 +36,7 @@ test.describe("user validation", () => {
     await page.goto(`${process.env.BASE_URL}/User/new`);
     await page.fill('input[id="name"]', dataTest.User.name);
     await page.fill('input[id="email"]', "invalidemail");
+    await page.fill('input[name="newPassword"]', dataTest.User.newPassword);
     await page.click('button:has-text("Save and continue editing")');
     await page.waitForURL(`${process.env.BASE_URL}/User/new`);
     await test.expect(page.getByText("Invalid email")).toBeVisible();

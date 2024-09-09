@@ -15,6 +15,7 @@ export const dataTest: DataTest = {
   User: {
     email: "my-user+e2e@premieroctet.com",
     name: "MY_USER",
+    newPassword: "newPassword",
   },
   Post: {
     title: "MY_POST",
@@ -97,6 +98,9 @@ export const fillForm = async (
     case "User":
       await page.fill('input[id="email"]', dataTest.User.email);
       await page.fill('input[id="name"]', dataTest.User.name);
+      if (await page.isVisible('input[name="newPassword"]')) {
+        await page.fill('input[name="newPassword"]', dataTest.User.newPassword);
+      }
       await page.setInputFiles('input[type="file"]', {
         name: "test.txt",
         mimeType: "text/plain",
