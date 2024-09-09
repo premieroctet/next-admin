@@ -25,7 +25,7 @@ enum Role {
 model User {
   id             Int       @id @default(autoincrement())
   email          String    @unique
-  hashedPassword String
+  hashedPassword String?
   name           String?
   posts          Post[]    @relation("author") // One-to-many relation
   profile        Profile?  @relation("profile") // One-to-one relation
