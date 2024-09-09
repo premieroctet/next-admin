@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.4.1
+
+### Patch Changes
+
+- [c868ce7](https://github.com/premieroctet/next-admin/commit/c868ce7): fix: set hashed password optional
+
 ## 5.4.0
 
 ### Minor Changes
