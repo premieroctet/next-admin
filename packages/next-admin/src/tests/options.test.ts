@@ -6,7 +6,6 @@ describe("Options", () => {
     const customInputs = getCustomInputs("User", options);
 
     expect(Object.keys(customInputs).length).toBe(1);
-    // @ts-expect-error
     expect(customInputs?.email).toBeDefined();
   });
 });
