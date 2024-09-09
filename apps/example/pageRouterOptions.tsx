@@ -1,5 +1,6 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
+import PasswordInput from "./components/PasswordInput";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin Page Router",
@@ -8,6 +9,9 @@ export const options: NextAdminOptions = {
       toString: (user) => `${user.name} (${user.email})`,
       title: "Users",
       icon: "UsersIcon",
+      aliases: {
+        newPassword: "Password",
+      },
       list: {
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email"],
@@ -41,6 +45,7 @@ export const options: NextAdminOptions = {
         display: [
           "id",
           "name",
+          "newPassword",
           "email",
           "posts",
           "role",
@@ -48,15 +53,17 @@ export const options: NextAdminOptions = {
           "avatar",
         ],
         styles: {
-          _form: "grid-cols-3 gap-2 md:grid-cols-4",
-          id: "col-span-2",
-          name: "col-span-2 row-start-2",
-          email: "col-span-2 row-start-3",
-          posts: "col-span-2 row-start-4",
-          role: "col-span-2 row-start-4",
-          birthDate: "col-span-3 row-start-5",
-          avatar: "col-span-1 row-start-5",
-          metadata: "col-span-4 row-start-6",
+          _form: "grid-cols-3 gap-4 md:grid-cols-4",
+          id: "col-span-2 row-start-1",
+          name: "col-span-2 row-start-1",
+          "email-notice": "col-span-4 row-start-2",
+          email: "col-span-4 md:col-span-2 row-start-3",
+          newPassword: "col-span-3 row-start-4",
+          posts: "col-span-4 md:col-span-2 row-start-5",
+          role: "col-span-4 md:col-span-3 row-start-6",
+          birthDate: "col-span-3 row-start-7",
+          avatar: "col-span-4 row-start-8",
+          metadata: "col-span-4 row-start-9",
         },
         fields: {
           name: {
@@ -80,6 +87,22 @@ export const options: NextAdminOptions = {
                 return "https://raw.githubusercontent.com/premieroctet/next-admin/33fcd755a34f1ec5ad53ca8e293029528af814ca/apps/example/public/assets/logo.svg";
               },
             },
+          },
+        },
+        customFields: {
+          newPassword: {
+            input: <PasswordInput />,
+            required: true,
+          },
+        },
+        hooks: {
+          beforeDb: async (data) => {
+            const newPassword = data.newPassword;
+            if (newPassword) {
+              data.hashedPassword = `hashed-${newPassword}`;
+            }
+
+            return data;
           },
         },
       },
