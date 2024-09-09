@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.4.0
+
+### Minor Changes
+
+- [0c80933](https://github.com/premieroctet/next-admin/commit/0c80933): add ability to define custom fields in edit
+
 ## 5.3.1
 
 ### Patch Changes
