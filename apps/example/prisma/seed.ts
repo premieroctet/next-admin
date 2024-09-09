@@ -19,6 +19,7 @@ async function main() {
       create: {
         email: `user${i}@nextadmin.io`,
         name: `User ${i}`,
+        hashedPassword: "password",
         ...(i === 0 ? { role: "ADMIN" } : {}),
       },
     });

@@ -18,6 +18,7 @@ describe("fillRelationInSchema", () => {
         role: "ADMIN",
         avatar: null,
         metadata: null,
+        hashedPassword: "",
       },
       {
         id: 2,
@@ -29,6 +30,7 @@ describe("fillRelationInSchema", () => {
         role: "ADMIN",
         avatar: null,
         metadata: null,
+        hashedPassword: "",
       },
     ]);
     const result = await fillRelationInSchema("Post")(schema);

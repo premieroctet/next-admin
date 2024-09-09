@@ -10,15 +10,20 @@ export const getCustomInputs = (
   options?: NextAdminOptions
 ) => {
   const editFields = options?.model?.[model]?.edit?.fields;
+  const customFields = options?.model?.[model]?.edit?.customFields;
 
-  return Object.keys(editFields ?? {}).reduce(
-    (acc, field) => {
-      const input = editFields?.[field as keyof typeof editFields]?.input;
-      if (input) {
-        acc[field as Field<ModelName>] = input;
-      }
-      return acc;
-    },
-    {} as Record<Field<ModelName>, React.ReactElement | undefined>
-  );
+  const inputs: Record<string, { input?: React.ReactElement }> = {
+    ...editFields,
+    ...customFields,
+  };
+
+  return Object.keys(inputs ?? {}).reduce<
+    Record<string, React.ReactElement | undefined>
+  >((acc, field) => {
+    const input = inputs?.[field]?.input;
+    if (input) {
+      acc[field as Field<ModelName>] = input;
+    }
+    return acc;
+  }, {});
 };

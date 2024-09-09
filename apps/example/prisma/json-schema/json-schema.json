@@ -10,6 +10,9 @@
         "email": {
           "type": "string"
         },
+        "hashedPassword": {
+          "type": "string"
+        },
         "name": {
           "type": [
             "string",
@@ -73,7 +76,8 @@
         }
       },
       "required": [
-        "email"
+        "email",
+        "hashedPassword"
       ]
     },
     "Post": {

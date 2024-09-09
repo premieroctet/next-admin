@@ -334,7 +334,8 @@ const Form = ({
         modelOptions?.edit?.styles?.[id as Field<typeof resource>];
 
       const tooltip =
-        modelOptions?.edit?.fields?.[id as Field<typeof resource>]?.tooltip;
+        modelOptions?.edit?.fields?.[id as Field<typeof resource>]?.tooltip ||
+        modelOptions?.edit?.customFields?.[id]?.tooltip;
 
       const sanitizedClassNames = classNames
         ?.split(",")
@@ -411,8 +412,9 @@ const Form = ({
         onChange(val === "" ? options.emptyValue || "" : val);
       };
 
-      if (customInputs?.[props.name as Field<ModelName>]) {
-        return cloneElement(customInputs[props.name as Field<ModelName>]!, {
+      const customInput = customInputs?.[props.name as Field<ModelName>];
+      if (customInput) {
+        return cloneElement(customInput, {
           value: props.value,
           onChange: onChangeOverride || onTextChange,
           readonly,
@@ -420,6 +422,7 @@ const Form = ({
           name: props.name,
           required: props.required,
           disabled: props.disabled,
+          mode: edit ? "edit" : "create",
         });
       }
 
