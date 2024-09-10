@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.4.2
+
+### Patch Changes
+
+- [8c9405f](https://github.com/premieroctet/next-admin/commit/8c9405f): fix crash when edit object is not defined in options.model
+
 ## 5.4.1
 
 ### Patch Changes
