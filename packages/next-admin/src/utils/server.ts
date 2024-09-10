@@ -1014,7 +1014,7 @@ export const removeHiddenProperties =
 export const addCustomProperties =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
   (schema: Schema) => {
-    const customFieldKeys = Object.keys(editOptions.customFields ?? {});
+    const customFieldKeys = Object.keys(editOptions?.customFields ?? {});
 
     customFieldKeys.forEach((property) => {
       const fieldOptions = editOptions?.customFields?.[property];
