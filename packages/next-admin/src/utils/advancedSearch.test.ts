@@ -94,7 +94,7 @@ describe("advancedSearch", () => {
                 contains: "test",
               },
             },
-          }
+          },
         },
         {
           test3: {
@@ -103,7 +103,7 @@ describe("advancedSearch", () => {
                 equals: "test",
               },
             },
-          }
+          },
         },
         {
           OR: [
@@ -111,12 +111,12 @@ describe("advancedSearch", () => {
               test5: {
                 test6: {
                   contains: "test",
-                }
-              }
-            }
-          ]
-        }
-      ]
+                },
+              },
+            },
+          ],
+        },
+      ],
     };
 
     const expected: UIQueryBlock[] = [
@@ -127,6 +127,8 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[0]",
       },
       {
         type: "filter",
@@ -135,6 +137,8 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[1]",
       },
       {
         type: "filter",
@@ -143,6 +147,8 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[2]",
       },
       {
         type: "filter",
@@ -151,10 +157,13 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[3]",
       },
       {
         type: "and",
         id: "1",
+        internalPath: "[4]",
         children: [
           {
             type: "filter",
@@ -163,6 +172,8 @@ describe("advancedSearch", () => {
             value: "test",
             contentType: "text",
             id: "1",
+            canHaveChildren: false,
+            internalPath: "[4].children[0]",
           },
           {
             type: "filter",
@@ -171,10 +182,13 @@ describe("advancedSearch", () => {
             value: "test",
             contentType: "text",
             id: "1",
+            canHaveChildren: false,
+            internalPath: "[4].children[1]",
           },
           {
             type: "or",
             id: "1",
+            internalPath: "[4].children[2]",
             children: [
               {
                 type: "filter",
@@ -183,9 +197,11 @@ describe("advancedSearch", () => {
                 value: "test",
                 contentType: "text",
                 id: "1",
-              }
-            ]
-          }
+                canHaveChildren: false,
+                internalPath: "[4].children[2].children[0]",
+              },
+            ],
+          },
         ],
       },
     ];
@@ -218,6 +234,8 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[0]",
       },
     ];
 
@@ -251,7 +269,7 @@ describe("advancedSearch", () => {
                 contains: "test",
               },
             },
-          }
+          },
         },
         {
           test3: {
@@ -260,7 +278,7 @@ describe("advancedSearch", () => {
                 equals: "test",
               },
             },
-          }
+          },
         },
         {
           OR: [
@@ -268,12 +286,12 @@ describe("advancedSearch", () => {
               test5: {
                 test6: {
                   contains: "test",
-                }
-              }
-            }
-          ]
-        }
-      ]
+                },
+              },
+            },
+          ],
+        },
+      ],
     };
 
     const base: UIQueryBlock[] = [
@@ -284,6 +302,8 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[0]",
       },
       {
         type: "filter",
@@ -292,6 +312,8 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[1]",
       },
       {
         type: "filter",
@@ -300,6 +322,8 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[2]",
       },
       {
         type: "filter",
@@ -308,6 +332,8 @@ describe("advancedSearch", () => {
         value: "test",
         contentType: "text",
         id: "1",
+        canHaveChildren: false,
+        internalPath: "[3]",
       },
       {
         type: "and",
@@ -320,6 +346,8 @@ describe("advancedSearch", () => {
             value: "test",
             contentType: "text",
             id: "1",
+            canHaveChildren: false,
+            internalPath: "[4].children[0]",
           },
           {
             type: "filter",
@@ -328,6 +356,8 @@ describe("advancedSearch", () => {
             value: "test",
             contentType: "text",
             id: "1",
+            canHaveChildren: false,
+            internalPath: "[4].children[1]",
           },
           {
             type: "or",
@@ -340,18 +370,18 @@ describe("advancedSearch", () => {
                 value: "test",
                 contentType: "text",
                 id: "1",
-              }
-            ]
-          }
+                canHaveChildren: false,
+                internalPath: "[4].children[2].children[0]",
+              },
+            ],
+          },
         ],
       },
     ];
 
     // @ts-expect-error
-    const received = buildQueryBlocks(base, { resource: "Test", schema })
+    const received = buildQueryBlocks(base, { resource: "Test", schema });
 
-    expect(received).toEqual(
-      expected
-    );
+    expect(received).toEqual(expected);
   });
 });

@@ -15,7 +15,9 @@ export type QueryCondition =
   | "contains"
   | "search"
   | "startsWith"
-  | "endsWith";
+  | "endsWith"
+  | "null"
+  | "nnull";
 
 export type Filter = {
   [key: string]:
@@ -37,6 +39,7 @@ export type QueryBlock =
     }
   | Filter;
 
+// TODO: handle null and nnull operators
 const queryConditionsSchema = z.union([
   z.literal("equals"),
   z.literal("not"),
@@ -90,7 +93,7 @@ export const getQueryCondition = (condition: string) => {
   }
 };
 
-const contentTypeFromSchemaType = (
+export const contentTypeFromSchemaType = (
   schemaType: Schema["type"],
   format: Schema["format"]
 ) => {
@@ -116,11 +119,50 @@ export type UIQueryBlock = (
       type: "filter";
       path: string;
       condition: QueryCondition;
-      value: string;
+      value: string | null;
       contentType: "text" | "number" | "datetime";
+      canHaveChildren: false;
+      // internalPath is used to keep track of the path in the query block
+      internalPath?: string;
     }
-  | { type: "and" | "or"; children?: UIQueryBlock[] }
+  | { type: "and" | "or"; children?: UIQueryBlock[]; internalPath?: string }
 ) & { id: string };
+
+export const setInternalPathToBlocks = (blocks: UIQueryBlock[], path = "") => {
+  blocks.forEach((block, index) => {
+    block.internalPath = `${path}[${index}]`;
+    if (block.type !== "filter" && block.children) {
+      setInternalPathToBlocks(block.children, `${path}[${index}].children`);
+    }
+  });
+};
+
+export const cleanEmptyBlocks = (blocks: UIQueryBlock[]): UIQueryBlock[] => {
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    if (block) {
+      if (block.type !== "filter" && block.children) {
+        block.children = cleanEmptyBlocks(block.children);
+      }
+    }
+  }
+
+  const indicesToRemove: number[] = []
+
+  for (let i = 0; i < blocks.length; i++) {
+    const block = blocks[i];
+    
+    if (!block) {
+      indicesToRemove.push(i);
+    }
+  }
+
+  indicesToRemove.forEach((idx) => {
+    blocks.splice(idx, 1);
+  });
+
+  return blocks
+}
 
 export const buildUIBlocks = <M extends ModelName>(
   blocks: QueryBlock | null,
@@ -130,7 +172,7 @@ export const buildUIBlocks = <M extends ModelName>(
   if (blocks) {
     const entries = Object.entries(blocks);
 
-    return entries
+    const uiBlocks = entries
       .flatMap(([key, value]): UIQueryBlock | undefined => {
         if (key === "AND" || key === "OR") {
           return {
@@ -161,6 +203,7 @@ export const buildUIBlocks = <M extends ModelName>(
                   schemaProperty.type,
                   schemaProperty.format
                 ),
+                canHaveChildren: false,
               };
             } else {
               let isArrayConditionKey = conditionKey === "some";
@@ -219,6 +262,10 @@ export const buildUIBlocks = <M extends ModelName>(
         }
       })
       .filter(Boolean) as UIQueryBlock[];
+
+    setInternalPathToBlocks(uiBlocks);
+
+    return uiBlocks;
   }
 
   return [];
@@ -245,7 +292,7 @@ export const buildQueryBlocks = <M extends ModelName>(
             acc,
             `${finalPath}[${index}]`
           );
-        })
+        });
       }
     } else if (block.type === "filter") {
       const [basePath, ...rest] = block.path.split(".");
@@ -257,55 +304,58 @@ export const buildQueryBlocks = <M extends ModelName>(
         ];
 
       if (schemaProperty?.type === "array") {
-        const childResource = schemaProperty.items?.$ref
-          ?.split("/")
-          ?.at(-1)!;
+        const childResource = schemaProperty.items?.$ref?.split("/")?.at(-1)!;
 
         if (!get(acc, [path, basePath].filter(Boolean))) {
           set(acc, [path, basePath].filter(Boolean).join("."), {
-            some: {}
-          })
+            some: {},
+          });
         }
         buildQueryBlocks(
-          [{
-            ...block,
-            path: rest.join(".")
-          }],
+          [
+            {
+              ...block,
+              path: rest.join("."),
+            },
+          ],
           {
             resource: childResource as M,
             schema,
           },
           acc,
           [path, basePath, "some"].filter(Boolean).join(".")
-        )
+        );
       } else if (schemaProperty?.$ref) {
         const childResource = schemaProperty.$ref.split("/").at(-1)!;
-        
+
         if (!get(acc, [path, basePath].filter(Boolean))) {
-          set(acc, [path, basePath].filter(Boolean).join("."), {})
+          set(acc, [path, basePath].filter(Boolean).join("."), {});
         }
         buildQueryBlocks(
-          [{
-            ...block,
-            path: rest.join(".")
-          }],
+          [
+            {
+              ...block,
+              path: rest.join("."),
+            },
+          ],
           {
             resource: childResource as M,
             schema,
           },
           acc,
-          [path, basePath].filter(Boolean).join('.')
+          [path, basePath].filter(Boolean).join(".")
         );
       } else {
         const condition = block.condition;
         const value =
-          block.contentType === "number" ? +block.value : block.value;
+          block.contentType === "number" && !!block.value
+            ? +block.value
+            : block.value;
 
         set(acc, [path, basePath].filter(Boolean).join("."), {
           [condition]: value,
         });
       }
-
     }
   });
 

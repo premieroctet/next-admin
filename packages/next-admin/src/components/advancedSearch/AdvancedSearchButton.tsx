@@ -1,8 +1,8 @@
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
 import { useState } from "react";
-import Button from "./radix/Button";
+import Button from "../radix/Button";
 import AdvancedSearchModal from "./AdvancedSearchModal";
-import { ModelName, Schema } from "../types";
+import { ModelName, Schema } from "../../types";
 
 type Props = {
   resource: ModelName;

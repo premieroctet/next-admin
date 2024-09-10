@@ -2609,6 +2609,20 @@
   dependencies:
     "@types/lodash" "*"
 
+"@types/lodash.unset@^4.5.9":
+  version "4.5.9"
+  resolved "https://registry.yarnpkg.com/@types/lodash.unset/-/lodash.unset-4.5.9.tgz#f8174347e368e217d2e69fbfa8c67d47f850d844"
+  integrity sha512-uyYP6JMM30vKXJtDrPtJyK/t3TdyjhZQ7woJAk1biI/o/sXZvBVqQtiMWsIlYLcn6jSPrG4sjYWTZM34qNM7dA==
+  dependencies:
+    "@types/lodash" "*"
+
+"@types/lodash.update@^4.10.9":
+  version "4.10.9"
+  resolved "https://registry.yarnpkg.com/@types/lodash.update/-/lodash.update-4.10.9.tgz#10d1254abd1971fa4383f3deaecccfb9d3a2a338"
+  integrity sha512-5qFtUDaJKM33gBYNRO7HwJfCSY0H7V133E1N7uKH6YbEIOqcxRfrH8WGp7qQ37C5OeTJOOKcEgWjC9M77NZVIw==
+  dependencies:
+    "@types/lodash" "*"
+
 "@types/lodash@*":
   version "4.14.191"
   resolved "https://registry.npmjs.org/@types/lodash/-/lodash-4.14.191.tgz"
@@ -4238,6 +4252,14 @@ dlv@^1.1.3:
   version "1.1.3"
   resolved "https://registry.npmjs.org/dlv/-/dlv-1.1.3.tgz"
   integrity sha512-+HlytyjlPKnIG8XuRG8WvmBP8xs8P71y+SKKS6ZXWoEgLuePxtDoUEiH7WkdePWrQ5JBpE6aoVqfZfJUQkjXwA==
+
+dnd-kit-sortable-tree@^0.1.73:
+  version "0.1.73"
+  resolved "https://registry.yarnpkg.com/dnd-kit-sortable-tree/-/dnd-kit-sortable-tree-0.1.73.tgz#fbee875667c106ae1f6a773472c968ababac0af6"
+  integrity sha512-rQX1Iq0bceHoyV+bWOCyXtc5AT4kmxe9xymVmjN/9HaxiE4RVVoRQHGXu7Xfb4HBAFT0pJQ6Xh7KIA8jMSR31g==
+  dependencies:
+    clsx "^1.2.1"
+    react-merge-refs "^2.0.1"
 
 doctrine@^2.1.0:
   version "2.1.0"
@@ -6753,6 +6775,16 @@ lodash.truncate@^4.4.2:
   resolved "https://registry.npmjs.org/lodash.truncate/-/lodash.truncate-4.4.2.tgz"
   integrity sha512-jttmRe7bRse52OsWIMDLaXxWqRAmtIUccAQ3garviCqJjafXOfNMO0yMfNpdD6zbGaTU0P5Nz7e7gAT6cKmJRw==
 
+lodash.unset@^4.5.2:
+  version "4.5.2"
+  resolved "https://registry.yarnpkg.com/lodash.unset/-/lodash.unset-4.5.2.tgz#370d1d3e85b72a7e1b0cdf2d272121306f23e4ed"
+  integrity sha512-bwKX88k2JhCV9D1vtE8+naDKlLiGrSmf8zi/Y9ivFHwbmRfA8RxS/aVJ+sIht2XOwqoNr4xUPUkGZpc1sHFEKg==
+
+lodash.update@^4.10.2:
+  version "4.10.2"
+  resolved "https://registry.yarnpkg.com/lodash.update/-/lodash.update-4.10.2.tgz#9da9985cf06646f5226bca8e276d58bee0db8796"
+  integrity sha512-0d/9zvc/+lN6QruE81yEuoslwtgKSDStWJY5rgTolfSKiRMonCD3OYAR1Ea2hewjY+KDYzRw73+10Jxs7HwZsQ==
+
 lodash@^4.17.19, lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.4:
   version "4.17.21"
   resolved "https://registry.npmjs.org/lodash/-/lodash-4.17.21.tgz"
@@ -8279,10 +8311,10 @@ prelude-ls@^1.2.1:
   resolved "https://registry.npmjs.org/prelude-ls/-/prelude-ls-1.2.1.tgz"
   integrity sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==
 
-prettier-plugin-tailwindcss@^0.5.13:
-  version "0.5.13"
-  resolved "https://registry.yarnpkg.com/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.5.13.tgz#ee3c1e07848c90abdd1edde36a09366327e31e26"
-  integrity sha512-2tPWHCFNC+WRjAC4SIWQNSOdcL1NNkydXim8w7TDqlZi+/ulZYz2OouAI6qMtkggnPt7lGamboj6LcTMwcCvoQ==
+prettier-plugin-tailwindcss@^0.6.6:
+  version "0.6.6"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-tailwindcss/-/prettier-plugin-tailwindcss-0.6.6.tgz#93e524d3c30f3fb45dc9e99de985b2a584ff063f"
+  integrity sha512-OPva5S7WAsPLEsOuOWXATi13QrCKACCiIonFgIR6V4lYv4QLp++UXVhZSzRbZxXGimkQtQT86CC6fQqTOybGng==
 
 prettier@^2.7.1:
   version "2.8.7"
@@ -8474,6 +8506,11 @@ react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-merge-refs@^2.0.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/react-merge-refs/-/react-merge-refs-2.1.1.tgz#e46763f8f1b881c0226ee54a1a2a10ffefba0233"
+  integrity sha512-jLQXJ/URln51zskhgppGJ2ub7b2WFKGq3cl3NYKtlHoTG+dN2q7EzWrn3hN3EgPsTMvpR9tpq5ijdp7YwFZkag==
 
 react-onclickoutside@^6.13.0:
   version "6.13.0"

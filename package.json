@@ -35,7 +35,7 @@
   "dependencies": {
     "@changesets/cli": "^2.26.1",
     "@radix-ui/react-slot": "^1.0.2",
-    "prettier-plugin-tailwindcss": "^0.5.13"
+    "prettier-plugin-tailwindcss": "^0.6.6"
   },
   "packageManager": "yarn@1.22.19",
   "repository": {

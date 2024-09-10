@@ -25,7 +25,7 @@ import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
 import ExportDropdown from "./ExportDropdown";
 import { buttonVariants } from "./radix/Button";
-import AdvancedSearchButton from "./AdvancedSearchButton";
+import AdvancedSearchButton from "./advancedSearch/AdvancedSearchButton";
 
 type Props = {
   resource: ModelName;

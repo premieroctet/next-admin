@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
-  getQueryCondition,
-  QueryBlock,
-  QueryCondition,
+  buildUIBlocks,
   validateQuery,
 } from "../utils/advancedSearch";
 import { useRouterInternal } from "./useRouterInternal";
@@ -18,17 +16,19 @@ const useAdvancedSearch = <M extends ModelName>({
   schema,
 }: UseAdvancedSearchParams<M>) => {
   const { router, query } = useRouterInternal();
-  const [parsedQuery, setParsedQuery] = useState(() => {
+  const [uiBlocks, setUiBlocks] = useState(() => {
     if (query.q) {
       const blocks = validateQuery(query.q);
 
       if (!blocks) {
         return null;
       }
+
+      return buildUIBlocks(blocks, { resource, schema });
     }
   });
 
-  return { parsedQuery };
+  return { uiBlocks, setUiBlocks };
 };
 
 export default useAdvancedSearch;
