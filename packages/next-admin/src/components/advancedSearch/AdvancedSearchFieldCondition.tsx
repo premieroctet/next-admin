@@ -27,13 +27,11 @@ const AdvancedSearchFieldCondition = ({ uiBlock }: Props) => {
   };
 
   const renderDropdownItems = () => {
-    const commonValidConditions: QueryCondition[] = [
-      "equals",
-      "not",
-      "in",
-      "notIn",
-    ];
+    const commonValidConditions: QueryCondition[] = ["equals", "not"];
     const extraConditions: QueryCondition[] = ["null", "nnull"];
+
+    // Content type specific conditions
+    const nonBooleanConditions: QueryCondition[] = ["in", "notIn"];
     const textConditions: QueryCondition[] = [
       "search",
       "startsWith",
@@ -41,9 +39,13 @@ const AdvancedSearchFieldCondition = ({ uiBlock }: Props) => {
     ];
     const numberConditions: QueryCondition[] = ["lt", "lte", "gt", "gte"];
 
+    if (uiBlock.contentType !== "boolean") {
+      commonValidConditions.push(...nonBooleanConditions);
+    }
+
     if (uiBlock.contentType === "text") {
       commonValidConditions.push(...textConditions);
-    } else {
+    } else if (uiBlock.contentType !== "boolean") {
       commonValidConditions.push(...numberConditions);
     }
 
@@ -76,7 +78,7 @@ const AdvancedSearchFieldCondition = ({ uiBlock }: Props) => {
         </Button>
       </DropdownTrigger>
       <DropdownBody>
-        <DropdownContent className="p-2">
+        <DropdownContent className="z-[999] p-2" align="start">
           {renderDropdownItems()}
         </DropdownContent>
       </DropdownBody>

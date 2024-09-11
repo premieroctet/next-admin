@@ -1,7 +1,7 @@
 import z from "zod";
 import set from "lodash.set";
 import get from "lodash.get";
-import { ModelName, Schema } from "../types";
+import { ModelName, Schema, SchemaModel } from "../types";
 
 export type QueryCondition =
   | "equals"
@@ -22,7 +22,7 @@ export type QueryCondition =
 export type Filter = {
   [key: string]:
     | {
-        [key in QueryCondition]?: string | number;
+        [key in QueryCondition]?: string | number | boolean;
       }
     | {
         some: QueryBlock | Filter;
@@ -109,6 +109,8 @@ export const contentTypeFromSchemaType = (
     case "integer":
     case "number":
       return "number";
+    case "boolean":
+      return "boolean";
     default:
       return "text";
   }
@@ -119,14 +121,24 @@ export type UIQueryBlock = (
       type: "filter";
       path: string;
       condition: QueryCondition;
-      value: string | null;
-      contentType: "text" | "number" | "datetime";
+      value: string | number | boolean | null;
+      contentType: "text" | "number" | "datetime" | "boolean";
       canHaveChildren: false;
       // internalPath is used to keep track of the path in the query block
       internalPath?: string;
     }
   | { type: "and" | "or"; children?: UIQueryBlock[]; internalPath?: string }
 ) & { id: string };
+
+export const isSchemaPropertyScalarArray = (
+  definition: SchemaModel<ModelName>,
+  property: string
+) => {
+  const schemaProperty =
+    definition.properties[property as keyof typeof definition.properties];
+
+  return schemaProperty?.type === "array" && !schemaProperty.items?.$ref;
+};
 
 export const setInternalPathToBlocks = (blocks: UIQueryBlock[], path = "") => {
   blocks.forEach((block, index) => {
@@ -147,11 +159,11 @@ export const cleanEmptyBlocks = (blocks: UIQueryBlock[]): UIQueryBlock[] => {
     }
   }
 
-  const indicesToRemove: number[] = []
+  const indicesToRemove: number[] = [];
 
   for (let i = 0; i < blocks.length; i++) {
     const block = blocks[i];
-    
+
     if (!block) {
       indicesToRemove.push(i);
     }
@@ -161,8 +173,8 @@ export const cleanEmptyBlocks = (blocks: UIQueryBlock[]): UIQueryBlock[] => {
     blocks.splice(idx, 1);
   });
 
-  return blocks
-}
+  return blocks;
+};
 
 export const buildUIBlocks = <M extends ModelName>(
   blocks: QueryBlock | null,
@@ -197,7 +209,7 @@ export const buildUIBlocks = <M extends ModelName>(
                 type: "filter",
                 path: [...fields, key].join("."),
                 condition: queryCondition,
-                value: value[queryCondition] as string,
+                value: value[queryCondition] as string | number | boolean,
                 id: crypto.randomUUID(),
                 contentType: contentTypeFromSchemaType(
                   schemaProperty.type,

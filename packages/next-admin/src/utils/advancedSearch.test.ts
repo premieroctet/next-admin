@@ -32,6 +32,9 @@ const schema: JSONSchema4 = {
         test5: {
           $ref: "#/definitions/Test5",
         },
+        testBool: {
+          type: "boolean",
+        },
       },
     },
     Test3: {
@@ -117,6 +120,9 @@ describe("advancedSearch", () => {
           ],
         },
       ],
+      testBool: {
+        equals: true,
+      },
     };
 
     const expected: UIQueryBlock[] = [
@@ -203,6 +209,16 @@ describe("advancedSearch", () => {
             ],
           },
         ],
+      },
+      {
+        type: "filter",
+        path: "testBool",
+        condition: "equals",
+        value: true,
+        contentType: "boolean",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[5]",
       },
     ];
 

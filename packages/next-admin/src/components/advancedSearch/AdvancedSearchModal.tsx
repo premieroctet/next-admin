@@ -1,7 +1,14 @@
-import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
+// import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
 import { SortableTree } from "dnd-kit-sortable-tree";
-import { useCallback, useMemo } from "react";
+import { Fragment, useCallback, useMemo } from "react";
 import unset from "lodash.unset";
+import {
+  DialogContent,
+  DialogOverlay,
+  DialogPortal,
+  DialogRoot,
+  DialogTitle,
+} from "../radix/Dialog";
 import { ModelName, Schema } from "../../types";
 import useAdvancedSearch from "../../hooks/useAdvancedSearch";
 import AdvancedSearchTree from "./AdvancedSearchTreeItem";
@@ -13,6 +20,9 @@ import {
 } from "../../utils/advancedSearch";
 import { AdvancedSearchContext } from "./AdvancedSearchContext";
 import update from "lodash.update";
+import { Transition, TransitionChild } from "@headlessui/react";
+import { useI18n } from "../../context/I18nContext";
+import Button from "../radix/Button";
 
 type Props = {
   isOpen: boolean;
@@ -23,6 +33,7 @@ type Props = {
 
 const AdvancedSearchModal = ({ isOpen, onClose, resource, schema }: Props) => {
   const { uiBlocks, setUiBlocks } = useAdvancedSearch({ resource, schema });
+  const { t } = useI18n();
 
   const addUiBlock = useCallback(
     (uiBlock: UIQueryBlock) => {
@@ -83,48 +94,88 @@ const AdvancedSearchModal = ({ isOpen, onClose, resource, schema }: Props) => {
     [addUiBlock, removeUiBlock, updateUiBlock, resource, schema]
   );
 
-  console.log("uiBlocks", uiBlocks);
+  const onClear = () => {
+    setUiBlocks(null);
+  };
 
   return (
-    <Dialog
-      as="div"
+    <DialogRoot
       open={isOpen}
-      className="relative z-50 transition duration-300 ease-in-out"
-      onClose={onClose}
-      transition
+      onOpenChange={(open) => {
+        if (!open) {
+          onClose();
+        }
+      }}
+      modal
     >
-      <DialogBackdrop
-        transition
-        className="z-999 bg-nextadmin-background-default/70 dark:bg-dark-nextadmin-background-default/70 fixed inset-0 duration-300 ease-out data-[closed]:opacity-0"
-      />
-      <div className="fixed inset-0 flex w-screen items-center justify-center">
-        <DialogPanel
-          className="bg-nextadmin-background-emphasis dark:bg-dark-nextadmin-background-emphasis w-full max-w-xl rounded-xl p-4 shadow-sm duration-300 ease-out data-[closed]:scale-95 data-[closed]:opacity-0"
-          transition
-        >
-          <div className="flex flex-col gap-4">
-            <AdvancedSearchContext.Provider value={contextValue}>
-              {uiBlocks && (
-                <SortableTree<UIQueryBlock>
-                  items={uiBlocks}
-                  onItemsChanged={(items, reason) => {
-                    const newItems = items.slice();
-                    setInternalPathToBlocks(newItems);
-                    setUiBlocks(newItems);
-                  }}
-                  TreeItemComponent={AdvancedSearchTree}
-                />
-              )}
-              <AdvancedSearchDropdown
-                resource={resource}
-                schema={schema}
-                onAddBlock={addUiBlock}
-              />
-            </AdvancedSearchContext.Provider>
-          </div>
-        </DialogPanel>
-      </div>
-    </Dialog>
+      <DialogPortal forceMount>
+        <Transition show={isOpen} as="div">
+          <TransitionChild
+            as={Fragment}
+            enter="transition-opacity ease-in-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            leave="transition-opacity ease-in-out duration-300"
+          >
+            <DialogOverlay
+              forceMount
+              className="bg-nextadmin-background-default/70 dark:bg-dark-nextadmin-background-default/70 fixed inset-0"
+            />
+          </TransitionChild>
+          <TransitionChild
+            as={Fragment}
+            enter="transition-opacity ease-in-out duration-300"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+            leave="transition-opacity ease-in-out duration-300"
+          >
+            <DialogContent
+              forceMount
+              className="fixed left-[50%] top-[50%] max-w-xl"
+            >
+              <div className="flex flex-col gap-4">
+                <DialogTitle>{t("search.advanced.title")}</DialogTitle>
+                <AdvancedSearchContext.Provider value={contextValue}>
+                  {uiBlocks && (
+                    <SortableTree<UIQueryBlock>
+                      items={uiBlocks}
+                      onItemsChanged={(items, reason) => {
+                        const newItems = items.slice();
+                        setInternalPathToBlocks(newItems);
+                        setUiBlocks(newItems);
+                      }}
+                      TreeItemComponent={AdvancedSearchTree}
+                    />
+                  )}
+                  <AdvancedSearchDropdown
+                    resource={resource}
+                    schema={schema}
+                    onAddBlock={addUiBlock}
+                  />
+                  <div className="flex justify-between">
+                    <Button variant="destructive" onClick={onClear}>
+                      {t("search.advanced.clear")}
+                    </Button>
+                    <div className="flex justify-end gap-4">
+                      <Button variant="ghost" onClick={onClose}>
+                        {t("search.advanced.cancel")}
+                      </Button>
+                      <Button variant="default">
+                        {t("search.advanced.save")}
+                      </Button>
+                    </div>
+                  </div>
+                </AdvancedSearchContext.Provider>
+              </div>
+            </DialogContent>
+          </TransitionChild>
+        </Transition>
+      </DialogPortal>
+    </DialogRoot>
   );
 };
 

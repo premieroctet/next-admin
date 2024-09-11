@@ -29,7 +29,7 @@ const AdvancedSearchDropdown = ({
   trigger,
 }: Props) => {
   return (
-    <Dropdown modal={false}>
+    <Dropdown>
       <DropdownTrigger asChild>
         {trigger || (
           <Button variant="ghost" className="justify-between gap-2">
@@ -43,9 +43,7 @@ const AdvancedSearchDropdown = ({
       </DropdownTrigger>
       <DropdownBody>
         <DropdownContent
-          className="max-h-[300px] w-[max(var(--radix-dropdown-menu-trigger-width),_300px)] overflow-y-auto p-2"
-          onInteractOutside={(e) => e.preventDefault()}
-          onPointerDownOutside={(e) => e.preventDefault()}
+          className="z-[999] max-h-[300px] w-[max(var(--radix-dropdown-menu-trigger-width),_300px)] overflow-y-auto p-2"
           avoidCollisions
           sideOffset={4}
           align="start"
