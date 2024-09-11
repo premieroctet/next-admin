@@ -22,7 +22,7 @@ export type QueryCondition =
 export type Filter = {
   [key: string]:
     | {
-        [key in QueryCondition]?: string | number | boolean;
+        [key in QueryCondition]?: string | number | boolean | null;
       }
     | {
         some: QueryBlock | Filter;
@@ -39,7 +39,6 @@ export type QueryBlock =
     }
   | Filter;
 
-// TODO: handle null and nnull operators
 const queryConditionsSchema = z.union([
   z.literal("equals"),
   z.literal("not"),
@@ -58,7 +57,10 @@ const queryConditionsSchema = z.union([
 const filterSchema: z.ZodType<Filter> = z.record(
   z.string(),
   z.union([
-    z.record(queryConditionsSchema, z.union([z.string(), z.number()])),
+    z.record(
+      queryConditionsSchema,
+      z.union([z.string(), z.number(), z.boolean(), z.null()])
+    ),
     z.lazy(() => filterSchema),
     z.lazy(() => relationshipSchema),
   ])
@@ -78,7 +80,8 @@ export const validateQuery = (query: string) => {
   try {
     const parsed = JSON.parse(query);
     return queryBlockSchema.parse(parsed);
-  } catch {
+  } catch (e) {
+    console.log(e);
     return false;
   }
 };
@@ -116,6 +119,16 @@ export const contentTypeFromSchemaType = (
   }
 };
 
+export const isFieldNullable = (schemaType: Schema["type"]) => {
+  const isArrayType = Array.isArray(schemaType);
+
+  if (isArrayType) {
+    return schemaType.includes("null");
+  }
+
+  return schemaType === "null";
+};
+
 export type UIQueryBlock = (
   | {
       type: "filter";
@@ -126,6 +139,7 @@ export type UIQueryBlock = (
       canHaveChildren: false;
       // internalPath is used to keep track of the path in the query block
       internalPath?: string;
+      nullable: boolean;
     }
   | { type: "and" | "or"; children?: UIQueryBlock[]; internalPath?: string }
 ) & { id: string };
@@ -176,6 +190,34 @@ export const cleanEmptyBlocks = (blocks: UIQueryBlock[]): UIQueryBlock[] => {
   return blocks;
 };
 
+const getConditionFromValue = (
+  value: string | number | boolean | null,
+  condition: QueryCondition
+) => {
+  if (value === null) {
+    return condition === "equals" ? "null" : "nnull";
+  }
+
+  return condition;
+};
+
+const getValueFromContentType = (
+  value: string | number | boolean | null,
+  contentType: "text" | "number" | "datetime" | "boolean"
+) => {
+  if (contentType === "datetime") {
+    try {
+      const dateString = new Date(value as string).toJSON();
+
+      return dateString.substring(0, dateString.length - 8);
+    } catch {
+      return value;
+    }
+  }
+
+  return value;
+};
+
 export const buildUIBlocks = <M extends ModelName>(
   blocks: QueryBlock | null,
   { resource, schema }: { resource: M; schema: Schema },
@@ -200,74 +242,84 @@ export const buildUIBlocks = <M extends ModelName>(
             resourceInSchema.properties[
               key as keyof typeof resourceInSchema.properties
             ];
-          const conditionKey = Object.keys(value)[0];
-          const queryCondition = getQueryCondition(conditionKey);
+          const conditions = Object.entries(value as Filter);
 
           if (schemaProperty) {
-            if (queryCondition) {
-              return {
-                type: "filter",
-                path: [...fields, key].join("."),
-                condition: queryCondition,
-                value: value[queryCondition] as string | number | boolean,
-                id: crypto.randomUUID(),
-                contentType: contentTypeFromSchemaType(
+            // @ts-expect-error
+            return conditions.flatMap(([conditionKey, conditionValue]) => {
+              const queryCondition = getQueryCondition(conditionKey);
+
+              if (queryCondition) {
+                const queryValue = value[conditionKey] as
+                  | string
+                  | number
+                  | boolean
+                  | null;
+                const contentType = contentTypeFromSchemaType(
                   schemaProperty.type,
                   schemaProperty.format
-                ),
-                canHaveChildren: false,
-              };
-            } else {
-              let isArrayConditionKey = conditionKey === "some";
-              if (schemaProperty.type !== "array" && isArrayConditionKey) {
-                /**
-                 * Check that "some" is actually not a property of the model
-                 */
-                if (schemaProperty.properties?.some) {
-                  isArrayConditionKey = false;
-                } else {
-                  return undefined;
-                }
-              }
-
-              const childResourceName = (
-                isArrayConditionKey
-                  ? schemaProperty.items?.$ref
-                  : schemaProperty.$ref
-              )
-                ?.split("/")
-                ?.at(-1)! as keyof typeof schema.definitions;
-              const childEntries = Object.entries(
-                isArrayConditionKey ? value.some : value
-              );
-
-              // @ts-expect-error
-              return childEntries
-                .map(([childKey, childValue]) => {
-                  if (childKey === "AND" || childKey === "OR") {
-                    return {
-                      type: childKey === "AND" ? "and" : "or",
-                      id: crypto.randomUUID(),
-                      children: (childValue as QueryBlock[])
-                        .flatMap((block) => {
-                          return buildUIBlocks(
-                            block,
-                            { resource: childResourceName, schema },
-                            [...fields, key]
-                          );
-                        })
-                        .filter(Boolean) as UIQueryBlock[],
-                    };
+                );
+                return {
+                  type: "filter",
+                  path: [...fields, key].join("."),
+                  condition: getConditionFromValue(queryValue, queryCondition),
+                  value: getValueFromContentType(queryValue, contentType),
+                  id: crypto.randomUUID(),
+                  contentType: contentType,
+                  canHaveChildren: false,
+                  nullable: isFieldNullable(schemaProperty.type),
+                };
+              } else {
+                let isArrayConditionKey = conditionKey === "some";
+                if (schemaProperty.type !== "array" && isArrayConditionKey) {
+                  /**
+                   * Check that "some" is actually not a property of the model
+                   */
+                  if (schemaProperty.properties?.some) {
+                    isArrayConditionKey = false;
+                  } else {
+                    return undefined;
                   }
+                }
 
-                  return buildUIBlocks(
-                    { [childKey]: childValue } as Filter,
-                    { resource: childResourceName, schema },
-                    [...fields, key]
-                  );
-                })
-                .flat();
-            }
+                const childResourceName = (
+                  isArrayConditionKey
+                    ? schemaProperty.items?.$ref
+                    : schemaProperty.$ref
+                )
+                  ?.split("/")
+                  ?.at(-1)! as keyof typeof schema.definitions;
+                const childEntries = Object.entries(
+                  isArrayConditionKey ? value.some : value
+                );
+
+                return childEntries
+                  .map(([childKey, childValue]) => {
+                    if (childKey === "AND" || childKey === "OR") {
+                      return {
+                        type: childKey === "AND" ? "and" : "or",
+                        id: crypto.randomUUID(),
+                        children: (childValue as QueryBlock[])
+                          .flatMap((block) => {
+                            return buildUIBlocks(
+                              block,
+                              { resource: childResourceName, schema },
+                              [...fields, key]
+                            );
+                          })
+                          .filter(Boolean) as UIQueryBlock[],
+                      };
+                    }
+
+                    return buildUIBlocks(
+                      { [childKey]: childValue } as Filter,
+                      { resource: childResourceName, schema },
+                      [...fields, key]
+                    );
+                  })
+                  .flat();
+              }
+            });
           }
 
           return undefined;
@@ -281,6 +333,46 @@ export const buildUIBlocks = <M extends ModelName>(
   }
 
   return [];
+};
+
+const getValueForUiBlock = (block: UIQueryBlock) => {
+  if (block.type === "filter") {
+    if (block.condition === "null" || block.condition === "nnull") {
+      return null;
+    }
+
+    if (block.contentType === "datetime") {
+      return new Date(block.value as string).toISOString();
+    }
+
+    if (block.contentType === "number" && !!block.value) {
+      return +block.value;
+    }
+
+    return block.value;
+  }
+};
+
+const getQueryBlockValueForUiBlock = (uiBlock: UIQueryBlock) => {
+  if (uiBlock.type === "filter") {
+    if (uiBlock.condition === "null") {
+      return {
+        equals: null,
+      };
+    }
+
+    if (uiBlock.condition === "nnull") {
+      return {
+        not: null,
+      };
+    }
+
+    return {
+      [uiBlock.condition]: getValueForUiBlock(uiBlock),
+    };
+  }
+
+  return {};
 };
 
 export const buildQueryBlocks = <M extends ModelName>(
@@ -358,14 +450,9 @@ export const buildQueryBlocks = <M extends ModelName>(
           [path, basePath].filter(Boolean).join(".")
         );
       } else {
-        const condition = block.condition;
-        const value =
-          block.contentType === "number" && !!block.value
-            ? +block.value
-            : block.value;
-
         set(acc, [path, basePath].filter(Boolean).join("."), {
-          [condition]: value,
+          ...get(acc, [path, basePath].filter(Boolean)),
+          ...getQueryBlockValueForUiBlock(block),
         });
       }
     }

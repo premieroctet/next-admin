@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  buildQueryBlocks,
   buildUIBlocks,
   validateQuery,
 } from "../utils/advancedSearch";
@@ -28,7 +29,17 @@ const useAdvancedSearch = <M extends ModelName>({
     }
   });
 
-  return { uiBlocks, setUiBlocks };
+  const submitSearch = () => {
+    if (uiBlocks && uiBlocks.length) {
+      router.setQuery({
+        q: JSON.stringify(buildQueryBlocks(uiBlocks, { resource, schema })),
+      });
+    } else {
+      router.setQuery({ q: null });
+    }
+  };
+
+  return { uiBlocks, setUiBlocks, submitSearch };
 };
 
 export default useAdvancedSearch;

@@ -24,6 +24,7 @@ import {
   transformData,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
+import { validateQuery } from "./advancedSearch";
 
 type CreateNestedWherePredicateParams<M extends ModelName> = {
   field: Prisma.DMMF.Field;
@@ -134,9 +135,8 @@ export const createWherePredicate = <M extends ModelName>({
                 search,
                 searchOptions: (
                   options?.model?.[resource]?.list?.search as string[]
-                )?.filter(
-                  (searchOption) =>
-                    searchOption?.toString().startsWith(field.name)
+                )?.filter((searchOption) =>
+                  searchOption?.toString().startsWith(field.name)
                 ) as Field<M>[],
               });
             }
@@ -203,18 +203,28 @@ const getFieldsFiltered = <M extends ModelName>(
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
     fieldsFiltered = list?.search
-      ? model?.fields.filter(
-          ({ name }) =>
-            (list.search as string[])?.some((search) => {
-              const searchNameSplit = search?.toString().split(".");
+      ? model?.fields.filter(({ name }) =>
+          (list.search as string[])?.some((search) => {
+            const searchNameSplit = search?.toString().split(".");
 
-              return searchNameSplit?.[0] === name;
-            })
+            return searchNameSplit?.[0] === name;
+          })
         )
       : fieldsFiltered;
   }
 
   return fieldsFiltered as readonly Prisma.DMMF.Field[];
+};
+
+const getWherePredicateFromQueryParams = (
+  searchParams: URLSearchParams,
+  key = "q"
+) => {
+  const query = searchParams.get(key);
+
+  if (query) {
+    return validateQuery(query);
+  }
 };
 
 const preparePrismaListRequest = <M extends ModelName>(
@@ -289,12 +299,14 @@ const preparePrismaListRequest = <M extends ModelName>(
   let where = {};
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   select = selectPayloadForModel(resource, list, "object");
-  where = createWherePredicate({
-    resource,
-    options,
-    search,
-    otherFilters: fieldFilters,
-  });
+  where =
+    getWherePredicateFromQueryParams(searchParams) ||
+    createWherePredicate({
+      resource,
+      options,
+      search,
+      otherFilters: fieldFilters,
+    });
 
   return {
     select,
@@ -586,8 +598,9 @@ export const getDataItem = async <M extends ModelName>({
   const select = selectPayloadForModel(resource, edit, "object");
 
   Object.entries(select).forEach(([key, value]) => {
-    const fieldTypeDmmf = dmmfSchema?.fields.find((field) => field.name === key)
-      ?.type;
+    const fieldTypeDmmf = dmmfSchema?.fields.find(
+      (field) => field.name === key
+    )?.type;
 
     if (fieldTypeDmmf && dmmfSchema) {
       const relatedResourceOptions =

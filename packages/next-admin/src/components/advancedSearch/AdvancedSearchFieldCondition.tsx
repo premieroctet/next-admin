@@ -16,7 +16,7 @@ type Props = {
 
 const AdvancedSearchFieldCondition = ({ uiBlock }: Props) => {
   const { t } = useI18n();
-  const { removeUiBlock, updateUiBlock } = useAdvancedSearchContext();
+  const { updateUiBlock } = useAdvancedSearchContext();
 
   if (uiBlock.type !== "filter") {
     return null;
@@ -49,7 +49,13 @@ const AdvancedSearchFieldCondition = ({ uiBlock }: Props) => {
       commonValidConditions.push(...numberConditions);
     }
 
-    return [...commonValidConditions, ...extraConditions].map((condition) => {
+    const conditions = [...commonValidConditions];
+
+    if (uiBlock.nullable) {
+      conditions.push(...extraConditions);
+    }
+
+    return conditions.map((condition) => {
       return (
         <DropdownItem
           key={condition}

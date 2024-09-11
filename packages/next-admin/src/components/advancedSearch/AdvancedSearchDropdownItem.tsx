@@ -5,6 +5,7 @@ import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import {
   contentTypeFromSchemaType,
+  isFieldNullable,
   isSchemaPropertyScalarArray,
   UIQueryBlock,
 } from "../../utils/advancedSearch";
@@ -76,6 +77,7 @@ const AdvancedSearchDropdownItem = ({
         canHaveChildren: false,
         condition: "equals",
         id: crypto.randomUUID(),
+        nullable: isFieldNullable(schemaProperty!.type),
       });
     }
   };

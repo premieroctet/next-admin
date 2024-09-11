@@ -51,7 +51,7 @@ const AdvancedSearchInput = ({ uiBlock }: Props) => {
           ? "datetime-local"
           : uiBlock.contentType
       }
-      className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default flex min-w-[50px] flex-1"
+      className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default flex w-auto max-w-[100px] md:max-w-[160px]"
       onChange={onChange}
       value={(uiBlock.value as string | number | null) ?? ""}
     />

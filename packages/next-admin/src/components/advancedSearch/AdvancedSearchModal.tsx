@@ -32,7 +32,10 @@ type Props = {
 };
 
 const AdvancedSearchModal = ({ isOpen, onClose, resource, schema }: Props) => {
-  const { uiBlocks, setUiBlocks } = useAdvancedSearch({ resource, schema });
+  const { uiBlocks, setUiBlocks, submitSearch } = useAdvancedSearch({
+    resource,
+    schema,
+  });
   const { t } = useI18n();
 
   const addUiBlock = useCallback(
@@ -135,7 +138,7 @@ const AdvancedSearchModal = ({ isOpen, onClose, resource, schema }: Props) => {
           >
             <DialogContent
               forceMount
-              className="fixed left-[50%] top-[50%] max-w-xl"
+              className="fixed inset-x-0 max-w-xl md:left-[50%] md:top-[50%]"
             >
               <div className="flex flex-col gap-4">
                 <DialogTitle>{t("search.advanced.title")}</DialogTitle>
@@ -164,7 +167,13 @@ const AdvancedSearchModal = ({ isOpen, onClose, resource, schema }: Props) => {
                       <Button variant="ghost" onClick={onClose}>
                         {t("search.advanced.cancel")}
                       </Button>
-                      <Button variant="default">
+                      <Button
+                        variant="default"
+                        onClick={() => {
+                          submitSearch();
+                          onClose();
+                        }}
+                      >
                         {t("search.advanced.save")}
                       </Button>
                     </div>

@@ -18,7 +18,7 @@ const schema: JSONSchema4 = {
     Test: {
       properties: {
         test: {
-          type: "string",
+          type: ["string", "null"],
         },
         test2: {
           type: "string",
@@ -34,6 +34,9 @@ const schema: JSONSchema4 = {
         },
         testBool: {
           type: "boolean",
+        },
+        testNull: {
+          type: ["string", "null"],
         },
       },
     },
@@ -77,6 +80,7 @@ describe("advancedSearch", () => {
     const base: QueryBlock = {
       test: {
         contains: "test",
+        not: null,
       },
       test2: {
         equals: "test",
@@ -123,6 +127,9 @@ describe("advancedSearch", () => {
       testBool: {
         equals: true,
       },
+      testNull: {
+        equals: null,
+      },
     };
 
     const expected: UIQueryBlock[] = [
@@ -135,6 +142,18 @@ describe("advancedSearch", () => {
         id: "1",
         canHaveChildren: false,
         internalPath: "[0]",
+        nullable: true,
+      },
+      {
+        type: "filter",
+        path: "test",
+        condition: "nnull",
+        value: null,
+        contentType: "text",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[1]",
+        nullable: true,
       },
       {
         type: "filter",
@@ -144,7 +163,8 @@ describe("advancedSearch", () => {
         contentType: "text",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[1]",
+        internalPath: "[2]",
+        nullable: false,
       },
       {
         type: "filter",
@@ -154,7 +174,8 @@ describe("advancedSearch", () => {
         contentType: "text",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[2]",
+        internalPath: "[3]",
+        nullable: false,
       },
       {
         type: "filter",
@@ -164,12 +185,13 @@ describe("advancedSearch", () => {
         contentType: "text",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[3]",
+        internalPath: "[4]",
+        nullable: false,
       },
       {
         type: "and",
         id: "1",
-        internalPath: "[4]",
+        internalPath: "[5]",
         children: [
           {
             type: "filter",
@@ -179,7 +201,8 @@ describe("advancedSearch", () => {
             contentType: "text",
             id: "1",
             canHaveChildren: false,
-            internalPath: "[4].children[0]",
+            internalPath: "[5].children[0]",
+            nullable: false,
           },
           {
             type: "filter",
@@ -189,12 +212,13 @@ describe("advancedSearch", () => {
             contentType: "text",
             id: "1",
             canHaveChildren: false,
-            internalPath: "[4].children[1]",
+            internalPath: "[5].children[1]",
+            nullable: false,
           },
           {
             type: "or",
             id: "1",
-            internalPath: "[4].children[2]",
+            internalPath: "[5].children[2]",
             children: [
               {
                 type: "filter",
@@ -204,7 +228,8 @@ describe("advancedSearch", () => {
                 contentType: "text",
                 id: "1",
                 canHaveChildren: false,
-                internalPath: "[4].children[2].children[0]",
+                internalPath: "[5].children[2].children[0]",
+                nullable: false,
               },
             ],
           },
@@ -218,7 +243,20 @@ describe("advancedSearch", () => {
         contentType: "boolean",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[5]",
+        internalPath: "[6]",
+        nullable: false,
+      },
+
+      {
+        type: "filter",
+        path: "testNull",
+        condition: "null",
+        value: null,
+        contentType: "text",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[7]",
+        nullable: true,
       },
     ];
 
@@ -252,6 +290,7 @@ describe("advancedSearch", () => {
         id: "1",
         canHaveChildren: false,
         internalPath: "[0]",
+        nullable: false,
       },
     ];
 
@@ -265,6 +304,7 @@ describe("advancedSearch", () => {
     const expected: QueryBlock = {
       test: {
         contains: "test",
+        not: null,
       },
       test2: {
         equals: "test",
@@ -308,6 +348,9 @@ describe("advancedSearch", () => {
           ],
         },
       ],
+      testNull: {
+        equals: null,
+      },
     };
 
     const base: UIQueryBlock[] = [
@@ -320,6 +363,7 @@ describe("advancedSearch", () => {
         id: "1",
         canHaveChildren: false,
         internalPath: "[0]",
+        nullable: true,
       },
       {
         type: "filter",
@@ -330,6 +374,7 @@ describe("advancedSearch", () => {
         id: "1",
         canHaveChildren: false,
         internalPath: "[1]",
+        nullable: false,
       },
       {
         type: "filter",
@@ -340,6 +385,7 @@ describe("advancedSearch", () => {
         id: "1",
         canHaveChildren: false,
         internalPath: "[2]",
+        nullable: false,
       },
       {
         type: "filter",
@@ -350,6 +396,7 @@ describe("advancedSearch", () => {
         id: "1",
         canHaveChildren: false,
         internalPath: "[3]",
+        nullable: false,
       },
       {
         type: "and",
@@ -364,6 +411,7 @@ describe("advancedSearch", () => {
             id: "1",
             canHaveChildren: false,
             internalPath: "[4].children[0]",
+            nullable: false,
           },
           {
             type: "filter",
@@ -374,6 +422,7 @@ describe("advancedSearch", () => {
             id: "1",
             canHaveChildren: false,
             internalPath: "[4].children[1]",
+            nullable: false,
           },
           {
             type: "or",
@@ -388,10 +437,33 @@ describe("advancedSearch", () => {
                 id: "1",
                 canHaveChildren: false,
                 internalPath: "[4].children[2].children[0]",
+                nullable: false,
               },
             ],
           },
         ],
+      },
+      {
+        type: "filter",
+        path: "testNull",
+        condition: "null",
+        value: null,
+        contentType: "text",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[5]",
+        nullable: true,
+      },
+      {
+        type: "filter",
+        path: "test",
+        condition: "nnull",
+        value: null,
+        contentType: "text",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[6]",
+        nullable: true,
       },
     ];
 
