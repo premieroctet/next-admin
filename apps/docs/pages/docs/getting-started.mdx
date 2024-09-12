@@ -40,7 +40,7 @@ module.exports = {
     "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: "class",
-  presets: [require("@premieroctet/next-admin/dist/preset")],
+  presets: [require("@premieroctet/next-admin/preset")],
 };
 ```
 
@@ -78,7 +78,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
 
     ```tsx copy filename="app/admin/[[...nextadmin]]/page.tsx"
     import { NextAdmin, PageProps } from "@premieroctet/next-admin";
-    import { getNextAdminProps } from "@premieroctet/next-admin/dist/appRouter";
+    import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
     import { prisma } from "@/prisma";
     import schema from "@/prisma/json-schema/json-schema.json";
     import "@/styles.css" // .css file containing tailiwnd rules
@@ -121,7 +121,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
     ```tsx copy filename="pages/admin/[[...nextadmin]].ts"
     import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
 
-    import { getNextAdminProps } from "@premieroctet/next-admin/dist/pageRouter";
+    import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
     import { GetServerSideProps } from "next";
     import { prisma } from " @/prisma";
     import schema from "@/prisma/json-schema/json-schema.json";
@@ -226,7 +226,7 @@ module.exports = {
 
   </Tabs.Tab>
 
-  More information about the `getNextAdminProps` [here](/docs/api/get-next-admin-props-function).
+More information about the `getNextAdminProps` [here](/docs/api/get-next-admin-props-function).
 
 </Tabs>
 
@@ -240,7 +240,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
     ```ts copy filename="app/api/admin/[[...nextadmin]]/route.ts"
     import { prisma } from "@/prisma";
     import schema from "@/prisma/json-schema/json-schema.json";
-    import { createHandler } from "@premieroctet/next-admin/dist/appHandler";
+    import { createHandler } from "@premieroctet/next-admin/appHandler";
 
     const { run } = createHandler({
       apiBasePath: "/api/admin",
@@ -257,7 +257,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
 
       ```ts copy filename="pages/api/admin/[[...nextadmin]].ts"
       import { prisma } from "@/prisma";
-      import { createHandler } from "@premieroctet/next-admin/dist/pageHandler";
+      import { createHandler } from "@premieroctet/next-admin/pageHandler";
       import schema from "@/prisma/json-schema/json-schema.json";
 
       export const config = {
@@ -279,9 +279,11 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
       <Callout emoji="⚠️">
         Make sure to export the config object to define no `bodyParser`. This is required to be able to parse FormData.
       </Callout>
+
   </Tabs.Tab>
 
-  More information about the `createHandler` function [here](/docs/api/create-handler-function).
+More information about the `createHandler` function [here](/docs/api/create-handler-function).
+
 </Tabs>
 
 ### Next Admin options - optional

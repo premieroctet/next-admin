@@ -1,5 +1,5 @@
 import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
-import { getNextAdminProps } from "@premieroctet/next-admin/dist/pageRouter";
+import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import { GetServerSideProps } from "next";
 import { options } from "../../../pageRouterOptions";
 import { prisma } from "../../../prisma";
