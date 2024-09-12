@@ -107,7 +107,7 @@ type CreateWherePredicateParams<M extends ModelName> = {
   options?: NextAdminOptions;
   search?: string;
   otherFilters?: Filter<M>[];
-  searchParams: URLSearchParams;
+  searchParams?: URLSearchParams;
 };
 
 export const createWherePredicate = <M extends ModelName>({
@@ -192,7 +192,10 @@ export const createWherePredicate = <M extends ModelName>({
 
   const externalFilters = otherFilters ?? [];
 
-  const advancedSearchFilter = getWherePredicateFromQueryParams(searchParams);
+  const advancedSearchFilter = searchParams
+    ? getWherePredicateFromQueryParams(searchParams)
+    : null;
+
   return {
     AND: [...externalFilters, searchFilter, advancedSearchFilter].filter(
       Boolean
