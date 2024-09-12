@@ -9,12 +9,14 @@ import {
   isSchemaPropertyScalarArray,
   UIQueryBlock,
 } from "../../utils/advancedSearch";
+import { useConfig } from "../../context/ConfigContext";
 
 type Props = {
   property: string;
   schema: Schema;
   resource: ModelName;
   path?: string;
+  displayPath?: string;
   onAddBlock: (block: UIQueryBlock) => void;
 };
 
@@ -24,7 +26,9 @@ const AdvancedSearchDropdownItem = ({
   resource,
   path,
   onAddBlock,
+  displayPath,
 }: Props) => {
+  const { options } = useConfig();
   const schemaDef = schema.definitions[resource];
   const schemaProperty =
     schemaDef.properties[property as keyof typeof schemaDef.properties];
@@ -61,6 +65,10 @@ const AdvancedSearchDropdownItem = ({
     };
   }, [hasChildren, schemaProperty, schema]);
 
+  const aliases = options?.model?.[resource]?.aliases;
+  const displayedProperty =
+    aliases?.[property as keyof typeof aliases] ?? property;
+
   const onClick = (evt: MouseEvent<HTMLDivElement>) => {
     if (hasChildren) {
       evt.preventDefault();
@@ -78,6 +86,9 @@ const AdvancedSearchDropdownItem = ({
         condition: "equals",
         id: crypto.randomUUID(),
         nullable: isFieldNullable(schemaProperty!.type),
+        displayPath: [displayPath, displayedProperty]
+          .filter(Boolean)
+          .join(" → "),
       });
     }
   };
@@ -86,7 +97,7 @@ const AdvancedSearchDropdownItem = ({
     <>
       <DropdownItem className="cursor-pointer rounded-md p-2" onClick={onClick}>
         <div className="flex items-center justify-between">
-          {property}
+          {displayedProperty}
           {hasChildren && (
             <ChevronRightIcon
               className={clsx("h-5 w-5 transition-all", {
@@ -111,6 +122,9 @@ const AdvancedSearchDropdownItem = ({
                 schema={schema}
                 resource={childResource.model}
                 path={[path, property].filter(Boolean).join(".")}
+                displayPath={[displayPath, displayedProperty]
+                  .filter(Boolean)
+                  .join(" → ")}
                 onAddBlock={onAddBlock}
               />
             );

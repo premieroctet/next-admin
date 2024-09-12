@@ -38,6 +38,12 @@ const schema: JSONSchema4 = {
         testNull: {
           type: ["string", "null"],
         },
+        testArray: {
+          type: "array",
+          items: {
+            type: "string",
+          },
+        },
       },
     },
     Test3: {
@@ -81,6 +87,7 @@ describe("advancedSearch", () => {
       test: {
         contains: "test",
         not: null,
+        in: ["test", "test2"],
       },
       test2: {
         equals: "test",
@@ -130,6 +137,9 @@ describe("advancedSearch", () => {
       testNull: {
         equals: null,
       },
+      testArray: {
+        has: "test",
+      },
     };
 
     const expected: UIQueryBlock[] = [
@@ -157,13 +167,24 @@ describe("advancedSearch", () => {
       },
       {
         type: "filter",
+        path: "test",
+        condition: "in",
+        value: "test, test2",
+        contentType: "text",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[2]",
+        nullable: true,
+      },
+      {
+        type: "filter",
         path: "test2",
         condition: "equals",
         value: "test",
         contentType: "text",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[2]",
+        internalPath: "[3]",
         nullable: false,
       },
       {
@@ -174,7 +195,7 @@ describe("advancedSearch", () => {
         contentType: "text",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[3]",
+        internalPath: "[4]",
         nullable: false,
       },
       {
@@ -185,13 +206,13 @@ describe("advancedSearch", () => {
         contentType: "text",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[4]",
+        internalPath: "[5]",
         nullable: false,
       },
       {
         type: "and",
         id: "1",
-        internalPath: "[5]",
+        internalPath: "[6]",
         children: [
           {
             type: "filter",
@@ -201,7 +222,7 @@ describe("advancedSearch", () => {
             contentType: "text",
             id: "1",
             canHaveChildren: false,
-            internalPath: "[5].children[0]",
+            internalPath: "[6].children[0]",
             nullable: false,
           },
           {
@@ -212,13 +233,13 @@ describe("advancedSearch", () => {
             contentType: "text",
             id: "1",
             canHaveChildren: false,
-            internalPath: "[5].children[1]",
+            internalPath: "[6].children[1]",
             nullable: false,
           },
           {
             type: "or",
             id: "1",
-            internalPath: "[5].children[2]",
+            internalPath: "[6].children[2]",
             children: [
               {
                 type: "filter",
@@ -228,7 +249,7 @@ describe("advancedSearch", () => {
                 contentType: "text",
                 id: "1",
                 canHaveChildren: false,
-                internalPath: "[5].children[2].children[0]",
+                internalPath: "[6].children[2].children[0]",
                 nullable: false,
               },
             ],
@@ -243,10 +264,9 @@ describe("advancedSearch", () => {
         contentType: "boolean",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[6]",
+        internalPath: "[7]",
         nullable: false,
       },
-
       {
         type: "filter",
         path: "testNull",
@@ -255,8 +275,19 @@ describe("advancedSearch", () => {
         contentType: "text",
         id: "1",
         canHaveChildren: false,
-        internalPath: "[7]",
+        internalPath: "[8]",
         nullable: true,
+      },
+      {
+        type: "filter",
+        path: "testArray",
+        condition: "equals",
+        value: "test",
+        contentType: "text",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[9]",
+        nullable: false,
       },
     ];
 
@@ -305,6 +336,7 @@ describe("advancedSearch", () => {
       test: {
         contains: "test",
         not: null,
+        in: ["test", "test2"],
       },
       test2: {
         equals: "test",
@@ -350,6 +382,9 @@ describe("advancedSearch", () => {
       ],
       testNull: {
         equals: null,
+      },
+      testArray: {
+        has: "test",
       },
     };
 
@@ -464,6 +499,28 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[6]",
         nullable: true,
+      },
+      {
+        type: "filter",
+        path: "test",
+        condition: "in",
+        value: "test, test2",
+        contentType: "text",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[7]",
+        nullable: true,
+      },
+      {
+        type: "filter",
+        path: "testArray",
+        condition: "equals",
+        value: "test",
+        contentType: "text",
+        id: "1",
+        canHaveChildren: false,
+        internalPath: "[8]",
+        nullable: false,
       },
     ];
 

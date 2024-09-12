@@ -17,12 +17,15 @@ export type QueryCondition =
   | "startsWith"
   | "endsWith"
   | "null"
-  | "nnull";
+  | "nnull"
+  | "has";
+
+type FilterValue = string | number | boolean | null;
 
 export type Filter = {
   [key: string]:
     | {
-        [key in QueryCondition]?: string | number | boolean | null;
+        [key in QueryCondition]?: FilterValue | FilterValue[];
       }
     | {
         some: QueryBlock | Filter;
@@ -52,6 +55,8 @@ const queryConditionsSchema = z.union([
   z.literal("search"),
   z.literal("startsWith"),
   z.literal("endsWith"),
+  // Scalar arrays
+  z.literal("has"),
 ]);
 
 const filterSchema: z.ZodType<Filter> = z.record(
@@ -81,7 +86,6 @@ export const validateQuery = (query: string) => {
     const parsed = JSON.parse(query);
     return queryBlockSchema.parse(parsed);
   } catch (e) {
-    console.log(e);
     return false;
   }
 };
@@ -140,6 +144,7 @@ export type UIQueryBlock = (
       // internalPath is used to keep track of the path in the query block
       internalPath?: string;
       nullable: boolean;
+      displayPath?: string;
     }
   | { type: "and" | "or"; children?: UIQueryBlock[]; internalPath?: string }
 ) & { id: string };
@@ -191,19 +196,24 @@ export const cleanEmptyBlocks = (blocks: UIQueryBlock[]): UIQueryBlock[] => {
 };
 
 const getConditionFromValue = (
-  value: string | number | boolean | null,
+  value: FilterValue | FilterValue[],
   condition: QueryCondition
 ) => {
   if (value === null) {
     return condition === "equals" ? "null" : "nnull";
   }
 
+  if (condition === "has") {
+    return "equals";
+  }
+
   return condition;
 };
 
-const getValueFromContentType = (
-  value: string | number | boolean | null,
-  contentType: "text" | "number" | "datetime" | "boolean"
+const getQueryBlockValue = (
+  value: FilterValue | FilterValue[],
+  contentType: "text" | "number" | "datetime" | "boolean",
+  condition: QueryCondition
 ) => {
   if (contentType === "datetime") {
     try {
@@ -213,6 +223,10 @@ const getValueFromContentType = (
     } catch {
       return value;
     }
+  }
+
+  if ((condition === "in" || condition === "notIn") && Array.isArray(value)) {
+    return value.join(", ");
   }
 
   return value;
@@ -263,7 +277,11 @@ export const buildUIBlocks = <M extends ModelName>(
                   type: "filter",
                   path: [...fields, key].join("."),
                   condition: getConditionFromValue(queryValue, queryCondition),
-                  value: getValueFromContentType(queryValue, contentType),
+                  value: getQueryBlockValue(
+                    queryValue,
+                    contentType,
+                    queryCondition
+                  ),
                   id: crypto.randomUUID(),
                   contentType: contentType,
                   canHaveChildren: false,
@@ -345,6 +363,16 @@ const getValueForUiBlock = (block: UIQueryBlock) => {
       return new Date(block.value as string).toISOString();
     }
 
+    if (block.condition === "in" || block.condition === "notIn") {
+      return (block.value as string).split(", ").map((val) => {
+        if (block.contentType === "number") {
+          return +val;
+        }
+
+        return val;
+      });
+    }
+
     if (block.contentType === "number" && !!block.value) {
       return +block.value;
     }
@@ -408,27 +436,33 @@ export const buildQueryBlocks = <M extends ModelName>(
         ];
 
       if (schemaProperty?.type === "array") {
-        const childResource = schemaProperty.items?.$ref?.split("/")?.at(-1)!;
-
-        if (!get(acc, [path, basePath].filter(Boolean))) {
+        if (isSchemaPropertyScalarArray(resourceInSchema, basePath)) {
           set(acc, [path, basePath].filter(Boolean).join("."), {
-            some: {},
+            has: getValueForUiBlock(block),
           });
-        }
-        buildQueryBlocks(
-          [
+        } else {
+          const childResource = schemaProperty.items?.$ref?.split("/")?.at(-1)!;
+
+          if (!get(acc, [path, basePath].filter(Boolean))) {
+            set(acc, [path, basePath].filter(Boolean).join("."), {
+              some: {},
+            });
+          }
+          buildQueryBlocks(
+            [
+              {
+                ...block,
+                path: rest.join("."),
+              },
+            ],
             {
-              ...block,
-              path: rest.join("."),
+              resource: childResource as M,
+              schema,
             },
-          ],
-          {
-            resource: childResource as M,
-            schema,
-          },
-          acc,
-          [path, basePath, "some"].filter(Boolean).join(".")
-        );
+            acc,
+            [path, basePath, "some"].filter(Boolean).join(".")
+          );
+        }
       } else if (schemaProperty?.$ref) {
         const childResource = schemaProperty.$ref.split("/").at(-1)!;
 

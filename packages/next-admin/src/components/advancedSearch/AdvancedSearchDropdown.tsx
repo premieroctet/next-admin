@@ -12,6 +12,7 @@ import Button from "../radix/Button";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/24/outline";
 import Divider from "../Divider";
 import { UIQueryBlock } from "../../utils/advancedSearch";
+import { useI18n } from "../../context/I18nContext";
 
 type Props = {
   resource: ModelName;
@@ -28,6 +29,8 @@ const AdvancedSearchDropdown = ({
   showBranching = true,
   trigger,
 }: Props) => {
+  const { t } = useI18n();
+
   return (
     <Dropdown>
       <DropdownTrigger asChild>
@@ -35,7 +38,7 @@ const AdvancedSearchDropdown = ({
           <Button variant="ghost" className="justify-between gap-2">
             <div className="flex items-center gap-2">
               <PlusIcon className="h-4 w-4" aria-hidden="true" />
-              Add a filter
+              {t("search.advanced.add")}
             </div>
             <ChevronDownIcon className="h-4 w-4" aria-hidden="true" />
           </Button>
@@ -60,7 +63,7 @@ const AdvancedSearchDropdown = ({
                   });
                 }}
               >
-                AND / OR group
+                {t("search.advanced.and_or_group")}
               </DropdownItem>
               <DropdownSeparator className="my-0.5" />
             </>

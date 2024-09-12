@@ -107,6 +107,7 @@ type CreateWherePredicateParams<M extends ModelName> = {
   options?: NextAdminOptions;
   search?: string;
   otherFilters?: Filter<M>[];
+  searchParams: URLSearchParams;
 };
 
 export const createWherePredicate = <M extends ModelName>({
@@ -114,6 +115,7 @@ export const createWherePredicate = <M extends ModelName>({
   options,
   search,
   otherFilters,
+  searchParams,
 }: CreateWherePredicateParams<M>) => {
   let fieldsFiltered = getFieldsFiltered(resource, options);
 
@@ -190,7 +192,12 @@ export const createWherePredicate = <M extends ModelName>({
 
   const externalFilters = otherFilters ?? [];
 
-  return { AND: [...externalFilters, searchFilter] };
+  const advancedSearchFilter = getWherePredicateFromQueryParams(searchParams);
+  return {
+    AND: [...externalFilters, searchFilter, advancedSearchFilter].filter(
+      Boolean
+    ),
+  };
 };
 
 const getFieldsFiltered = <M extends ModelName>(
@@ -299,14 +306,13 @@ const preparePrismaListRequest = <M extends ModelName>(
   let where = {};
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   select = selectPayloadForModel(resource, list, "object");
-  where =
-    getWherePredicateFromQueryParams(searchParams) ||
-    createWherePredicate({
-      resource,
-      options,
-      search,
-      otherFilters: fieldFilters,
-    });
+  where = createWherePredicate({
+    resource,
+    options,
+    search,
+    otherFilters: fieldFilters,
+    searchParams,
+  });
 
   return {
     select,

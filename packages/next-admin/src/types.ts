@@ -63,20 +63,22 @@ export type Model<
 export type PropertyPayload<
   M extends ModelName,
   P extends keyof ObjectField<M>,
-> = Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends Array<infer T>
-  ? T
-  : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends
-        | infer T
-        | null
+> =
+  Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends Array<infer T>
     ? T
-    : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
+    : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P] extends
+          | infer T
+          | null
+      ? T
+      : never | Prisma.TypeMap["model"][M]["payload"]["objects"][P];
 
 export type ModelFromProperty<
   M extends ModelName,
   P extends keyof ObjectField<M>,
-> = PropertyPayload<M, P> extends Payload
-  ? ModelFromPayload<PropertyPayload<M, P>>
-  : never;
+> =
+  PropertyPayload<M, P> extends Payload
+    ? ModelFromPayload<PropertyPayload<M, P>>
+    : never;
 
 export type ModelWithoutRelationships<M extends ModelName> = Model<M, number>;
 
@@ -111,16 +113,17 @@ type Substract<
   B extends number,
   I extends any[] = [],
   O extends any[] = [],
-> = LessThan<A, B> extends true
-  ? never
-  : LessThan<I["length"], A> extends true
-    ? Substract<
-        A,
-        B,
-        [...I, any],
-        LessThan<I["length"], B> extends true ? O : [...O, any]
-      >
-    : O["length"];
+> =
+  LessThan<A, B> extends true
+    ? never
+    : LessThan<I["length"], A> extends true
+      ? Substract<
+          A,
+          B,
+          [...I, any],
+          LessThan<I["length"], B> extends true ? O : [...O, any]
+        >
+      : O["length"];
 
 type Leaves<T> = T extends object
   ? {
@@ -861,19 +864,60 @@ export type CustomInputProps = Partial<{
 }>;
 
 export type TranslationKeys =
-  | "list.header.add.label"
-  | "list.header.search.placeholder"
+  | "actions.delete.label"
+  | "actions.label"
+  | "export.label"
+  | "actions.create.label"
+  | "actions.edit.label"
+  | "form.button.delete.label"
+  | "form.delete.alert"
+  | "form.button.save.label"
+  | "form.button.save_edit.label"
+  | "list.empty.label"
+  | "list.empty.caption"
   | "list.footer.indicator.showing"
   | "list.footer.indicator.to"
   | "list.footer.indicator.of"
+  | "list.header.add.label"
+  | "list.header.search.placeholder"
+  | "list.header.result"
+  | "list.header.search.result"
+  | "list.header.search.result_filtered"
   | "list.row.actions.delete.label"
-  | "list.empty.label"
-  | "form.button.save.label"
-  | "form.button.delete.label"
+  | "list.row.actions.delete.alert"
+  | "list.row.actions.delete.success"
+  | "list.row.actions.delete.error"
+  | "list.row.actions.export"
   | "form.widgets.file_upload.label"
+  | "form.widgets.file_upload.drag_and_drop"
   | "form.widgets.file_upload.delete"
-  | "actions.label"
-  | "actions.delete.label";
+  | "form.widgets.multiselect.select"
+  | "form.widgets.scalar_array.add"
+  | "selector.loading"
+  | "theme.dark"
+  | "theme.light"
+  | "theme.system"
+  | "user.logout"
+  | "search.advanced.title"
+  | "search.advanced.add"
+  | "search.advanced.clear"
+  | "search.advanced.cancel"
+  | "search.advanced.save"
+  | "search.advanced.and_or_group"
+  | "search.advanced.conditions.equals"
+  | "search.advanced.conditions.not"
+  | "search.advanced.conditions.in"
+  | "search.advanced.conditions.notIn"
+  | "search.advanced.conditions.lt"
+  | "search.advanced.conditions.lte"
+  | "search.advanced.conditions.gt"
+  | "search.advanced.conditions.gte"
+  | "search.advanced.conditions.contains"
+  | "search.advanced.conditions.search"
+  | "search.advanced.conditions.startsWith"
+  | "search.advanced.conditions.endsWith"
+  | "search.advanced.conditions.null"
+  | "search.advanced.conditions.nnull";
 
 export type Translations = {
   [key in TranslationKeys]?: string;

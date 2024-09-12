@@ -31,11 +31,14 @@ const useAdvancedSearch = <M extends ModelName>({
 
   const submitSearch = () => {
     if (uiBlocks && uiBlocks.length) {
-      router.setQuery({
-        q: JSON.stringify(buildQueryBlocks(uiBlocks, { resource, schema })),
-      });
+      router.setQuery(
+        {
+          q: JSON.stringify(buildQueryBlocks(uiBlocks, { resource, schema })),
+        },
+        true
+      );
     } else {
-      router.setQuery({ q: null });
+      router.setQuery({ q: null }, true);
     }
   };
 

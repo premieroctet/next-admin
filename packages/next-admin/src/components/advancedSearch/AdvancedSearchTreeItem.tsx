@@ -51,9 +51,9 @@ const AdvancedSearchTree = forwardRef<HTMLDivElement, Props>((props, ref) => {
                 variant="ghost"
                 size="sm"
                 className="block max-w-[100px] overflow-x-hidden truncate text-left md:max-w-[200px]"
-                title={props.item.path.split(".").join(" → ")}
+                title={props.item.displayPath}
               >
-                {props.item.path.split(".").join(" → ")}
+                {props.item.displayPath}
               </Button>
             }
             resource={resource}
