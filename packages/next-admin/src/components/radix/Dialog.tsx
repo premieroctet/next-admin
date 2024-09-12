@@ -1,6 +1,7 @@
 import * as Dialog from "@radix-ui/react-dialog";
-import { ElementRef, ForwardedRef, forwardRef } from "react";
+import { ElementRef, forwardRef } from "react";
 import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export const DialogRoot = Dialog.Root;
 export const DialogTrigger = Dialog.Trigger;
@@ -12,9 +13,8 @@ export const DialogOverlay = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <Dialog.Overlay
-      className={clsx(
-        "fixed inset-0 z-[51] bg-black/20 dark:bg-white/20",
-        className
+      className={twMerge(
+        clsx("fixed inset-0 z-[51] bg-black/20 dark:bg-white/20", className)
       )}
       ref={ref}
       {...props}
@@ -28,9 +28,11 @@ export const DialogContent = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <Dialog.Content
-      className={clsx(
-        "text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis border-nextadmin-border-strong dark:border-dark-nextadmin-border-strong bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default fixed top-[50%] z-[52] w-full translate-y-[-50%] rounded-md border p-4 md:left-[50%] md:w-[50vw] md:translate-x-[-50%]",
-        className
+      className={twMerge(
+        clsx(
+          "text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis border-nextadmin-border-strong dark:border-dark-nextadmin-border-strong bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default fixed top-[50%] z-[52] w-full translate-y-[-50%] rounded-md border p-4 md:left-[50%] md:w-[50vw] md:translate-x-[-50%]",
+          className
+        )
       )}
       ref={ref}
       {...props}
@@ -46,9 +48,11 @@ export const DialogTitle = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <Dialog.Title
-      className={clsx(
-        "text-nextadmin-content-default dark:text-dark-nextadmin-content-default text-lg font-medium",
-        className
+      className={twMerge(
+        clsx(
+          "text-nextadmin-content-default dark:text-dark-nextadmin-content-default text-lg font-medium",
+          className
+        )
       )}
       ref={ref}
       {...props}

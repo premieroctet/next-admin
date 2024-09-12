@@ -4,6 +4,7 @@ import * as React from "react";
 import Spinner from "../common/Spinner";
 
 import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
 const buttonVariants = cva(
   "inline-flex items-center justify-center rounded-md text-sm font-normal transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background",
@@ -68,7 +69,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         ref={ref}
         disabled={loading || disabled}
         {...props}
-        className={clsx(buttonVariants({ variant, size, className, icon }))}
+        className={twMerge(
+          clsx(buttonVariants({ variant, size, className, icon }))
+        )}
       >
         {loading && <Spinner className="mr-2 inline h-4 w-4" />}
         {children}

@@ -24,6 +24,7 @@ import {
   transformData,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
+import { validateQuery } from "./advancedSearch";
 
 type CreateNestedWherePredicateParams<M extends ModelName> = {
   field: Prisma.DMMF.Field;
@@ -106,6 +107,7 @@ type CreateWherePredicateParams<M extends ModelName> = {
   options?: NextAdminOptions;
   search?: string;
   otherFilters?: Filter<M>[];
+  advancedSearch?: string;
 };
 
 export const createWherePredicate = <M extends ModelName>({
@@ -113,6 +115,7 @@ export const createWherePredicate = <M extends ModelName>({
   options,
   search,
   otherFilters,
+  advancedSearch,
 }: CreateWherePredicateParams<M>) => {
   let fieldsFiltered = getFieldsFiltered(resource, options);
 
@@ -134,9 +137,8 @@ export const createWherePredicate = <M extends ModelName>({
                 search,
                 searchOptions: (
                   options?.model?.[resource]?.list?.search as string[]
-                )?.filter(
-                  (searchOption) =>
-                    searchOption?.toString().startsWith(field.name)
+                )?.filter((searchOption) =>
+                  searchOption?.toString().startsWith(field.name)
                 ) as Field<M>[],
               });
             }
@@ -190,7 +192,15 @@ export const createWherePredicate = <M extends ModelName>({
 
   const externalFilters = otherFilters ?? [];
 
-  return { AND: [...externalFilters, searchFilter] };
+  const advancedSearchFilter = advancedSearch
+    ? getWherePredicateFromQueryParams(advancedSearch)
+    : null;
+
+  return {
+    AND: [...externalFilters, searchFilter, advancedSearchFilter].filter(
+      Boolean
+    ),
+  };
 };
 
 const getFieldsFiltered = <M extends ModelName>(
@@ -203,18 +213,21 @@ const getFieldsFiltered = <M extends ModelName>(
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
     fieldsFiltered = list?.search
-      ? model?.fields.filter(
-          ({ name }) =>
-            (list.search as string[])?.some((search) => {
-              const searchNameSplit = search?.toString().split(".");
+      ? model?.fields.filter(({ name }) =>
+          (list.search as string[])?.some((search) => {
+            const searchNameSplit = search?.toString().split(".");
 
-              return searchNameSplit?.[0] === name;
-            })
+            return searchNameSplit?.[0] === name;
+          })
         )
       : fieldsFiltered;
   }
 
   return fieldsFiltered as readonly Prisma.DMMF.Field[];
+};
+
+const getWherePredicateFromQueryParams = (query: string) => {
+  return validateQuery(query);
 };
 
 const preparePrismaListRequest = <M extends ModelName>(
@@ -225,6 +238,7 @@ const preparePrismaListRequest = <M extends ModelName>(
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
+  const advancedSearch = searchParams.get("q") || "";
   let filtersParams: string[] = [];
   try {
     filtersParams = skipFilters
@@ -294,6 +308,7 @@ const preparePrismaListRequest = <M extends ModelName>(
     options,
     search,
     otherFilters: fieldFilters,
+    advancedSearch,
   });
 
   return {
@@ -586,8 +601,9 @@ export const getDataItem = async <M extends ModelName>({
   const select = selectPayloadForModel(resource, edit, "object");
 
   Object.entries(select).forEach(([key, value]) => {
-    const fieldTypeDmmf = dmmfSchema?.fields.find((field) => field.name === key)
-      ?.type;
+    const fieldTypeDmmf = dmmfSchema?.fields.find(
+      (field) => field.name === key
+    )?.type;
 
     if (fieldTypeDmmf && dmmfSchema) {
       const relatedResourceOptions =

@@ -16,6 +16,7 @@ import {
   ListDataItem,
   ModelIcon,
   ModelName,
+  Schema,
 } from "../types";
 import { DataTable } from "./DataTable";
 import Filters from "./Filters";
@@ -49,6 +50,7 @@ export type ListProps = {
   title: string;
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
+  schema: Schema;
 };
 
 function List({
@@ -59,6 +61,7 @@ function List({
   resourcesIdProperty,
   title,
   icon,
+  schema,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
@@ -221,6 +224,7 @@ function List({
           getSelectedRowsIds={getSelectedRowsIds}
           onDelete={() => deleteItems(getSelectedRowsIds())}
           totalCount={total}
+          schema={schema}
         />
 
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">

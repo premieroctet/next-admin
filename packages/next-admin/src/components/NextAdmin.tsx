@@ -65,6 +65,7 @@ export function NextAdmin({
           resourcesIdProperty={resourcesIdProperty!}
           actions={actions}
           icon={resourceIcon}
+          schema={schema!}
         />
       );
     }
