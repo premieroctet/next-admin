@@ -66,6 +66,11 @@
       "import": "./dist/preset.js",
       "types": "./dist/preset.d.ts",
       "require": "./dist/preset.js"
+    },
+    "./components/*": {
+      "import": "./dist/components/*.js",
+      "types": "./dist/components/*.d.ts",
+      "require": "./dist/components/*.js"
     }
   },
   "peerDependencies": {

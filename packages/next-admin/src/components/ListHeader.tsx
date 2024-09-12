@@ -70,7 +70,7 @@ export default function ListHeader({
   const selectedRowsCount = Object.keys(selectedRows).length;
 
   const actions = useMemo(() => {
-    const defaultActions: ModelAction[] = canDelete
+    const defaultActions: ModelAction<ModelName>[] = canDelete
       ? [
           {
             id: SPECIFIC_IDS_TO_RUN_ACTION.DELETE,
@@ -139,7 +139,10 @@ export default function ListHeader({
           <AdvancedSearchButton resource={resource} schema={schema} />
           {Boolean(selectedRowsCount) && !!actions.length && (
             <ActionsDropdown
-              actions={actions}
+              // We don't want client actions in the list header
+              actions={actions.filter(
+                (action) => !("type" in action && action.type === "dialog")
+              )}
               resource={resource}
               selectedIds={getSelectedRowsIds()}
               selectedCount={selectedRowsCount}

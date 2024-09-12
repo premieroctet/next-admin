@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler, createRouter } from "next-connect";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
-import { NextAdminOptions, Permission } from "./types";
+import { NextAdminOptions, Permission, ServerAction } from "./types";
 import { hasPermission } from "./utils/permissions";
 import {
   formatId,
@@ -88,6 +88,10 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(404).json({ error: "Action not found" });
       }
 
+      if ("type" in modelAction && modelAction.type === "dialog") {
+        return res.status(404).json({ error: "Action not found" });
+      }
+
       let body;
 
       try {
@@ -97,7 +101,7 @@ export const createHandler = <P extends string = "nextadmin">({
       }
 
       try {
-        await modelAction.action(body);
+        await (modelAction as ServerAction).action(body);
 
         return res.json({ ok: true });
       } catch (e) {
@@ -160,7 +164,9 @@ export const createHandler = <P extends string = "nextadmin">({
           });
         }
 
-        response = (await editOptions?.hooks?.afterDb?.(response, mode, req)) ?? response;
+        response =
+          (await editOptions?.hooks?.afterDb?.(response, mode, req)) ??
+          response;
 
         return res.status(id ? 200 : 201).json(response);
       } catch (e) {

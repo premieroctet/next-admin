@@ -3,6 +3,7 @@ import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import debounce from "lodash/debounce";
 import { ChangeEvent, useEffect, useState, useTransition } from "react";
+import clsx from "clsx";
 import { ITEMS_PER_PAGE } from "../config";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
@@ -41,6 +42,8 @@ import {
   SelectValue,
 } from "./radix/Select";
 import ActionDropdownItem from "./ActionDropdownItem";
+import ClientDialogProvider from "../context/ClientDialogContext";
+import ClientActionDialog from "./ClientActionDialog";
 
 export type ListProps = {
   resource: ModelName;
@@ -51,6 +54,7 @@ export type ListProps = {
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   schema: Schema;
+  actionsMap: NonNullable<AdminComponentProps["actionsMap"]>;
 };
 
 function List({
@@ -62,6 +66,7 @@ function List({
   title,
   icon,
   schema,
+  actionsMap,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
@@ -169,20 +174,20 @@ function List({
                     action={action}
                     resourceIds={[row.original[idProperty].value as string]}
                     resource={resource}
+                    data={row.original}
                   />
                 );
               })}
-              <DropdownItem asChild>
-                <Button
-                  variant="destructiveOutline"
-                  className="h-6 w-full"
-                  onClick={(evt) => {
-                    evt.stopPropagation();
-                    deleteItems([row.original[idProperty].value as string]);
-                  }}
-                >
-                  {t("list.row.actions.delete.label")}
-                </Button>
+              <DropdownItem
+                className={clsx(
+                  "cursor-pointer rounded-md px-2 py-1 text-red-700 hover:bg-red-50 dark:text-red-400"
+                )}
+                onClick={(evt) => {
+                  evt.stopPropagation();
+                  deleteItems([row.original[idProperty].value as string]);
+                }}
+              >
+                {t("list.row.actions.delete.label")}
               </DropdownItem>
             </DropdownContent>
           </DropdownBody>
@@ -210,7 +215,7 @@ function List({
   };
 
   return (
-    <>
+    <ClientDialogProvider>
       <div className="flow-root h-full">
         <ListHeader
           title={title}
@@ -298,7 +303,8 @@ function List({
           ) : null}
         </div>
       </div>
-    </>
+      <ClientActionDialog actionsMap={actionsMap} />
+    </ClientDialogProvider>
   );
 }
 

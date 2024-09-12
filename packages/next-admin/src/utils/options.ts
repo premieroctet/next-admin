@@ -27,3 +27,24 @@ export const getCustomInputs = (
     return acc;
   }, {});
 };
+
+export const getClientActionDialogs = (
+  model: ModelName,
+  options?: NextAdminOptions
+) => {
+  const actions = options?.model?.[model]?.actions;
+  const actionsMap: Record<string, React.ReactElement> = {};
+
+  actions?.forEach((action) => {
+    if (
+      "component" in action &&
+      "type" in action &&
+      action.type === "dialog" &&
+      action.component
+    ) {
+      actionsMap[action.id] = action.component;
+    }
+  });
+
+  return actionsMap;
+};

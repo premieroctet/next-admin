@@ -1,7 +1,7 @@
 import dynamic from "next/dynamic";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
-import { getCustomInputs } from "../utils/options";
+import { getClientActionDialogs, getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
@@ -37,6 +37,7 @@ export function NextAdmin({
   resourcesIcons,
   user,
   externalLinks,
+  actionsMap: actionsMapProp,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -55,6 +56,9 @@ export function NextAdmin({
 
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
+      const actionsMap = isAppDir
+        ? actionsMapProp
+        : getClientActionDialogs(resource!, options!);
       return (
         <List
           key={resource}
@@ -66,6 +70,7 @@ export function NextAdmin({
           actions={actions}
           icon={resourceIcon}
           schema={schema!}
+          actionsMap={actionsMap ?? {}}
         />
       );
     }
