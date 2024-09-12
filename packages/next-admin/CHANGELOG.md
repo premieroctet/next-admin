@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 5.5.0
+
+### Minor Changes
+
+- [0ad77be](https://github.com/premieroctet/next-admin/commit/0ad77be): feat: add advanced search ([#326](https://github.com/premieroctet/next-admin/issues/326))
+
 ## 5.4.2
 
 ### Patch Changes

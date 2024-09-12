@@ -89,7 +89,7 @@ export const DropdownSeparator = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <DropdownMenu.Separator
-      className={clsx("m-1 h-px bg-gray-200", className)}
+      className={clsx("m-1 h-px bg-nextadmin-border-strong dark:bg-dark-nextadmin-border-strong", className)}
       ref={ref}
       {...props}
     />

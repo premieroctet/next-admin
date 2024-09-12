@@ -125,7 +125,9 @@ export const createHandler = <P extends string = "nextadmin">({
           );
         }
 
-        response = (await editOptions?.hooks?.afterDb?.(response, mode, req)) ?? response;
+        response =
+          (await editOptions?.hooks?.afterDb?.(response, mode, req)) ??
+          response;
 
         return NextResponse.json(response, { status: id ? 200 : 201 });
       } catch (e) {
