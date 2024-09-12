@@ -17,7 +17,6 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "plugins": [{ "name": "next" }],
-    "moduleResolution": "Bundler"
   },
   "include": ["src", "next-env.d.ts"],
   "exclude": ["node_modules"]
