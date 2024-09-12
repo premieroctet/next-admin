@@ -1,7 +1,6 @@
 {
   "name": "@premieroctet/next-admin",
   "version": "5.5.0",
-  "main": "./dist/index.js",
   "description": "Next-Admin provides a customizable and turnkey admin dashboard for applications built with Next.js and powered by the Prisma ORM. It aims to simplify the development process by providing a turnkey admin system that can be easily integrated into your project.",
   "keywords": [
     "next.js",
@@ -27,7 +26,6 @@
     }
   ],
   "homepage": "https://next-admin.js.org/",
-  "types": "./dist/index.d.ts",
   "license": "MIT",
   "scripts": {
     "js": "tsc",
@@ -37,6 +35,38 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "tsc": "tsc --noEmit"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js"
+    },
+    "./appRouter": {
+      "import": "./dist/appRouter.js",
+      "types": "./dist/appRouter.d.ts",
+      "require": "./dist/appRouter.js"
+    },
+    "./appHandler": {
+      "import": "./dist/appHandler.js",
+      "types": "./dist/appHandler.d.ts",
+      "require": "./dist/appHandler.js"
+    },
+    "./pageRouter": {
+      "import": "./dist/pageRouter.js",
+      "types": "./dist/pageRouter.d.ts",
+      "require": "./dist/pageRouter.js"
+    },
+    "./pageHandler": {
+      "import": "./dist/pageHandler.js",
+      "types": "./dist/pageHandler.d.ts",
+      "require": "./dist/pageHandler.js"
+    },
+    "./preset": {
+      "import": "./dist/preset.js",
+      "types": "./dist/preset.d.ts",
+      "require": "./dist/preset.js"
+    }
   },
   "peerDependencies": {
     "@prisma/client": ">=4",
