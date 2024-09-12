@@ -1,16 +1,7 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": [
-    "./src/pageRouter.ts",
-    "src/index.ts",
-    "./src/appRouter.ts",
-    "./src/actions/index.ts",
-    "./src/plugin.ts",
-    "./src/preset.ts",
-    "./src/appHandler.ts",
-    "./src/pageHandler.ts"
-  ],
-  "exclude": ["dist", "build", "node_modules"],
+  "include": ["./src/**/*"],
+  "exclude": ["dist", "build", "node_modules", "src/tests"],
   "compilerOptions": {
     "lib": ["dom"],
     "outDir": "dist",
