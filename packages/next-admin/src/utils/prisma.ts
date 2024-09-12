@@ -107,7 +107,7 @@ type CreateWherePredicateParams<M extends ModelName> = {
   options?: NextAdminOptions;
   search?: string;
   otherFilters?: Filter<M>[];
-  searchParams?: URLSearchParams;
+  advancedSearch?: string;
 };
 
 export const createWherePredicate = <M extends ModelName>({
@@ -115,7 +115,7 @@ export const createWherePredicate = <M extends ModelName>({
   options,
   search,
   otherFilters,
-  searchParams,
+  advancedSearch,
 }: CreateWherePredicateParams<M>) => {
   let fieldsFiltered = getFieldsFiltered(resource, options);
 
@@ -192,8 +192,8 @@ export const createWherePredicate = <M extends ModelName>({
 
   const externalFilters = otherFilters ?? [];
 
-  const advancedSearchFilter = searchParams
-    ? getWherePredicateFromQueryParams(searchParams)
+  const advancedSearchFilter = advancedSearch
+    ? getWherePredicateFromQueryParams(advancedSearch)
     : null;
 
   return {
@@ -226,15 +226,8 @@ const getFieldsFiltered = <M extends ModelName>(
   return fieldsFiltered as readonly Prisma.DMMF.Field[];
 };
 
-const getWherePredicateFromQueryParams = (
-  searchParams: URLSearchParams,
-  key = "q"
-) => {
-  const query = searchParams.get(key);
-
-  if (query) {
-    return validateQuery(query);
-  }
+const getWherePredicateFromQueryParams = (query: string) => {
+  return validateQuery(query);
 };
 
 const preparePrismaListRequest = <M extends ModelName>(
@@ -245,6 +238,7 @@ const preparePrismaListRequest = <M extends ModelName>(
 ): PrismaListRequest<M> => {
   const model = getPrismaModelForResource(resource);
   const search = searchParams.get("search") || "";
+  const advancedSearch = searchParams.get("q") || "";
   let filtersParams: string[] = [];
   try {
     filtersParams = skipFilters
@@ -314,7 +308,7 @@ const preparePrismaListRequest = <M extends ModelName>(
     options,
     search,
     otherFilters: fieldFilters,
-    searchParams,
+    advancedSearch,
   });
 
   return {
