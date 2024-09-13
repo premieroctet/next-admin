@@ -3,7 +3,7 @@ import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
-import Form from "./Form";
+import { FormWrapper } from "./Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
 import PageLoader from "./PageLoader";
@@ -76,7 +76,7 @@ export function NextAdmin({
         : getCustomInputs(resource!, options!);
 
       return (
-        <Form
+        <FormWrapper
           data={data}
           slug={slug}
           schema={modelSchema}

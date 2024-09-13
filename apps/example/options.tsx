@@ -107,6 +107,9 @@ export const options: NextAdminOptions = {
             display: "list",
             orderField: "order",
           },
+          role: {
+            disabled: true,
+          },
           avatar: {
             format: "file",
             handler: {

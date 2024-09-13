@@ -29,6 +29,9 @@ import React, {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import { useConfig } from "../context/ConfigContext";
+import CustomInputsProvider, {
+  useCustomInputs,
+} from "../context/CustomInputsContext";
 import FormDataProvider, { useFormData } from "../context/FormDataContext";
 import FormStateProvider, { useFormState } from "../context/FormStateContext";
 import { useI18n } from "../context/I18nContext";
@@ -39,6 +42,7 @@ import {
   EditFieldsOptions,
   Field,
   FormProps,
+  FormWrapperProps,
   ModelName,
   ModelOptions,
   Permission,
@@ -47,6 +51,7 @@ import { getSchemas } from "../utils/jsonSchema";
 import { formatLabel, slugify } from "../utils/tools";
 import FormHeader from "./FormHeader";
 import ArrayField from "./inputs/ArrayField";
+import BaseInput from "./inputs/BaseInput";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
@@ -64,7 +69,6 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import BaseInput from "./inputs/BaseInput";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
@@ -84,13 +88,13 @@ const widgets: RjsfForm["props"]["widgets"] = {
   TextareaWidget: TextareaWidget,
 };
 
-const Form = ({
+export const Form = ({
   data,
   schema,
-  dmmfSchema,
+  uiSchema,
   resource,
+  id,
   validation: validationProp,
-  customInputs,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
   const { basePath, options, apiBasePath } = useConfig();
@@ -105,13 +109,8 @@ const Form = ({
   const canCreate =
     !modelOptions?.permissions ||
     modelOptions?.permissions?.includes(Permission.CREATE);
-  const { edit, id, ...schemas } = getSchemas(
-    data,
-    schema,
-    dmmfSchema,
-    modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
-  );
   const { router } = useRouterInternal();
+  const edit = !!data;
   const { t } = useI18n();
   const formRef = useRef<RjsfForm>(null);
   const [isPending, setIsPending] = useState(false);
@@ -120,6 +119,7 @@ const Form = ({
   const { showMessage } = useMessage();
   const { cleanAll } = useFormState();
   const { setFormData } = useFormData();
+  const customInputs = useCustomInputs();
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -539,7 +539,8 @@ const Form = ({
             tagName={CustomForm}
             idPrefix=""
             idSeparator=""
-            {...schemas}
+            schema={schema}
+            uiSchema={uiSchema}
             onChange={(e) => {
               setFormData(e.formData);
             }}
@@ -548,7 +549,7 @@ const Form = ({
             extraErrors={extraErrors}
             fields={fields}
             disabled={allDisabled}
-            formContext={{ isPending, dmmfSchema }}
+            formContext={{ isPending }}
             templates={{
               ...templates,
               ButtonTemplates: { SubmitButton: submitButton },
@@ -562,31 +563,52 @@ const Form = ({
     [submitButton]
   );
 
-  return (
-    <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
-        <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
-        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
-          <RjsfFormComponent ref={formRef} />
-        </div>
-      </div>
-    </div>
-  );
+  return <RjsfFormComponent ref={formRef} />;
 };
 
-const FormWrapper = (props: FormProps) => {
+export const FormWrapper = (props: FormWrapperProps) => {
+  const { data, schema, dmmfSchema, resource } = props;
+  const { options } = useConfig();
+
+  const modelOptions: ModelOptions<typeof resource>[typeof resource] =
+    options?.model?.[resource];
+  const { edit, id, ...schemas } = useMemo(
+    () =>
+      getSchemas(
+        data,
+        schema,
+        dmmfSchema,
+        modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
+      ),
+    []
+  );
+
   return (
     <>
       <FormHeader {...props} />
       <MessageProvider>
         <FormDataProvider data={props.data}>
-          <FormStateProvider>
-            <Form {...props} />
-          </FormStateProvider>
+          <CustomInputsProvider customInputs={props.customInputs}>
+            <FormStateProvider>
+              <div className="relative h-full">
+                <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
+                  <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
+                  <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
+                    <Form
+                      data={data}
+                      schema={schemas.schema}
+                      uiSchema={schemas.uiSchema}
+                      resource={resource}
+                      id={id}
+                      validation={props.validation}
+                    />
+                  </div>
+                </div>
+              </div>
+            </FormStateProvider>
+          </CustomInputsProvider>
         </FormDataProvider>
       </MessageProvider>
     </>
   );
 };
-
-export default FormWrapper;

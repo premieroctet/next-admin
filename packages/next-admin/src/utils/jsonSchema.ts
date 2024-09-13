@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { UiSchema } from "@rjsf/utils";
-import { EditFieldsOptions, Field, ModelName } from "../types";
+import { EditFieldsOptions, Field, ModelName, Schema } from "../types";
 
 export type Schemas = {
-  schema: any;
+  schema: Schema;
   uiSchema: UiSchema;
 };
 
@@ -66,7 +66,7 @@ export function getSchemas<M extends ModelName>(
   if (schema && dmmfSchema) {
     const idProperty = dmmfSchema.find((property) => property.isId);
 
-    edit = !!data?.[idProperty?.name ?? "id"];
+    edit = !!data;
     id = data?.[idProperty?.name ?? "id"];
     Object.keys(schema.properties).forEach((property) => {
       const dmmfProperty = dmmfSchema.find(
@@ -88,7 +88,7 @@ export function getSchemas<M extends ModelName>(
           dmmfProperty?.isUpdatedAt ||
           disabledFields?.includes(dmmfProperty.name))
       ) {
-        edit
+        data
           ? (uiSchema[property] = {
               ...uiSchema[property],
               "ui:disabled": true,

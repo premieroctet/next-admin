@@ -1,16 +1,26 @@
+import { cloneDeep } from "lodash";
 import { createEdgeRouter } from "next-connect";
 import { NextRequest, NextResponse } from "next/server";
+import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
-import { CreateAppHandlerParams, Permission, RequestContext } from "./types";
+import {
+  CreateAppHandlerParams,
+  EditFieldsOptions,
+  Permission,
+  RequestContext,
+} from "./types";
+import { getSchemaForResource, getSchemas } from "./utils/jsonSchema";
 import { hasPermission } from "./utils/permissions";
+import { getDataItem } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
+  getPrismaModelForResource,
   getResourceFromParams,
   getResources,
+  transformSchema,
 } from "./utils/server";
-import { HookError } from "./exceptions/HookError";
 
 export const createHandler = <P extends string = "nextadmin">({
   apiBasePath,
@@ -36,6 +46,65 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
+    .get(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
+      const resource = getResourceFromParams(ctx.params[paramKey], resources);
+
+      if (!resource) {
+        return NextResponse.json(
+          { error: "Resource not found" },
+          { status: 404 }
+        );
+      }
+
+      const id =
+        ctx.params[paramKey].length === 2
+          ? formatId(resource, ctx.params[paramKey].at(-1)!)
+          : undefined;
+
+      if (id && hasPermission(options?.model?.[resource], Permission.EDIT)) {
+        const data = await getDataItem({
+          prisma,
+          resource,
+          resourceId: id,
+          options,
+        });
+
+        let deepCopySchema = await transformSchema(
+          resource,
+          options,
+          data
+        )(cloneDeep(schema));
+
+        const dmmfSchema = getPrismaModelForResource(resource);
+
+        const editFieldOptions = options?.model?.[resource]?.edit
+          ?.fields as EditFieldsOptions<typeof resource>;
+
+        const modelSchema =
+          resource && schema
+            ? getSchemaForResource(deepCopySchema, resource)
+            : undefined;
+
+        const { uiSchema } = getSchemas<typeof resource>(
+          data,
+          modelSchema,
+          dmmfSchema?.fields ?? [],
+          editFieldOptions
+        );
+
+        return NextResponse.json({ data, schema: modelSchema, uiSchema });
+      } else if (
+        !id &&
+        hasPermission(options?.model?.[resource], Permission.CREATE)
+      ) {
+        return NextResponse.json({ data: {} });
+      } else {
+        return NextResponse.json(
+          { error: "You don't have permission to view this resource" },
+          { status: 403 }
+        );
+      }
+    })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, ctx) => {
       const id = ctx.params[paramKey].at(-1)!;
 

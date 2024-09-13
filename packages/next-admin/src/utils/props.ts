@@ -13,7 +13,6 @@ import {
 import { getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList } from "./prisma";
 import {
-  applyVisiblePropertiesInSchema,
   getModelIdProperty,
   getPrismaModelForResource,
   getResourceFromParams,
@@ -147,37 +146,32 @@ export async function getPropsFromParams({
       const resourceId = getResourceIdFromParam(params[1], resource);
 
       const dmmfSchema = getPrismaModelForResource(resource);
-      const edit = options?.model?.[resource]?.edit as EditOptions<
-        typeof resource
-      >;
+
+      const data = resourceId ? await getDataItem({
+        prisma,
+        resource,
+        resourceId,
+        options,
+        locale,
+        isAppDir,
+      }) : undefined;
 
       let deepCopySchema = await transformSchema(
         resource,
-        edit,
-        options
+        options,
+        data
       )(cloneDeep(schema));
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
 
       if (resourceId !== undefined) {
-        const data = await getDataItem({
-          prisma,
-          resource,
-          resourceId,
-          options,
-          locale,
-          isAppDir,
-        });
-
         const toStringFunction = getToStringForModel(
           options?.model?.[resource]
         );
         const slug = toStringFunction
           ? toStringFunction(data)
           : resourceId.toString();
-
-        applyVisiblePropertiesInSchema(resource, edit, data, deepCopySchema);
 
         return {
           ...defaultProps,

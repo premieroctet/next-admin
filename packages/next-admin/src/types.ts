@@ -1,10 +1,11 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
+import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
-import { NextApiRequest } from "next";
+import { UiSchema } from "@rjsf/utils";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -1038,6 +1039,15 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
 };
 
 export type FormProps = {
+  data: any;
+  schema: Schema;
+  uiSchema: UiSchema
+  resource: ModelName;
+  id?: string | number | undefined;
+  validation?: PropertyValidationError[];
+};
+
+export type FormWrapperProps = {
   data: any;
   schema: any;
   dmmfSchema: readonly Prisma.DMMF.Field[];

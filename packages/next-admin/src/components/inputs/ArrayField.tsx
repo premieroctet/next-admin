@@ -1,17 +1,22 @@
 import { FieldProps } from "@rjsf/utils";
+import { JSONSchema7 } from "json-schema";
+import type { Enumeration } from "../../types";
 import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import ScalarArrayField from "./ScalarArray/ScalarArrayField";
-import type { Enumeration, FormProps } from "../../types";
 
 const ArrayField = (props: FieldProps) => {
-  const { formData, onChange, name, disabled, schema, required, formContext } =
-    props;
+  const { formData, onChange, name, disabled, schema, required } = props;
 
-  const dmmfSchema = formContext.dmmfSchema as FormProps["dmmfSchema"];
+  const childSchema = schema.items as JSONSchema7;
 
-  const dmmfField = dmmfSchema.find((field) => field.name === name);
-
-  if (dmmfField?.kind === "scalar" && dmmfField?.isList) {
+  if (
+    (childSchema.type === "string" ||
+      childSchema.type === "number" ||
+      childSchema.type === "integer") &&
+    schema.type === "array" &&
+    // @ts-expect-error
+    !childSchema.relation
+  ) {
     return (
       <ScalarArrayField
         name={name}
@@ -23,8 +28,7 @@ const ArrayField = (props: FieldProps) => {
     );
   }
 
-  const options =
-    dmmfField?.kind === "enum" ? (schema.enum as Enumeration[]) : undefined;
+  const options = schema.enum as Enumeration[] | undefined;
 
   return (
     <MultiSelectWidget

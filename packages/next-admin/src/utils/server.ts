@@ -906,42 +906,43 @@ export const formatSearchFields = (uri: string) =>
  */
 export const transformSchema = <M extends ModelName>(
   resource: M,
-  edit: EditOptions<M>,
-  options?: NextAdminOptions
-) =>
-  pipe<Schema>(
+  options?: NextAdminOptions,
+  data?: any
+) => {
+  const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
+
+  return pipe<Schema>(
     removeHiddenProperties(resource, edit),
     changeFormatInSchema(resource, edit),
     fillRelationInSchema(resource, options),
     fillDescriptionInSchema(resource, edit),
     addCustomProperties(resource, edit),
-    orderSchema(resource, options)
+    orderSchema(resource, options),
+    visiblePropertiesInSchema(resource, edit, data)
   );
-
-export const applyVisiblePropertiesInSchema = <M extends ModelName>(
-  resource: M,
-  edit: EditOptions<M>,
-  data: any,
-  schema: Schema
-) => {
-  const modelName = resource;
-  const model = models.find((model) => model.name === modelName);
-  if (!model) return schema;
-  const display = edit?.display;
-  const fields = edit?.fields;
-  if (display) {
-    display.forEach((property) => {
-      if (
-        schema.definitions?.[modelName]?.properties &&
-        fields?.[property]?.visible?.(data) === false
-      ) {
-        // @ts-expect-error
-        delete schema.definitions[modelName].properties[property];
-      }
-    });
-  }
-  return schema;
 };
+
+export const visiblePropertiesInSchema =
+  <M extends ModelName>(resource: M, edit: EditOptions<M>, data?: any) =>
+  (schema: Schema) => {
+    const modelName = resource;
+    const model = models.find((model) => model.name === modelName);
+    if (!model) return schema;
+    const display = edit?.display;
+    const fields = edit?.fields;
+    if (display) {
+      display.forEach((property) => {
+        if (
+          schema.definitions?.[modelName]?.properties &&
+          fields?.[property]?.visible?.(data) === false
+        ) {
+          // @ts-expect-error
+          delete schema.definitions[modelName].properties[property];
+        }
+      });
+    }
+    return schema;
+  };
 
 const fillDescriptionInSchema = <M extends ModelName>(
   resource: M,

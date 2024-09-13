@@ -5,7 +5,7 @@ import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import {
   EditFieldsOptions,
-  FormProps,
+  FormWrapperProps,
   ModelOptions,
   Permission,
 } from "../types";
@@ -24,7 +24,7 @@ export default function FormHeader({
   data,
   schema,
   dmmfSchema,
-}: FormProps) {
+}: FormWrapperProps) {
   const { t } = useI18n();
   const { basePath, options } = useConfig();
   const modelOptions: ModelOptions<typeof resource>[typeof resource] =

@@ -582,7 +582,6 @@ export const getDataItem = async <M extends ModelName>({
   prisma,
   resource,
   options,
-
   resourceId,
   locale,
   isAppDir,

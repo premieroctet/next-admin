@@ -37,6 +37,9 @@ export const extractSerializable = <T>(obj: T): T => {
   } else if (obj === null) {
     return obj;
   } else if (typeof obj === "object") {
+    if(React.isValidElement(obj)) {
+      return obj;
+    } 
     let newObj = {} as T;
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
