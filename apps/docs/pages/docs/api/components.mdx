@@ -1,0 +1,80 @@
+import OptionsTable from "../../../components/OptionsTable";
+
+# Components
+
+Next-Admin exports a set of UI components which are, for most of those, extending [Radix UI primitives](https://www.radix-ui.com/primitives). These components are available through the `@premieroctet/next-admin/components` import.
+
+## `Button`
+
+The button element accepts all the base `button` tag attributes and extends it with the following:
+
+<OptionsTable
+  options={[
+    {
+      name: "variant",
+      description:
+        "The button variant. Possible values are `default`, `destructive`, `destructiveOutline`, `outline`, `secondary`, `ghost`, `link`",
+      defaultValue: "default",
+    },
+    {
+      name: "size",
+      description: "The button size. Possible values are `default`, `sm`, `lg`",
+    },
+    {
+      name: "icon",
+      description: "A boolean indicating the presence of an icon",
+    },
+    {
+      name: "asChild",
+      description: (
+        <>
+          A boolean to render a{" "}
+          <a href="https://www.radix-ui.com/primitives/docs/utilities/slot">
+            Radix Slot component
+          </a>
+        </>
+      ),
+    },
+    {
+      name: "loading",
+      description: "A boolean to render a spinner",
+    },
+  ]}
+/>
+
+## `BaseInput`
+
+The input component rendered in the Form component. It accepts all the base `input` tag attributes.
+
+## `Switch`
+
+The [Radix Switch](https://www.radix-ui.com/primitives/docs/components/switch) component.
+
+## `Select`
+
+The [Radix Select](https://www.radix-ui.com/primitives/docs/components/select) component.
+
+## `Checkbox`
+
+An implementation of the [Radix Checkbox](https://www.radix-ui.com/primitives/docs/components/checkbox) component. It accepts all the props of the [Checkbox Root](https://www.radix-ui.com/primitives/docs/components/switch#root) component, and the following:
+
+<OptionsTable
+  options={[
+    {
+      name: "indeterminate",
+      description: "A boolean to render the checkbox in an indeterminate state",
+    },
+  ]}
+/>
+
+## `Dropdown`
+
+The [Radix Dropdown](https://www.radix-ui.com/primitives/docs/components/dropdown) component.
+
+## `Table`
+
+The [Radix Table](https://www.radix-ui.com/primitives/docs/components/table) component.
+
+## `Tooltip`
+
+The [Radix Tooltip](https://www.radix-ui.com/primitives/docs/components/tooltip) component.

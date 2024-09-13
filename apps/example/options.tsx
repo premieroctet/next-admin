@@ -1,6 +1,7 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
+import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
@@ -161,6 +162,12 @@ export const options: NextAdminOptions = {
           },
           successMessage: "actions.user.email.success",
           errorMessage: "actions.user.email.error",
+        },
+        {
+          type: "dialog",
+          id: "user-details",
+          title: "actions.user.details.title",
+          component: <UserDetailsDialog />,
         },
       ],
     },

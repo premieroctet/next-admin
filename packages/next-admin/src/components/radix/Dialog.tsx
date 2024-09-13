@@ -14,7 +14,10 @@ export const DialogOverlay = forwardRef<
   return (
     <Dialog.Overlay
       className={twMerge(
-        clsx("fixed inset-0 z-[51] bg-black/20 dark:bg-white/20", className)
+        clsx(
+          "bg-nextadmin-background-default/70 dark:bg-dark-nextadmin-background-default/70 fixed inset-0 z-[51]",
+          className
+        )
       )}
       ref={ref}
       {...props}
