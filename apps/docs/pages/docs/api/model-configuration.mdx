@@ -821,8 +821,12 @@ Represents the props that are passed to the custom dialog component.
     {
       name: "data",
       type: "Record<string, ListDataFieldValue>",
-      description:
-        "A record of row's properties with ListDataFieldValue as value",
+      description: (
+        <>
+          A record of row's properties with{" "}
+          <a href="#listdatafieldvalue">ListDataFieldValue</a> as value
+        </>
+      ),
     },
     {
       name: "onClose",
