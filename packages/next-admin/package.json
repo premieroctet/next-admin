@@ -67,10 +67,10 @@
       "types": "./dist/preset.d.ts",
       "require": "./dist/preset.js"
     },
-    "./components/*": {
-      "import": "./dist/components/*.js",
-      "types": "./dist/components/*.d.ts",
-      "require": "./dist/components/*.js"
+    "./components": {
+      "import": "./dist/components/index.js",
+      "types": "./dist/components/index.d.ts",
+      "require": "./dist/components/index.js"
     }
   },
   "peerDependencies": {

@@ -168,7 +168,6 @@ export const options: NextAdminOptions = {
           id: "user-details",
           title: "actions.user.details.title",
           component: <UserDetailsDialog />,
-          className: "",
         },
       ],
     },

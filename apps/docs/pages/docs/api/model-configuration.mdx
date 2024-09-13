@@ -114,9 +114,8 @@ By default, if no models are defined, they will all be displayed in the admin. I
       description: (
         <>
           {" "}
-          an array of actions (see <a href="#actions-property">
-            actions property
-          </a>)
+          an array of actions (see{" "}
+          <a href="#actions-property">actions property</a>)
         </>
       ),
     },
@@ -200,9 +199,8 @@ This property determines how your data is displayed in the [list View](/docs/glo
       description: (
         <>
           {" "}
-          define a set of Prisma filters that user can choose in list (see <a href="#listfilters-property">
-            filters
-          </a>)
+          define a set of Prisma filters that user can choose in list (see{" "}
+          <a href="#listfilters-property">filters</a>)
         </>
       ),
     },
@@ -315,6 +313,7 @@ The `exports` property is available in the `list` property. It's an object or an
 This property determines how your data is displayed in the [edit view](/docs/glossary#edit-view)
 
 {" "}
+
 <OptionsTable
   options={[
     {
@@ -323,10 +322,9 @@ This property determines how your data is displayed in the [edit view](/docs/glo
       description: (
         <>
           {" "}
-          an array of fields that are displayed in the form. It can also be an object
-          that will be displayed in the form of a notice (see <a href="#notice">
-            notice
-          </a>)
+          an array of fields that are displayed in the form. It can also be an
+          object that will be displayed in the form of a notice (see{" "}
+          <a href="#notice">notice</a>)
         </>
       ),
       defaultValue: "all scalar fields are displayed",
@@ -590,12 +588,38 @@ The `actions` property is an array of objects that allows you to define a set of
       description: "mandatory, action's unique identifier",
     },
     {
+      name: "type",
+      type: "String",
+      description:
+        "optional action type for client side actions, possible value is 'dialog'. By default action with no type is executed on the server",
+    },
+    {
+      name: "component",
+      type: "ReactElement",
+      description: (
+        <>
+          a React component that will be displayed in a dialog when the action
+          is triggered. Its mandatory if the action type is specified
+        </>
+      ),
+    },
+    {
+      name: "className",
+      type: "string",
+      description: (
+        <>
+          class name applied to the dialog displayed when the action type is set
+          to 'dialog'.
+        </>
+      ),
+    },
+    {
       name: "action",
       type: "Function",
       description: (
         <>
           an async function that will be triggered when selecting the action in
-          the dropdown. For App Router, it must be defined as a server action
+          the dropdown. Its mandatory if the action type is not specified
         </>
       ),
     },
@@ -732,9 +756,11 @@ Represents the props that are passed to the custom input component.
       description: (
         <>
           {" "}
-          a function taking a <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event">
+          a function taking a{" "}
+          <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event">
             ChangeEvent
-          </a> as a parameter
+          </a>{" "}
+          as a parameter
         </>
       ),
     },
@@ -772,6 +798,131 @@ The `HookError` is an error that can be thrown in the `beforeDb` hook of the `ed
       type: "Object",
       description:
         "an error object that must contain at least an error property which is a string",
+    },
+  ]}
+/>
+
+## ClientActionDialogContentProps
+
+Represents the props that are passed to the custom dialog component.
+
+<OptionsTable
+  options={[
+    {
+      name: "resource",
+      type: "String",
+      description: "the current Prisma model name",
+    },
+    {
+      name: "resourceId",
+      type: "String | Number",
+      description: "the selected record id",
+    },
+    {
+      name: "data",
+      type: "Record<string, ListDataFieldValue>",
+      description:
+        "A record of row's properties with [ListDataFieldValue](#listdatafieldvalue) as value",
+    },
+    {
+      name: "onClose",
+      type: "Function",
+      description: "a function to close the dialog",
+    },
+  ]}
+/>
+
+## ListDataFieldValue
+
+Represents a formatted value used by Next-Admin. It will have different shapes depending of the data type.
+
+It will always have the following :
+
+<OptionsTable
+  options={[
+    {
+      name: "__nextadmin_formatted",
+      type: "ReactNode",
+      description:
+        "A React Node used to have a custom rendering of the field, if needed",
+    },
+  ]}
+/>
+
+### Scalar
+
+<OptionsTable
+  options={[
+    {
+      name: "type",
+      type: "`scalar`",
+      description: "The type of data. It is always `scalar`",
+    },
+    {
+      name: "value",
+      type: "String | Number | boolean",
+      description: "the value coming from the database",
+    },
+  ]}
+/>
+
+### Count
+
+<OptionsTable
+  options={[
+    {
+      name: "type",
+      type: "`count`",
+      description: "The type of data. It is always `count`",
+    },
+    {
+      name: "value",
+      type: "Number",
+      description: "the value coming from the database",
+    },
+  ]}
+/>
+
+### Link
+
+<OptionsTable
+  options={[
+    {
+      name: "type",
+      type: "`link`",
+      description: "The type of data. It is always `link`",
+    },
+    {
+      name: "value",
+      type: "object",
+      description: "the link data displayed in the link CTA",
+    },
+    {
+      name: "value.label",
+      type: "String",
+      description: "the link CTA label",
+    },
+    {
+      name: "value.url",
+      type: "String",
+      description: "the link CTA href",
+    },
+  ]}
+/>
+
+### Date
+
+<OptionsTable
+  options={[
+    {
+      name: "type",
+      type: "`date`",
+      description: "The type of data. It is always `date`",
+    },
+    {
+      name: "value",
+      type: "Date",
+      description: "the value coming from the database",
     },
   ]}
 />

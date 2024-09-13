@@ -1,5 +1,6 @@
 import { Transition, TransitionChild } from "@headlessui/react";
 import { cloneElement, Fragment } from "react";
+import clsx from "clsx";
 import { useClientDialog } from "../context/ClientDialogContext";
 import { useConfig } from "../context/ConfigContext";
 import {
@@ -70,7 +71,10 @@ const ClientActionDialog = ({ actionsMap }: Props) => {
             afterLeave={clearData}
           >
             <DialogContent
-              className="max-w-xl md:left-[50%] md:top-[50%]"
+              className={clsx(
+                "max-w-xl md:left-[50%] md:top-[50%]",
+                action?.className
+              )}
               forceMount
             >
               {action &&

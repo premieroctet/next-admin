@@ -1,6 +1,6 @@
 "use client";
 import { ClientActionDialogContentProps } from "@premieroctet/next-admin";
-import Button from "@premieroctet/next-admin/components/radix/Button";
+import { Button } from "@premieroctet/next-admin/components";
 
 type Props = ClientActionDialogContentProps<"User">;
 
