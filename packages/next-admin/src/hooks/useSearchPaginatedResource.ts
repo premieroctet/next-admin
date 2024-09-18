@@ -26,7 +26,9 @@ const useSearchPaginatedResource = ({
   const runSearch = async (query: string, resetOptions = true) => {
     const perPage = 25;
 
-    const relationModel = modelSchema?.properties[fieldName]?.relation;
+    const relationModel =
+      modelSchema?.properties[fieldName]?.relation ||
+      modelSchema?.properties[fieldName]?.items?.relation;
 
     if (!relationModel) {
       return;

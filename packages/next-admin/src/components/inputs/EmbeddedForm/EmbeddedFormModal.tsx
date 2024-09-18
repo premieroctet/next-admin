@@ -25,7 +25,7 @@ const EmbeddedFormModal = <M extends ModelName, O extends ModelName>({
 }: {
   originalResource: O;
   resource: M;
-  id: string;
+  id?: string;
   onClose: () => void;
 }) => {
   const { t } = useI18n();
@@ -39,7 +39,7 @@ const EmbeddedFormModal = <M extends ModelName, O extends ModelName>({
   useEffect(() => {
     const fetchData = async () => {
       const { data, modelSchema, uiSchema } = (await fetch(
-        `${apiBasePath}/${resource}/${id}`
+        `${apiBasePath}/${resource}/${id ?? ""}`
       ).then((res) => res.json())) as {
         data: FormData;
         modelSchema: SchemaModel<M>;

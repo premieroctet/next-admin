@@ -28,6 +28,7 @@ model User {
   hashedPassword String?
   name           String?
   posts          Post[]    @relation("author") // One-to-many relation
+  coPosts       Post[]    @relation("coAuthors") // Many-to-many relation
   profile        Profile?  @relation("profile") // One-to-one relation
   birthDate      DateTime?
   createdAt      DateTime  @default(now())
@@ -44,6 +45,8 @@ model Post {
   published  Boolean             @default(false)
   author     User                @relation("author", fields: [authorId], references: [id]) // Many-to-one relation
   authorId   Int
+  coAuthor  User                 @relation("coAuthors", fields: [coAuthorId], references: [id]) // Many-to-many relation
+  coAuthorId Int
   categories CategoriesOnPosts[]
   rate       Decimal?            @db.Decimal(5, 2)
   order      Int                 @default(0)

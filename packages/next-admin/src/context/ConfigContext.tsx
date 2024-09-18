@@ -1,6 +1,6 @@
 "use client";
 import React, { useContext, useMemo } from "react";
-import { ModelName, NextAdminOptions } from "../types";
+import { ModelName, NextAdminOptions, Schema } from "../types";
 
 export type ConfigContextType = {
   options?: NextAdminOptions;
@@ -9,6 +9,7 @@ export type ConfigContextType = {
   apiBasePath: string;
   resourcesIdProperty: Record<ModelName, string> | null;
   resources?: ModelName[];
+  schema?: Schema;
   toModelName: (str: string) => ModelName;
 };
 
@@ -24,6 +25,7 @@ type ProviderProps = {
   isAppDir?: boolean;
   resourcesIdProperty: Record<ModelName, string> | null;
   resources?: ModelName[];
+  schema?: Schema;
 };
 
 export const ConfigProvider = ({ children, ...props }: ProviderProps) => {

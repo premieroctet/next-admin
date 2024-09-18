@@ -72,6 +72,7 @@ export const options: NextAdminOptions = {
           } as const,
           "email",
           "posts",
+          "coPosts",
           "role",
           "birthDate",
           "avatar",
@@ -106,7 +107,6 @@ export const options: NextAdminOptions = {
           posts: {
             display: "list",
             orderField: "order",
-            
           },
           role: {
             //disabled: true,
@@ -233,6 +233,7 @@ export const options: NextAdminOptions = {
           "published",
           "categories",
           "author",
+          "coAuthor",
           "rate",
           "tags",
         ],

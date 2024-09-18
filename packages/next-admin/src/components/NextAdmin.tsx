@@ -1,5 +1,5 @@
 import dynamic from "next/dynamic";
-import { AdminComponentProps, CustomUIProps, ModelName } from "../types";
+import { AdminComponentProps, CustomUIProps } from "../types";
 import { getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import { FormWrapper } from "./Form";
@@ -10,7 +10,7 @@ import PageLoader from "./PageLoader";
 const Head = dynamic(() => import("next/head"));
 
 // Components
-export function NextAdmin<M extends ModelName>({
+export function NextAdmin({
   basePath,
   apiBasePath,
   data,
@@ -67,7 +67,7 @@ export function NextAdmin<M extends ModelName>({
       );
     }
 
-    if ((data && !Array.isArray(data)) || (schema && !data)) {
+    if ((data && !Array.isArray(data)) || (modelSchema && !data)) {
       const customInputs = isAppDir
         ? customInputsProp
         : getCustomInputs(resource!, options!);

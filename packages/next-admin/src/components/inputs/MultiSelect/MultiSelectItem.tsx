@@ -1,5 +1,4 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
-import { RJSFSchema } from "@rjsf/utils";
 import Link from "next/link";
 import { useConfig } from "../../../context/ConfigContext";
 import { Enumeration, Field, ModelName, SchemaProperty } from "../../../types";
@@ -20,7 +19,8 @@ const MultiSelectItem = ({
 }: Props) => {
   const { basePath } = useConfig();
 
-  const relationModel = item?.data?.modelName ?? propertySchema?.items?.relation;
+  const relationModel =
+    item?.data?.modelName ?? propertySchema?.items?.relation;
 
   return (
     <div className="py border-nextadmin-border-default dark:border-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted/50 hover:bg-nextadmin-background-muted relative z-10 flex cursor-default items-center justify-center rounded-md border px-2 text-sm">

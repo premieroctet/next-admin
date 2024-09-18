@@ -28,6 +28,12 @@
             "$ref": "#/definitions/Post"
           }
         },
+        "coPosts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Post"
+          }
+        },
         "profile": {
           "anyOf": [
             {
@@ -104,6 +110,9 @@
         "author": {
           "$ref": "#/definitions/User"
         },
+        "coAuthor": {
+          "$ref": "#/definitions/User"
+        },
         "categories": {
           "type": "array",
           "items": {
@@ -130,6 +139,7 @@
       "required": [
         "title",
         "authorId",
+        "coAuthorId",
         "tags"
       ]
     },

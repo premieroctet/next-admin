@@ -186,6 +186,7 @@ export const fillRelationInSchema =
         const fieldKind = field.kind;
         const relationToFields = field.relationToFields;
         const relationFromFields = field.relationFromFields;
+        const relationName = field.relationName;
 
         if (fieldKind === "enum") {
           const fieldValue =
@@ -231,6 +232,7 @@ export const fillRelationInSchema =
               schema.definitions[modelName].properties[
                 field.name as Field<typeof modelName>
               ];
+
             if (fieldValue) {
               const enumeration: Enumeration[] = [];
 
@@ -239,12 +241,34 @@ export const fillRelationInSchema =
                 fieldValue.items = {
                   type: "string",
                   relation: modelNameRelation,
+                  relationName: relationName,
                   enum: enumeration,
                 };
+
+                const extendedRelationProperty =
+                  // prettier-ignore
+                  // @ts-expect-error
+                  options?.model?.[modelName]?.edit?.fields?.[fieldName]?.relationshipSearchField;
+
+                if (extendedRelationProperty) {
+                  const extendedRelationField = getDeepRelationModel(
+                    modelNameRelation,
+                    extendedRelationProperty
+                  );
+
+                  const extendedModelRelationIdField =
+                    extendedRelationField?.type as ModelName;
+
+                  fieldValue.items = {
+                    ...fieldValue.items,
+                    relation: extendedModelRelationIdField,
+                  };
+                }
               } else {
                 //Relation One-to-One
                 fieldValue.type = "string";
                 fieldValue.relation = modelNameRelation;
+                relationName && (fieldValue.relationName = relationName);
                 fieldValue.enum = enumeration;
                 delete fieldValue.anyOf;
               }

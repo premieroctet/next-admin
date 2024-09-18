@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { useState } from "react";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
 import { useConfig } from "../../../context/ConfigContext";
 import { useFormState } from "../../../context/FormStateContext";
@@ -8,6 +9,7 @@ import useClickOutside from "../../../hooks/useCloseOnOutsideClick";
 import { useDisclosure } from "../../../hooks/useDisclosure";
 import { Enumeration, Field, ModelName, SchemaProperty } from "../../../types";
 import Button from "../../radix/Button";
+import EmbeddedFormModal from "../EmbeddedForm/EmbeddedFormModal";
 import { Selector } from "../Selector";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectDisplayTable from "./MultiSelectDisplayTable";
@@ -27,12 +29,16 @@ const MultiSelectWidget = (props: Props) => {
   const { options: globalOptions } = useConfig();
   const { resource } = useResource();
   const { onToggle, isOpen, onClose } = useDisclosure();
+  const [isModalOpen, setIsOpen] = useState(false);
   const containerRef = useClickOutside<HTMLDivElement>(() => onClose());
   const { formData, onChange, options, name, propertySchema } = props;
   const { t } = useI18n();
   const { setFieldDirty } = useFormState();
   const fieldOptions =
     globalOptions?.model?.[resource!]?.edit?.fields?.[name as Field<ModelName>];
+
+  const relationModel = 
+    propertySchema?.relation || propertySchema?.items?.relation;
 
   const onRemoveClick = (value: any) => {
     setFieldDirty(name);
@@ -120,16 +126,33 @@ const MultiSelectWidget = (props: Props) => {
               onChange(value);
             }}
           />
-
-          <Button
-            aria-disabled={props.disabled}
-            type="button"
-            disabled={props.disabled}
-            className="relative"
-          >
-            {select}
-            {t("form.widgets.multiselect.select")}
-          </Button>
+          {isModalOpen && (
+            <EmbeddedFormModal
+              originalResource={resource}
+              resource={relationModel as ModelName}
+              onClose={() => setIsOpen(false)}
+            />
+          )}
+          <div className="flex gap-2">
+            <Button
+              aria-disabled={props.disabled}
+              type="button"
+              disabled={props.disabled}
+              className="relative"
+            >
+              {select}
+              {t("form.widgets.multiselect.select")}
+            </Button>
+            <Button
+              aria-disabled={props.disabled}
+              type="button"
+              disabled={props.disabled}
+              className="relative"
+              onClick={() => setIsOpen(true)}
+            >
+              {t("form.widgets.multiselect.create")}
+            </Button>
+          </div>
         </div>
       )}
       {displayMode === "table" && (

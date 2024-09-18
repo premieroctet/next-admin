@@ -9,6 +9,7 @@ import type { PropertyValidationError } from "./exceptions/ValidationError";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
+  relationName?: string;
 };
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
@@ -674,6 +675,7 @@ export type SchemaProperty<M extends ModelName> = {
   [P in Field<M>]?: JSONSchema7 & {
     items?: JSONSchema7Definition;
     relation?: ModelName;
+    relationName?: string;
   };
 };
 
@@ -910,6 +912,7 @@ export type TranslationKeys =
   | "form.widgets.file_upload.drag_and_drop"
   | "form.widgets.file_upload.delete"
   | "form.widgets.multiselect.select"
+  | "form.widgets.multiselect.create"
   | "form.widgets.scalar_array.add"
   | "selector.loading"
   | "theme.dark"

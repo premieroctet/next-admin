@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
-import { CreateAppHandlerParams, Permission, RequestContext, Schema } from "./types";
+import { CreateAppHandlerParams, Permission, RequestContext } from "./types";
 import { hasPermission } from "./utils/permissions";
 import { getDataItem } from "./utils/prisma";
 import {
@@ -53,8 +53,10 @@ export const createHandler = <P extends string = "nextadmin">({
           ? formatId(resource, ctx.params[paramKey].at(-1)!)
           : undefined;
 
+      let data;
+
       if (id && hasPermission(options?.model?.[resource], Permission.EDIT)) {
-        const data = await getDataItem({
+        data = await getDataItem({
           prisma,
           resource,
           resourceId: id,
@@ -73,7 +75,13 @@ export const createHandler = <P extends string = "nextadmin">({
         !id &&
         hasPermission(options?.model?.[resource], Permission.CREATE)
       ) {
-        return NextResponse.json({ data: {} });
+        let { uiSchema, schema: modelSchema } = await transformSchema(
+          resource,
+          schema,
+          options,
+          data
+        );
+        return NextResponse.json({ data: {}, modelSchema, uiSchema });
       } else {
         return NextResponse.json(
           { error: "You don't have permission to view this resource" },
