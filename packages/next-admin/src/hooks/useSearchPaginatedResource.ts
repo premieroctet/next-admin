@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useConfig } from "../context/ConfigContext";
-import { Enumeration } from "../types";
+import { useResource } from "../context/ResourceContext";
+import { Enumeration, Field, ModelName } from "../types";
 
 type UseSearchPaginatedResourceParams = {
-  fieldName: string;
+  fieldName: Field<ModelName>;
   initialOptions?: Enumeration[];
 };
 
@@ -12,24 +13,24 @@ const useSearchPaginatedResource = ({
   initialOptions,
 }: UseSearchPaginatedResourceParams) => {
   const [isPending, setIsPending] = useState(false);
-  const { apiBasePath, dmmfSchema, resource } = useConfig();
+  const { apiBasePath } = useConfig();
+  const { resource } = useResource();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
   const [allOptions, setAllOptions] = useState<Enumeration[]>(
     initialOptions ?? []
   );
   const [hasNextPage, setHasNextPage] = useState(false);
+  const { modelSchema } = useResource();
 
   const runSearch = async (query: string, resetOptions = true) => {
     const perPage = 25;
 
-    const fieldFromDmmf = dmmfSchema?.find((field) => field.name === fieldName);
+    const relationModel = modelSchema?.properties[fieldName]?.relation;
 
-    if (!fieldFromDmmf) {
+    if (!relationModel) {
       return;
     }
-
-    const model = fieldFromDmmf.type;
 
     try {
       setIsPending(true);
@@ -41,7 +42,7 @@ const useSearchPaginatedResource = ({
         body: JSON.stringify({
           originModel: resource!,
           property: fieldName,
-          model,
+          model: relationModel,
           query,
           page: searchPage.current,
           perPage,

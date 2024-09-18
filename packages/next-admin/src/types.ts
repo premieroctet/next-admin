@@ -1,11 +1,11 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { UiSchema } from "@rjsf/utils";
 import type { JSONSchema7 } from "json-schema";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
-import { UiSchema } from "@rjsf/utils";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -691,6 +691,11 @@ export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
   definitions: SchemaDefinitions;
 };
 
+export type Schemas = {
+  schema: Schema;
+  uiSchema: UiSchema;
+};
+
 export type AdminFormData<M extends ModelName> = {
   [P in Field<M>]?: string;
 };
@@ -768,12 +773,14 @@ export type AdminUser = {
   logout?: [RequestInfo, RequestInit?] | (() => void | Promise<void>) | string;
 };
 
-export type AdminComponentProps = {
+export type AdminComponentProps<M extends ModelName = ModelName> = {
   basePath: string;
   apiBasePath: string;
   schema?: Schema;
-  data?: ListData<ModelName>;
-  resource?: ModelName;
+  modelSchema?: SchemaModel<M>;
+  uiSchema?: UiSchema;
+  data?: ListData<M> | Model<M>;
+  resource?: M;
   slug?: string;
   /**
    * Page router only
@@ -786,7 +793,6 @@ export type AdminComponentProps = {
   validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
-  dmmfSchema?: readonly Prisma.DMMF.Field[];
   isAppDir?: boolean;
   locale?: string;
   /**
@@ -815,8 +821,8 @@ export type AdminComponentProps = {
   externalLinks?: ExternalLink[];
 };
 
-export type MainLayoutProps = Pick<
-  AdminComponentProps,
+export type MainLayoutProps<M extends ModelName = ModelName> = Pick<
+  AdminComponentProps<M>,
   | "resource"
   | "resources"
   | "resourcesTitles"
@@ -833,7 +839,6 @@ export type MainLayoutProps = Pick<
   | "externalLinks"
   | "options"
   | "resourcesIdProperty"
-  | "dmmfSchema"
 >;
 
 export type CustomUIProps = {
@@ -1038,25 +1043,37 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   schema: any;
 };
 
-export type FormProps = {
+export type FormProps<M extends ModelName> = {
   data: any;
-  schema: Schema;
-  uiSchema: UiSchema
-  resource: ModelName;
-  id?: string | number | undefined;
+  id?: string | number;
   validation?: PropertyValidationError[];
+  disabled?: boolean;
+  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
 };
 
-export type FormWrapperProps = {
-  data: any;
-  schema: any;
-  dmmfSchema: readonly Prisma.DMMF.Field[];
-  resource: ModelName;
+export type FormWrapperProps<M extends ModelName> = {
+  data?: Model<M>;
+  resource: M;
+  modelSchema: SchemaModel<M>;
+  uiSchema: UiSchema;
   slug?: string;
   validation?: PropertyValidationError[];
   title: string;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
-  actions?: AdminComponentProps["actions"];
+  actions?: AdminComponentProps<M>["actions"];
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;
+  resources: ModelName[];
+};
+
+export type MenuProps<M extends ModelName> = {
+  resource?: M;
+  resources?: ModelName[];
+  resourcesTitles?: Record<ModelName, string | undefined>;
+  customPages?: AdminComponentProps["customPages"];
+  configuration?: SidebarConfiguration;
+  resourcesIcons: AdminComponentProps["resourcesIcons"];
+  user?: AdminComponentProps["user"];
+  externalLinks?: AdminComponentProps["externalLinks"];
+  title?: string;
 };

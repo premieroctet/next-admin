@@ -11,12 +11,12 @@ import {
 } from "react";
 import { useI18n } from "../../context/I18nContext";
 import useSearchPaginatedResource from "../../hooks/useSearchPaginatedResource";
-import { Enumeration } from "../../types";
+import { Enumeration, Field, ModelName } from "../../types";
 import LoaderRow from "../LoaderRow";
 
 export type SelectorProps = {
   open: boolean;
-  name: string;
+  name: Field<ModelName>;
   onChange: (option: Enumeration) => void;
   options?: Enumeration[];
   selectedOptions?: string[];

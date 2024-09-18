@@ -9,6 +9,7 @@ import {
 import clsx from "clsx";
 import Link from "next/link";
 import { ReactElement, useState } from "react";
+import { useResource } from "../../context/ResourceContext";
 import { ModelName } from "../../types";
 import EmbeddedFormModal from "./EmbeddedForm/EmbeddedFormModal";
 
@@ -31,6 +32,7 @@ const DndItem = ({
 }: Props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [resource, id] = href?.split("/").slice(-2) ?? [];
+  const { resource: originalResource } = useResource();
 
   const {
     attributes,
@@ -73,25 +75,26 @@ const DndItem = ({
       </div>
 
       <div className="flex items-center space-x-3">
-        <div>
-          <PencilSquareIcon
-            onClick={() => {
-              setIsOpen(true);
-            }}
-            className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer"
+        {isOpen && (
+          <EmbeddedFormModal
+            originalResource={originalResource}
+            id={id}
+            resource={resource as ModelName}
+            onClose={() => setIsOpen(false)}
           />
-          {isOpen && (
-            <EmbeddedFormModal
-              id={id}
-              resource={resource as ModelName}
-              onClose={() => setIsOpen(false)}
-            />
-          )}
-        </div>
+        )}
         {!!href && (
-          <Link href={href} className="flex items-center">
-            <ArrowTopRightOnSquareIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer" />
-          </Link>
+          <>
+            <PencilSquareIcon
+              onClick={() => {
+                setIsOpen(true);
+              }}
+              className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer"
+            />
+            <Link href={href} className="flex items-center">
+              <ArrowTopRightOnSquareIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer" />
+            </Link>
+          </>
         )}
         {deletable && (
           <div onClick={() => onRemoveClick()}>

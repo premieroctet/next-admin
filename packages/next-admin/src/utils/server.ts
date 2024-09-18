@@ -1,6 +1,8 @@
 import { Prisma } from "@prisma/client";
+import { UiSchema } from "@rjsf/utils";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
+import { cloneDeep } from "lodash";
 import { NextApiRequest } from "next";
 import { Writable } from "node:stream";
 import {
@@ -16,8 +18,10 @@ import {
   ObjectField,
   ScalarField,
   Schema,
+  SchemaModel,
   UploadParameters,
 } from "../types";
+import { getSchemaForResource, getSchemas } from "./jsonSchema";
 import { isNativeFunction, isUploadParameters, pipe } from "./tools";
 
 export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
@@ -898,20 +902,20 @@ export const formatSearchFields = (uri: string) =>
  * Centralizes the transformation of the schema
  *
  * @param resource
- * @param edit
- * @param prisma
- * @param searchParams
+ * @param schema
  * @param options
+ * @param data
  * @returns
  */
-export const transformSchema = <M extends ModelName>(
+export const transformSchema = async <M extends ModelName>(
   resource: M,
+  schema: Schema,
   options?: NextAdminOptions,
-  data?: any
-) => {
+  data?: Model<M>
+): Promise<{ schema: SchemaModel<M>; uiSchema: UiSchema }> => {
   const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
 
-  return pipe<Schema>(
+  const transformedSchema = await pipe<Schema>(
     removeHiddenProperties(resource, edit),
     changeFormatInSchema(resource, edit),
     fillRelationInSchema(resource, options),
@@ -919,7 +923,15 @@ export const transformSchema = <M extends ModelName>(
     addCustomProperties(resource, edit),
     orderSchema(resource, options),
     visiblePropertiesInSchema(resource, edit, data)
+  )(cloneDeep(schema));
+
+  const dmmfSchema = getPrismaModelForResource(resource);
+  const modelSchema: SchemaModel<M> = getSchemaForResource(
+    transformedSchema,
+    resource
   );
+
+  return getSchemas<M>(modelSchema!, dmmfSchema?.fields!, data, edit?.fields);
 };
 
 export const visiblePropertiesInSchema =

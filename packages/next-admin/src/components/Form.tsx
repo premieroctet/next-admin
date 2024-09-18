@@ -11,6 +11,7 @@ import {
   FieldTemplateProps,
   getSubmitButtonOptions,
   ObjectFieldTemplateProps,
+  RJSFSchema,
   SubmitButtonProps,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
@@ -29,17 +30,17 @@ import React, {
 } from "react";
 import { twMerge } from "tailwind-merge";
 import { useConfig } from "../context/ConfigContext";
-import CustomInputsProvider, {
-  useCustomInputs,
-} from "../context/CustomInputsContext";
-import FormDataProvider, { useFormData } from "../context/FormDataContext";
+import FormDataProvider, {
+  FormDataConsumer,
+  useFormData,
+} from "../context/FormDataContext";
 import FormStateProvider, { useFormState } from "../context/FormStateContext";
 import { useI18n } from "../context/I18nContext";
 import { MessageProvider, useMessage } from "../context/MessageContext";
+import ResourceProvider, { useResource } from "../context/ResourceContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
-  EditFieldsOptions,
   Field,
   FormProps,
   FormWrapperProps,
@@ -47,7 +48,6 @@ import {
   ModelOptions,
   Permission,
 } from "../types";
-import { getSchemas } from "../utils/jsonSchema";
 import { formatLabel, slugify } from "../utils/tools";
 import FormHeader from "./FormHeader";
 import ArrayField from "./inputs/ArrayField";
@@ -88,16 +88,17 @@ const widgets: RjsfForm["props"]["widgets"] = {
   TextareaWidget: TextareaWidget,
 };
 
-export const Form = ({
+export const Form = <M extends ModelName>({
   data,
-  schema,
-  uiSchema,
-  resource,
   id,
   validation: validationProp,
-}: FormProps) => {
+  customInputs,
+  disabled = false,
+}: FormProps<M>) => {
   const [validation, setValidation] = useState(validationProp);
   const { basePath, options, apiBasePath } = useConfig();
+  const { resource, modelSchema, uiSchema } = useResource();
+
   const modelOptions: ModelOptions<typeof resource>[typeof resource] =
     options?.model?.[resource];
   const canDelete =
@@ -114,12 +115,11 @@ export const Form = ({
   const { t } = useI18n();
   const formRef = useRef<RjsfForm>(null);
   const [isPending, setIsPending] = useState(false);
-  const allDisabled = edit && !canEdit;
+  const allDisabled = (edit && !canEdit) || disabled;
   const { runDeletion } = useDeleteAction(resource);
   const { showMessage } = useMessage();
   const { cleanAll } = useFormState();
   const { setFormData } = useFormData();
-  const customInputs = useCustomInputs();
 
   useEffect(() => {
     if (!edit && !canCreate) {
@@ -207,7 +207,7 @@ export const Form = ({
         </div>
       );
     },
-    [isPending, id]
+    [isPending]
   );
 
   const extraErrors: ErrorSchema | undefined = validation?.reduce(
@@ -469,6 +469,7 @@ export const Form = ({
           />
         );
       }
+
       return (
         // @ts-expect-error
         <BaseInput
@@ -532,19 +533,14 @@ export const Form = ({
   const RjsfFormComponent = useMemo(
     () =>
       forwardRef<RjsfForm>((_props, ref) => {
-        const { formData } = useFormData();
-
         return (
           <RjsfForm
             tagName={CustomForm}
             idPrefix=""
             idSeparator=""
-            schema={schema}
+            schema={modelSchema as RJSFSchema}
             uiSchema={uiSchema}
-            onChange={(e) => {
-              setFormData(e.formData);
-            }}
-            formData={formData}
+            formData={data}
             validator={validator}
             extraErrors={extraErrors}
             fields={fields}
@@ -566,49 +562,44 @@ export const Form = ({
   return <RjsfFormComponent ref={formRef} />;
 };
 
-export const FormWrapper = (props: FormWrapperProps) => {
-  const { data, schema, dmmfSchema, resource } = props;
-  const { options } = useConfig();
-
-  const modelOptions: ModelOptions<typeof resource>[typeof resource] =
-    options?.model?.[resource];
-  const { edit, id, ...schemas } = useMemo(
-    () =>
-      getSchemas(
-        data,
-        schema,
-        dmmfSchema,
-        modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
-      ),
-    []
-  );
+export const FormWrapper = <M extends ModelName>(
+  props: FormWrapperProps<M>
+) => {
+  const { data, modelSchema, uiSchema, resource } = props;
 
   return (
     <>
-      <FormHeader {...props} />
-      <MessageProvider>
-        <FormDataProvider data={props.data}>
-          <CustomInputsProvider customInputs={props.customInputs}>
+      <ResourceProvider
+        resource={resource}
+        modelSchema={modelSchema}
+        uiSchema={uiSchema}
+      >
+        <FormHeader {...props} />
+        <MessageProvider>
+          <FormDataProvider data={{}}>
             <FormStateProvider>
               <div className="relative h-full">
                 <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
                   <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
                   <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
-                    <Form
-                      data={data}
-                      schema={schemas.schema}
-                      uiSchema={schemas.uiSchema}
-                      resource={resource}
-                      id={id}
-                      validation={props.validation}
-                    />
+                    <FormDataConsumer>
+                      {({ formData }) => {
+                        return (
+                          <Form<M>
+                            data={{ ...data, ...formData }}
+                            validation={props.validation}
+                            customInputs={props.customInputs}
+                          />
+                        );
+                      }}
+                    </FormDataConsumer>
                   </div>
                 </div>
               </div>
             </FormStateProvider>
-          </CustomInputsProvider>
-        </FormDataProvider>
-      </MessageProvider>
+          </FormDataProvider>
+        </MessageProvider>
+      </ResourceProvider>
     </>
   );
 };

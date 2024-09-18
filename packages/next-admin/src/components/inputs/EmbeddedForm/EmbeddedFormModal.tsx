@@ -1,10 +1,12 @@
 import { Transition, TransitionChild } from "@headlessui/react";
-import { XMarkIcon } from "@heroicons/react/24/outline";
+import { CheckIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { UiSchema } from "@rjsf/utils";
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
+import Loader from "../../../assets/icons/Loader";
 import { useConfig } from "../../../context/ConfigContext";
 import { useI18n } from "../../../context/I18nContext";
-import { ModelName, Schema } from "../../../types";
+import ResourceProvider from "../../../context/ResourceContext";
+import { Field, ModelName, SchemaModel } from "../../../types";
 import { Form } from "../../Form";
 import {
   DialogClose,
@@ -15,12 +17,14 @@ import {
   DialogTitle,
 } from "../../radix/Dialog";
 
-const EmbeddedFormModal = ({
+const EmbeddedFormModal = <M extends ModelName, O extends ModelName>({
+  originalResource,
   resource,
   id,
   onClose,
 }: {
-  resource: ModelName;
+  originalResource: O;
+  resource: M;
   id: string;
   onClose: () => void;
 }) => {
@@ -29,33 +33,41 @@ const EmbeddedFormModal = ({
 
   const [resourceData, setResourceData] = useState<{
     data: FormData;
-    schema: Schema;
+    modelSchema: SchemaModel<M>;
     uiSchema: UiSchema;
   } | null>(null);
   useEffect(() => {
     const fetchData = async () => {
-      const { data, schema, uiSchema } = await fetch(
+      const { data, modelSchema, uiSchema } = (await fetch(
         `${apiBasePath}/${resource}/${id}`
-      ).then((res) => res.json());
+      ).then((res) => res.json())) as {
+        data: FormData;
+        modelSchema: SchemaModel<M>;
+        uiSchema: UiSchema;
+      };
 
-      setResourceData({ data, schema, uiSchema });
+      uiSchema["ui:submitButtonOptions"] = {
+        norender: true,
+      };
+      const disabledFields = (
+        Object.keys(modelSchema.properties) as Field<M>[]
+      ).filter(
+        (key) =>
+          modelSchema.properties[key]?.items?.relation === originalResource ||
+          modelSchema.properties[key]?.relation === originalResource
+      );
+
+      disabledFields.forEach((field) => {
+        uiSchema[field as string] = {
+          "ui:disabled": true,
+        };
+      });
+
+      setResourceData({ data, modelSchema, uiSchema });
     };
 
     fetchData();
   }, [apiBasePath, id, resource]);
-
-  const { data, schema, uiSchema } = useMemo(() => {
-    console.log("resourceData", resourceData);
-    if (resourceData) {
-      return resourceData;
-    }
-
-    return {
-      data: null,
-      schema: null,
-      uiSchema: null,
-    };
-  }, [resourceData]);
 
   return (
     <DialogRoot>
@@ -86,25 +98,39 @@ const EmbeddedFormModal = ({
           >
             <DialogContent
               forceMount
-              className="fixed inset-x-0 max-w-screen-md md:left-[50%] md:top-[50%]"
+              className="fixed inset-x-0 max-h-[90vh] max-w-screen-md overflow-y-auto p-0 md:left-[50%] md:top-[50%]"
             >
-              <div className="flex flex-col gap-4">
-                <DialogTitle></DialogTitle>
-                <div className="flex w-full justify-between p-4">
+              <DialogTitle className="bg-nextadmin-background-default/90 dark:bg-dark-nextadmin-background-default/90 shadow-b-md sticky inset-x-0 top-0 z-[53] p-4 sm:px-8">
+                <div className="flex w-full justify-between">
                   <h2 className="text-xl font-bold">
                     {t("Edit")} {resource}
                   </h2>
-                  <DialogClose onClick={onClose}>
-                    <XMarkIcon className="h-5 w-5" />
-                  </DialogClose>
+                  <div className="flex gap-4">
+                    <DialogClose onClick={onClose}>
+                      <XMarkIcon className="h-5 w-5" />
+                    </DialogClose>
+                    <DialogClose onClick={onClose}>
+                      <div className="bg-nextadmin-brand-default text-nextadmin-brand-inverted hover:bg-nextadmin-brand-emphasis rounded-full p-1.5">
+                        <CheckIcon className="h-5 w-5" />
+                      </div>
+                    </DialogClose>
+                  </div>
                 </div>
-                {schema && (
-                  <Form
+              </DialogTitle>
+
+              <div className="flex flex-col gap-4 p-4 pt-4 sm:px-8 sm:pb-8">
+                {resourceData ? (
+                  <ResourceProvider
                     resource={resource}
-                    data={data as FormData}
-                    schema={schema as Schema}
-                    uiSchema={uiSchema as UiSchema}
-                  />
+                    modelSchema={resourceData.modelSchema}
+                    uiSchema={resourceData.uiSchema}
+                  >
+                    <Form data={resourceData?.data as FormData} id={id} />
+                  </ResourceProvider>
+                ) : (
+                  <div className="flex items-center justify-center">
+                    <Loader className="stroke-nextadmin-content-default dark:stroke-dark-nextadmin-content-default h-6 w-6 animate-spin dark:stroke-gray-300" />
+                  </div>
                 )}
               </div>
             </DialogContent>

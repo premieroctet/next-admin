@@ -1,6 +1,11 @@
 import { FieldProps } from "@rjsf/utils";
 import { JSONSchema7 } from "json-schema";
-import type { Enumeration } from "../../types";
+import type {
+  Enumeration,
+  Field,
+  ModelName,
+  SchemaProperty,
+} from "../../types";
 import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import ScalarArrayField from "./ScalarArray/ScalarArrayField";
 
@@ -37,7 +42,7 @@ const ArrayField = (props: FieldProps) => {
       name={name}
       disabled={disabled ?? false}
       required={required}
-      schema={schema}
+      propertySchema={schema as SchemaProperty<ModelName>[Field<ModelName>]}
       options={options}
     />
   );

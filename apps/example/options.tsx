@@ -106,9 +106,10 @@ export const options: NextAdminOptions = {
           posts: {
             display: "list",
             orderField: "order",
+            
           },
           role: {
-            disabled: true,
+            //disabled: true,
           },
           avatar: {
             format: "file",
@@ -146,7 +147,7 @@ export const options: NextAdminOptions = {
         },
         hooks: {
           beforeDb: async (data, mode, request) => {
-            const newPassword = data.newPassword;
+            const newPassword = data.password;
             if (newPassword) {
               data.hashedPassword = `hashed-${newPassword}`;
             }
@@ -201,6 +202,17 @@ export const options: NextAdminOptions = {
         },
       },
       edit: {
+        styles: {
+          _form: "grid-cols-3 gap-4 md:grid-cols-4",
+          id: "col-span-2 row-start-1",
+          title: "col-span-2 row-start-1",
+          content: "col-span-4 row-start-2",
+          published: "col-span-4 md:col-span-2 row-start-3",
+          categories: "col-span-4 md:col-span-2 row-start-4",
+          author: "col-span-4 md:col-span-3 row-start-5",
+          rate: "col-span-3 row-start-6",
+          tags: "col-span-4 row-start-7",
+        },
         fields: {
           content: {
             format: "richtext-html",

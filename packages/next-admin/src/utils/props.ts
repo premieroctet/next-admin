@@ -1,8 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { cloneDeep } from "lodash";
 import {
   AdminComponentProps,
-  EditOptions,
   GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
   MainLayoutProps,
@@ -145,22 +143,23 @@ export async function getPropsFromParams({
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
 
-      const dmmfSchema = getPrismaModelForResource(resource);
+      const data = resourceId
+        ? await getDataItem({
+            prisma,
+            resource,
+            resourceId,
+            options,
+            locale,
+            isAppDir,
+          })
+        : undefined;
 
-      const data = resourceId ? await getDataItem({
-        prisma,
+      let { uiSchema, schema: modelSchema } = await transformSchema(
         resource,
-        resourceId,
-        options,
-        locale,
-        isAppDir,
-      }) : undefined;
-
-      let deepCopySchema = await transformSchema(
-        resource,
+        schema,
         options,
         data
-      )(cloneDeep(schema));
+      );
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
@@ -178,8 +177,8 @@ export async function getPropsFromParams({
           resource,
           data,
           slug,
-          schema: deepCopySchema,
-          dmmfSchema: dmmfSchema?.fields,
+          modelSchema,
+          uiSchema,
           customInputs,
           actions: isAppDir ? actions : undefined,
         };
@@ -189,8 +188,7 @@ export async function getPropsFromParams({
         return {
           ...defaultProps,
           resource,
-          schema: deepCopySchema,
-          dmmfSchema: dmmfSchema?.fields,
+          modelSchema: modelSchema,
           customInputs,
         };
       }
@@ -265,7 +263,6 @@ export const getMainLayoutProps = ({
     resourcesIcons,
     externalLinks: options?.externalLinks,
     options: extractSerializable(options),
-    dmmfSchema: dmmfSchema?.fields,
     resourcesIdProperty: resourcesIdProperty,
   };
 };

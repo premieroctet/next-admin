@@ -22,4 +22,8 @@ const FormDataProvider = ({ data, children }: PropsWithChildren<{data: any}>) =>
   );
 };
 
+export const FormDataConsumer = FormDataContext.Consumer;
+
 export default FormDataProvider;
+
+

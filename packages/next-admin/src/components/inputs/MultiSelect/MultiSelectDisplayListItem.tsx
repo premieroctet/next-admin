@@ -1,6 +1,5 @@
-import { RJSFSchema } from "@rjsf/utils";
 import { useConfig } from "../../../context/ConfigContext";
-import { Enumeration } from "../../../types";
+import { Enumeration, Field, ModelName, SchemaProperty } from "../../../types";
 import { slugify } from "../../../utils/tools";
 import DndItem from "../DndItem";
 
@@ -9,7 +8,7 @@ type Props = {
   deletable?: boolean;
   sortable?: boolean;
   onRemoveClick: (value: Enumeration["value"]) => void;
-  schema: RJSFSchema;
+  propertySchema: SchemaProperty<ModelName>[Field<ModelName>];
 };
 
 const MultiSelectDisplayListItem = ({
@@ -17,13 +16,13 @@ const MultiSelectDisplayListItem = ({
   deletable,
   sortable,
   onRemoveClick,
-  schema,
+  propertySchema,
 }: Props) => {
   const { basePath } = useConfig();
   const { value, label } = item;
 
-  // @ts-expect-error
-  const relationModel = item?.data?.modelName ?? schema.items?.relation;
+  const relationModel =
+    item?.data?.modelName ?? propertySchema?.items?.relation;
 
   return (
     <DndItem

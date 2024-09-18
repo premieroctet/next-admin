@@ -1,22 +1,14 @@
-import { cloneDeep } from "lodash";
 import { createEdgeRouter } from "next-connect";
 import { NextRequest, NextResponse } from "next/server";
 import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
-import {
-  CreateAppHandlerParams,
-  EditFieldsOptions,
-  Permission,
-  RequestContext,
-} from "./types";
-import { getSchemaForResource, getSchemas } from "./utils/jsonSchema";
+import { CreateAppHandlerParams, Permission, RequestContext, Schema } from "./types";
 import { hasPermission } from "./utils/permissions";
 import { getDataItem } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
-  getPrismaModelForResource,
   getResourceFromParams,
   getResources,
   transformSchema,
@@ -69,30 +61,14 @@ export const createHandler = <P extends string = "nextadmin">({
           options,
         });
 
-        let deepCopySchema = await transformSchema(
+        let { uiSchema, schema: modelSchema } = await transformSchema(
           resource,
+          schema,
           options,
           data
-        )(cloneDeep(schema));
-
-        const dmmfSchema = getPrismaModelForResource(resource);
-
-        const editFieldOptions = options?.model?.[resource]?.edit
-          ?.fields as EditFieldsOptions<typeof resource>;
-
-        const modelSchema =
-          resource && schema
-            ? getSchemaForResource(deepCopySchema, resource)
-            : undefined;
-
-        const { uiSchema } = getSchemas<typeof resource>(
-          data,
-          modelSchema,
-          dmmfSchema?.fields ?? [],
-          editFieldOptions
         );
 
-        return NextResponse.json({ data, schema: modelSchema, uiSchema });
+        return NextResponse.json({ data, modelSchema, uiSchema });
       } else if (
         !id &&
         hasPermission(options?.model?.[resource], Permission.CREATE)

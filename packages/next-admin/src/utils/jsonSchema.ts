@@ -1,11 +1,14 @@
 import { Prisma } from "@prisma/client";
 import { UiSchema } from "@rjsf/utils";
-import { EditFieldsOptions, Field, ModelName, Schema } from "../types";
-
-export type Schemas = {
-  schema: Schema;
-  uiSchema: UiSchema;
-};
+import {
+  EditFieldsOptions,
+  Field,
+  Model,
+  ModelName,
+  Schema,
+  SchemaModel,
+  SchemaProperty,
+} from "../types";
 
 function filterProperties(properties: any): Record<string, any> {
   const filteredProperties = {};
@@ -26,7 +29,7 @@ function filterProperties(properties: any): Record<string, any> {
   return filteredProperties;
 }
 
-export function getSchemaForResource(schema: any, resource: string) {
+export function getSchemaForResource(schema: Schema, resource: string) {
   let resourceSchema =
     schema.definitions[resource as keyof typeof schema.definitions];
 
@@ -39,14 +42,12 @@ export function getSchemaForResource(schema: any, resource: string) {
 }
 
 export function getSchemas<M extends ModelName>(
-  data: any,
-  schema: any,
+  schema: SchemaModel<M>,
   dmmfSchema: readonly Prisma.DMMF.Field[],
+  data?: Model<M>,
   editFieldsOptions?: EditFieldsOptions<M>
-): Schemas & { edit: boolean; id?: string | number } {
+): { schema: SchemaModel<M>; uiSchema: UiSchema } {
   const uiSchema: UiSchema = {};
-  let edit = false;
-  let id;
 
   const { disabledFields, requiredFields } = Object.entries(
     editFieldsOptions ?? {}
@@ -64,38 +65,36 @@ export function getSchemas<M extends ModelName>(
   );
 
   if (schema && dmmfSchema) {
-    const idProperty = dmmfSchema.find((property) => property.isId);
+    (Object.keys(schema.properties) as (keyof SchemaProperty<M>)[]).forEach(
+      (property: Field<M>) => {
+        const dmmfProperty = dmmfSchema.find(
+          (dmmfProperty) => dmmfProperty.name === property
+        );
 
-    edit = !!data;
-    id = data?.[idProperty?.name ?? "id"];
-    Object.keys(schema.properties).forEach((property) => {
-      const dmmfProperty = dmmfSchema.find(
-        (dmmfProperty) => dmmfProperty.name === property
-      );
+        if (
+          dmmfProperty &&
+          requiredFields?.includes(dmmfProperty.name) &&
+          !schema.required?.includes(dmmfProperty.name)
+        ) {
+          schema.required = [...(schema.required ?? []), dmmfProperty.name];
+        }
 
-      if (
-        dmmfProperty &&
-        requiredFields?.includes(dmmfProperty.name) &&
-        !schema.require?.includes(dmmfProperty.name)
-      ) {
-        schema.required = [...(schema.required ?? []), dmmfProperty.name];
+        if (
+          dmmfProperty &&
+          (dmmfProperty.isId ||
+            dmmfProperty.name === "createdAt" ||
+            dmmfProperty?.isUpdatedAt ||
+            disabledFields?.includes(dmmfProperty.name))
+        ) {
+          data
+            ? (uiSchema[property as string] = {
+                ...uiSchema[property as string],
+                "ui:disabled": true,
+              })
+            : delete schema.properties[property];
+        }
       }
-
-      if (
-        dmmfProperty &&
-        (dmmfProperty.isId ||
-          dmmfProperty.name === "createdAt" ||
-          dmmfProperty?.isUpdatedAt ||
-          disabledFields?.includes(dmmfProperty.name))
-      ) {
-        data
-          ? (uiSchema[property] = {
-              ...uiSchema[property],
-              "ui:disabled": true,
-            })
-          : delete schema.properties[property];
-      }
-    });
+    );
   }
-  return { uiSchema, schema, edit, id };
+  return { uiSchema, schema };
 }

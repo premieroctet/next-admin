@@ -1,6 +1,5 @@
 import dynamic from "next/dynamic";
-import { AdminComponentProps, CustomUIProps } from "../types";
-import { getSchemaForResource } from "../utils/jsonSchema";
+import { AdminComponentProps, CustomUIProps, ModelName } from "../types";
 import { getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import { FormWrapper } from "./Form";
@@ -11,16 +10,17 @@ import PageLoader from "./PageLoader";
 const Head = dynamic(() => import("next/head"));
 
 // Components
-export function NextAdmin({
+export function NextAdmin<M extends ModelName>({
   basePath,
   apiBasePath,
   data,
   resource,
   schema,
+  modelSchema,
+  uiSchema,
   resources,
   slug,
   total,
-  dmmfSchema,
   dashboard,
   validation,
   isAppDir,
@@ -47,9 +47,6 @@ export function NextAdmin({
   const actions =
     actionsProp || (resource ? options?.model?.[resource]?.actions : undefined);
 
-  const modelSchema =
-    resource && schema ? getSchemaForResource(schema, resource) : undefined;
-
   const resourceTitle = resourcesTitles?.[resource!] ?? resource;
   const resourceIcon = resourcesIcons?.[resource!];
 
@@ -70,7 +67,7 @@ export function NextAdmin({
       );
     }
 
-    if ((data && !Array.isArray(data)) || (modelSchema && !data)) {
+    if ((data && !Array.isArray(data)) || (schema && !data)) {
       const customInputs = isAppDir
         ? customInputsProp
         : getCustomInputs(resource!, options!);
@@ -79,14 +76,14 @@ export function NextAdmin({
         <FormWrapper
           data={data}
           slug={slug}
-          schema={modelSchema}
-          dmmfSchema={dmmfSchema!}
+          modelSchema={modelSchema!}
+          uiSchema={uiSchema!}
           resource={resource!}
+          resources={resources!}
           validation={validation}
           title={resourceTitle!}
           customInputs={customInputs}
           actions={actions}
-          icon={resourceIcon}
           resourcesIdProperty={resourcesIdProperty!}
         />
       );
@@ -124,7 +121,6 @@ export function NextAdmin({
         user={user}
         externalLinks={externalLinks}
         options={options}
-        dmmfSchema={dmmfSchema}
         resourcesIdProperty={resourcesIdProperty!}
       >
         {renderMainComponent()}
