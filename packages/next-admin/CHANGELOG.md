@@ -1,5 +1,15 @@
 # @premieroctet/next-admin
 
+## 6.0.0
+
+### Major Changes
+
+- [db30b5c](https://github.com/premieroctet/next-admin/commit/db30b5c): feat: use exports field ([#379](https://github.com/premieroctet/next-admin/issues/379))
+
+### Minor Changes
+
+- [cdebaac](https://github.com/premieroctet/next-admin/commit/cdebaac): feat: add client actions ([#401](https://github.com/premieroctet/next-admin/issues/401))
+
 ## 5.5.0
 
 ### Minor Changes
