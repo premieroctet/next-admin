@@ -6,6 +6,9 @@
           "title": "Send email",
           "success": "Email sent successfully",
           "error": "Error while sending email"
+        },
+        "details": {
+          "title": "User details"
         }
       }
     },

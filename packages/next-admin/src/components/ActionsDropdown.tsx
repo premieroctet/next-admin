@@ -15,7 +15,9 @@ import {
 } from "./radix/Dropdown";
 
 type Props = {
-  actions: Array<ModelAction | Omit<ModelAction, "action">>;
+  actions: Array<
+    ModelAction<ModelName> | Omit<ModelAction<ModelName>, "action">
+  >;
   selectedIds: string[] | number[];
   resource: ModelName;
   selectedCount?: number;

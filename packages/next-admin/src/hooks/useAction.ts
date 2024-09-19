@@ -1,4 +1,4 @@
-import { ModelAction, ModelName } from "../types";
+import { ClientAction, ModelAction, ModelName } from "../types";
 import { useI18n } from "../context/I18nContext";
 import { useConfig } from "../context/ConfigContext";
 import { useMessage } from "../context/MessageContext";
@@ -13,7 +13,9 @@ export const useAction = (resource: ModelName, ids: string[] | number[]) => {
   const { showMessage } = useMessage();
 
   const runAction = async (
-    modelAction: ModelAction | Omit<ModelAction, "action">
+    modelAction:
+      | Exclude<ModelAction<ModelName>, ClientAction<ModelName>>
+      | Omit<Exclude<ModelAction<ModelName>, ClientAction<ModelName>>, "action">
   ) => {
     try {
       if (

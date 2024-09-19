@@ -110,6 +110,9 @@
           "title": "Envoyer un email",
           "success": "Email envoyé avec succès",
           "error": "Erreur lors de l'envoi de l'email"
+        },
+        "details": {
+          "title": "Détails de l'utilisateur"
         }
       },
       "label": "Action",

@@ -122,10 +122,7 @@ const AdvancedSearchModal = ({ isOpen, onClose, resource, schema }: Props) => {
             leaveTo="opacity-0"
             leave="transition-opacity ease-in-out duration-300"
           >
-            <DialogOverlay
-              forceMount
-              className="bg-nextadmin-background-default/70 dark:bg-dark-nextadmin-background-default/70 fixed inset-0"
-            />
+            <DialogOverlay forceMount />
           </TransitionChild>
           <TransitionChild
             as={Fragment}
@@ -138,7 +135,7 @@ const AdvancedSearchModal = ({ isOpen, onClose, resource, schema }: Props) => {
           >
             <DialogContent
               forceMount
-              className="fixed inset-x-0 max-w-xl md:left-[50%] md:top-[50%]"
+              className="max-w-xl md:left-[50%] md:top-[50%]"
             >
               <div className="flex flex-col gap-4">
                 <DialogTitle>{t("search.advanced.title")}</DialogTitle>

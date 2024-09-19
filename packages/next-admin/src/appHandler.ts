@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
-import { CreateAppHandlerParams, Permission, RequestContext } from "./types";
+import {
+  CreateAppHandlerParams,
+  Permission,
+  RequestContext,
+  ServerAction,
+} from "./types";
 import { hasPermission } from "./utils/permissions";
 import { getDataItem } from "./utils/prisma";
 import {
@@ -116,10 +121,17 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
+      if ("type" in modelAction && modelAction.type === "dialog") {
+        return NextResponse.json(
+          { error: "Action not found" },
+          { status: 404 }
+        );
+      }
+
       const body = await req.json();
 
       try {
-        await modelAction.action(body as string[] | number[]);
+        await (modelAction as ServerAction).action(body as string[] | number[]);
 
         return NextResponse.json({ ok: true });
       } catch (e) {

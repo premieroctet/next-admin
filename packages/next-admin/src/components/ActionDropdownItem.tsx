@@ -1,18 +1,23 @@
 import clsx from "clsx";
+import { useClientDialog } from "../context/ClientDialogContext";
+import { useI18n } from "../context/I18nContext";
 import { useAction } from "../hooks/useAction";
 import { ModelAction, ModelName } from "../types";
 import { DropdownItem } from "./radix/Dropdown";
-import { useI18n } from "../context/I18nContext";
 
 type Props = {
-  action: ModelAction | Omit<ModelAction, "action">;
+  action: ModelAction<ModelName> | Omit<ModelAction<ModelName>, "action">;
   resource: ModelName;
   resourceIds: string[] | number[];
+  data?: any;
 };
 
-const ActionDropdownItem = ({ action, resource, resourceIds }: Props) => {
+const ActionDropdownItem = ({ action, resource, resourceIds, data }: Props) => {
   const { t } = useI18n();
   const { runAction } = useAction(resource, resourceIds);
+  const isClientAction =
+    "component" in action && "type" in action && action.type === "dialog";
+  const { open } = useClientDialog();
 
   return (
     <DropdownItem
@@ -23,7 +28,16 @@ const ActionDropdownItem = ({ action, resource, resourceIds }: Props) => {
       })}
       onClick={(evt) => {
         evt.stopPropagation();
-        runAction(action);
+        if (isClientAction) {
+          open({
+            actionId: action.id,
+            data: data,
+            resource: resource,
+            resourceId: resourceIds[0],
+          });
+        } else {
+          runAction(action);
+        }
       }}
     >
       {t(action.title)}

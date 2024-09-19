@@ -1,5 +1,5 @@
 import { MainLayout, MainLayoutProps } from "@premieroctet/next-admin";
-import { getMainLayoutProps } from "@premieroctet/next-admin/dist/pageRouter";
+import { getMainLayoutProps } from "@premieroctet/next-admin/pageRouter";
 import { GetServerSideProps } from "next";
 import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";

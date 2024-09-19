@@ -534,13 +534,28 @@ type CustomFieldsType = {
 
 export type ActionStyle = "default" | "destructive";
 
-export type ModelAction = {
-  title: string;
-  id: string;
+export type ServerAction = {
   action: (ids: string[] | number[]) => Promise<void>;
-  style?: ActionStyle;
   successMessage?: string;
   errorMessage?: string;
+};
+
+export type ClientAction<T extends ModelName> = {
+  type: "dialog";
+  component: React.ReactElement<ClientActionDialogContentProps<T>>;
+  /**
+   * Class name to apply to the dialog content
+   */
+  className?: string;
+};
+
+export type ModelAction<T extends ModelName> = (
+  | ServerAction
+  | ClientAction<T>
+) & {
+  title: string;
+  id: string;
+  style?: ActionStyle;
 };
 
 export type ModelIcon = keyof typeof OutlineIcons;
@@ -576,7 +591,7 @@ export type ModelOptions<T extends ModelName> = {
      * an object containing the aliases of the model fields as keys, and the field name.
      */
     aliases?: Partial<Record<Field<P>, string>> & { [key: string]: string };
-    actions?: ModelAction[];
+    actions?: ModelAction<T>[];
     /**
      * the outline HeroIcon name displayed in the sidebar and pages title
      * @type ModelIcon
@@ -810,7 +825,8 @@ export type AdminComponentProps<M extends ModelName = ModelName> = {
    */
   pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
-  actions?: Omit<ModelAction, "action">[];
+  actions?: Omit<ModelAction<ModelName>, "action">[];
+  actionsMap?: Record<string, React.ReactElement>;
   translations?: Translations;
   /**
    * Global admin title
@@ -1080,3 +1096,10 @@ export type MenuProps<M extends ModelName> = {
   externalLinks?: AdminComponentProps["externalLinks"];
   title?: string;
 };
+
+export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
+  resource: ModelName;
+  resourceId: string | number;
+  data: Record<keyof Model<T>, ListDataFieldValue>;
+  onClose?: () => void;
+}>;

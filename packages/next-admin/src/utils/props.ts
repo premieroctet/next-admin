@@ -8,7 +8,7 @@ import {
   ModelName,
   NextAdminOptions,
 } from "../types";
-import { getCustomInputs } from "./options";
+import { getClientActionDialogs, getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList } from "./prisma";
 import {
   getModelIdProperty,
@@ -94,6 +94,7 @@ export async function getPropsFromParams({
 
   // We don't need to pass the action function to the component
   const actions = options?.model?.[resource]?.actions?.map((action) => {
+    // @ts-expect-error
     const { action: _, ...actionRest } = action;
     return actionRest;
   });
@@ -130,6 +131,10 @@ export async function getPropsFromParams({
         appDir: isAppDir,
       });
 
+      const actionsMap = isAppDir
+        ? getClientActionDialogs(resource, options)
+        : undefined;
+
       return {
         ...defaultProps,
         resource,
@@ -138,6 +143,7 @@ export async function getPropsFromParams({
         error: error ?? (searchParams?.error as string),
         schema,
         actions: isAppDir ? actions : undefined,
+        actionsMap,
       };
     }
     case Page.EDIT: {

@@ -1,6 +1,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import clsx from "clsx";
 import { ComponentProps, ElementRef, forwardRef } from "react";
+import { twMerge } from "tailwind-merge";
 
 export const Dropdown = DropdownMenu.Root;
 
@@ -38,9 +39,11 @@ export const DropdownContent = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <DropdownMenu.Content
-      className={clsx(
-        "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle z-50 rounded-md shadow-lg focus:outline-none focus:ring-0",
-        className
+      className={twMerge(
+        clsx(
+          "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle z-50 rounded-md shadow-lg focus:outline-none focus:ring-0",
+          className
+        )
       )}
       ref={ref}
       {...props}
@@ -56,9 +59,11 @@ export const DropdownItem = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <DropdownMenu.Item
-      className={clsx(
-        "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted hover:bg-nextadmin-background-muted group text-sm focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
-        className
+      className={twMerge(
+        clsx(
+          "text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted hover:bg-nextadmin-background-muted group text-sm focus:outline-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0",
+          className
+        )
       )}
       ref={ref}
       {...props}
@@ -74,7 +79,9 @@ export const DropdownLabel = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <DropdownMenu.Label
-      className={clsx("group text-sm font-medium text-gray-900", className)}
+      className={twMerge(
+        clsx("group text-sm font-medium text-gray-900", className)
+      )}
       ref={ref}
       {...props}
     />
@@ -89,7 +96,12 @@ export const DropdownSeparator = forwardRef<
 >(({ className, ...props }, ref) => {
   return (
     <DropdownMenu.Separator
-      className={clsx("m-1 h-px bg-nextadmin-border-strong dark:bg-dark-nextadmin-border-strong", className)}
+      className={twMerge(
+        clsx(
+          "bg-nextadmin-border-strong dark:bg-dark-nextadmin-border-strong m-1 h-px",
+          className
+        )
+      )}
       ref={ref}
       {...props}
     />
