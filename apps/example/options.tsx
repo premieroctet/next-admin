@@ -240,7 +240,7 @@ export const options: NextAdminOptions = {
           "published",
           "categories",
           "author",
-          "coAuthor",
+          "coAuthors",
           "rate",
           "tags",
         ],

@@ -110,8 +110,11 @@
         "author": {
           "$ref": "#/definitions/User"
         },
-        "coAuthor": {
-          "$ref": "#/definitions/User"
+        "coAuthors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
         },
         "categories": {
           "type": "array",
@@ -139,7 +142,6 @@
       "required": [
         "title",
         "authorId",
-        "coAuthorId",
         "tags"
       ]
     },

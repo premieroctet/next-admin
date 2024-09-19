@@ -15,6 +15,7 @@ function filterProperties(properties: any): Record<string, any> {
 
   Object.entries<Record<string, any>>(properties).map(
     ([property, attributes]) => {
+      console.log(property, attributes);
       if (
         !Object.keys(attributes).includes("$ref") &&
         !Object.keys(attributes.items || {}).includes("$ref") &&
