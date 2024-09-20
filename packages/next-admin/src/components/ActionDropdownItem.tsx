@@ -5,6 +5,7 @@ import { useI18n } from "../context/I18nContext";
 import { useAction } from "../hooks/useAction";
 import { ModelAction, ModelName } from "../types";
 import { DropdownItem } from "./radix/Dropdown";
+import { twMerge } from "tailwind-merge";
 
 type Props = {
   action: ModelAction<ModelName> | Omit<ModelAction<ModelName>, "action">;
@@ -24,12 +25,11 @@ const ActionDropdownItem = ({ action, resource, resourceIds }: Props) => {
   return (
     <DropdownItem
       key={action.title}
-      className={clsx(
-        "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1",
-        {
+      className={twMerge(
+        clsx("flex cursor-pointer items-center gap-2 rounded-md px-2 py-1", {
           "text-red-700 dark:text-red-400": action.style === "destructive",
           "hover:bg-red-50": action.style === "destructive",
-        }
+        })
       )}
       onClick={(evt) => {
         evt.stopPropagation();

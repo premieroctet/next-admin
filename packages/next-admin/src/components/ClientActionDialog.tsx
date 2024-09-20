@@ -11,6 +11,7 @@ import {
   DialogPortal,
   DialogRoot,
 } from "./radix/Dialog";
+import { twMerge } from "tailwind-merge";
 
 type Props<M extends ModelName> = {
   resource: M;
@@ -78,9 +79,11 @@ const ClientActionDialog = <M extends ModelName>({
             leave="transition-opacity ease-in-out duration-300"
           >
             <DialogContent
-              className={clsx(
-                "max-h-[90vh] max-w-screen-md max-w-xl overflow-y-auto outline-none md:left-[50%] md:top-[50%]",
-                action?.className
+              className={twMerge(
+                clsx(
+                  "max-h-[90vh] max-w-screen-md max-w-xl overflow-y-auto outline-none md:left-[50%] md:top-[50%]",
+                  action?.className
+                )
               )}
               forceMount
             >

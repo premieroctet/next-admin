@@ -42,7 +42,7 @@ const MultiSelectWidget = (props: Props) => {
 
   const displayMode =
     !!fieldOptions && "display" in fieldOptions
-      ? fieldOptions.display ?? "select"
+      ? (fieldOptions.display ?? "select")
       : "select";
 
   const fieldSortable =

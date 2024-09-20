@@ -43,6 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
+import { twMerge } from "tailwind-merge";
 
 export type ListProps = {
   resource: ModelName;
@@ -177,8 +178,10 @@ function List({
                 );
               })}
               <DropdownItem
-                className={clsx(
-                  "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-red-700 hover:bg-red-50 dark:text-red-400"
+                className={twMerge(
+                  clsx(
+                    "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-red-700 hover:bg-red-50 dark:text-red-400"
+                  )
                 )}
                 onClick={(evt) => {
                   evt.stopPropagation();
