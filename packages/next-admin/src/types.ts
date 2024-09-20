@@ -1070,7 +1070,7 @@ export type FormProps = {
 
 export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
   resource: ModelName;
-  resourceId: string | number;
-  data: Model<T>;
+  resourceIds: Array<string | number>;
+  data: Array<Model<T>>;
   onClose?: () => void;
 }>;

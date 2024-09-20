@@ -42,7 +42,7 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
-    .get(`${apiBasePath}/:model/:id/raw`, async (req, ctx) => {
+    .get(`${apiBasePath}/:model/raw`, async (req, ctx) => {
       const resource = getResourceFromParams(ctx.params[paramKey], resources);
 
       if (!resource) {
@@ -52,8 +52,16 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
-      const id = formatId(resource, ctx.params[paramKey].at(-2)!);
-      const data = await getRawData({ prisma, resource, resourceId: id });
+      const ids = req.nextUrl.searchParams
+        .get("ids")
+        ?.split(",")
+        .map((id) => formatId(resource, id));
+
+      if (!ids) {
+        return NextResponse.json({ error: "No ids provided" }, { status: 400 });
+      }
+
+      const data = await getRawData({ prisma, resource, resourceIds: ids });
 
       return NextResponse.json(data);
     })

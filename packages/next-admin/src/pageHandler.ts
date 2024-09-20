@@ -68,7 +68,7 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
-    .get(`${apiBasePath}/:model/:id/raw`, async (req, res) => {
+    .get(`${apiBasePath}/:model/raw`, async (req, res) => {
       const resource = getResourceFromParams(
         [req.query[paramKey]![0]],
         resources
@@ -78,8 +78,14 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(404).json({ error: "Resource not found" });
       }
 
-      const id = formatId(resource, req.query[paramKey]!.at(-2)!);
-      const data = await getRawData({ prisma, resource, resourceId: id });
+      let ids: any = req.query.ids;
+      if (Array.isArray(ids)) {
+        ids = ids.map((id) => formatId(resource, id));
+      } else {
+        ids = ids?.split(",").map((id: string) => formatId(resource, id));
+      }
+
+      const data = await getRawData({ prisma, resource, resourceIds: ids });
 
       return res.json(data);
     })

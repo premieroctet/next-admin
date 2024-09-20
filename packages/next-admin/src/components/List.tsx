@@ -173,7 +173,6 @@ function List({
                     action={action}
                     resourceIds={[row.original[idProperty].value as string]}
                     resource={resource}
-                    data={row.original}
                   />
                 );
               })}

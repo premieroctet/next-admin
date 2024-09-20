@@ -10,10 +10,9 @@ type Props = {
   action: ModelAction<ModelName> | Omit<ModelAction<ModelName>, "action">;
   resource: ModelName;
   resourceIds: string[] | number[];
-  data?: any;
 };
 
-const ActionDropdownItem = ({ action, resource, resourceIds, data }: Props) => {
+const ActionDropdownItem = ({ action, resource, resourceIds }: Props) => {
   const { t } = useI18n();
   const { runAction } = useAction(resource, resourceIds);
   const { open: openActionDialog } = useClientActionDialog();
@@ -38,7 +37,7 @@ const ActionDropdownItem = ({ action, resource, resourceIds, data }: Props) => {
           openActionDialog({
             action: action,
             resource,
-            resourceId: resourceIds[0],
+            resourceIds,
           });
         } else {
           runAction(action);

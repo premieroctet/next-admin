@@ -14,7 +14,7 @@ import {
 
 type Props<M extends ModelName> = {
   resource: M;
-  resourceId: string | number;
+  resourceIds: Array<string | number>;
   onClose: () => void;
   action: ClientAction<M> & {
     title: string;
@@ -25,23 +25,25 @@ type Props<M extends ModelName> = {
 
 const ClientActionDialog = <M extends ModelName>({
   resource,
-  resourceId,
+  resourceIds,
   onClose,
   action,
 }: Props<M>) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState<Model<M> | null>(null);
+  const [data, setData] = useState<Array<Model<M>> | null>(null);
   const { apiBasePath } = useConfig();
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(`${apiBasePath}/${slugify(resource)}/${resourceId}/raw`)
+    fetch(
+      `${apiBasePath}/${slugify(resource)}/raw?ids=${resourceIds.join(",")}`
+    )
       .then((res) => res.json())
       .then(setData)
       .finally(() => {
         setIsLoading(false);
       });
-  }, [resource, resourceId]);
+  }, [resource, resourceIds]);
 
   return (
     <DialogRoot
@@ -77,7 +79,7 @@ const ClientActionDialog = <M extends ModelName>({
           >
             <DialogContent
               className={clsx(
-                "max-w-xl outline-none md:left-[50%] md:top-[50%]",
+                "max-h-[90vh] max-w-screen-md max-w-xl overflow-y-auto outline-none md:left-[50%] md:top-[50%]",
                 action?.className
               )}
               forceMount
@@ -90,8 +92,8 @@ const ClientActionDialog = <M extends ModelName>({
               {data &&
                 cloneElement(action.component, {
                   data: data,
-                  resource: resource,
-                  resourceId: resourceId,
+                  resource,
+                  resourceIds,
                   onClose,
                 })}
             </DialogContent>

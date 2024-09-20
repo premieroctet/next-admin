@@ -670,11 +670,11 @@ export const getDataItem = async <M extends ModelName>({
 export const getRawData = async ({
   prisma,
   resource,
-  resourceId,
+  resourceIds,
 }: {
   prisma: PrismaClient;
   resource: ModelName;
-  resourceId: string | number;
+  resourceIds: Array<string | number>;
 }) => {
   const modelDMMF = getPrismaModelForResource(resource);
 
@@ -689,8 +689,8 @@ export const getRawData = async ({
   );
 
   // @ts-expect-error
-  const data = await prisma[resource].findUnique({
-    where: { id: resourceId },
+  const data = await prisma[resource].findMany({
+    where: { id: { in: resourceIds } },
     include,
   });
 

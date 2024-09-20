@@ -11,7 +11,7 @@ import { ActionStyle, ClientAction, ModelName } from "../types";
 
 type ClientActionDialogParams<M extends ModelName> = {
   resource: M;
-  resourceId: string | number;
+  resourceIds: Array<string | number>;
   action: ClientAction<M> & {
     title: string;
     id: string;
