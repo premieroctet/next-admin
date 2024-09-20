@@ -11,6 +11,7 @@ const categories = [
   "Humanities",
 ];
 
+
 async function main() {
   for (const i of Array.from(Array(25).keys())) {
     await prisma.user.upsert({

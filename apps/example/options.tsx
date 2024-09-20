@@ -156,6 +156,7 @@ export const options: NextAdminOptions = {
       actions: [
         {
           id: "submit-email",
+          icon: "EnvelopeIcon",
           title: "actions.user.email.title",
           action: async (ids) => {
             console.log("Sending email to " + ids.length + " users");
@@ -165,6 +166,7 @@ export const options: NextAdminOptions = {
         },
         {
           type: "dialog",
+          icon: "EyeIcon",
           id: "user-details",
           title: "actions.user.details.title",
           component: <UserDetailsDialog />,

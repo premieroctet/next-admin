@@ -14,6 +14,7 @@ import {
   PrismaListRequest,
   Select,
 } from "../types";
+import { validateQuery } from "./advancedSearch";
 import {
   enumValueForEnumType,
   findRelationInData,
@@ -24,7 +25,6 @@ import {
   transformData,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
-import { validateQuery } from "./advancedSearch";
 
 type CreateNestedWherePredicateParams<M extends ModelName> = {
   field: Prisma.DMMF.Field;
@@ -540,7 +540,6 @@ export const selectPayloadForModel = <M extends ModelName>(
   const idProperty = getModelIdProperty(resource);
 
   const displayKeys = options?.display;
-
   let selectedFields = model?.fields.reduce(
     (acc, field) => {
       if (
@@ -658,5 +657,42 @@ export const getDataItem = async <M extends ModelName>({
     }
   });
   data = transformData(data, resource, edit ?? {}, options);
+  return data;
+};
+
+/**
+ * Get raw data from Prisma (2-deep nested relations)
+ * @param prisma
+ * @param resource
+ * @param resourceId
+ * @returns
+ */
+export const getRawData = async ({
+  prisma,
+  resource,
+  resourceId,
+}: {
+  prisma: PrismaClient;
+  resource: ModelName;
+  resourceId: string | number;
+}) => {
+  const modelDMMF = getPrismaModelForResource(resource);
+
+  const include = modelDMMF?.fields.reduce(
+    (acc, field) => {
+      if (field.kind === "object") {
+        acc[field.name] = true;
+      }
+      return acc;
+    },
+    {} as Record<string, true>
+  );
+
+  // @ts-expect-error
+  const data = await prisma[resource].findUnique({
+    where: { id: resourceId },
+    include,
+  });
+
   return data;
 };

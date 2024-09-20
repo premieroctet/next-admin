@@ -1,10 +1,10 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import type { JSONSchema7 } from "json-schema";
+import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
-import { NextApiRequest } from "next";
 
 declare type JSONSchema7Definition = JSONSchema7 & {
   relation?: ModelName;
@@ -553,6 +553,7 @@ export type ModelAction<T extends ModelName> = (
 ) & {
   title: string;
   id: string;
+  icon?: keyof typeof OutlineIcons;
   style?: ActionStyle;
 };
 
@@ -1070,6 +1071,6 @@ export type FormProps = {
 export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
   resource: ModelName;
   resourceId: string | number;
-  data: Record<keyof Model<T>, ListDataFieldValue>;
+  data: Model<T>;
   onClose?: () => void;
 }>;
