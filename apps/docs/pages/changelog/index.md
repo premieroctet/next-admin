@@ -1,5 +1,14 @@
 # @premieroctet/next-admin
 
+## 6.0.1
+
+### Patch Changes
+
+- [497ab87](https://github.com/premieroctet/next-admin/commit/497ab87): Add translation for success/error messages in form
+- [f5347cf](https://github.com/premieroctet/next-admin/commit/f5347cf): Fix dialog action in form
+- [f5347cf](https://github.com/premieroctet/next-admin/commit/f5347cf): Add icons on action dropdown
+- [32f5562](https://github.com/premieroctet/next-admin/commit/32f5562): Fix user pictures in menu
+
 ## 6.0.0
 
 ### Major Changes
