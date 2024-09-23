@@ -7,6 +7,7 @@ import {
 import clsx from "clsx";
 import { useEffect } from "react";
 import { useMessage } from "../context/MessageContext";
+import { useI18n } from "../context/I18nContext";
 
 const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
   const { message, hideMessage } = useMessage();
@@ -15,6 +16,8 @@ const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [hideMessage, message]);
+
+  const { t } = useI18n();
 
   return (
     message && (
@@ -46,7 +49,7 @@ const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
             )}
           </div>
           <div className="ml-3">
-            <p className="text-sm font-medium">{message.message}</p>
+            <p className="text-sm font-medium">{t(message.message)}</p>
           </div>
         </div>
       </div>

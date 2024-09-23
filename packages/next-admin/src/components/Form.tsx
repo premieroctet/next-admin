@@ -183,7 +183,7 @@ const Form = ({
                         query: {
                           message: JSON.stringify({
                             type: "success",
-                            message: "Deleted successfully",
+                            message: "form.delete.succeed",
                           }),
                         },
                       });
@@ -253,7 +253,7 @@ const Form = ({
             query: {
               message: JSON.stringify({
                 type: "success",
-                message: "Deleted successfully",
+                message: "form.delete.succeed",
               }),
             },
           });
@@ -268,7 +268,7 @@ const Form = ({
             query: {
               message: JSON.stringify({
                 type: "success",
-                message: "Created successfully",
+                message: "form.create.succeed",
               }),
             },
           });
@@ -282,7 +282,7 @@ const Form = ({
           if (pathname === location.pathname) {
             showMessage({
               type: "success",
-              message: "Updated successfully",
+              message: "form.update.succeed",
             });
           } else {
             return router.push({
@@ -290,7 +290,7 @@ const Form = ({
               query: {
                 message: JSON.stringify({
                   type: "success",
-                  message: "Updated successfully",
+                  message: "form.update.succeed",
                 }),
               },
             });
