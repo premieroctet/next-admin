@@ -172,7 +172,9 @@ export default function Menu({
       <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color flex flex-1 items-center gap-1 px-2 py-3 text-sm font-semibold leading-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {user.data.picture ? (
-            <Image
+            <img
+              width={32}
+              height={32}
               className="flex h-8 w-8 flex-shrink-0 rounded-full"
               src={user.data.picture}
               alt="User picture"
