@@ -34,5 +34,6 @@ export const getNextAdminProps = async ({
   return { props };
 };
 
-
-export const getMainLayoutProps = (args: Omit<GetMainLayoutPropsParams, 'isAppDir' | 'params'>) => _getMainLayoutProps({ ...args, isAppDir: false });
+export const getMainLayoutProps = (
+  args: Omit<GetMainLayoutPropsParams, "isAppDir" | "params">
+) => _getMainLayoutProps({ ...args, isAppDir: false });

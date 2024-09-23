@@ -108,7 +108,7 @@ export default function Menu<M extends ModelName = ModelName>({
 
   const getItemProps = (model: ModelName) => {
     return {
-      name: t(`model.${model}.plural`, {}, resourcesTitles?.[model] || model),
+      name: t(`model.${model}.plural`, {}, resourcesTitles?.[model] ?? model),
       href: `${basePath}/${slugify(model)}`,
       current: model === currentResource,
       icon: resourcesIcons?.[model],
@@ -155,7 +155,9 @@ export default function Menu<M extends ModelName = ModelName>({
       <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color flex flex-1 items-center gap-1 px-2 py-3 text-sm font-semibold leading-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {user.data.picture ? (
-            <Image
+            <img
+              width={32}
+              height={32}
               className="flex h-8 w-8 flex-shrink-0 rounded-full"
               src={user.data.picture}
               alt="User picture"

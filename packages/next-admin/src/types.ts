@@ -555,6 +555,7 @@ export type ModelAction<T extends ModelName> = (
 ) & {
   title: string;
   id: string;
+  icon?: keyof typeof OutlineIcons;
   style?: ActionStyle;
 };
 
@@ -1099,7 +1100,7 @@ export type MenuProps<M extends ModelName> = {
 
 export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
   resource: ModelName;
-  resourceId: string | number;
-  data: Record<keyof Model<T>, ListDataFieldValue>;
+  resourceIds: Array<string | number>;
+  data: Array<Model<T>>;
   onClose?: () => void;
 }>;

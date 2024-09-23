@@ -1,6 +1,7 @@
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
+import UserDetailsDialog from "./components/UserDetailsDialogContent";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin Page Router",
@@ -115,6 +116,13 @@ export const options: NextAdminOptions = {
           },
           successMessage: "Email sent successfully",
           errorMessage: "Error while sending email",
+        },
+        {
+          type: "dialog",
+          icon: "EyeIcon",
+          id: "user-details",
+          title: "User details",
+          component: <UserDetailsDialog />,
         },
       ],
     },

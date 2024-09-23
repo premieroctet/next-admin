@@ -75,6 +75,7 @@ export default function ListHeader({
           {
             id: SPECIFIC_IDS_TO_RUN_ACTION.DELETE,
             title: t("actions.delete.label"),
+            icon: "TrashIcon",
             style: "destructive",
             action: async () => {
               await onDelete();
@@ -139,10 +140,7 @@ export default function ListHeader({
           <AdvancedSearchButton resource={resource} schema={schema} />
           {Boolean(selectedRowsCount) && !!actions.length && (
             <ActionsDropdown
-              // We don't want client actions in the list header
-              actions={actions.filter(
-                (action) => !("type" in action && action.type === "dialog")
-              )}
+              actions={actions}
               resource={resource}
               selectedIds={getSelectedRowsIds()}
               selectedCount={selectedRowsCount}

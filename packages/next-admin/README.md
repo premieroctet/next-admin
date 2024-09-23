@@ -51,7 +51,7 @@ Bonus: Customize the admin dashboard by passing the `NextAdminOptions` options t
 
 An example of `next-admin` options:
 
-```tsx 
+```tsx
 // app/admin/options.ts
 import { NextAdminOptions } from "@premieroctet/next-admin";
 
@@ -118,7 +118,6 @@ export const options: NextAdminOptions = {
   },
 };
 ```
-
 
 ## 📄 Documentation
 

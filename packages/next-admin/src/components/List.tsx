@@ -1,10 +1,11 @@
 "use client";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
+import clsx from "clsx";
 import debounce from "lodash/debounce";
 import { ChangeEvent, useEffect, useState, useTransition } from "react";
-import clsx from "clsx";
 import { ITEMS_PER_PAGE } from "../config";
+import ClientActionDialogProvider from "../context/ClientActionDialogContext";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { MessageProvider } from "../context/MessageContext";
@@ -19,6 +20,7 @@ import {
   ModelName,
   Schema,
 } from "../types";
+import ActionDropdownItem from "./ActionDropdownItem";
 import { DataTable } from "./DataTable";
 import Filters from "./Filters";
 import ListHeader from "./ListHeader";
@@ -41,9 +43,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./radix/Select";
-import ActionDropdownItem from "./ActionDropdownItem";
-import ClientDialogProvider from "../context/ClientDialogContext";
-import ClientActionDialog from "./ClientActionDialog";
+import { twMerge } from "tailwind-merge";
 
 export type ListProps = {
   resource: ModelName;
@@ -174,19 +174,21 @@ function List({
                     action={action}
                     resourceIds={[row.original[idProperty].value as string]}
                     resource={resource}
-                    data={row.original}
                   />
                 );
               })}
               <DropdownItem
-                className={clsx(
-                  "cursor-pointer rounded-md px-2 py-1 text-red-700 hover:bg-red-50 dark:text-red-400"
+                className={twMerge(
+                  clsx(
+                    "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-red-700 hover:bg-red-50 dark:text-red-400"
+                  )
                 )}
                 onClick={(evt) => {
                   evt.stopPropagation();
                   deleteItems([row.original[idProperty].value as string]);
                 }}
               >
+                <TrashIcon className="h-5 w-5" />
                 {t("list.row.actions.delete.label")}
               </DropdownItem>
             </DropdownContent>
@@ -215,7 +217,7 @@ function List({
   };
 
   return (
-    <ClientDialogProvider>
+    <ClientActionDialogProvider>
       <div className="flow-root h-full">
         <ListHeader
           title={title}
@@ -303,8 +305,7 @@ function List({
           ) : null}
         </div>
       </div>
-      <ClientActionDialog actionsMap={actionsMap} />
-    </ClientDialogProvider>
+    </ClientActionDialogProvider>
   );
 }
 

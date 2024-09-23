@@ -35,6 +35,6 @@ export const validate = <M extends ModelName>(
   }
 
   if (errors.length > 0) {
-    throw new ValidationError("Validation error", errors);
+    throw new ValidationError("form.validation.error", errors);
   }
 };

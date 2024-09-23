@@ -63,7 +63,7 @@ export function isImageType(url: string) {
 
 /**
  * Get the filename from a file url
-*/  
+ */
 export function getFilenameFromUrl(url: string) {
   if (isBase64Url(url)) {
     return undefined;

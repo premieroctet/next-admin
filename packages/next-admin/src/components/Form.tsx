@@ -29,6 +29,7 @@ import React, {
   useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
+import ClientActionDialogProvider from "../context/ClientActionDialogContext";
 import { useConfig } from "../context/ConfigContext";
 import FormDataProvider, {
   FormDataConsumer,
@@ -183,14 +184,14 @@ export const Form = <M extends ModelName>({
                         query: {
                           message: JSON.stringify({
                             type: "success",
-                            message: "Deleted successfully",
+                            message: t("form.delete.succeed"),
                           }),
                         },
                       });
                     } catch (e) {
                       showMessage({
                         type: "error",
-                        message: (e as Error).message,
+                        message: t((e as Error).message),
                       });
                     } finally {
                       setIsPending(false);
@@ -253,7 +254,7 @@ export const Form = <M extends ModelName>({
             query: {
               message: JSON.stringify({
                 type: "success",
-                message: "Deleted successfully",
+                message: t("form.delete.succeed"),
               }),
             },
           });
@@ -268,7 +269,7 @@ export const Form = <M extends ModelName>({
             query: {
               message: JSON.stringify({
                 type: "success",
-                message: "Created successfully",
+                message: t("form.create.succeed"),
               }),
             },
           });
@@ -282,7 +283,7 @@ export const Form = <M extends ModelName>({
           if (pathname === location.pathname) {
             showMessage({
               type: "success",
-              message: "Updated successfully",
+              message: t("form.update.succeed"),
             });
           } else {
             return router.push({
@@ -290,7 +291,7 @@ export const Form = <M extends ModelName>({
               query: {
                 message: JSON.stringify({
                   type: "success",
-                  message: "Updated successfully",
+                  message: t("form.update.succeed"),
                 }),
               },
             });
@@ -300,7 +301,7 @@ export const Form = <M extends ModelName>({
         if (result?.error) {
           showMessage({
             type: "error",
-            message: result.error,
+            message: t(result.error),
           });
         }
       } finally {
@@ -565,18 +566,23 @@ export const Form = <M extends ModelName>({
 export const FormWrapper = <M extends ModelName>(
   props: FormWrapperProps<M>
 ) => {
+  const { pathname } = useRouterInternal();
   const { data, modelSchema, uiSchema, resource } = props;
+  const [id] =
+    pathname.split("/").slice(-1)[0] !== "new"
+      ? pathname.split("/").slice(-1)
+      : [undefined];
 
   return (
-    <>
-      <ResourceProvider
-        resource={resource}
-        modelSchema={modelSchema}
-        uiSchema={uiSchema}
-      >
+    <ResourceProvider
+      resource={resource}
+      modelSchema={modelSchema}
+      uiSchema={uiSchema}
+    >
+      <ClientActionDialogProvider>
         <FormHeader {...props} />
         <MessageProvider>
-          <FormDataProvider data={{}}>
+          <FormDataProvider>
             <FormStateProvider>
               <div className="relative h-full">
                 <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
@@ -587,6 +593,7 @@ export const FormWrapper = <M extends ModelName>(
                         return (
                           <Form<M>
                             data={{ ...data, ...formData }}
+                            id={id}
                             validation={props.validation}
                             customInputs={props.customInputs}
                           />
@@ -599,7 +606,7 @@ export const FormWrapper = <M extends ModelName>(
             </FormStateProvider>
           </FormDataProvider>
         </MessageProvider>
-      </ResourceProvider>
-    </>
+      </ClientActionDialogProvider>
+    </ResourceProvider>
   );
 };

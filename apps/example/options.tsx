@@ -1,7 +1,7 @@
+import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
-import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
@@ -96,6 +96,8 @@ export const options: NextAdminOptions = {
         fields: {
           name: {
             required: true,
+            validate: (name) =>
+              (name && name.length > 2) || "form.user.name.error",
           },
           email: {
             validate: (email) => email.includes("@") || "form.user.email.error",
@@ -160,6 +162,7 @@ export const options: NextAdminOptions = {
       actions: [
         {
           id: "submit-email",
+          icon: "EnvelopeIcon",
           title: "actions.user.email.title",
           action: async (ids) => {
             console.log("Sending email to " + ids.length + " users");
@@ -169,6 +172,7 @@ export const options: NextAdminOptions = {
         },
         {
           type: "dialog",
+          icon: "EyeIcon",
           id: "user-details",
           title: "actions.user.details.title",
           component: <UserDetailsDialog />,

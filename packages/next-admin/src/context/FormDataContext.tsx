@@ -12,8 +12,10 @@ const FormDataContext = createContext({
 
 export const useFormData = () => useContext(FormDataContext);
 
-const FormDataProvider = ({ data, children }: PropsWithChildren<{data: any}>) => {
-  const [formData, setFormData] = useState<any>(data);
+const FormDataProvider = ({
+  children,
+}: PropsWithChildren) => {
+  const [formData, setFormData] = useState<any>({});
 
   return (
     <FormDataContext.Provider value={{ formData, setFormData }}>

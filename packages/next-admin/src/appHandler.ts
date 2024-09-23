@@ -10,7 +10,7 @@ import {
   ServerAction,
 } from "./types";
 import { hasPermission } from "./utils/permissions";
-import { getDataItem } from "./utils/prisma";
+import { getDataItem, getRawData } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
@@ -43,6 +43,29 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
+    .get(`${apiBasePath}/:model/raw`, async (req, ctx) => {
+      const resource = getResourceFromParams(ctx.params[paramKey], resources);
+
+      if (!resource) {
+        return NextResponse.json(
+          { error: "Resource not found" },
+          { status: 404 }
+        );
+      }
+
+      const ids = req.nextUrl.searchParams
+        .get("ids")
+        ?.split(",")
+        .map((id) => formatId(resource, id));
+
+      if (!ids) {
+        return NextResponse.json({ error: "No ids provided" }, { status: 400 });
+      }
+
+      const data = await getRawData({ prisma, resource, resourceIds: ids });
+
+      return NextResponse.json(data);
+    })
     .get(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
       const resource = getResourceFromParams(ctx.params[paramKey], resources);
 
@@ -58,35 +81,28 @@ export const createHandler = <P extends string = "nextadmin">({
           ? formatId(resource, ctx.params[paramKey].at(-1)!)
           : undefined;
 
-      let data;
-
-      if (id && hasPermission(options?.model?.[resource], Permission.EDIT)) {
-        data = await getDataItem({
-          prisma,
-          resource,
-          resourceId: id,
-          options,
-        });
-
-        let { uiSchema, schema: modelSchema } = await transformSchema(
-          resource,
-          schema,
-          options,
-          data
-        );
-
-        return NextResponse.json({ data, modelSchema, uiSchema });
-      } else if (
-        !id &&
-        hasPermission(options?.model?.[resource], Permission.CREATE)
+      if (
+        (id && hasPermission(options?.model?.[resource], Permission.EDIT)) ||
+        (!id && hasPermission(options?.model?.[resource], Permission.CREATE))
       ) {
+        let data;
+        if (id) {
+          data = await getDataItem({
+            prisma,
+            resource,
+            resourceId: id,
+            options,
+          });
+        }
+
         let { uiSchema, schema: modelSchema } = await transformSchema(
           resource,
           schema,
           options,
           data
         );
-        return NextResponse.json({ data: {}, modelSchema, uiSchema });
+
+        return NextResponse.json({ data: data ?? {}, modelSchema, uiSchema });
       } else {
         return NextResponse.json(
           { error: "You don't have permission to view this resource" },
@@ -162,6 +178,18 @@ export const createHandler = <P extends string = "nextadmin">({
         ctx.params[paramKey].length === 2
           ? formatId(resource, ctx.params[paramKey].at(-1)!)
           : undefined;
+
+      console.log("id", id);
+
+      if (
+        (id && !hasPermission(options?.model?.[resource], Permission.EDIT)) ||
+        (!id && !hasPermission(options?.model?.[resource], Permission.CREATE))
+      ) {
+        return NextResponse.json(
+          { error: "You don't have permission to edit this resource" },
+          { status: 403 }
+        );
+      }
 
       const editOptions = options?.model?.[resource]?.edit;
 
