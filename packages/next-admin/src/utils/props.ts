@@ -9,7 +9,7 @@ import {
   NextAdminOptions,
 } from "../types";
 import { getClientActionDialogs, getCustomInputs } from "./options";
-import { getDataItem, getMappedDataList } from "./prisma";
+import { getDataItem, getMappedDataList, getRawData } from "./prisma";
 import {
   getModelIdProperty,
   getPrismaModelForResource,
