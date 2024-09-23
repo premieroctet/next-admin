@@ -14,9 +14,9 @@ jobs:
         run: yarn install
       - name: Create .env file in exemple
         run: |
-          rm apps/exemple/.env
-          touch apps/exemple/.env
-          echo POSTGRES_URL_NON_POOLING=${{ secrets.POSTGRES_URL_NON_POOLING }} >> apps/exemple/.env
-          echo POSTGRES_URL=${{ secrets.POSTGRES_URL }} >> apps/exemple/.env
+          rm apps/example/.env
+          touch apps/example/.env
+          echo POSTGRES_URL_NON_POOLING=${{ secrets.POSTGRES_URL_NON_POOLING }} >> apps/example/.env
+          echo POSTGRES_URL=${{ secrets.POSTGRES_URL }} >> apps/example/.env
       - name: Reset database
         run: yarn reset-database
