@@ -75,6 +75,18 @@
       "loading": "Chargement"
     },
     "form": {
+      "create": {
+        "succeed": "Création réussie"
+      },
+      "update": {
+        "succeed": "Mise à jour réussie"
+      },
+      "delete": {
+        "succeed": "Suppression réussie"
+      },
+      "validation": {
+        "error": "Erreur de validation"
+      },
       "button": {
         "delete": {
           "label": "Supprimer"

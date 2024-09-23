@@ -1,7 +1,7 @@
+import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
-import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
@@ -95,6 +95,8 @@ export const options: NextAdminOptions = {
         fields: {
           name: {
             required: true,
+            validate: (name) =>
+              (name && name.length > 2) || "form.user.name.error",
           },
           email: {
             validate: (email) => email.includes("@") || "form.user.email.error",

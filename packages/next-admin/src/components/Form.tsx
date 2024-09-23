@@ -184,14 +184,14 @@ const Form = ({
                         query: {
                           message: JSON.stringify({
                             type: "success",
-                            message: "Deleted successfully",
+                            message: t("form.delete.succeed"),
                           }),
                         },
                       });
                     } catch (e) {
                       showMessage({
                         type: "error",
-                        message: (e as Error).message,
+                        message: t((e as Error).message),
                       });
                     } finally {
                       setIsPending(false);
@@ -254,7 +254,7 @@ const Form = ({
             query: {
               message: JSON.stringify({
                 type: "success",
-                message: "Deleted successfully",
+                message: t("form.delete.succeed"),
               }),
             },
           });
@@ -269,7 +269,7 @@ const Form = ({
             query: {
               message: JSON.stringify({
                 type: "success",
-                message: "Created successfully",
+                message: t("form.create.succeed"),
               }),
             },
           });
@@ -283,7 +283,7 @@ const Form = ({
           if (pathname === location.pathname) {
             showMessage({
               type: "success",
-              message: "Updated successfully",
+              message: t("form.update.succeed"),
             });
           } else {
             return router.push({
@@ -291,7 +291,7 @@ const Form = ({
               query: {
                 message: JSON.stringify({
                   type: "success",
-                  message: "Updated successfully",
+                  message: t("form.update.succeed"),
                 }),
               },
             });
@@ -301,7 +301,7 @@ const Form = ({
         if (result?.error) {
           showMessage({
             type: "error",
-            message: result.error,
+            message: t(result.error),
           });
         }
       } finally {
