@@ -12,8 +12,11 @@ jobs:
         uses: actions/checkout@v2
       - name: Install dependencies
         run: yarn install
+      - name: Create .env file in exemple
+        run: |
+          rm apps/exemple/.env
+          touch apps/exemple/.env
+          echo POSTGRES_URL_NON_POOLING=${{ secrets.POSTGRES_URL_NON_POOLING }} >> apps/exemple/.env
+          echo POSTGRES_URL=${{ secrets.POSTGRES_URL }} >> apps/exemple/.env
       - name: Reset database
-        env:
-          POSTGRES_URL_NON_POOLING: ${{ env.POSTGRES_URL_NON_POOLING }}
-          POSTGRES_URL: ${{ env.POSTGRES_URL }}
         run: yarn reset-database
