@@ -37,7 +37,7 @@ const Checkbox = ({
       className={clsx(
         "outline-nextadmin-primary-500 flex h-4 w-4 items-center justify-center rounded border text-white focus:outline focus:outline-1 focus:outline-offset-2",
         (status === true || status === "indeterminate") &&
-          "border-nextadmin-primary-500 bg-nextadmin-primary-500 ",
+          "border-nextadmin-primary-500 bg-nextadmin-primary-500",
         status === false &&
           "border-nextadmin-border-default dark:border-dark-nextadmin-border-default bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default",
         className

@@ -28,6 +28,7 @@ import React, {
   useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
+import ClientActionDialogProvider from "../context/ClientActionDialogContext";
 import { useConfig } from "../context/ConfigContext";
 import FormDataProvider, { useFormData } from "../context/FormDataContext";
 import FormStateProvider, { useFormState } from "../context/FormStateContext";
@@ -47,6 +48,7 @@ import { getSchemas } from "../utils/jsonSchema";
 import { formatLabel, slugify } from "../utils/tools";
 import FormHeader from "./FormHeader";
 import ArrayField from "./inputs/ArrayField";
+import BaseInput from "./inputs/BaseInput";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
@@ -64,7 +66,6 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import BaseInput from "./inputs/BaseInput";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
@@ -564,7 +565,7 @@ const Form = ({
 
   return (
     <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
         <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <RjsfFormComponent ref={formRef} />
@@ -577,14 +578,16 @@ const Form = ({
 const FormWrapper = (props: FormProps) => {
   return (
     <>
-      <FormHeader {...props} />
-      <MessageProvider>
-        <FormDataProvider data={props.data}>
-          <FormStateProvider>
-            <Form {...props} />
-          </FormStateProvider>
-        </FormDataProvider>
-      </MessageProvider>
+      <ClientActionDialogProvider>
+        <FormHeader {...props} />
+        <MessageProvider>
+          <FormDataProvider data={props.data}>
+            <FormStateProvider>
+              <Form {...props} />
+            </FormStateProvider>
+          </FormDataProvider>
+        </MessageProvider>
+      </ClientActionDialogProvider>
     </>
   );
 };

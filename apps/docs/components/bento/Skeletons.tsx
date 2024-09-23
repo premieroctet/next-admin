@@ -34,7 +34,7 @@ export const SkeletonOne = () => {
       initial="initial"
       animate="visible"
       whileHover="hover"
-      className=" dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex h-full min-h-[6rem] w-full flex-1 flex-col space-y-2"
+      className="dark:bg-dot-white/[0.2] bg-dot-black/[0.2] flex h-full min-h-[6rem] w-full flex-1 flex-col space-y-2"
     >
       {false && (
         <motion.div className="h-0 w-0 border-b-[50px] border-l-[30px] border-r-[30px] border-b-black border-l-transparent border-r-transparent" />
@@ -146,9 +146,7 @@ export const SkeletonThree = () => {
           <CheckBadgeIcon className="absolute right-0 top-6 h-6 w-6 text-teal-600" />
         </div>
       </motion.div>
-      <motion.div className="pl-4 ">
-        {`includeRequiredFields = true`}
-      </motion.div>
+      <motion.div className="pl-4">{`includeRequiredFields = true`}</motion.div>
       <motion.div>{`}`}</motion.div>
     </motion.div>
   );
@@ -188,7 +186,7 @@ export const SkeletonFour = () => {
     >
       <motion.div
         variants={variants}
-        className="flex flex-row items-center space-x-2 rounded-full border border-neutral-100  bg-white p-2 dark:border-white/[0.4] dark:bg-black"
+        className="flex flex-row items-center space-x-2 rounded-full border border-neutral-100 bg-white p-2 dark:border-white/[0.4] dark:bg-black"
       >
         <MagnifyingGlassIcon className="h-6 w-6" />
         <div className="h-4 w-full rounded-full bg-gray-100 dark:bg-neutral-700" />

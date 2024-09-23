@@ -31,18 +31,23 @@ export const pipe =
     }, Promise.resolve(x));
   };
 
-export const extractSerializable = <T>(obj: T): T => {
+export const extractSerializable = <T>(obj: T, isAppDir?: boolean): T => {
   if (Array.isArray(obj)) {
-    return obj.map(extractSerializable) as unknown as T;
+    return obj.map((item) =>
+      extractSerializable(item, isAppDir)
+    ) as unknown as T;
   } else if (obj === null) {
     return obj;
   } else if (typeof obj === "object") {
+    if (isAppDir && React.isValidElement(obj)) {
+      return obj;
+    }
     let newObj = {} as T;
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         newObj = {
           ...newObj,
-          [key]: extractSerializable(obj[key]),
+          [key]: extractSerializable(obj[key], isAppDir),
         };
       }
     }

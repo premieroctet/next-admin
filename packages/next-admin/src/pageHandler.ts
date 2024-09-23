@@ -1,10 +1,12 @@
 import { PrismaClient } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler, createRouter } from "next-connect";
+import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
 import { NextAdminOptions, Permission, ServerAction } from "./types";
 import { hasPermission } from "./utils/permissions";
+import { getRawData } from "./utils/prisma";
 import {
   formatId,
   getFormDataValues,
@@ -12,7 +14,6 @@ import {
   getResourceFromParams,
   getResources,
 } from "./utils/server";
-import { HookError } from "./exceptions/HookError";
 
 type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**
@@ -67,6 +68,27 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
+    .get(`${apiBasePath}/:model/raw`, async (req, res) => {
+      const resource = getResourceFromParams(
+        [req.query[paramKey]![0]],
+        resources
+      );
+
+      if (!resource) {
+        return res.status(404).json({ error: "Resource not found" });
+      }
+
+      let ids: any = req.query.ids;
+      if (Array.isArray(ids)) {
+        ids = ids.map((id) => formatId(resource, id));
+      } else {
+        ids = ids?.split(",").map((id: string) => formatId(resource, id));
+      }
+
+      const data = await getRawData({ prisma, resource, resourceIds: ids });
+
+      return res.json(data);
+    })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, res) => {
       const id = req.query[paramKey]!.at(-1)!;
 

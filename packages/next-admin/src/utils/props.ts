@@ -11,7 +11,7 @@ import {
   NextAdminOptions,
 } from "../types";
 import { getClientActionDialogs, getCustomInputs } from "./options";
-import { getDataItem, getMappedDataList } from "./prisma";
+import { getDataItem, getMappedDataList, getRawData } from "./prisma";
 import {
   applyVisiblePropertiesInSchema,
   getModelIdProperty,
@@ -276,7 +276,7 @@ export const getMainLayoutProps = ({
     sidebar: options?.sidebar,
     resourcesIcons,
     externalLinks: options?.externalLinks,
-    options: extractSerializable(options),
+    options: extractSerializable(options, isAppDir),
     dmmfSchema: dmmfSchema?.fields,
     resourcesIdProperty: resourcesIdProperty,
   };

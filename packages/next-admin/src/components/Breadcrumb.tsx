@@ -47,12 +47,11 @@ export default function Breadcrumb({
                   page.current
                     ? "text-nextadmin-brand-subtle dark:text-dark-nextadmin-brand-subtle"
                     : "text-nextadmin-menu-default dark:text-dark-nextadmin-menu-color"
-                }
-                `}
+                } `}
                 aria-current={page.current ? "page" : undefined}
               >
                 {!!page.icon && (
-                  <ResourceIcon icon={page.icon} className="h-5 w-5 " />
+                  <ResourceIcon icon={page.icon} className="h-5 w-5" />
                 )}
                 <span className="flex-basis-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap">
                   {page.label}

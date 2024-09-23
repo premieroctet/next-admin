@@ -125,7 +125,7 @@ export default function Menu({
 
   const getItemProps = (model: ModelName) => {
     return {
-      name: t(`model.${model}.plural`, {}, resourcesTitles?.[model] || model),
+      name: t(`model.${model}.plural`, {}, resourcesTitles?.[model] ?? model),
       href: `${basePath}/${slugify(model)}`,
       current: model === currentResource,
       icon: resourcesIcons?.[model],

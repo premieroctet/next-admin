@@ -1,5 +1,6 @@
 import { createEdgeRouter } from "next-connect";
 import { NextRequest, NextResponse } from "next/server";
+import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
 import {
@@ -9,13 +10,13 @@ import {
   ServerAction,
 } from "./types";
 import { hasPermission } from "./utils/permissions";
+import { getRawData } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
   getResourceFromParams,
   getResources,
 } from "./utils/server";
-import { HookError } from "./exceptions/HookError";
 
 export const createHandler = <P extends string = "nextadmin">({
   apiBasePath,
@@ -41,6 +42,29 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
+    .get(`${apiBasePath}/:model/raw`, async (req, ctx) => {
+      const resource = getResourceFromParams(ctx.params[paramKey], resources);
+
+      if (!resource) {
+        return NextResponse.json(
+          { error: "Resource not found" },
+          { status: 404 }
+        );
+      }
+
+      const ids = req.nextUrl.searchParams
+        .get("ids")
+        ?.split(",")
+        .map((id) => formatId(resource, id));
+
+      if (!ids) {
+        return NextResponse.json({ error: "No ids provided" }, { status: 400 });
+      }
+
+      const data = await getRawData({ prisma, resource, resourceIds: ids });
+
+      return NextResponse.json(data);
+    })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, ctx) => {
       const id = ctx.params[paramKey].at(-1)!;
 

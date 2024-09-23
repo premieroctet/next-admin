@@ -33,12 +33,12 @@ const EmptyState = ({
         icon={icon ?? "RectangleGroupIcon"}
         className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default mx-auto h-20 w-20 stroke-1"
       />
-      <h3 className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-default mt-2 text-lg  font-semibold">
+      <h3 className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-default mt-2 text-lg font-semibold">
         {t("list.empty.label", { resource: resourceName })}
       </h3>
       {hasCreatePermission && (
         <>
-          <p className="text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis mt-1 text-sm ">
+          <p className="text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis mt-1 text-sm">
             {t("list.empty.caption", { resource: resourceName })}
           </p>
           <div className="mt-6">
