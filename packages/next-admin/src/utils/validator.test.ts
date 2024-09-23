@@ -23,6 +23,6 @@ describe("validator", () => {
           },
         }
       )
-    ).toThrow("Validation error");
+    ).toThrow("form.validation.error");
   });
 });
