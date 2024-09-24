@@ -7,6 +7,7 @@ import {
   Field,
   Filter,
   ListOptions,
+  Model,
   ModelName,
   NextAdminContext,
   NextAdminOptions,
@@ -667,15 +668,15 @@ export const getDataItem = async <M extends ModelName>({
  * @param resourceId
  * @returns
  */
-export const getRawData = async ({
+export const getRawData = async <M extends ModelName>({
   prisma,
   resource,
   resourceIds,
 }: {
   prisma: PrismaClient;
-  resource: ModelName;
+  resource: M;
   resourceIds: Array<string | number>;
-}) => {
+}): Promise<Model<M>[]> => {
   const modelDMMF = getPrismaModelForResource(resource);
 
   const include = modelDMMF?.fields.reduce(

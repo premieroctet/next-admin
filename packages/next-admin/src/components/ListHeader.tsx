@@ -84,7 +84,7 @@ export default function ListHeader({
         ]
       : [];
 
-    return [...(actionsProp || []), ...defaultActions];
+    return [...(actionsProp ?? []), ...defaultActions];
   }, [actionsProp, onDelete, t, canDelete]);
 
   const resourcePluralName = t(`model.${resource}.plural`, {}, title);

@@ -1,7 +1,8 @@
+import { merge } from "lodash";
 import dynamic from "next/dynamic";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
-import { getClientActionDialogs, getCustomInputs } from "../utils/options";
+import { getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
@@ -29,7 +30,7 @@ export function NextAdmin({
   resourcesIdProperty,
   customInputs: customInputsProp,
   customPages,
-  actions: actionsProp,
+  actions,
   translations,
   locale,
   title,
@@ -37,7 +38,6 @@ export function NextAdmin({
   resourcesIcons,
   user,
   externalLinks,
-  actionsMap: actionsMapProp,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -45,8 +45,10 @@ export function NextAdmin({
     );
   }
 
-  const actions =
-    actionsProp || (resource ? options?.model?.[resource]?.actions : undefined);
+  let mergedActions = merge(
+    actions ?? [],
+    resource ? options?.model?.[resource]?.actions : []
+  );
 
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
@@ -56,9 +58,6 @@ export function NextAdmin({
 
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
-      const actionsMap = isAppDir
-        ? actionsMapProp
-        : getClientActionDialogs(resource!, options!);
       return (
         <List
           key={resource}
@@ -67,10 +66,9 @@ export function NextAdmin({
           total={total}
           title={resourceTitle!}
           resourcesIdProperty={resourcesIdProperty!}
-          actions={actions}
+          actions={mergedActions}
           icon={resourceIcon}
           schema={schema!}
-          actionsMap={actionsMap ?? {}}
         />
       );
     }
@@ -90,7 +88,7 @@ export function NextAdmin({
           validation={validation}
           title={resourceTitle!}
           customInputs={customInputs}
-          actions={actions}
+          actions={mergedActions}
           icon={resourceIcon}
           resourcesIdProperty={resourcesIdProperty!}
         />

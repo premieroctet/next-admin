@@ -169,6 +169,7 @@ export const options: NextAdminOptions = {
         {
           type: "dialog",
           icon: "EyeIcon",
+          canExecute: (item) => item.role === "ADMIN",
           id: "user-details",
           title: "actions.user.details.title",
           component: <UserDetailsDialog />,

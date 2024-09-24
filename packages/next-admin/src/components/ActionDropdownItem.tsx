@@ -1,14 +1,14 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 import { useClientActionDialog } from "../context/ClientActionDialogContext";
 import { useI18n } from "../context/I18nContext";
 import { useAction } from "../hooks/useAction";
-import { ModelAction, ModelName } from "../types";
+import { ModelAction, ModelName, OutputModelAction } from "../types";
 import { DropdownItem } from "./radix/Dropdown";
-import { twMerge } from "tailwind-merge";
 
 type Props = {
-  action: ModelAction<ModelName> | Omit<ModelAction<ModelName>, "action">;
+  action: OutputModelAction[number];
   resource: ModelName;
   resourceIds: string[] | number[];
 };
@@ -22,25 +22,38 @@ const ActionDropdownItem = ({ action, resource, resourceIds }: Props) => {
 
   const Icon = action.icon && OutlineIcons[action.icon];
 
+  const enabledAction =
+    action.allowedIds === undefined ||
+    (action.allowedIds.length > 0 &&
+      resourceIds.every((id) => action.allowedIds?.includes(id as never)));
+
+  if (!enabledAction && resourceIds.length === 1) {
+    return null;
+  }
+
   return (
     <DropdownItem
       key={action.title}
+      disabled={!enabledAction}
       className={twMerge(
         clsx("flex cursor-pointer items-center gap-2 rounded-md px-2 py-1", {
           "text-red-700 dark:text-red-400": action.style === "destructive",
           "hover:bg-red-50": action.style === "destructive",
+          "text-nextadmin-content-emphasis/50 dark:text-dark-nextadmin-content-emphasis/50 cursor-not-allowed":
+            !enabledAction,
         })
       )}
       onClick={(evt) => {
+        if (!enabledAction) return;
         evt.stopPropagation();
         if (isClientAction) {
           openActionDialog({
-            action: action,
+            action: action as any,
             resource,
             resourceIds,
           });
         } else {
-          runAction(action);
+          runAction(action as ModelAction<typeof resource>);
         }
       }}
     >
