@@ -6,6 +6,7 @@ import { useI18n } from "../context/I18nContext";
 import { useAction } from "../hooks/useAction";
 import { ModelAction, ModelName, OutputModelAction } from "../types";
 import { DropdownItem } from "./radix/Dropdown";
+import { SimpleTooltip } from "./radix/Tooltip";
 
 type Props = {
   action: OutputModelAction[number];
@@ -25,13 +26,15 @@ const ActionDropdownItem = ({ action, resource, resourceIds }: Props) => {
   const enabledAction =
     action.allowedIds === undefined ||
     (action.allowedIds.length > 0 &&
-      resourceIds.every((id) => action.allowedIds?.includes(id as never)));
+      (resourceIds as (string | number)[]).every((id) =>
+        action.allowedIds?.includes(id as never)
+      ));
 
   if (!enabledAction && resourceIds.length === 1) {
     return null;
   }
 
-  return (
+  const component = (
     <DropdownItem
       key={action.title}
       disabled={!enabledAction}
@@ -61,6 +64,16 @@ const ActionDropdownItem = ({ action, resource, resourceIds }: Props) => {
       {t(action.title)}
     </DropdownItem>
   );
+
+  if (!enabledAction && resourceIds.length > 1) {
+    return (
+      <SimpleTooltip text={t("actions.some_failed_condition")}>
+        {component}
+      </SimpleTooltip>
+    );
+  }
+
+  return component;
 };
 
 export default ActionDropdownItem;

@@ -4,7 +4,12 @@ import { NextHandler, createRouter } from "next-connect";
 import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
-import { NextAdminOptions, Permission, ServerAction } from "./types";
+import {
+  ModelAction,
+  NextAdminOptions,
+  Permission,
+  ServerAction,
+} from "./types";
 import { hasPermission } from "./utils/permissions";
 import { getRawData } from "./utils/prisma";
 import {
@@ -102,9 +107,9 @@ export const createHandler = <P extends string = "nextadmin">({
         return res.status(404).json({ error: "Resource not found" });
       }
 
-      const modelAction = options?.model?.[resource]?.actions?.find(
-        (action) => action.id === id
-      );
+      const modelAction = (
+        options?.model?.[resource]?.actions as ModelAction<typeof resource>[]
+      )?.find((action) => action.id === id);
 
       if (!modelAction) {
         return res.status(404).json({ error: "Action not found" });
