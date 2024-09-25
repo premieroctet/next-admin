@@ -17,6 +17,6 @@ jobs:
           rm apps/example/.env
           touch apps/example/.env
           echo POSTGRES_URL_NON_POOLING=${{ secrets.POSTGRES_URL_NON_POOLING }} >> apps/example/.env
-          echo POSTGRES_URL=${{ secrets.POSTGRES_URL }} >> apps/example/.env
+          echo POSTGRES_PRISMA_URL=${{ secrets.POSTGRES_PRISMA_URL }} >> apps/example/.env
       - name: Reset database
         run: yarn reset-database
