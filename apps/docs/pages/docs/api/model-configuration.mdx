@@ -599,7 +599,12 @@ The `actions` property is an array of objects that allows you to define a set of
       description: (
         <>
           a React component that will be displayed in a dialog when the action
-          is triggered. Its mandatory if the action type is specified
+          is triggered. Its mandatory if the action type `dialog` is specified.
+          See the{" "}
+          <a href="#clientactiondialogcontentprops">
+            ClientActionDialogContentProps
+          </a>{" "}
+          for the props passed to the component.
         </>
       ),
     },
@@ -620,6 +625,16 @@ The `actions` property is an array of objects that allows you to define a set of
         <>
           an async function that will be triggered when selecting the action in
           the dropdown. Its mandatory if the action type is not specified
+        </>
+      ),
+    },
+    {
+      name: "canExecute",
+      type: "Function",
+      description: (
+        <>
+          a function that takes a record as a parameter and returns a boolean.
+          It is used to determine if the action can be executed on the record
         </>
       ),
     },

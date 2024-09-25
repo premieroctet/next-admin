@@ -5,6 +5,7 @@ import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
 import {
   CreateAppHandlerParams,
+  ModelAction,
   Permission,
   RequestContext,
   ServerAction,
@@ -81,9 +82,9 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
-      const modelAction = options?.model?.[resource]?.actions?.find(
-        (action) => action.id === id
-      );
+      const modelAction = (
+        options?.model?.[resource]?.actions as ModelAction<typeof resource>[]
+      )?.find((action) => action.id === id);
 
       if (!modelAction) {
         return NextResponse.json(

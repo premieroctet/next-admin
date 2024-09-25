@@ -553,9 +553,22 @@ export type ModelAction<T extends ModelName> = (
 ) & {
   title: string;
   id: string;
+  canExecute?: (item: Model<T>) => boolean;
   icon?: keyof typeof OutlineIcons;
   style?: ActionStyle;
 };
+
+export type UnionModelAction = {
+  [M in ModelName]: ModelAction<M>;
+}[ModelName];
+
+export type OutputModelAction = (Omit<
+  UnionModelAction,
+  "action" | "canExecute"
+> & {
+  allowedIds?: string[] | number[];
+})[];
+
 
 export type ModelIcon = keyof typeof OutlineIcons;
 
@@ -590,7 +603,7 @@ export type ModelOptions<T extends ModelName> = {
      * an object containing the aliases of the model fields as keys, and the field name.
      */
     aliases?: Partial<Record<Field<P>, string>> & { [key: string]: string };
-    actions?: ModelAction<T>[];
+    actions?: ModelAction<P>[];
     /**
      * the outline HeroIcon name displayed in the sidebar and pages title
      * @type ModelIcon
@@ -817,8 +830,7 @@ export type AdminComponentProps = {
    */
   pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
-  actions?: Omit<ModelAction<ModelName>, "action">[];
-  actionsMap?: Record<string, React.ReactElement>;
+  actions?: OutputModelAction;
   translations?: Translations;
   /**
    * Global admin title

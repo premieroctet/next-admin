@@ -1,4 +1,4 @@
-import { ClientAction, ModelAction, ModelName } from "../types";
+import { ClientAction, ModelAction, ModelName, UnionModelAction } from "../types";
 import { useI18n } from "../context/I18nContext";
 import { useConfig } from "../context/ConfigContext";
 import { useMessage } from "../context/MessageContext";
@@ -7,15 +7,15 @@ export const SPECIFIC_IDS_TO_RUN_ACTION = {
   DELETE: "__admin-delete",
 };
 
-export const useAction = (resource: ModelName, ids: string[] | number[]) => {
+export const useAction = <M extends ModelName>(resource: M, ids: string[] | number[]) => {
   const { t } = useI18n();
   const { apiBasePath } = useConfig();
   const { showMessage } = useMessage();
 
   const runAction = async (
     modelAction:
-      | Exclude<ModelAction<ModelName>, ClientAction<ModelName>>
-      | Omit<Exclude<ModelAction<ModelName>, ClientAction<ModelName>>, "action">
+      | Exclude<ModelAction<M>, ClientAction<M>>
+      | Omit<Exclude<ModelAction<M>, ClientAction<M>>, "action">
   ) => {
     try {
       if (

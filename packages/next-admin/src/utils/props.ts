@@ -6,14 +6,16 @@ import {
   GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
   MainLayoutProps,
+  ModelAction,
   ModelIcon,
   ModelName,
   NextAdminOptions,
 } from "../types";
-import { getClientActionDialogs, getCustomInputs } from "./options";
-import { getDataItem, getMappedDataList, getRawData } from "./prisma";
+import { getCustomInputs } from "./options";
+import { getDataItem, getMappedDataList } from "./prisma";
 import {
   applyVisiblePropertiesInSchema,
+  getEnableToExecuteActions,
   getModelIdProperty,
   getPrismaModelForResource,
   getResourceFromParams,
@@ -58,20 +60,13 @@ export async function getPropsFromParams({
     resource,
     resources,
     resourcesTitles,
+    resourcesIdProperty,
     customPages,
     title,
     sidebar,
     resourcesIcons,
     externalLinks,
   } = getMainLayoutProps({ basePath, apiBasePath, options, params, isAppDir });
-
-  const resourcesIdProperty = resources!.reduce(
-    (acc, resource) => {
-      acc[resource] = getModelIdProperty(resource);
-      return acc;
-    },
-    {} as Record<ModelName, string>
-  );
 
   const clientOptions: NextAdminOptions | undefined =
     extractSerializable(options);
@@ -95,7 +90,7 @@ export async function getPropsFromParams({
 
   if (!resource) return defaultProps;
 
-  // We don't need to pass the action function to the component
+  // We don't need to pass the action function and canExecute to the component
   const actions = options?.model?.[resource]?.actions?.map((action) => {
     // @ts-expect-error
     const { action: _, ...actionRest } = action;
@@ -134,9 +129,22 @@ export async function getPropsFromParams({
         appDir: isAppDir,
       });
 
-      const actionsMap = isAppDir
-        ? getClientActionDialogs(resource, options)
-        : undefined;
+      const dataIds = data.map(
+        (item) => item[getModelIdProperty(resource)].value
+      );
+
+      const fullfilledAction = await getEnableToExecuteActions<typeof resource>(
+        resource,
+        prisma,
+        dataIds,
+        actions as ModelAction<typeof resource>[]
+      );
+
+      let serializedActions = extractSerializable(fullfilledAction, isAppDir);
+
+      // const verifiedAction = actions?.map((action) => {
+      //   action.canExecute = action.canExecute ?? (() => true);
+      // });
 
       return {
         ...defaultProps,
@@ -145,8 +153,7 @@ export async function getPropsFromParams({
         total,
         error: error ?? (searchParams?.error as string),
         schema,
-        actions: isAppDir ? actions : undefined,
-        actionsMap,
+        actions: serializedActions,
       };
     }
     case Page.EDIT: {
@@ -185,6 +192,19 @@ export async function getPropsFromParams({
 
         applyVisiblePropertiesInSchema(resource, edit, data, deepCopySchema);
 
+        const dataId = data[getModelIdProperty(resource)];
+
+        const fullfilledAction = await getEnableToExecuteActions<
+          typeof resource
+        >(
+          resource,
+          prisma,
+          [dataId],
+          actions as ModelAction<typeof resource>[]
+        );
+
+        let serializedActions = extractSerializable(fullfilledAction, isAppDir);
+
         return {
           ...defaultProps,
           resource,
@@ -193,7 +213,7 @@ export async function getPropsFromParams({
           schema: deepCopySchema,
           dmmfSchema: dmmfSchema?.fields,
           customInputs,
-          actions: isAppDir ? actions : undefined,
+          actions: serializedActions,
         };
       }
 

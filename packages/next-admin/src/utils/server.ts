@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
 import { NextApiRequest } from "next";
@@ -10,14 +10,17 @@ import {
   Enumeration,
   Field,
   Model,
+  ModelAction,
   ModelName,
   ModelWithoutRelationships,
   NextAdminOptions,
   ObjectField,
+  OutputModelAction,
   ScalarField,
   Schema,
   UploadParameters,
 } from "../types";
+import { getRawData } from "./prisma";
 import { isNativeFunction, isUploadParameters, pipe } from "./tools";
 
 export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
@@ -38,6 +41,51 @@ export const enumValueForEnumType = (enumName: string, value: string) => {
   }
 
   return false;
+};
+
+export const getEnableToExecuteActions = async <M extends ModelName>(
+  resource: M,
+  prisma: PrismaClient,
+  ids: string[] | number[],
+  actions?: Omit<ModelAction<M>, "action">[]
+): Promise<OutputModelAction | undefined> => {
+  if (actions?.some((action) => action.canExecute)) {
+    const data: Model<typeof resource>[] = await getRawData<typeof resource>({
+      prisma,
+      resource,
+      resourceIds: ids,
+    });
+
+    return actions?.reduce(
+      async (acc, action) => {
+        const accResolved = await acc;
+        const { canExecute, ...restAction } = action;
+        if (canExecute) {
+          const allowedIds = data
+            .filter((item) =>
+              (canExecute as (item: Model<typeof resource>) => boolean)(item)
+            )
+            .map(
+              (item) =>
+                item[
+                  getModelIdProperty(resource) as keyof Model<typeof resource>
+                ]
+            ) as string[] | number[];
+
+          accResolved.push({ ...restAction, allowedIds });
+        } else {
+          accResolved.push(restAction);
+        }
+        return Promise.resolve(accResolved);
+      },
+      Promise.resolve([] as OutputModelAction)
+    );
+  } else {
+    return actions?.map((action) => {
+      const { canExecute, ...restAction } = action;
+      return restAction;
+    });
+  }
 };
 
 export const getPrismaModelForResource = (

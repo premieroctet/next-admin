@@ -117,6 +117,7 @@
       "label": "Exporter"
     },
     "actions": {
+      "some_failed_condition": "Certains éléments ne peuvent pas effectuer cette action",
       "user": {
         "email": {
           "title": "Envoyer un email",
