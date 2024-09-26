@@ -21,7 +21,7 @@ test.describe("User's custom actions", () => {
     await page.getByText("Send email").click();
     await response;
 
-    await expect(page.getByText("Email sent to 2 users")).toBeVisible();
+    await expect(page.getByText("Email sent successfully")).toBeVisible();
   });
 
   test("Delete user", async ({ page }) => {

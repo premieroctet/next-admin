@@ -165,7 +165,7 @@ export const options: NextAdminOptions = {
             console.log("Sending email to " + ids.length + " users");
             return {
               type: "success",
-              message: "Email sent to " + ids.length + " users",
+              message: "Email sent successfully",
             };
           },
           successMessage: "actions.user.email.success",
