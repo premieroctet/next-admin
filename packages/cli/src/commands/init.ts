@@ -5,21 +5,17 @@ import ora from "ora";
 import { execa } from "execa";
 import { Command } from "commander";
 import { confirm, input } from "@inquirer/prompts";
-import { getPackageManager } from "../utils/packageManager.js";
-import { updatePrismaSchema } from "../utils/prisma.js";
-import { addTailwindCondig } from "../utils/tailwind.js";
-import { getRouterRoot } from "../utils/next.js";
+import { getPackageManager } from "../utils/packageManager";
+import { updatePrismaSchema } from "../utils/prisma";
+import { addTailwindCondig } from "../utils/tailwind";
+import { getRouterRoot } from "../utils/next";
 import {
   writeToTemplate,
-  APP_ROUTER_API_TEMPLATE,
-  APP_ROUTER_PAGE_TEMPLATE,
-  PAGE_ROUTER_API_TEMPLATE,
-  PAGE_ROUTER_PAGE_TEMPLATE,
-} from "../utils/templates.js";
+} from "../utils/templates";
 import {
   NEXTADMIN_OPTIONS_FILENAME,
   NEXTADMIN_CSS_FILENAME,
-} from "../utils/constants.js";
+} from "../utils/constants";
 
 type InitOptions = {
   basePath: string;
@@ -192,8 +188,8 @@ export const initAction = async ({
 
   const pageContent = writeToTemplate(
     routerRootPath.type === "page"
-      ? PAGE_ROUTER_PAGE_TEMPLATE
-      : APP_ROUTER_PAGE_TEMPLATE,
+      ? "page_router_page"
+      : "app_router_page",
     {
       prismaClientPath: path.relative(pageFilePath, prismaPath),
       jsonSchemaPath: path.relative(pageFilePath, jsonSchemaPath),
@@ -207,9 +203,10 @@ export const initAction = async ({
         pageFilePath,
         path.join(
           basePath,
-          `${NEXTADMIN_OPTIONS_FILENAME}.${pageFileExtension}`
+          NEXTADMIN_OPTIONS_FILENAME
         )
       ),
+      isTypescript: usesTypescript
     }
   );
 
@@ -217,8 +214,8 @@ export const initAction = async ({
 
   const apiContent = writeToTemplate(
     routerRootPath.type === "page"
-      ? PAGE_ROUTER_API_TEMPLATE
-      : APP_ROUTER_API_TEMPLATE,
+      ? "page_router_api"
+      : "app_router_api",
     {
       prismaClientPath: path.relative(apiFilePath, prismaPath),
       jsonSchemaPath: path.relative(apiFilePath, jsonSchemaPath),
@@ -226,16 +223,30 @@ export const initAction = async ({
         apiFilePath,
         path.join(
           basePath,
-          `${NEXTADMIN_OPTIONS_FILENAME}.${pageFileExtension}`
+          NEXTADMIN_OPTIONS_FILENAME
         )
       ),
       apiBasePath: baseApiPath,
+      isTypescript: usesTypescript
     }
   );
 
   writeFileSync(apiFilePath, apiContent);
 
-  spinner.succeed();
+  const optionsContent = writeToTemplate('options', {
+    isTypescript: usesTypescript
+  })
+
+  writeFileSync(
+    path.join(basePath, `${NEXTADMIN_OPTIONS_FILENAME}.${pageFileExtension}`),
+    optionsContent
+  );
+
+  spinner.succeed(`Next-admin files have been created. Options are located under ${path.join(basePath, `${NEXTADMIN_OPTIONS_FILENAME}.${pageFileExtension}`)}
+
+See the Next-Admin documentation for more information on how to customize the admin panel.
+https://next-admin.js.org/docs/api/options
+`);
 };
 
 export const initCommand = (program: Command) => {
@@ -245,7 +256,8 @@ export const initCommand = (program: Command) => {
     .option("--cwd <path>", "The Next.js project directory")
     .option(
       "-s, --schema <path>",
-      "The path where the Prisma schema is located, relative to project root"
+      "The directory path where the Prisma schema is located, relative to project root, or cwd if provided",
+      "prisma"
     )
     .option(
       "-r, --baseRoutePath <path>",

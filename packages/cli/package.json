@@ -1,11 +1,12 @@
 {
   "name": "@premieroctet/next-admin-cli",
   "version": "1.0.0",
-  "type": "module",
-  "bin": "dist/index.js",
+  "bin": {
+    "next-admin-cli": "dist/index.js"
+  },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsx scripts/build.ts",
+    "dev": "tsx scripts/dev.ts",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "tsc": "tsc --noEmit"
   },
@@ -16,13 +17,17 @@
     "execa": "^9.3.1",
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
+    "mustache": "^4.2.0",
     "ora": "^8.1.0"
   },
   "devDependencies": {
+    "@types/mustache": "^4.2.5",
+    "esbuild": "^0.24.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "*",
-    "typescript": "^5.6.2",
-    "tsconfig": "*"
+    "tsconfig": "*",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
   },
   "engines": {
     "node": ">= 20"

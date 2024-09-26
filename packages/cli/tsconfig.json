@@ -7,9 +7,9 @@
     "declaration": false,
     "composite": false,
     "declarationMap": false,
-    "module": "NodeNext",
-    "moduleResolution": "NodeNext"
+    "module": "ESNext",
+    "skipLibCheck": true
   },
-  "include": ["src/**/*", "./index.ts"],
+  "include": ["src/**/*"],
   "exclude": ["dist", "node_modules"]
 }
