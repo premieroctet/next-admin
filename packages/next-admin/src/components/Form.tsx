@@ -577,19 +577,16 @@ const Form = ({
 
 const FormWrapper = (props: FormProps) => {
   return (
-    <>
+    <MessageProvider>
       <ClientActionDialogProvider>
-        <MessageProvider>
-          <FormHeader {...props} />
-
-          <FormDataProvider data={props.data}>
-            <FormStateProvider>
-              <Form {...props} />
-            </FormStateProvider>
-          </FormDataProvider>
-        </MessageProvider>
+        <FormHeader {...props} />
+        <FormDataProvider data={props.data}>
+          <FormStateProvider>
+            <Form {...props} />
+          </FormStateProvider>
+        </FormDataProvider>
       </ClientActionDialogProvider>
-    </>
+    </MessageProvider>
   );
 };
 

@@ -157,11 +157,16 @@ export const options: NextAdminOptions = {
       },
       actions: [
         {
+          type: "server",
           id: "submit-email",
           icon: "EnvelopeIcon",
           title: "actions.user.email.title",
           action: async (ids) => {
             console.log("Sending email to " + ids.length + " users");
+            return {
+              type: "success",
+              message: "Email sent to " + ids.length + " users",
+            };
           },
           successMessage: "actions.user.email.success",
           errorMessage: "actions.user.email.error",

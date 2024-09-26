@@ -109,6 +109,7 @@ export const options: NextAdminOptions = {
       },
       actions: [
         {
+          type: "server",
           title: "Send email",
           id: "submit-email",
           action: async (ids) => {

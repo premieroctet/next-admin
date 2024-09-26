@@ -1,13 +1,16 @@
-import { ClientAction, ModelAction, ModelName, UnionModelAction } from "../types";
-import { useI18n } from "../context/I18nContext";
 import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
 import { useMessage } from "../context/MessageContext";
+import { ClientAction, MessageData, ModelAction, ModelName } from "../types";
 
 export const SPECIFIC_IDS_TO_RUN_ACTION = {
   DELETE: "__admin-delete",
 };
 
-export const useAction = <M extends ModelName>(resource: M, ids: string[] | number[]) => {
+export const useAction = <M extends ModelName>(
+  resource: M,
+  ids: string[] | number[]
+) => {
   const { t } = useI18n();
   const { apiBasePath } = useConfig();
   const { showMessage } = useMessage();
@@ -34,6 +37,15 @@ export const useAction = <M extends ModelName>(resource: M, ids: string[] | numb
             },
           }
         );
+
+        const actionMessage = (await response.json()) as MessageData;
+        if (actionMessage && actionMessage.message) {
+          showMessage({
+            type: actionMessage.type,
+            message: t(actionMessage.message),
+          });
+          return;
+        }
 
         if (!response.ok) {
           throw new Error();

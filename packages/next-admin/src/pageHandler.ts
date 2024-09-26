@@ -104,7 +104,9 @@ export const createHandler = <P extends string = "nextadmin">({
       );
 
       if (!resource) {
-        return res.status(404).json({ error: "Resource not found" });
+        return res
+          .status(404)
+          .json({ type: "error", message: "Resource not found" });
       }
 
       const modelAction = (
@@ -112,11 +114,15 @@ export const createHandler = <P extends string = "nextadmin">({
       )?.find((action) => action.id === id);
 
       if (!modelAction) {
-        return res.status(404).json({ error: "Action not found" });
+        return res
+          .status(404)
+          .json({ type: "error", message: "Action not found" });
       }
 
       if ("type" in modelAction && modelAction.type === "dialog") {
-        return res.status(404).json({ error: "Action not found" });
+        return res
+          .status(404)
+          .json({ type: "error", message: "Action not found" });
       }
 
       let body;
@@ -124,15 +130,18 @@ export const createHandler = <P extends string = "nextadmin">({
       try {
         body = await getJsonBody(req);
       } catch {
-        return res.status(400).json({ error: "Invalid JSON body" });
+        return res
+          .status(400)
+          .json({ type: "error", message: "Invalid JSON body" });
       }
 
       try {
-        await (modelAction as ServerAction).action(body);
-
-        return res.json({ ok: true });
+        const result = await (modelAction as ServerAction).action(body);
+        return res.json(result ?? null);
       } catch (e) {
-        return res.status(500).json({ error: (e as Error).message });
+        return res
+          .status(500)
+          .json({ type: "error", message: (e as Error).message });
       }
     })
     .post(`${apiBasePath}/options`, async (req, res) => {

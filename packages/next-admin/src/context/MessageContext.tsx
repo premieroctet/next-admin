@@ -1,17 +1,8 @@
 "use client";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { useRouterInternal } from "../hooks/useRouterInternal";
+import { MessageContextType, MessageData } from "../types";
 
-type MessageData = {
-  type: "error" | "info" | "success";
-  message: string;
-};
-
-type MessageContextType = {
-  showMessage: (message: MessageData) => void;
-  message: MessageData | null;
-  hideMessage: () => void;
-};
 
 const MessageContext = createContext<MessageContextType>({
   showMessage: () => {},
