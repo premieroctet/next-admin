@@ -9,18 +9,7 @@ import "../../../styles.css";
 const pageOptions = options;
 
 export default function Admin(props: AdminComponentProps) {
-  return (
-    <NextAdmin
-      {...props}
-      options={pageOptions}
-      user={{
-        data: {
-          name: "John Doe",
-        },
-        logout: ["/"],
-      }}
-    />
-  );
+  return <NextAdmin {...props} options={pageOptions} />;
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) =>
@@ -31,4 +20,10 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) =>
     schema,
     options: pageOptions,
     req,
+    user: {
+      data: {
+        name: "John Doe",
+      },
+      logout: ["/"],
+    },
   });

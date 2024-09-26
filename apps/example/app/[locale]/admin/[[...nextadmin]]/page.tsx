@@ -20,6 +20,13 @@ export default async function AdminPage({
   params,
   searchParams,
 }: Readonly<PageProps>) {
+  const logoutRequest: [RequestInfo, RequestInit] = [
+    "/",
+    {
+      method: "POST",
+    },
+  ];
+
   const props = await getNextAdminProps({
     params: params.nextadmin,
     searchParams,
@@ -33,25 +40,13 @@ export default async function AdminPage({
         (messages) => messages.admin as Record<string, string>
       ),
     locale: params.locale as string,
+    user: {
+      data: {
+        name: "John Doe",
+      },
+      logout: logoutRequest,
+    },
   });
 
-  const logoutRequest: [RequestInfo, RequestInit] = [
-    "/",
-    {
-      method: "POST",
-    },
-  ];
-
-  return (
-    <NextAdmin
-      {...props}
-      dashboard={<Dashboard />}
-      user={{
-        data: {
-          name: "John Doe",
-        },
-        logout: logoutRequest,
-      }}
-    />
-  );
+  return <NextAdmin {...props} dashboard={<Dashboard />} />;
 }

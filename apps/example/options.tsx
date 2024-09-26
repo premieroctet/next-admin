@@ -9,7 +9,10 @@ export const options: NextAdminOptions = {
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,
-      permissions: ["edit", "delete", "create"],
+      permissions: (user) => {
+        console.log("user", user);
+        return ["edit", "delete", "create"];
+      },
       title: "Users",
       icon: "UsersIcon",
       aliases: {

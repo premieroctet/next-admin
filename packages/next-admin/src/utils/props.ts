@@ -42,6 +42,7 @@ export async function getPropsFromParams({
   getMessages,
   basePath,
   apiBasePath,
+  user
 }: GetNextAdminPropsParams): Promise<
   | AdminComponentProps
   | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
@@ -78,12 +79,13 @@ export async function getPropsFromParams({
     customPages,
     resourcesTitles,
     resourcesIdProperty,
-    options: clientOptions,
+    serverOptions: clientOptions,
     title,
     sidebar,
     resourcesIcons,
     externalLinks,
     locale,
+    user
   };
 
   if (!params) return defaultProps;

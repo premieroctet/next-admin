@@ -38,6 +38,7 @@ export function NextAdmin({
   resourcesIcons,
   user,
   externalLinks,
+  serverOptions
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -45,9 +46,11 @@ export function NextAdmin({
     );
   }
 
+  const mergedOptions = merge(options, serverOptions);
+
   let mergedActions = merge(
     actions ?? [],
-    resource ? options?.model?.[resource]?.actions : []
+    resource ? mergedOptions?.model?.[resource]?.actions : []
   );
 
   const modelSchema =
@@ -76,7 +79,7 @@ export function NextAdmin({
     if ((data && !Array.isArray(data)) || (modelSchema && !data)) {
       const customInputs = isAppDir
         ? customInputsProp
-        : getCustomInputs(resource!, options!);
+        : getCustomInputs(resource!, mergedOptions!);
 
       return (
         <Form
@@ -126,7 +129,7 @@ export function NextAdmin({
         resourcesIcons={resourcesIcons}
         user={user}
         externalLinks={externalLinks}
-        options={options}
+        options={mergedOptions}
         dmmfSchema={dmmfSchema}
         resourcesIdProperty={resourcesIdProperty!}
       >

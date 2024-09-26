@@ -553,7 +553,7 @@ export type ModelAction<T extends ModelName> = (
 ) & {
   title: string;
   id: string;
-  canExecute?: (item: Model<T>) => boolean;
+  canExecute?: (item: Model<T>, metadata: UserData) => boolean;
   icon?: keyof typeof OutlineIcons;
   style?: ActionStyle;
 };
@@ -568,7 +568,6 @@ export type OutputModelAction = (Omit<
 > & {
   allowedIds?: string[] | number[];
 })[];
-
 
 export type ModelIcon = keyof typeof OutlineIcons;
 
@@ -610,7 +609,7 @@ export type ModelOptions<T extends ModelName> = {
      * @link https://heroicons.com/outline
      */
     icon?: ModelIcon;
-    permissions?: PermissionType[];
+    permissions?: PermissionType[] | ((userData: UserData) => PermissionType[]);
   };
 };
 
@@ -794,6 +793,7 @@ export type UserData = {
 export type AdminUser = {
   data: UserData;
   logout?: [RequestInfo, RequestInit?] | (() => void | Promise<void>) | string;
+  roles?: string[];
 };
 
 export type AdminComponentProps = {
@@ -821,6 +821,7 @@ export type AdminComponentProps = {
    * Mandatory for page router
    */
   options?: NextAdminOptions;
+  serverOptions?: NextAdminOptions;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
   resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
@@ -1016,6 +1017,7 @@ export type GetNextAdminPropsParams = {
    * @returns
    */
   getMessages?: (locale: string) => Promise<Record<string, string>>;
+  user?: AdminUser;
 };
 
 export type GetMainLayoutPropsParams = Omit<
