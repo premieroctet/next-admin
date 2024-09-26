@@ -9,7 +9,7 @@ import {
 
 export const addTailwindCondig = async (basePath: string) => {
   const { stdout: libPath } =
-    await execa`node -p "path.dirname(require.resolve('@premieroctet/next-admin'))"`;
+    await execa`node -p path.dirname(require.resolve('@premieroctet/next-admin'))`;
 
   const content = `
 /** @type {import('tailwindcss').Config} */

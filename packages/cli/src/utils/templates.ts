@@ -15,5 +15,7 @@ export const writeToTemplate = (
     'utf-8'
   )
   
-  return Mustache.render(template, context)
+  return Mustache.render(template, context, undefined, {
+    escape: (value) => value
+  })
 };

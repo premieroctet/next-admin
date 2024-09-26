@@ -10,7 +10,7 @@ export const updatePrismaSchema = async (schemaPath: string) => {
 
   if (!hasJsonSchemaProvider) {
     const updatedSchema = schema.replace(
-      /(database client {)/gm,
+      /(generator client {)/gm,
       `generator jsonSchema {
     provider              = "prisma-json-schema-generator"
     includeRequiredFields = "true"

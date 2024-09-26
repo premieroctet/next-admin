@@ -16,17 +16,17 @@ export const packageManagerLockFiles = {
 };
 
 export const packageManagerInstallCmd = {
-  [PackageManager.NPM]: "npm install",
-  [PackageManager.YARN]: "yarn add",
-  [PackageManager.PNPM]: "pnpm add",
-  [PackageManager.BUN]: "bun add",
+  [PackageManager.NPM]: "install",
+  [PackageManager.YARN]: "add",
+  [PackageManager.PNPM]: "add",
+  [PackageManager.BUN]: "add",
 };
 
 export const packageManagerInstallDevCmd = {
-  [PackageManager.NPM]: "npm install --save-dev",
-  [PackageManager.YARN]: "yarn add -D",
-  [PackageManager.PNPM]: "pnpm add -D",
-  [PackageManager.BUN]: "bun add -D",
+  [PackageManager.NPM]: "install --save-dev",
+  [PackageManager.YARN]: "add -D",
+  [PackageManager.PNPM]: "add -D",
+  [PackageManager.BUN]: "add -D",
 };
 
 type PackageManagerData = {
@@ -50,3 +50,11 @@ export const getPackageManager = (
     }
   }
 };
+
+export const getDataForPackageManager = (packageManager: PackageManager): PackageManagerData => {
+  return {
+    name: packageManager,
+    installCmd: packageManagerInstallCmd[packageManager],
+    installDevCmd: packageManagerInstallDevCmd[packageManager],
+  };
+}
