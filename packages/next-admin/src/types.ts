@@ -1096,4 +1096,3 @@ export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
   data: Array<Model<T>>;
   onClose: (message?: MessageData) => void;
 }>;
-

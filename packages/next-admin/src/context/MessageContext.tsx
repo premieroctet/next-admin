@@ -3,7 +3,6 @@ import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import { MessageContextType, MessageData } from "../types";
 
-
 const MessageContext = createContext<MessageContextType>({
   showMessage: () => {},
   message: null,
