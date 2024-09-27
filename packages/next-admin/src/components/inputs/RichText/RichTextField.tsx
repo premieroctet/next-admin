@@ -149,6 +149,31 @@ const RichTextField = ({
               title="Heading 3"
               disabled={disabled}
             />
+            <Separator />
+            <Button
+              format="left"
+              icon={<Icons.AlignLeft />}
+              title="Align left"
+              disabled={disabled}
+            />
+            <Button
+              format="center"
+              icon={<Icons.AlignCenter />}
+              title="Align center"
+              disabled={disabled}
+            />
+            <Button
+              format="right"
+              icon={<Icons.AlignRight />}
+              title="Align right"
+              disabled={disabled}
+            />
+            <Button
+              format="justify"
+              icon={<Icons.AlignJustify />}
+              title="Align justify"
+              disabled={disabled}
+            />
           </Toolbar>
           <Editable
             spellCheck
