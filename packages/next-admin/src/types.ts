@@ -532,11 +532,31 @@ type CustomFieldsType = {
 
 export type ActionStyle = "default" | "destructive";
 
+export type MessageData = {
+  type: "error" | "info" | "success";
+  message: string;
+};
+
+export type MessageContextType = {
+  showMessage: (message: MessageData) => void;
+  message: MessageData | null;
+  hideMessage: () => void;
+};
+
+export type BareModelAction<M extends ModelName> = {
+  title: string;
+  id: string;
+  canExecute?: (item: Model<M>) => boolean;
+  icon?: keyof typeof OutlineIcons;
+  style?: ActionStyle;
+};
+
 export type ServerAction = {
-  action: (ids: string[] | number[]) => Promise<void>;
+  type: "server";
+  action: (ids: string[] | number[]) => Promise<void | MessageData>;
   successMessage?: string;
   errorMessage?: string;
-};
+} & BareModelAction<ModelName>;
 
 export type ClientAction<T extends ModelName> = {
   type: "dialog";
@@ -545,18 +565,9 @@ export type ClientAction<T extends ModelName> = {
    * Class name to apply to the dialog content
    */
   className?: string;
-};
+} & BareModelAction<T>;
 
-export type ModelAction<T extends ModelName> = (
-  | ServerAction
-  | ClientAction<T>
-) & {
-  title: string;
-  id: string;
-  canExecute?: (item: Model<T>) => boolean;
-  icon?: keyof typeof OutlineIcons;
-  style?: ActionStyle;
-};
+export type ModelAction<T extends ModelName> = ServerAction | ClientAction<T>;
 
 export type UnionModelAction = {
   [M in ModelName]: ModelAction<M>;
@@ -568,7 +579,6 @@ export type OutputModelAction = (Omit<
 > & {
   allowedIds?: string[] | number[];
 })[];
-
 
 export type ModelIcon = keyof typeof OutlineIcons;
 
@@ -1084,5 +1094,5 @@ export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
   resource: ModelName;
   resourceIds: Array<string | number>;
   data: Array<Model<T>>;
-  onClose?: () => void;
+  onClose: (message?: MessageData) => void;
 }>;

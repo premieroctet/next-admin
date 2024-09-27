@@ -73,6 +73,7 @@ export default function ListHeader({
     const defaultActions: ModelAction<ModelName>[] = canDelete
       ? [
           {
+            type: "server",
             id: SPECIFIC_IDS_TO_RUN_ACTION.DELETE,
             title: t("actions.delete.label"),
             icon: "TrashIcon",

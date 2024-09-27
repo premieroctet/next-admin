@@ -1,9 +1,16 @@
 import { Transition, TransitionChild } from "@headlessui/react";
 import clsx from "clsx";
 import { cloneElement, Fragment, useEffect, useState } from "react";
+import { twMerge } from "tailwind-merge";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
-import { ActionStyle, ClientAction, Model, ModelName } from "../types";
+import {
+  ActionStyle,
+  ClientAction,
+  MessageData,
+  Model,
+  ModelName,
+} from "../types";
 import { slugify } from "../utils/tools";
 import {
   DialogContent,
@@ -11,12 +18,11 @@ import {
   DialogPortal,
   DialogRoot,
 } from "./radix/Dialog";
-import { twMerge } from "tailwind-merge";
 
 type Props<M extends ModelName> = {
   resource: M;
   resourceIds: Array<string | number>;
-  onClose: () => void;
+  onClose: (message?: MessageData) => void;
   action: ClientAction<M> & {
     title: string;
     id: string;

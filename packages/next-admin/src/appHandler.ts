@@ -77,7 +77,7 @@ export const createHandler = <P extends string = "nextadmin">({
 
       if (!resource) {
         return NextResponse.json(
-          { error: "Resource not found" },
+          { type: "error", message: "Resource not found" },
           { status: 404 }
         );
       }
@@ -88,14 +88,14 @@ export const createHandler = <P extends string = "nextadmin">({
 
       if (!modelAction) {
         return NextResponse.json(
-          { error: "Action not found" },
+          { type: "error", message: "Action not found" },
           { status: 404 }
         );
       }
 
       if ("type" in modelAction && modelAction.type === "dialog") {
         return NextResponse.json(
-          { error: "Action not found" },
+          { type: "error", message: "Action not found" },
           { status: 404 }
         );
       }
@@ -103,12 +103,14 @@ export const createHandler = <P extends string = "nextadmin">({
       const body = await req.json();
 
       try {
-        await (modelAction as ServerAction).action(body as string[] | number[]);
+        const result = await (modelAction as ServerAction).action(
+          body as string[] | number[]
+        );
 
-        return NextResponse.json({ ok: true });
+        return NextResponse.json(result ?? null);
       } catch (e) {
         return NextResponse.json(
-          { error: (e as Error).message },
+          { type: "error", message: (e as Error).message },
           { status: 500 }
         );
       }
