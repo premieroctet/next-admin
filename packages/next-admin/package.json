@@ -34,7 +34,8 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "exports": {
     ".": {

@@ -1,0 +1,15 @@
+{
+  "extends": "tsconfig/base.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+    "declaration": false,
+    "composite": false,
+    "declarationMap": false,
+    "module": "ESNext",
+    "skipLibCheck": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["dist", "node_modules"]
+}

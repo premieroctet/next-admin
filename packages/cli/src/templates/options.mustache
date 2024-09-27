@@ -1,0 +1,9 @@
+{{#isTypescript}}import type { NextAdminOptions } from "@premieroctet/next-admin";{{/isTypescript}}
+
+const options{{#isTypescript}}: NextAdminOptions{{/isTypescript}} = {
+  title: "My awesome admin",
+
+  model: {}
+}
+
+export default options;
