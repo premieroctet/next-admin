@@ -1,6 +1,7 @@
 import { confirm, input, select } from "@inquirer/prompts";
 import chalk from "chalk";
 import { Command } from "commander";
+import { execa, parseCommandString } from "execa";
 import { existsSync, mkdirSync, writeFileSync } from "fs";
 import ora from "ora";
 import path from "path";
@@ -81,13 +82,13 @@ export const initAction = async ({
 
   const spinner = ora("Installing dependencies").start();
 
-  // try {
-  //   await execa(packageManagerData.name, parseCommandString(`${packageManagerData.installCmd} @premieroctet/next-admin`));
-  //   await execa(packageManagerData.name, parseCommandString(`${packageManagerData.installDevCmd} prisma-json-schema-generator tailwindcss`));
-  // } catch (e) {
-  //   spinner.fail("Failed to install dependencies");
-  //   process.exit(1);
-  // }
+  try {
+    await execa(packageManagerData.name, parseCommandString(`${packageManagerData.installCmd} @premieroctet/next-admin`));
+    await execa(packageManagerData.name, parseCommandString(`${packageManagerData.installDevCmd} prisma-json-schema-generator tailwindcss`));
+  } catch (e) {
+    spinner.fail("Failed to install dependencies");
+    process.exit(1);
+  }
 
   spinner.text = "Generating JSON schema";
 
@@ -252,7 +253,7 @@ export const initCommand = (program: Command) => {
     .option("--cwd <path>", "The Next.js project directory", path.relative(process.cwd(), process.cwd()) || ".")
     .option(
       "-s, --schema <path>",
-      "The directory path where the Prisma schema is located, relative to project root, or cwd if provided",
+      "The directory path where the Prisma schema is located, relative to the current directory, or cwd if provided",
       "prisma/schema.prisma"
     )
     .option(

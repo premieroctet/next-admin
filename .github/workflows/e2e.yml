@@ -25,6 +25,8 @@ jobs:
         run: yarn install
       - name: Run linter
         run: yarn lint
+      - name: Run typecheck
+        run: yarn typecheck
       - name: Install playwright dependencies
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps

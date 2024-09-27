@@ -1,14 +1,38 @@
 {
   "name": "@premieroctet/next-admin-cli",
   "version": "0.0.0",
+  "description": "CLI for Next-Admin, an admin dashboard for Next.js applications.",
   "bin": {
     "next-admin-cli": "dist/index.js"
   },
+  "keywords": [
+    "next.js",
+    "prisma",
+    "admin",
+    "dashboard",
+    "react",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/premieroctet/next-admin.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/premieroctet/next-admin/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/premieroctet/next-admin/blob/main/LICENSE"
+    }
+  ],
   "scripts": {
     "build": "tsx scripts/build.ts",
     "dev": "tsx scripts/dev.ts",
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "tsc": "tsc --noEmit"
+    "tsc": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@inquirer/prompts": "^5.5.0",
@@ -30,6 +54,6 @@
     "typescript": "^5.6.2"
   },
   "engines": {
-    "node": ">= 20"
+    "node": ">= 18"
   }
 }

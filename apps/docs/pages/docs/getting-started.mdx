@@ -8,6 +8,31 @@ import { Callout, Steps, Tabs } from "nextra/components";
 
 The following guide will help you get started with Next-Admin.
 
+<Tabs items={["CLI", "Manually"]}>
+
+<Tabs.Tab>
+
+<Callout type="info">
+  The CLI is in its early stages of development and might be the subject of
+  unexpected behaviors. If you encounter any issues, please report them on the
+  [GitHub repository](https://github.com/premieroctet/next-admin/issues).
+</Callout>
+
+You can initialize the required files to use Next-Admin in your project using the CLI.
+
+```bash
+npx @premieroctet/next-admin-cli@latest init
+```
+
+Make sure to check the available options by running the following command:
+
+```bash
+npx @premieroctet/next-admin-cli@latest init --help
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
 <Steps>
 ### Installation
 
@@ -297,6 +322,9 @@ The `NextAdmin` component accepts an optional `options` prop. In the blocks abov
 </Callout>
 
 </Steps>
+</Tabs.Tab>
+
+</Tabs>
 
 ### Usage
 
