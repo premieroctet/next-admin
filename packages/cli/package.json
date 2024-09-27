@@ -31,7 +31,6 @@
     "build": "tsx scripts/build.ts",
     "dev": "tsx scripts/dev.ts",
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "tsc": "tsc --noEmit",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
