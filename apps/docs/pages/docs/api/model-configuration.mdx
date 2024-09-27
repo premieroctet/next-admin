@@ -591,7 +591,7 @@ The `actions` property is an array of objects that allows you to define a set of
       name: "type",
       type: "String",
       description:
-        "optional action type for client side actions, possible value is 'dialog'. By default action with no type is executed on the server",
+        "action type for client side actions, possible value is 'dialog' | 'server'. By default action with no type is executed on the server",
     },
     {
       name: "component",
@@ -624,7 +624,9 @@ The `actions` property is an array of objects that allows you to define a set of
       description: (
         <>
           an async function that will be triggered when selecting the action in
-          the dropdown. Its mandatory if the action type is not specified
+          the dropdown. Its mandatory if the action type is not specified. Can
+          return a message object to display a message after the action is done
+          or throw an error to display a message
         </>
       ),
     },
@@ -642,12 +644,13 @@ The `actions` property is an array of objects that allows you to define a set of
       name: "successMessage",
       type: "String",
       description:
-        "a message that will be displayed when the action is successful",
+        "a message that will be displayed when the action is successful if action doesn't return a message object",
     },
     {
       name: "errorMessage",
       type: "String",
-      description: "a message that will be displayed when the action fails",
+      description:
+        "a message that will be displayed when the action fails if action doesn't return a message object or throw an error with a message",
     },
   ]}
 />
@@ -846,7 +849,8 @@ Represents the props that are passed to the custom dialog component.
     {
       name: "onClose",
       type: "Function",
-      description: "a function to close the dialog",
+      description:
+        "a function to close the dialog, it can receive a message object to display a message after the dialog is closed",
     },
   ]}
 />

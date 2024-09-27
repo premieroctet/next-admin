@@ -4,7 +4,12 @@ import { twMerge } from "tailwind-merge";
 import { useClientActionDialog } from "../context/ClientActionDialogContext";
 import { useI18n } from "../context/I18nContext";
 import { useAction } from "../hooks/useAction";
-import { ModelAction, ModelName, OutputModelAction } from "../types";
+import {
+  ClientAction,
+  ModelName,
+  OutputModelAction,
+  ServerAction,
+} from "../types";
 import { DropdownItem } from "./radix/Dropdown";
 import { SimpleTooltip } from "./radix/Tooltip";
 
@@ -51,12 +56,12 @@ const ActionDropdownItem = ({ action, resource, resourceIds }: Props) => {
         evt.stopPropagation();
         if (isClientAction) {
           openActionDialog({
-            action: action as any,
+            action: action as ClientAction<typeof resource>,
             resource,
             resourceIds,
           });
         } else {
-          runAction(action as ModelAction<typeof resource>);
+          runAction(action as ServerAction);
         }
       }}
     >

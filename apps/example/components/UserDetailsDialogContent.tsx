@@ -21,7 +21,7 @@ const UserDetailsDialog = ({ data, onClose }: Props) => {
         </div>
       ))}
       <div className="flex">
-        <Button variant="default" onClick={onClose}>
+        <Button variant="default" onClick={() => onClose?.()}>
           Close
         </Button>
       </div>

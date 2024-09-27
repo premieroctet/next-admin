@@ -7,16 +7,13 @@ import {
   useState,
 } from "react";
 import ClientActionDialog from "../components/ClientActionDialog";
-import { ActionStyle, ClientAction, ModelName } from "../types";
+import { ClientAction, MessageData, ModelName } from "../types";
+import { useMessage } from "./MessageContext";
 
 type ClientActionDialogParams<M extends ModelName> = {
   resource: M;
   resourceIds: Array<string | number>;
-  action: ClientAction<M> & {
-    title: string;
-    id: string;
-    style?: ActionStyle;
-  };
+  action: ClientAction<M>;
 };
 
 type ClientDialogContextType = {
@@ -32,8 +29,16 @@ const ClientActionDialogProvider = ({ children }: PropsWithChildren) => {
   const [dialogData, setDialogData] =
     useState<ClientActionDialogParams<any> | null>(null);
 
-  const onClose = () => {
+  const { showMessage } = useMessage();
+
+  const onClose = (message?: MessageData) => {
     setIsOpen(false);
+    if (message) {
+      showMessage({
+        type: message.type,
+        message: message.message,
+      });
+    }
     clearData();
   };
 
