@@ -10,13 +10,15 @@ import {
   NEXTADMIN_OPTIONS_FILENAME,
 } from "../utils/constants";
 import { getRouterRoot } from "../utils/next";
-import { getDataForPackageManager, getPackageManager, PackageManager } from "../utils/packageManager";
-import { getRelativePath } from '../utils/path';
+import {
+  getDataForPackageManager,
+  getPackageManager,
+  PackageManager,
+} from "../utils/packageManager";
+import { getRelativePath } from "../utils/path";
 import { updatePrismaSchema } from "../utils/prisma";
 import { addTailwindCondig } from "../utils/tailwind";
-import {
-  writeToTemplate,
-} from "../utils/templates";
+import { writeToTemplate } from "../utils/templates";
 
 type InitOptions = {
   basePath: string;
@@ -56,7 +58,7 @@ export const initAction = async ({
         { name: "pnpm", value: PackageManager.PNPM },
         { name: "bun", value: PackageManager.BUN },
       ],
-    })
+    });
 
     packageManagerData = getDataForPackageManager(packageManager);
   }
@@ -64,27 +66,35 @@ export const initAction = async ({
   const usesTypescript = existsSync(path.join(basePath, "tsconfig.json"));
 
   const prismaClientPath = await input({
-    message: "Enter the path to the Prisma client instance file. if the path does not exist, its content will be automatically generated.",
+    message:
+      "Enter the path to the Prisma client instance file. if the path does not exist, its content will be automatically generated.",
     default: "./prisma.ts",
     required: true,
   });
 
   if (!existsSync(path.join(basePath, prismaClientPath))) {
     const prismaContent = writeToTemplate("prisma_instance", {
-      isTypescript: usesTypescript
-    })
+      isTypescript: usesTypescript,
+    });
 
-    writeFileSync(
-      path.join(basePath, prismaClientPath),
-      prismaContent
-    )
+    writeFileSync(path.join(basePath, prismaClientPath), prismaContent);
   }
 
   const spinner = ora("Installing dependencies").start();
 
   try {
-    await execa(packageManagerData.name, parseCommandString(`${packageManagerData.installCmd} @premieroctet/next-admin`));
-    await execa(packageManagerData.name, parseCommandString(`${packageManagerData.installDevCmd} prisma-json-schema-generator tailwindcss`));
+    await execa(
+      packageManagerData.name,
+      parseCommandString(
+        `${packageManagerData.installCmd} @premieroctet/next-admin`
+      )
+    );
+    await execa(
+      packageManagerData.name,
+      parseCommandString(
+        `${packageManagerData.installDevCmd} prisma-json-schema-generator tailwindcss`
+      )
+    );
   } catch (e) {
     spinner.fail("Failed to install dependencies");
     process.exit(1);
@@ -95,7 +105,7 @@ export const initAction = async ({
   try {
     await updatePrismaSchema(schemaPath);
   } catch (e) {
-    console.log(e)
+    console.log(e);
     spinner.fail("Failed to generate JSON schema");
     process.exit(1);
   }
@@ -169,14 +179,17 @@ export const initAction = async ({
 
   const pageFilePath =
     routerRootPath.type === "page"
-      ? path.join(pageFolderPath, `[[...nextadmin]]${pageFileExtension}`)
+      ? path.join(pageFolderPath, `[[...nextadmin]].${pageFileExtension}`)
       : path.join(pageFolderPath, `page.${pageFileExtension}`);
   const apiFilePath =
     routerRootPath.type === "page"
-      ? path.join(apiFolderPath, `[[...nextadmin]]${apiFileExtension}`)
+      ? path.join(apiFolderPath, `[[...nextadmin]].${apiFileExtension}`)
       : path.join(apiFolderPath, `route.${apiFileExtension}`);
 
-  const prismaPath = path.join(basePath, prismaClientPath.replace(/\.(ts|tsx|js|jsx)$/, ""));
+  const prismaPath = path.join(
+    basePath,
+    prismaClientPath.replace(/\.(ts|tsx|js|jsx)$/, "")
+  );
   const jsonSchemaPath = path.join(
     path.dirname(schemaPath),
     "json-schema",
@@ -184,9 +197,7 @@ export const initAction = async ({
   );
 
   const pageContent = writeToTemplate(
-    routerRootPath.type === "page"
-      ? "page_router_page"
-      : "app_router_page",
+    routerRootPath.type === "page" ? "page_router_page" : "app_router_page",
     {
       prismaClientPath: getRelativePath(pageFilePath, prismaPath),
       jsonSchemaPath: getRelativePath(pageFilePath, jsonSchemaPath),
@@ -198,41 +209,33 @@ export const initAction = async ({
       apiBasePath: baseApiPath,
       optionsPath: getRelativePath(
         pageFilePath,
-        path.join(
-          basePath,
-          NEXTADMIN_OPTIONS_FILENAME
-        )
+        path.join(basePath, NEXTADMIN_OPTIONS_FILENAME)
       ),
-      isTypescript: usesTypescript
+      isTypescript: usesTypescript,
     }
   );
 
   writeFileSync(pageFilePath, pageContent);
 
   const apiContent = writeToTemplate(
-    routerRootPath.type === "page"
-      ? "page_router_api"
-      : "app_router_api",
+    routerRootPath.type === "page" ? "page_router_api" : "app_router_api",
     {
       prismaClientPath: getRelativePath(apiFilePath, prismaPath),
       jsonSchemaPath: getRelativePath(apiFilePath, jsonSchemaPath),
       optionsPath: getRelativePath(
         apiFilePath,
-        path.join(
-          basePath,
-          NEXTADMIN_OPTIONS_FILENAME
-        )
+        path.join(basePath, NEXTADMIN_OPTIONS_FILENAME)
       ),
       apiBasePath: baseApiPath,
-      isTypescript: usesTypescript
+      isTypescript: usesTypescript,
     }
   );
 
   writeFileSync(apiFilePath, apiContent);
 
-  const optionsContent = writeToTemplate('options', {
-    isTypescript: usesTypescript
-  })
+  const optionsContent = writeToTemplate("options", {
+    isTypescript: usesTypescript,
+  });
 
   writeFileSync(
     path.join(basePath, `${NEXTADMIN_OPTIONS_FILENAME}.${pageFileExtension}`),
@@ -250,7 +253,11 @@ export const initCommand = (program: Command) => {
   program
     .command("init")
     .description("Initialize Next-Admin in your Next.js project")
-    .option("--cwd <path>", "The Next.js project directory", path.relative(process.cwd(), process.cwd()) || ".")
+    .option(
+      "--cwd <path>",
+      "The Next.js project directory",
+      path.relative(process.cwd(), process.cwd()) || "."
+    )
     .option(
       "-s, --schema <path>",
       "The directory path where the Prisma schema is located, relative to the current directory, or cwd if provided",
@@ -274,7 +281,7 @@ export const initCommand = (program: Command) => {
         const schemaPath = path.resolve(
           path.join(basePath, options.schema ?? "")
         );
-  
+
         await initAction({
           basePath,
           schemaPath,
@@ -282,7 +289,7 @@ export const initCommand = (program: Command) => {
           baseApiPath: options.baseApiPath,
         });
       } catch (e) {
-        console.log(e)
+        console.log(e);
       }
     });
 };
