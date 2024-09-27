@@ -1,4 +1,13 @@
-import { BaseEditor, Editor, EditorMarks, Node, Text, Transforms } from "slate";
+import { Property } from "csstype";
+import {
+  BaseEditor,
+  Editor,
+  EditorMarks,
+  Node,
+  Element as SlateElement,
+  Text,
+  Transforms,
+} from "slate";
 import { HistoryEditor } from "slate-history";
 import { ReactEditor, RenderElementProps, RenderLeafProps } from "slate-react";
 import { TypeElement } from "typescript";
@@ -24,6 +33,7 @@ declare module "slate" {
 }
 
 const LIST_TYPES = ["numbered-list", "bulleted-list"];
+const TEXT_ALIGN_TYPES = ["left", "center", "right", "justify"];
 
 export const isMark = (format: string): format is keyof EditorMarks => {
   return ["bold", "italic", "underline", "code", "strikethrough"].includes(
@@ -46,14 +56,25 @@ export const toggleBlock = (editor: Editor, format: any) => {
   const isList = LIST_TYPES.includes(format);
 
   Transforms.unwrapNodes(editor, {
-    // @ts-expect-error
-    match: (n) => LIST_TYPES.includes(n.type as string),
+    match: (n) =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      LIST_TYPES.includes(n.type as string) &&
+      !TEXT_ALIGN_TYPES.includes(format),
     split: true,
   });
 
-  Transforms.setNodes(editor, {
-    type: isActive ? "paragraph" : isList ? "list-item" : format,
-  });
+  let newProperties: Partial<SlateElement>;
+  if (TEXT_ALIGN_TYPES.includes(format)) {
+    newProperties = {
+      textAlign: isActive ? undefined : format,
+    };
+  } else {
+    newProperties = {
+      type: isActive ? "paragraph" : isList ? "list-item" : format,
+    };
+  }
+  Transforms.setNodes<SlateElement>(editor, newProperties);
 
   if (!isActive && isList) {
     const block = { type: format, children: [] };
@@ -67,16 +88,27 @@ export const isMarkActive = (editor: Editor, format: keyof EditorMarks) => {
 };
 
 export const isBlockActive = (editor: Editor, format: TypeElement) => {
+  const { selection } = editor;
+  if (!selection) return false;
+
+  const blockType = TEXT_ALIGN_TYPES.includes(String(format))
+    ? "textAlign"
+    : "type";
+
   const [match] = Editor.nodes(editor, {
-    // @ts-expect-error
-    match: (n) => n.type === format,
+    at: Editor.unhangRange(editor, selection),
+
+    match: (n) =>
+      !Editor.isEditor(n) &&
+      SlateElement.isElement(n) &&
+      // @ts-expect-error
+      n[blockType] === format,
   });
 
   return !!match;
 };
 
-export const renderLeaf = (props: RenderLeafProps) => {
-  let { children, leaf } = props;
+export const renderLeaf = ({ children, leaf, attributes }: RenderLeafProps) => {
   if (leaf.bold) {
     children = <strong>{children}</strong>;
   }
@@ -102,20 +134,25 @@ export const renderLeaf = (props: RenderLeafProps) => {
   if (leaf.strikethrough) {
     children = <s>{children}</s>;
   }
-  return <span {...props.attributes}>{children}</span>;
+  return <span {...attributes}>{children}</span>;
 };
 
-export const renderElement = (props: RenderElementProps) => {
-  const { attributes, children, element } = props;
+export const renderElement = ({
+  attributes,
+  children,
+  element,
+}: RenderElementProps) => {
+  const style = { textAlign: element.textAlign as Property.TextAlign };
   switch (element.type) {
     case "bulleted-list":
       return (
         <ul
-          {...attributes}
           style={{
             listStyleType: "disc",
             marginLeft: "1rem",
+            ...style,
           }}
+          {...attributes}
         >
           {children}
         </ul>
@@ -123,25 +160,31 @@ export const renderElement = (props: RenderElementProps) => {
     case "numbered-list":
       return (
         <ol
-          {...attributes}
           style={{
             listStyleType: "decimal",
             marginLeft: "1rem",
+            ...style,
           }}
+          {...attributes}
         >
           {children}
         </ol>
       );
     case "list-item":
-      return <li {...attributes}>{children}</li>;
+      return (
+        <li style={style} {...attributes}>
+          {children}
+        </li>
+      );
     case "heading-one":
       return (
         <h1
-          {...attributes}
           style={{
             fontSize: "2rem",
             fontWeight: 600,
+            ...style,
           }}
+          {...attributes}
         >
           {children}
         </h1>
@@ -149,11 +192,12 @@ export const renderElement = (props: RenderElementProps) => {
     case "heading-two":
       return (
         <h2
-          {...attributes}
           style={{
             fontSize: "1.5rem",
             fontWeight: 600,
+            ...style,
           }}
+          {...attributes}
         >
           {children}
         </h2>
@@ -161,11 +205,12 @@ export const renderElement = (props: RenderElementProps) => {
     case "heading-three":
       return (
         <h3
-          {...attributes}
           style={{
             fontSize: "1.25rem",
             fontWeight: 600,
+            ...style,
           }}
+          {...attributes}
         >
           {children}
         </h3>
@@ -177,6 +222,7 @@ export const renderElement = (props: RenderElementProps) => {
             borderLeft: "2px solid #ddd",
             paddingLeft: "1rem",
             marginLeft: "1rem",
+            ...style,
           }}
         >
           {children}
@@ -184,10 +230,18 @@ export const renderElement = (props: RenderElementProps) => {
       );
     case "br":
       return <>{children}</>;
-    case "pargraph":
-      return <p {...attributes}>{children}</p>;
+    case "paragraph":
+      return (
+        <p style={style} {...attributes}>
+          {children}
+        </p>
+      );
     case "div":
-      return <div {...attributes}>{children}</div>;
+      return (
+        <div style={style} {...attributes}>
+          {children}
+        </div>
+      );
     default:
       return <>{children}</>;
   }
@@ -202,6 +256,8 @@ export const serialize = (nodes: Node[], format: RichTextFormat) => {
 };
 
 export const serializeHtml = (node: Node) => {
+  const textAlign = (node as SlateElement).textAlign;
+  const style = textAlign ? ` style="text-align: ${textAlign};"` : "";
   if (Text.isText(node)) {
     let string = node.text;
     if (!string) {
@@ -209,20 +265,19 @@ export const serializeHtml = (node: Node) => {
     }
 
     if (node.bold) {
-      string = `<strong>${string}</strong>`;
+      string = `<strong${style}>${string}</strong>`;
     }
     if (node.code) {
-      string = `<code
-      >${string}</code>`;
+      string = `<code${style}>${string}</code>`;
     }
     if (node.italic) {
-      string = `<em>${string}</em>`;
+      string = `<em${style}>${string}</em>`;
     }
     if (node.underline) {
-      string = `<u>${string}</u>`;
+      string = `<u${style}>${string}</u>`;
     }
     if (node.strikethrough) {
-      string = `<s>${string}</s>`;
+      string = `<s${style}>${string}</s>`;
     }
     return string;
   }
@@ -236,23 +291,23 @@ export const serializeHtml = (node: Node) => {
   // @ts-expect-error
   switch (node.type) {
     case "bulleted-list":
-      return `<ul>${children}</ul>`;
+      return `<ul${style}>${children}</ul>`;
     case "numbered-list":
-      return `<ol>${children}</ol>`;
+      return `<ol${style}>${children}</ol>`;
     case "list-item":
-      return `<li>${children}</li>`;
+      return `<li${style}>${children}</li>`;
     case "heading-one":
-      return `<h1>${children}</h1>`;
+      return `<h1${style}>${children}</h1>`;
     case "heading-two":
-      return `<h2>${children}</h2>`;
+      return `<h2${style}>${children}</h2>`;
     case "heading-three":
-      return `<h3>${children}</h3>`;
+      return `<h3${style}>${children}</h3>`;
     case "blockquote":
-      return `<blockquote>${children}</blockquote>`;
+      return `<blockquote${style}>${children}</blockquote>`;
     case "paragraph":
-      return `<p>${children}</p>`;
+      return `<p${style}>${children}</p>`;
     default:
-      return `<div>${children}</div>`;
+      return `<div${style}>${children}</div>`;
   }
 };
 
@@ -317,9 +372,9 @@ export const deserializeHtml = (
   el: HTMLElement,
   markAttributes: EditorMarks = {}
 ) => {
-  if (el.nodeType === 3) {
+  if (el.nodeType === el.TEXT_NODE) {
     return {
-      text: el.textContent || "",
+      text: el.textContent ?? "",
       ...markAttributes,
     };
   }
@@ -356,6 +411,7 @@ export const deserializeHtml = (
     case "P":
       return {
         type: "paragraph",
+        textAlign: el.style.textAlign,
         children,
       };
     case "BR": {
@@ -367,41 +423,49 @@ export const deserializeHtml = (
     case "H1":
       return {
         type: "heading-one",
+        textAlign: el.style.textAlign,
         children,
       };
     case "H2":
       return {
         type: "heading-two",
+        textAlign: el.style.textAlign,
         children,
       };
     case "H3":
       return {
         type: "heading-three",
+        textAlign: el.style.textAlign,
         children,
       };
     case "BLOCKQUOTE":
       return {
         type: "blockquote",
+        textAlign: el.style.textAlign,
         children,
       };
     case "UL":
       return {
         type: "bulleted-list",
+        textAlign: el.style.textAlign,
         children,
       };
     case "OL":
       return {
         type: "numbered-list",
+        textAlign: el.style.textAlign,
         children,
       };
     case "LI":
       return {
         type: "list-item",
+        textAlign: el.style.textAlign,
         children,
       };
     case "DIV":
       return {
         type: "div",
+        textAlign: el.style.textAlign,
         children,
       };
     default:

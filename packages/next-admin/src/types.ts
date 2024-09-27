@@ -569,7 +569,6 @@ export type OutputModelAction = (Omit<
   allowedIds?: string[] | number[];
 })[];
 
-
 export type ModelIcon = keyof typeof OutlineIcons;
 
 export enum Permission {
