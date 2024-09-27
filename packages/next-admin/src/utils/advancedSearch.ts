@@ -286,6 +286,7 @@ export const buildUIBlocks = <M extends ModelName>(
                   contentType: contentType,
                   canHaveChildren: false,
                   nullable: isFieldNullable(schemaProperty.type),
+                  displayPath: [...fields, key].join(" → "),
                 };
               } else {
                 let isArrayConditionKey = conditionKey === "some";
