@@ -3,7 +3,7 @@ name: Reset database
 on:
   schedule:
     # - cron: "0 0 * * *"
-    - cron: "*/1 * * * *"
+    - cron: "*/15 * * * *"
 
 jobs:
   reset-db:
