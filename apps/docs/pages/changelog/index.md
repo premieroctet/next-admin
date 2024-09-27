@@ -1,5 +1,22 @@
 # @premieroctet/next-admin
 
+## 6.1.0
+
+### Minor Changes
+
+- [68700e6](https://github.com/premieroctet/next-admin/commit/68700e6): - Allow custom actions messages
+  - Allow custom dialog actions messages
+  - `type` prop is now required on `actions` items
+  - `action` function now can return a Message object to display a message after the action is done
+  - Error thrown by `action` function are now caught and displayed in a message
+  - `onClose` prop can now receive a Message object to display a message after the dialog is closed
+
+### Patch Changes
+
+- [0ccbbab](https://github.com/premieroctet/next-admin/commit/0ccbbab): Add align on RichText Editor
+- [a338dda](https://github.com/premieroctet/next-admin/commit/a338dda): Add conditional action through `canExecute` function
+- [68700e6](https://github.com/premieroctet/next-admin/commit/68700e6): Fix form action message
+
 ## 6.0.1
 
 ### Patch Changes
