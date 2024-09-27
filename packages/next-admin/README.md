@@ -25,6 +25,14 @@
 
 ## Installation
 
+### With the CLI
+
+```shell copy
+npx @premieroctet/next-admin-cli@latest init
+```
+
+### Manually
+
 To install the library, run the following command:
 
 ```shell copy
