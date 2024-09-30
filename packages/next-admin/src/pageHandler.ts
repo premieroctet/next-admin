@@ -18,7 +18,9 @@ import {
   getJsonBody,
   getResourceFromParams,
   getResources,
+  schema,
 } from "./utils/server";
+import { getJsonSchema } from "./utils/jsonSchema";
 
 type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**
@@ -51,10 +53,6 @@ type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   //  * @default "nextadmin"
   //  */
   paramKey?: P;
-  /**
-   * Generated JSON schema from Prisma
-   */
-  schema: any;
 };
 
 export const createHandler = <P extends string = "nextadmin">({
@@ -63,7 +61,6 @@ export const createHandler = <P extends string = "nextadmin">({
   prisma,
   paramKey = "nextadmin" as P,
   onRequest,
-  schema,
 }: CreateAppHandlerParams<P>) => {
   const router = createRouter<NextApiRequest, NextApiResponse>();
   const resources = getResources(options);

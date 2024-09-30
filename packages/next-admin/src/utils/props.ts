@@ -22,9 +22,11 @@ import {
   getResourceIdFromParam,
   getResources,
   getToStringForModel,
+  schema,
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
+import { getJsonSchema } from "./jsonSchema";
 
 enum Page {
   LIST = 1,
@@ -35,7 +37,6 @@ export async function getPropsFromParams({
   params,
   searchParams,
   options,
-  schema,
   prisma,
   isAppDir = true,
   locale,
@@ -152,7 +153,6 @@ export async function getPropsFromParams({
         data,
         total,
         error: error ?? (searchParams?.error as string),
-        schema,
         actions: serializedActions,
       };
     }

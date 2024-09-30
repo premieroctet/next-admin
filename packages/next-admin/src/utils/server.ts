@@ -22,7 +22,9 @@ import {
 } from "../types";
 import { getRawData } from "./prisma";
 import { isNativeFunction, isUploadParameters, pipe } from "./tools";
+import { getJsonSchema } from "./jsonSchema";
 
+export const schema = getJsonSchema();
 export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
   .models as Prisma.DMMF.Model[];
 export const enums = Prisma.dmmf.datamodel.enums;

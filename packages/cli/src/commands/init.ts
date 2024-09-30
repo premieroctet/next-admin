@@ -92,7 +92,7 @@ export const initAction = async ({
     await execa(
       packageManagerData.name,
       parseCommandString(
-        `${packageManagerData.installDevCmd} prisma-json-schema-generator tailwindcss`
+        `${packageManagerData.installDevCmd} @premieroctet/next-admin-generator-prisma tailwindcss`
       )
     );
   } catch (e) {

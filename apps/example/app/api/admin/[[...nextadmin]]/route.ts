@@ -7,7 +7,6 @@ const { run } = createHandler({
   apiBasePath: "/api/admin",
   options,
   prisma,
-  schema,
 });
 
 export { run as DELETE, run as GET, run as POST };

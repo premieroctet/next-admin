@@ -1,10 +1,22 @@
 import { Prisma } from "@prisma/client";
 import { UiSchema } from "@rjsf/utils";
-import { EditFieldsOptions, Field, ModelName } from "../types";
+import { EditFieldsOptions, Field, ModelName, Schema } from "../types";
 
 export type Schemas = {
   schema: any;
   uiSchema: UiSchema;
+};
+
+export const getJsonSchema = (): Schema => {
+  try {
+    const schema = require(".next-admin/schema.json");
+
+    return schema as Schema;
+  } catch {
+    throw new Error(
+      "Schema not found, make sure you added the generator to your schema.prisma file"
+    );
+  }
 };
 
 function filterProperties(properties: any): Record<string, any> {

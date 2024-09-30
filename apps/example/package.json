@@ -35,6 +35,7 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@playwright/test": "^1.37.0",
+    "@premieroctet/next-admin-generator-prisma": "*",
     "@types/node": "^17.0.12",
     "@types/react": "^18.2.0",
     "@types/react-datepicker": "^4.19.3",

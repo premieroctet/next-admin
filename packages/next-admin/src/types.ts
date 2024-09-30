@@ -1010,7 +1010,7 @@ export type GetNextAdminPropsParams = {
   /**
    * `schema` is an object that represents the JSON schema of your Prisma schema.
    */
-  schema: any;
+  schema?: any;
   /**
    * `prisma` is an instance of PrismaClient.
    */
@@ -1070,10 +1070,6 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    * @default "nextadmin"
    */
   paramKey?: P;
-  /**
-   * Generated JSON schema from Prisma
-   */
-  schema: any;
 };
 
 export type FormProps = {
