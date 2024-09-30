@@ -1,7 +1,7 @@
 import z from "zod";
 import set from "lodash.set";
 import get from "lodash.get";
-import { ModelName, Schema, SchemaModel } from "../types";
+import { ModelName, ModelOptions, Schema, SchemaModel } from "../types";
 
 export type QueryCondition =
   | "equals"
@@ -234,8 +234,13 @@ const getQueryBlockValue = (
 
 export const buildUIBlocks = <M extends ModelName>(
   blocks: QueryBlock | null,
-  { resource, schema }: { resource: M; schema: Schema },
-  fields: string[] = []
+  {
+    resource,
+    schema,
+    options,
+  }: { resource: M; schema: Schema; options?: ModelOptions<ModelName> },
+  fields: string[] = [],
+  displayFields: string[] = []
 ): UIQueryBlock[] => {
   if (blocks) {
     const entries = Object.entries(blocks);
@@ -247,7 +252,12 @@ export const buildUIBlocks = <M extends ModelName>(
             type: key === "AND" ? "and" : "or",
             id: crypto.randomUUID(),
             children: value.flatMap((block: QueryBlock) => {
-              return buildUIBlocks(block, { resource, schema }, fields);
+              return buildUIBlocks(
+                block,
+                { resource, schema, options },
+                fields,
+                displayFields
+              );
             }),
           };
         } else {
@@ -257,10 +267,11 @@ export const buildUIBlocks = <M extends ModelName>(
               key as keyof typeof resourceInSchema.properties
             ];
           const conditions = Object.entries(value as Filter);
+          const displayKey = options?.[resource]?.aliases?.[key] ?? key;
 
           if (schemaProperty) {
             // @ts-expect-error
-            return conditions.flatMap(([conditionKey, conditionValue]) => {
+            return conditions.flatMap(([conditionKey]) => {
               const queryCondition = getQueryCondition(conditionKey);
 
               if (queryCondition) {
@@ -286,7 +297,7 @@ export const buildUIBlocks = <M extends ModelName>(
                   contentType: contentType,
                   canHaveChildren: false,
                   nullable: isFieldNullable(schemaProperty.type),
-                  displayPath: [...fields, key].join(" → "),
+                  displayPath: [...displayFields, displayKey].join(" → "),
                 };
               } else {
                 let isArrayConditionKey = conditionKey === "some";
@@ -322,8 +333,9 @@ export const buildUIBlocks = <M extends ModelName>(
                           .flatMap((block) => {
                             return buildUIBlocks(
                               block,
-                              { resource: childResourceName, schema },
-                              [...fields, key]
+                              { resource: childResourceName, schema, options },
+                              [...fields, key],
+                              [...displayFields, displayKey]
                             );
                           })
                           .filter(Boolean) as UIQueryBlock[],
@@ -332,8 +344,9 @@ export const buildUIBlocks = <M extends ModelName>(
 
                     return buildUIBlocks(
                       { [childKey]: childValue } as Filter,
-                      { resource: childResourceName, schema },
-                      [...fields, key]
+                      { resource: childResourceName, schema, options },
+                      [...fields, key],
+                      [...displayFields, displayKey]
                     );
                   })
                   .flat();
