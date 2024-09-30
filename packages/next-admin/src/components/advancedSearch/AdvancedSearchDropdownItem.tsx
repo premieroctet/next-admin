@@ -10,6 +10,7 @@ import {
   UIQueryBlock,
 } from "../../utils/advancedSearch";
 import { useConfig } from "../../context/ConfigContext";
+import { useI18n } from "../../context/I18nContext";
 
 type Props = {
   property: string;
@@ -29,6 +30,7 @@ const AdvancedSearchDropdownItem = ({
   displayPath,
 }: Props) => {
   const { options } = useConfig();
+  const { t } = useI18n();
   const schemaDef = schema.definitions[resource];
   const schemaProperty =
     schemaDef.properties[property as keyof typeof schemaDef.properties];
@@ -66,8 +68,11 @@ const AdvancedSearchDropdownItem = ({
   }, [hasChildren, schemaProperty, schema]);
 
   const aliases = options?.model?.[resource]?.aliases;
-  const displayedProperty =
-    aliases?.[property as keyof typeof aliases] ?? property;
+  const displayedProperty = t(
+    `model.${resource}.fields.${property}`,
+    {},
+    aliases?.[property as keyof typeof aliases] ?? property
+  );
 
   const onClick = (evt: MouseEvent<HTMLDivElement>) => {
     if (hasChildren) {
