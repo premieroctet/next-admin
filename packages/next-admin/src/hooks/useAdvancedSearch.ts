@@ -7,6 +7,7 @@ import {
 import { useRouterInternal } from "./useRouterInternal";
 import { ModelName, Schema } from "../types";
 import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
 
 type UseAdvancedSearchParams<M extends ModelName> = {
   resource: M;
@@ -19,6 +20,7 @@ const useAdvancedSearch = <M extends ModelName>({
 }: UseAdvancedSearchParams<M>) => {
   const { router, query } = useRouterInternal();
   const { options } = useConfig();
+  const { t } = useI18n();
   const [uiBlocks, setUiBlocks] = useState(() => {
     if (query.q) {
       const blocks = validateQuery(query.q);
@@ -31,6 +33,7 @@ const useAdvancedSearch = <M extends ModelName>({
         resource,
         schema,
         options: options?.model,
+        t,
       });
     }
   });

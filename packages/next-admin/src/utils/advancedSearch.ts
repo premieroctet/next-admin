@@ -2,6 +2,7 @@ import z from "zod";
 import set from "lodash.set";
 import get from "lodash.get";
 import { ModelName, ModelOptions, Schema, SchemaModel } from "../types";
+import { TranslationFn } from "../context/I18nContext";
 
 export type QueryCondition =
   | "equals"
@@ -238,7 +239,13 @@ export const buildUIBlocks = <M extends ModelName>(
     resource,
     schema,
     options,
-  }: { resource: M; schema: Schema; options?: ModelOptions<ModelName> },
+    t,
+  }: {
+    resource: M;
+    schema: Schema;
+    options?: ModelOptions<ModelName>;
+    t?: TranslationFn;
+  },
   fields: string[] = [],
   displayFields: string[] = []
 ): UIQueryBlock[] => {
@@ -267,7 +274,10 @@ export const buildUIBlocks = <M extends ModelName>(
               key as keyof typeof resourceInSchema.properties
             ];
           const conditions = Object.entries(value as Filter);
-          const displayKey = options?.[resource]?.aliases?.[key] ?? key;
+          const displayKeyFallback = options?.[resource]?.aliases?.[key] ?? key;
+          const displayKey =
+            t?.(`model.${resource}.fields.${key}`, {}, displayKeyFallback) ??
+            displayKeyFallback;
 
           if (schemaProperty) {
             // @ts-expect-error
