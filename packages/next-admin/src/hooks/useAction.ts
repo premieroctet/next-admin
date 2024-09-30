@@ -2,6 +2,7 @@ import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useMessage } from "../context/MessageContext";
 import { ClientAction, MessageData, ModelAction, ModelName } from "../types";
+import { useRouterInternal } from "./useRouterInternal";
 
 export const SPECIFIC_IDS_TO_RUN_ACTION = {
   DELETE: "__admin-delete",
@@ -14,6 +15,7 @@ export const useAction = <M extends ModelName>(
   const { t } = useI18n();
   const { apiBasePath } = useConfig();
   const { showMessage } = useMessage();
+  const { router } = useRouterInternal();
 
   const runAction = async (
     modelAction:
@@ -37,6 +39,7 @@ export const useAction = <M extends ModelName>(
             },
           }
         );
+        router.refresh();
 
         const actionMessage = (await response.json()) as MessageData;
         if (actionMessage && actionMessage.message) {

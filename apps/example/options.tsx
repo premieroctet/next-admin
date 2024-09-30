@@ -2,6 +2,7 @@ import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
+import { prisma } from "./prisma";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
@@ -29,8 +30,8 @@ export const options: NextAdminOptions = {
           "email",
           "posts",
           "role",
-          "birthDate",
-          "profile",
+          // "birthDate",
+          // "profile",
         ],
         search: ["name", "email", "role"],
         copy: ["email"],
@@ -41,6 +42,15 @@ export const options: NextAdminOptions = {
             value: {
               role: {
                 equals: "ADMIN",
+              },
+            },
+          },
+          {
+            name: "@premieroctet.com",
+            active: false,
+            value: {
+              email: {
+                endsWith: "@premieroctet.com",
               },
             },
           },
@@ -186,6 +196,33 @@ export const options: NextAdminOptions = {
       title: "Posts",
       icon: "NewspaperIcon",
       permissions: ["edit", "delete", "create"],
+      actions: [
+        {
+          type: "server",
+          id: "publish",
+          icon: "CheckIcon",
+          title: "actions.post.publish.title",
+          action: async (ids) => {
+            console.log("Publishing " + ids.length + " posts");
+            await prisma.post.updateMany({
+              where: {
+                id: {
+                  in: ids.map((id) => Number(id)),
+                },
+              },
+              data: {
+                published: true,
+              },
+            });
+            return {
+              type: "success",
+              message: "actions.post.publish.success",
+            };
+          },
+          successMessage: "actions.post.publish.success",
+          errorMessage: "actions.post.publish.error",
+        },
+      ],
       list: {
         exports: [
           { format: "CSV", url: "/api/posts/export?format=csv" },
@@ -199,6 +236,22 @@ export const options: NextAdminOptions = {
           "categories",
           "rate",
           "tags",
+        ],
+        filters: [
+          {
+            name: "Published",
+            active: false,
+            value: {
+              published: true,
+            },
+          },
+          {
+            name: "Unpublished",
+            active: false,
+            value: {
+              published: false,
+            },
+          },
         ],
         search: ["title", "content", "tags", "author.name"],
         fields: {

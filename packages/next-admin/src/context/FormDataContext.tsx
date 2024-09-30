@@ -1,7 +1,8 @@
-import React, {
+import {
   createContext,
   PropsWithChildren,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
@@ -17,6 +18,9 @@ const FormDataProvider = ({
   children,
 }: PropsWithChildren<{ data: any }>) => {
   const [formData, setFormData] = useState<any>(data);
+  useEffect(() => {
+    setFormData(data);
+  }, [data]);
 
   return (
     <FormDataContext.Provider value={{ formData, setFormData }}>
