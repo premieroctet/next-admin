@@ -9,17 +9,43 @@ const UserDetailsDialog = ({ data, onClose }: Props) => {
     <div className="flex flex-col gap-8">
       {data?.map((user) => (
         <div className="flex flex-col gap-2" key={user.id}>
-          <h2 className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default text-2xl font-semibold">
-            {user.email as string}
-          </h2>
-          <p className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle">
-            {user.name as string}
-          </p>
-          <p className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle">
-            {user.role as string}
-          </p>
+          <div className="flex flex-col gap-2">
+            <div className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle text-lg font-semibold">
+              User Information
+            </div>
+            <div className="text-nextadmin-content-subtle/50 dark:text-dark-nextadmin-content-subtle/50 text-sm font-medium">
+              Details about the current user.
+            </div>
+          </div>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <span className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle font-medium">
+                Name:
+              </span>
+              <span className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle col-span-3 font-medium">
+                {user.name as string}
+              </span>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <span className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle font-medium">
+                Email:
+              </span>
+              <span className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle col-span-3">
+                {user.email as string}
+              </span>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <span className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle font-medium">
+                Role:
+              </span>
+              <span className="text-nextadmin-content-subtle dark:text-dark-nextadmin-content-subtle col-span-3">
+                {user.role as string}
+              </span>
+            </div>
+          </div>
         </div>
       ))}
+
       <div className="flex">
         <Button variant="default" onClick={() => onClose?.()}>
           Close

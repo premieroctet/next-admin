@@ -122,6 +122,10 @@
         "publish": {
           "title": "Publier",
           "success": "Article publié avec succès"
+        },
+        "add-tag": {
+          "title": "Ajouter un tag",
+          "success": "Tag ajouté avec succès"
         }
       },
       "user": {

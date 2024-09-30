@@ -1,4 +1,5 @@
 import UserDetailsDialog from "@/components/UserDetailsDialogContent";
+import AddTagDialog from "@/components/PostAddTagDialogContent";
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
@@ -221,6 +222,13 @@ export const options: NextAdminOptions = {
           },
           successMessage: "actions.post.publish.success",
           errorMessage: "actions.post.publish.error",
+        },
+        {
+          type: "dialog",
+          icon: "TagIcon",
+          id: "add-tag",
+          title: "actions.post.add-tag.title",
+          component: <AddTagDialog />,
         },
       ],
       list: {
