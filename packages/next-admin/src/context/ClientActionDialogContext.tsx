@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 import ClientActionDialog from "../components/ClientActionDialog";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 import { ClientAction, MessageData, ModelName } from "../types";
 import { useMessage } from "./MessageContext";
 
@@ -30,9 +31,11 @@ const ClientActionDialogProvider = ({ children }: PropsWithChildren) => {
     useState<ClientActionDialogParams<any> | null>(null);
 
   const { showMessage } = useMessage();
+  const { router } = useRouterInternal();
 
   const onClose = (message?: MessageData) => {
     setIsOpen(false);
+    router.refresh();
     if (message) {
       showMessage({
         type: message.type,
