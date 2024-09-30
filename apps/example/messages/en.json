@@ -1,6 +1,12 @@
 {
   "admin": {
     "actions": {
+      "post": {
+        "publish": {
+          "title": "Publish post",
+          "success": "Post published successfully"
+        }
+      },
       "user": {
         "email": {
           "title": "Send email",
