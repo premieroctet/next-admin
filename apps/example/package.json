@@ -20,7 +20,7 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@picocss/pico": "^1.5.7",
-    "@premieroctet/next-admin": "6.1.0",
+    "@premieroctet/next-admin": "6.1.1",
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
     "babel-plugin-superjson-next": "^0.4.5",

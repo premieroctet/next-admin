@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 6.1.1
+
+### Patch Changes
+
+- [003805d](https://github.com/premieroctet/next-admin/commit/003805d): fix: correctly display path in advanced search
+- [84ae5d6](https://github.com/premieroctet/next-admin/commit/84ae5d6): improve dialog UI
+
 ## 6.1.0
 
 ### Minor Changes
