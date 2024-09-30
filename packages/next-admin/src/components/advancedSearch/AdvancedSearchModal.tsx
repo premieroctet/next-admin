@@ -157,7 +157,7 @@ const AdvancedSearchModal = ({ isOpen, onClose, resource, schema }: Props) => {
                     onAddBlock={addUiBlock}
                   />
                   <div className="flex justify-between">
-                    <Button variant="destructive" onClick={onClear}>
+                    <Button variant="destructiveOutline" onClick={onClear}>
                       {t("search.advanced.clear")}
                     </Button>
                     <div className="flex justify-end gap-4">

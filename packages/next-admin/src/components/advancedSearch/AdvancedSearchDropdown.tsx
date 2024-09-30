@@ -10,7 +10,6 @@ import {
 } from "../radix/Dropdown";
 import Button from "../radix/Button";
 import { ChevronDownIcon, PlusIcon } from "@heroicons/react/24/outline";
-import Divider from "../Divider";
 import { UIQueryBlock } from "../../utils/advancedSearch";
 import { useI18n } from "../../context/I18nContext";
 
@@ -35,7 +34,7 @@ const AdvancedSearchDropdown = ({
     <Dropdown>
       <DropdownTrigger asChild>
         {trigger || (
-          <Button variant="ghost" className="justify-between gap-2">
+          <Button variant="ghost" className="justify-between gap-2 border dark:border-dark-nextadmin-border-strong">
             <div className="flex items-center gap-2">
               <PlusIcon className="h-4 w-4" aria-hidden="true" />
               {t("search.advanced.add")}
