@@ -38,7 +38,7 @@ const AdvancedSearchTree = forwardRef<HTMLDivElement, Props>((props, ref) => {
       ref={ref}
       disableCollapseOnItemClick
       className="flex max-w-full flex-col"
-      contentClassName="max-w-full text-nextadmin-content-default dark:text-dark-nextadmin-content-default bg-nextadmin-background-emphasis dark:bg-dark-nextadmin-background-emphasis relative flex cursor-default gap-2 rounded-md !px-3 !py-1 text-sm !border-none"
+      contentClassName="max-w-full text-nextadmin-content-default dark:text-dark-nextadmin-content-default bg-nextadmin-background-muted dark:bg-dark-nextadmin-background-emphasis relative flex cursor-default gap-2 rounded-md !px-3 !py-1 text-sm !border-none"
     >
       <div className="flex max-w-full flex-1 items-center gap-2">
         <div {...props.handleProps}>
