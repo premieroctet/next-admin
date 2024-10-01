@@ -20,7 +20,6 @@ module.exports = {
   ],
   darkMode: "class",
   theme: {},
-  plugins: [require("@headlessui/tailwindcss")],
   presets: [require("@premieroctet/next-admin/preset")],
 };
   `;
