@@ -28,10 +28,10 @@
     "@types/react-dom": "^18.2.0",
     "autoprefixer": "^10.0.1",
     "eslint": "7.32.0",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
-    "tsconfig": "*",
+    "tsconfig": "workspace:*",
     "typescript": "^4.5.3"
   }
 }

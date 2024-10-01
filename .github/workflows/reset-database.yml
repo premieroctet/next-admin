@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Enable corepack
+        run: corepack enable
       - name: Install dependencies
         run: yarn install
       - name: Reset database
