@@ -2729,7 +2729,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@premieroctet/next-admin-generator-prisma@npm:*, @premieroctet/next-admin-generator-prisma@workspace:packages/generator-prisma":
+"@premieroctet/next-admin-generator-prisma@workspace:*, @premieroctet/next-admin-generator-prisma@workspace:packages/generator-prisma":
   version: 0.0.0-use.local
   resolution: "@premieroctet/next-admin-generator-prisma@workspace:packages/generator-prisma"
   dependencies:
@@ -2738,9 +2738,9 @@ __metadata:
     "@prisma/internals": "npm:^5.20.0"
     "@types/json-schema": "npm:^7.0.15"
     eslint: "npm:^7.32.0"
-    eslint-config-custom: "npm:*"
+    eslint-config-custom: "workspace:*"
     prisma-json-schema-generator: "npm:5.1.5"
-    tsconfig: "npm:*"
+    tsconfig: "workspace:*"
     typescript: "npm:^5.6.2"
   bin:
     next-admin-generator-prisma: dist/index.js
@@ -2754,7 +2754,7 @@ __metadata:
     "@types/json-schema": "npm:^7.0.15"
     eslint: "npm:^7.32.0"
     eslint-config-custom: "workspace:*"
-    tsconfig: "npm:*"
+    tsconfig: "workspace:*"
     typescript: "npm:^5.6.2"
   languageName: unknown
   linkType: soft
@@ -7768,7 +7768,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-custom@npm:*, eslint-config-custom@workspace:*, eslint-config-custom@workspace:packages/eslint-config-custom":
+"eslint-config-custom@workspace:*, eslint-config-custom@workspace:packages/eslint-config-custom":
   version: 0.0.0-use.local
   resolution: "eslint-config-custom@workspace:packages/eslint-config-custom"
   dependencies:
@@ -8217,7 +8217,7 @@ __metadata:
     "@picocss/pico": "npm:^1.5.7"
     "@playwright/test": "npm:^1.37.0"
     "@premieroctet/next-admin": "npm:6.1.4"
-    "@premieroctet/next-admin-generator-prisma": "npm:*"
+    "@premieroctet/next-admin-generator-prisma": "workspace:*"
     "@prisma/client": "npm:5.14.0"
     "@tremor/react": "npm:^3.2.2"
     "@types/node": "npm:^17.0.12"
@@ -15628,7 +15628,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tsconfig@npm:*, tsconfig@workspace:*, tsconfig@workspace:packages/tsconfig":
+"tsconfig@workspace:*, tsconfig@workspace:packages/tsconfig":
   version: 0.0.0-use.local
   resolution: "tsconfig@workspace:packages/tsconfig"
   languageName: unknown
