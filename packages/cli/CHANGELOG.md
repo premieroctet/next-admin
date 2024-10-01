@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-cli
 
+## 0.0.2
+
+### Patch Changes
+
+- [dce87b0](https://github.com/premieroctet/next-admin/commit/dce87b0): fix: remove useless headlessui tailwind plugin
+
 ## 0.0.1
 
 ### Patch Changes
