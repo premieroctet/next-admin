@@ -22,7 +22,7 @@
     "reset-database": "dotenv turbo run reset-database",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "publish-package": "yarn build:next-admin && changeset publish",
-    "changeset-version": "(changeset version) && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md"
+    "changeset-version": "(changeset version) && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install"
   },
   "devDependencies": {
     "dotenv-cli": "7.2.1",
