@@ -20,7 +20,6 @@ import {
   getResources,
   schema,
 } from "./utils/server";
-import { getJsonSchema } from "./utils/jsonSchema";
 
 type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**

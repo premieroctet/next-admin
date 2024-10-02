@@ -1,10 +1,15 @@
 import type { DMMF } from "@prisma/generator-helper";
-import type { JSONSchema7, JSONSchema7Definition } from "json-schema";
+import type { JSONSchema7 } from "json-schema";
 import {
   injectIntoJsonSchemaDefinition,
+  type NextAdminJSONSchema,
   type NextAdminJsonSchemaDataType,
   type NextAdminJsonSchemaRelation,
 } from "@premieroctet/next-admin-json-schema";
+
+type DeepMutableField<T> = {
+  -readonly [P in keyof T]: DeepMutableField<T[P]>;
+};
 
 const isFieldDisabled = (field: DMMF.Field) => {
   const isDisabled = field.isReadOnly || field.isGenerated || field.isUpdatedAt;
@@ -83,6 +88,17 @@ export const insertDmmfData = (
 
     const fields = dmmfModel.fields;
 
+    if (dmmfModel.primaryKey) {
+      injectIntoJsonSchemaDefinition(model as NextAdminJSONSchema, {
+        primaryKeyField: {
+          name: dmmfModel.primaryKey.fields.join("_"),
+          fields: dmmfModel.primaryKey.fields as DeepMutableField<
+            typeof dmmfModel.primaryKey
+          >["fields"],
+        },
+      });
+    }
+
     Object.entries(properties).forEach(([propertyName, property]) => {
       const dmmfField = fields.find((f) => f.name === propertyName);
 
@@ -90,18 +106,25 @@ export const insertDmmfData = (
         return;
       }
 
-      injectIntoJsonSchemaDefinition(model.properties![propertyName], {
-        primaryKey: dmmfField.isId,
-        kind: dmmfField.kind,
-        type: dmmfField.type as NextAdminJsonSchemaDataType,
-        disabled: isFieldDisabled(dmmfField),
-        isList: dmmfField.isList,
-        enum:
-          dmmfField.kind === "enum"
-            ? { $ref: `#/definitions/${dmmfField.type}` }
-            : undefined,
-        relation: getRelationData(dmmf, dmmfField, dmmfModel.name),
-      });
+      const modelProperty = model.properties![propertyName];
+
+      if (typeof modelProperty !== "boolean") {
+        injectIntoJsonSchemaDefinition(
+          model.properties![propertyName] as NextAdminJSONSchema,
+          {
+            primaryKey: dmmfField.isId,
+            kind: dmmfField.kind,
+            type: dmmfField.type as NextAdminJsonSchemaDataType,
+            disabled: isFieldDisabled(dmmfField),
+            isList: dmmfField.isList,
+            enum:
+              dmmfField.kind === "enum"
+                ? { $ref: `#/definitions/${dmmfField.type}` }
+                : undefined,
+            relation: getRelationData(dmmf, dmmfField, dmmfModel.name),
+          }
+        );
+      }
     });
   });
 

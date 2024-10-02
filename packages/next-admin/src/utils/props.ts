@@ -17,7 +17,6 @@ import {
   applyVisiblePropertiesInSchema,
   getEnableToExecuteActions,
   getModelIdProperty,
-  getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
@@ -26,7 +25,6 @@ import {
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
-import { getJsonSchema } from "./jsonSchema";
 
 enum Page {
   LIST = 1,
@@ -45,7 +43,7 @@ export async function getPropsFromParams({
   apiBasePath,
 }: GetNextAdminPropsParams): Promise<
   | AdminComponentProps
-  | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
+  | Omit<AdminComponentProps, "resource" | "action">
   | Pick<
       AdminComponentProps,
       | "pageComponent"
@@ -85,6 +83,7 @@ export async function getPropsFromParams({
     resourcesIcons,
     externalLinks,
     locale,
+    schema,
   };
 
   if (!params) return defaultProps;
@@ -159,7 +158,6 @@ export async function getPropsFromParams({
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
 
-      const dmmfSchema = getPrismaModelForResource(resource);
       const edit = options?.model?.[resource]?.edit as EditOptions<
         typeof resource
       >;
@@ -211,7 +209,6 @@ export async function getPropsFromParams({
           data,
           slug,
           schema: deepCopySchema,
-          dmmfSchema: dmmfSchema?.fields,
           customInputs,
           actions: serializedActions,
         };
@@ -222,7 +219,6 @@ export async function getPropsFromParams({
           ...defaultProps,
           resource,
           schema: deepCopySchema,
-          dmmfSchema: dmmfSchema?.fields,
           customInputs,
         };
       }
@@ -248,7 +244,6 @@ export const getMainLayoutProps = ({
 
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
-  const dmmfSchema = getPrismaModelForResource(resource!);
   const resourcesIdProperty = resources!.reduce(
     (acc, resource) => {
       acc[resource] = getModelIdProperty(resource);
@@ -297,7 +292,7 @@ export const getMainLayoutProps = ({
     resourcesIcons,
     externalLinks: options?.externalLinks,
     options: extractSerializable(options, isAppDir),
-    dmmfSchema: dmmfSchema?.fields,
     resourcesIdProperty: resourcesIdProperty,
+    schema,
   };
 };

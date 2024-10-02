@@ -1,4 +1,4 @@
-import type { JSONSchema7Definition } from "json-schema";
+import type { JSONSchema7Definition, JSONSchema7 } from "json-schema";
 
 export type NextAdminJsonSchemaDataType =
   | "BigInt"
@@ -19,7 +19,11 @@ export type NextAdminJsonSchemaRelation = {
 
 export type NextAdminJsonSchemaData = {
   primaryKey?: boolean;
-  kind: "scalar" | "object" | "enum" | "unsupported";
+  primaryKeyField?: {
+    name: string;
+    fields?: string[];
+  };
+  kind?: "scalar" | "object" | "enum" | "unsupported";
   type?: NextAdminJsonSchemaDataType;
   disabled?: boolean;
   isList?: boolean;
@@ -29,14 +33,12 @@ export type NextAdminJsonSchemaData = {
   relation?: NextAdminJsonSchemaRelation;
 };
 
-declare module "json-schema" {
-  interface JSONSchema7 {
-    __nextadmin?: NextAdminJsonSchemaData;
-  }
+export interface NextAdminJSONSchema extends JSONSchema7 {
+  __nextadmin?: NextAdminJsonSchemaData;
 }
 
 export const injectIntoJsonSchemaDefinition = (
-  schema: JSONSchema7Definition,
+  schema: NextAdminJSONSchema,
   data: NextAdminJsonSchemaData
 ) => {
   if (typeof schema !== "object") {

@@ -120,6 +120,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@premieroctet/next-admin-json-schema": "workspace:^",
     "@testing-library/react": "^14.1.2",
     "@types/body-parser": "^1.19.2",
     "@types/jest": "^29.5.1",
