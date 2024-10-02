@@ -32,6 +32,9 @@ jobs:
       - name: Build required packages
         run: yarn turbo run build --filter=@premieroctet/next-admin-json-schema --filter=@premieroctet/next-admin-generator-prisma
 
+      - name: Generate Prisma client
+        run: cd apps/example && yarn prisma generate
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
