@@ -30,7 +30,7 @@ jobs:
         run: yarn install
 
       - name: Build packages
-        run: yarn turbo run build --filter=!apps/*"
+        run: yarn turbo run build --filter=!apps/*
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
