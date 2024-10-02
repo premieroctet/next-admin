@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 6.1.4
+
+### Patch Changes
+
+- [11dff98](https://github.com/premieroctet/next-admin/commit/11dff98): Fix in/notin operators in advanced filters
+
 ## 6.1.3
 
 ### Patch Changes
