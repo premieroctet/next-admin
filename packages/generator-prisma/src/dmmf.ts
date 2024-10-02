@@ -12,7 +12,8 @@ type DeepMutableField<T> = {
 };
 
 const isFieldDisabled = (field: DMMF.Field) => {
-  const isDisabled = field.isReadOnly || field.isGenerated || field.isUpdatedAt;
+  const isDisabled =
+    field.isReadOnly || field.isGenerated || field.isUpdatedAt || field.isId;
 
   const isDateTime = field.type === "DateTime";
 
@@ -57,7 +58,9 @@ export const getRelationData = (
   return {
     $ref: `#/definitions/${field.type}`,
     fromField: from!,
+    fromFieldDbName: field.relationFromFields?.[0],
     toField: to!,
+    toFieldDbName: field.relationToFields?.[0],
   };
 };
 
@@ -116,6 +119,7 @@ export const insertDmmfData = (
             kind: dmmfField.kind,
             type: dmmfField.type as NextAdminJsonSchemaDataType,
             disabled: isFieldDisabled(dmmfField),
+            required: dmmfField.isRequired,
             isList: dmmfField.isList,
             enum:
               dmmfField.kind === "enum"

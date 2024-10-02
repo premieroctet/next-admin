@@ -21,7 +21,7 @@ import {
   getResourceIdFromParam,
   getResources,
   getToStringForModel,
-  schema,
+  globalSchema,
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
@@ -53,6 +53,7 @@ export async function getPropsFromParams({
       | "message"
       | "resources"
       | "error"
+      | "schema"
     >
 > {
   const {
@@ -83,7 +84,7 @@ export async function getPropsFromParams({
     resourcesIcons,
     externalLinks,
     locale,
-    schema,
+    schema: globalSchema,
   };
 
   if (!params) return defaultProps;
@@ -166,7 +167,7 @@ export async function getPropsFromParams({
         resource,
         edit,
         options
-      )(cloneDeep(schema));
+      )(cloneDeep(globalSchema));
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
@@ -293,6 +294,6 @@ export const getMainLayoutProps = ({
     externalLinks: options?.externalLinks,
     options: extractSerializable(options, isAppDir),
     resourcesIdProperty: resourcesIdProperty,
-    schema,
+    schema: globalSchema,
   };
 };

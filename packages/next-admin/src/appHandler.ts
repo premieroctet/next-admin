@@ -17,7 +17,7 @@ import {
   getFormValuesFromFormData,
   getResourceFromParams,
   getResources,
-  schema,
+  globalSchema,
 } from "./utils/server";
 
 export const createHandler = <P extends string = "nextadmin">({
@@ -154,7 +154,7 @@ export const createHandler = <P extends string = "nextadmin">({
           body: transformedBody ?? body,
           id,
           options,
-          schema,
+          schema: globalSchema,
         });
 
         if (response.error) {

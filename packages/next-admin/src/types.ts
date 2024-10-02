@@ -1007,10 +1007,6 @@ export type GetNextAdminPropsParams = {
    */
   options?: NextAdminOptions;
   /**
-   * `schema` is an object that represents the JSON schema of your Prisma schema.
-   */
-  schema?: any;
-  /**
    * `prisma` is an instance of PrismaClient.
    */
   prisma: PrismaClient;

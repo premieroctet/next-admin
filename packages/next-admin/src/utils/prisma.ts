@@ -28,7 +28,7 @@ import {
   getModelIdProperty,
   getToStringForRelations,
   modelHasIdField,
-  schema,
+  globalSchema,
   transformData,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
@@ -50,7 +50,7 @@ const createNestedWherePredicate = <M extends ModelName>(
   }: CreateNestedWherePredicateParams<M>,
   acc: Record<string, any> = {}
 ) => {
-  const resource = schema.definitions[field.type as ModelName];
+  const resource = globalSchema.definitions[field.type as ModelName];
   const resourceProperties = resource.properties;
 
   acc[field.name] = {
@@ -158,7 +158,7 @@ export const createWherePredicate = <M extends ModelName>({
 
             if (fieldNextAdmin?.kind === "enum" && fieldNextAdmin?.enum) {
               const enumDefinition = getDefinitionFromRef(
-                schema,
+                globalSchema,
                 fieldNextAdmin.enum.$ref
               );
               const enumValueForSearchTerm = enumValueForEnumType(
@@ -226,7 +226,9 @@ const getFieldsFiltered = <M extends ModelName>(
   resource: M,
   options?: NextAdminOptions
 ): [string, SchemaProperty<M>[Field<M>]][] => {
-  const model = schema.definitions[resource] as SchemaDefinitions[ModelName];
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
   const modelProperties = model.properties;
 
   let fieldsFiltered = Object.entries(modelProperties).filter(
@@ -258,7 +260,9 @@ const preparePrismaListRequest = <M extends ModelName>(
   options?: NextAdminOptions,
   skipFilters: boolean = false
 ): PrismaListRequest<M> => {
-  const model = schema.definitions[resource] as SchemaDefinitions[ModelName];
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
   const modelProperties = model.properties;
   const search = searchParams.get("search") || "";
   const advancedSearch = searchParams.get("q") || "";
@@ -369,7 +373,7 @@ export const optionsFromResource = async ({
     ]?.relationshipSearchField;
 
   if (relationshipField) {
-    const targetModel = schema.definitions[args.resource];
+    const targetModel = globalSchema.definitions[args.resource];
 
     if (!targetModel) {
       throw new Error(`Model ${args.resource} not found in schema`);
@@ -486,7 +490,10 @@ export const mapDataList = ({
   "resource" | "options" | "context" | "appDir"
 > & { fetchData: any[] }) => {
   const { resource, options } = args;
-  const data = findRelationInData(fetchData, schema.definitions[resource]);
+  const data = findRelationInData(
+    fetchData,
+    globalSchema.definitions[resource]
+  );
   const listFields = options?.model?.[resource]?.list?.fields ?? {};
   const originalData = cloneDeep(data);
   data.forEach((item, index) => {
@@ -565,7 +572,9 @@ export const selectPayloadForModel = <M extends ModelName>(
   options?: EditOptions<M> | ListOptions<M>,
   level: "scalar" | "object" = "scalar"
 ) => {
-  const model = schema.definitions[resource] as SchemaDefinitions[ModelName];
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
   const properties = model.properties;
   const idProperty = getModelIdProperty(resource);
 
@@ -627,7 +636,8 @@ export const getDataItem = async <M extends ModelName>({
   const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
   const idProperty = getModelIdProperty(resource);
   const select = selectPayloadForModel(resource, edit, "object");
-  const schemaResourceProperties = schema.definitions[resource].properties;
+  const schemaResourceProperties =
+    globalSchema.definitions[resource].properties;
 
   Object.entries(select).forEach(([key, value]) => {
     const fieldType =
@@ -686,7 +696,9 @@ export const getDataItem = async <M extends ModelName>({
       }
     }
   });
+
   data = transformData(data, resource, edit ?? {}, options);
+
   return data;
 };
 
@@ -706,7 +718,9 @@ export const getRawData = async <M extends ModelName>({
   resource: M;
   resourceIds: Array<string | number>;
 }): Promise<Model<M>[]> => {
-  const model = schema.definitions[resource] as SchemaDefinitions[ModelName];
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
   const modelProperties = model.properties;
 
   const include = Object.entries(modelProperties).reduce(

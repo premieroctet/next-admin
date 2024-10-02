@@ -14,7 +14,9 @@ export type NextAdminJsonSchemaDataType =
 export type NextAdminJsonSchemaRelation = {
   $ref: string;
   fromField: string;
+  fromFieldDbName?: string;
   toField: string;
+  toFieldDbName?: string;
 };
 
 export type NextAdminJsonSchemaData = {
@@ -26,6 +28,7 @@ export type NextAdminJsonSchemaData = {
   kind?: "scalar" | "object" | "enum" | "unsupported";
   type?: NextAdminJsonSchemaDataType;
   disabled?: boolean;
+  required?: boolean;
   isList?: boolean;
   enum?: {
     $ref: string;

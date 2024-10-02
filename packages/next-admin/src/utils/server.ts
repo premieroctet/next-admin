@@ -37,11 +37,13 @@ export const getJsonSchema = (): Schema => {
   }
 };
 
-export const schema = getJsonSchema();
-export const resources = Object.keys(schema.definitions).filter((modelName) => {
-  // Enums are not resources
-  return !schema.definitions[modelName as ModelName].enum;
-}) as ModelName[];
+export const globalSchema = getJsonSchema();
+export const resources = Object.keys(globalSchema.definitions).filter(
+  (modelName) => {
+    // Enums are not resources
+    return !globalSchema.definitions[modelName as ModelName].enum;
+  }
+) as ModelName[];
 
 export const enumValueForEnumType = (
   definition: Schema["definitions"][ModelName],
@@ -102,7 +104,12 @@ export const getEnableToExecuteActions = async <M extends ModelName>(
 };
 
 export const getModelIdProperty = (model: ModelName) => {
-  const schemaModel = schema.definitions[model];
+  const schemaModel = globalSchema.definitions[model];
+
+  if (!schemaModel || !schemaModel.properties) {
+    return "id";
+  }
+
   const schemaModelProperty = schemaModel.properties;
 
   return (
@@ -118,7 +125,9 @@ const getDeepRelationModel = <M extends ModelName>(
   model: M,
   property: Field<M>
 ) => {
-  const schemaModel = schema.definitions[model] as SchemaDefinitions[ModelName];
+  const schemaModel = globalSchema.definitions[
+    model
+  ] as SchemaDefinitions[ModelName];
   const schemaModelProperty = schemaModel.properties;
 
   const relationField =
@@ -127,7 +136,7 @@ const getDeepRelationModel = <M extends ModelName>(
 };
 
 export const modelHasIdField = (model: ModelName) => {
-  const schemaModel = schema.definitions[model];
+  const schemaModel = globalSchema.definitions[model];
   const schemaModelProperty = schemaModel.properties;
 
   return Object.entries(schemaModelProperty).some(
@@ -249,13 +258,13 @@ export const fillRelationInSchema =
     }
 
     if (!modelSchema || !fields) return schema;
+
     await Promise.all(
       fields.map(async ([name, value]) => {
         const fieldName = name as Field<typeof modelName>;
         const fieldNextAdmin = value.__nextadmin;
         const fieldType = fieldNextAdmin?.type;
         const fieldKind = fieldNextAdmin?.kind;
-        const relationToField = fieldNextAdmin?.relation?.toField;
         const relationFromField = fieldNextAdmin?.relation?.fromField;
 
         if (fieldKind === "enum") {
@@ -279,52 +288,46 @@ export const fillRelationInSchema =
         if (fieldKind === "object") {
           const modelNameRelation = fieldType as ModelName;
 
-          if (relationToField) {
+          let fieldValue =
+            schema.definitions[modelName].properties[
+              name as Field<typeof modelName>
+            ];
+
+          if (!fieldValue) return;
+
+          delete fieldValue.$ref;
+
+          const enumeration: Enumeration[] = [];
+          const required = schema.definitions[modelName].required;
+          const relationFromFieldsRequired = required?.includes(
+            relationFromField!
+          );
+
+          if (relationFromFieldsRequired) {
+            required?.push(fieldName);
+            schema.definitions[modelName].required = required;
+          }
+
+          if (fieldValue.type !== "array") {
             //Relation One-to-Many, Many side
-            const enumeration: Enumeration[] = [];
-            schema.definitions[modelName].properties[fieldName] = {
+            fieldValue.type = "string";
+            fieldValue.relation = modelNameRelation;
+            fieldValue.enum = enumeration;
+            fieldValue.__nextadmin = fieldNextAdmin;
+          } else {
+            //Relation Many-to-One
+            fieldValue.items = {
               type: "string",
               relation: modelNameRelation,
               enum: enumeration,
-              __nextadmin: fieldNextAdmin,
             };
 
-            const required = schema.definitions[modelName].required;
-            const relationFromFieldsRequired = required?.includes(
-              relationFromField!
-            );
-
-            if (relationFromFieldsRequired) {
-              required?.push(fieldName);
-              schema.definitions[modelName].required = required;
-            }
-          } else {
-            const fieldValue =
-              schema.definitions[modelName].properties[
-                name as Field<typeof modelName>
-              ];
-            if (fieldValue) {
-              const enumeration: Enumeration[] = [];
-
-              if (fieldValue.type === "array") {
-                //Relation Many-to-One
-                fieldValue.items = {
-                  type: "string",
-                  relation: modelNameRelation,
-                  enum: enumeration,
-                };
-              } else {
-                //Relation One-to-One
-                fieldValue.type = "string";
-                fieldValue.relation = modelNameRelation;
-                fieldValue.enum = enumeration;
-                delete fieldValue.anyOf;
-              }
-            }
+            delete fieldValue.anyOf;
           }
         }
       })
     );
+
     return schema;
   };
 
@@ -338,7 +341,9 @@ export const transformData = <M extends ModelName>(
   options?: NextAdminOptions
 ) => {
   const modelName = resource;
-  const model = schema.definitions[modelName] as SchemaDefinitions[ModelName];
+  const model = globalSchema.definitions[
+    modelName
+  ] as SchemaDefinitions[ModelName];
   if (!model) return data;
 
   const schemaProperties = model.properties;
@@ -384,7 +389,7 @@ export const transformData = <M extends ModelName>(
         modelName,
         key as Field<M>,
         explicitManyToManyRelationField
-          ? (deepRelationModel?.type as ModelName)
+          ? (deepRelationModel?.__nextadmin?.type as ModelName)
           : modelRelation,
         options
       );
@@ -413,7 +418,7 @@ export const transformData = <M extends ModelName>(
                 ]
               : item[modelRelationIdField],
             data: {
-              modelName: deepRelationModel?.type as ModelName,
+              modelName: deepRelationModel?.__nextadmin?.type as ModelName,
             },
           };
         });
@@ -473,7 +478,7 @@ export const findRelationInData = (
        * Make sure that we are in a relation that is not a list
        * because one side of a one-to-one relation will not have relationFromFields
        */
-      if ((propertyRelationFrom && propertyRelationToField) || !isList) {
+      if (propertyRelationFrom && propertyRelationToField && !isList) {
         const idProperty = getModelIdProperty(propertyType as ModelName);
         data.forEach((item) => {
           if (item[property]) {
@@ -586,7 +591,9 @@ export const parseFormData = <M extends ModelName>(
 };
 
 export const formatId = (resource: ModelName, id: string) => {
-  const model = schema.definitions[resource] as SchemaDefinitions[ModelName];
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
   const modelProperties = model.properties;
   const idProperty = getModelIdProperty(resource);
 
@@ -600,7 +607,7 @@ export const formatId = (resource: ModelName, id: string) => {
 const getExplicitManyToManyTableFields = <M extends ModelName>(
   manyToManyResource: M
 ) => {
-  const model = schema.definitions[
+  const model = globalSchema.definitions[
     manyToManyResource
   ] as SchemaDefinitions[ModelName];
   const modelProperties = model.properties;
@@ -615,7 +622,9 @@ const getExplicitManyToManyTableFields = <M extends ModelName>(
 const getExplicitManyToManyTablePrimaryKey = <M extends ModelName>(
   resource: M
 ) => {
-  const model = schema.definitions[resource] as SchemaDefinitions[ModelName];
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
 
   return {
     name: model?.__nextadmin?.primaryKeyField?.name,
@@ -719,13 +728,15 @@ export const formattedFormData = async <M extends ModelName>(
                   resourcePrimaryKey.fields!.find(
                     (field) =>
                       field ===
-                      currentResourceField[1].__nextadmin?.relation?.fromField
+                      currentResourceField[1].__nextadmin?.relation
+                        ?.fromFieldDbName
                   )!;
                 const resourcePrimaryKeyExternalResourceField =
                   resourcePrimaryKey.fields!.find(
                     (field) =>
                       field ===
-                      externalResourceField[1].__nextadmin?.relation?.fromField
+                      externalResourceField[1].__nextadmin?.relation
+                        ?.fromFieldDbName
                   )!;
 
                 formattedData[propertyName] = {
