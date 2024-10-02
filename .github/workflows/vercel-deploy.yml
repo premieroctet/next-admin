@@ -29,8 +29,8 @@ jobs:
       - name: Install Dependencies
         run: yarn install
 
-      - name: Build packages
-        run: yarn turbo run build --filter=!apps/*
+      - name: Build required packages
+        run: yarn turbo run build --filter=@premieroctet/next-admin-json-schema --filter=@premieroctet/next-admin-generator-prisma
 
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
