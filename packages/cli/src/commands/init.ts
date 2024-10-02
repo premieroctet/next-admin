@@ -2,14 +2,14 @@ import { confirm, input, select } from "@inquirer/prompts";
 import chalk from "chalk";
 import { Command } from "commander";
 import { execa, parseCommandString } from "execa";
-import { existsSync, mkdirSync, writeFileSync } from "fs";
+import { existsSync, mkdirSync, writeFileSync, readFileSync } from "fs";
 import ora from "ora";
 import path from "path";
 import {
   NEXTADMIN_CSS_FILENAME,
   NEXTADMIN_OPTIONS_FILENAME,
 } from "../utils/constants";
-import { getRouterRoot } from "../utils/next";
+import { getAppFilePath, getBabelUsage, getRouterRoot } from "../utils/next";
 import {
   getDataForPackageManager,
   getPackageManager,
@@ -242,8 +242,55 @@ export const initAction = async ({
     optionsContent
   );
 
+  let extraInstructions = "";
+
+  if (routerRootPath.type === "page") {
+    const appFilePath = getAppFilePath(basePath);
+
+    if (appFilePath) {
+      let appFileContent = readFileSync(appFilePath, "utf-8");
+      appFileContent = `import "${getRelativePath(
+        appFilePath,
+        path.join(basePath, NEXTADMIN_CSS_FILENAME)
+      )}"\n${appFileContent}`;
+      writeFileSync(appFilePath, appFileContent);
+    }
+
+    const usesBabel = getBabelUsage(basePath);
+
+    let superjsonInstructions = `Add the following to your babel configuration file:
+
+{
+  "presets": ["next/babel"],
+  "plugins": ["superjson-next"]
+}
+`;
+    if (!usesBabel) {
+      superjsonInstructions = `Add the following to your Next.js configuration file:
+
+experimental: {
+  swcPlugins: [
+    [
+      "next-superjson-plugin",
+      {
+        excluded: [],
+      },
+    ],
+  ],
+},
+`;
+    }
+
+    extraInstructions = `You will need to do the following manually:
+- ${usesBabel ? `${packageManagerData.installDevCmd} babel-plugin-superjson-next superjson@^1` : `${packageManagerData.installDevCmd} next-superjson-plugin superjson`}
+- ${superjsonInstructions}
+- Add "@premieroctet/next-admin" to your transpilePackages array in the Next.js configuration file 
+`;
+  }
+
   spinner.succeed(`Next-admin files have been created. Options are located under ${path.join(basePath, `${NEXTADMIN_OPTIONS_FILENAME}.${pageFileExtension}`)}
 
+${extraInstructions}
 See the Next-Admin documentation for more information on how to customize the admin panel.
 https://next-admin.js.org/docs/api/options
 `);

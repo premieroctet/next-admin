@@ -150,7 +150,6 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
     import { GetServerSideProps } from "next";
     import { prisma } from " @/prisma";
     import schema from "@/prisma/json-schema/json-schema.json";
-    import "@/styles.css";
 
     export default function Admin(props: AdminComponentProps) {
       return (
@@ -174,6 +173,9 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
 
     <Callout type="info">
       Do not forget to add the `options` prop to `<NextAdmin />` component and `getNextAdminProps` function, if you are using it.
+    </Callout>
+    <Callout type="info">
+      Your CSS file should be imported in the `_app.js` / `_app.tsx` file. This is mandatory per the [Next.js documentation](https://nextjs.org/docs/messages/css-global). In most apps, you might have a different tailwind configuration living with the Next-Admin one. In that case, to avoid any conflicts, you can create an [App Router layout file](https://nextjs.org/docs/app/building-your-application/routing/layouts-and-templates#layouts) which imports the CSS file.
     </Callout>
 
     #### SuperJson configuration
@@ -215,18 +217,18 @@ Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
 <Tabs items={["yarn", "npm", "pnpm"]}>
   <Tabs.Tab>
     ```bash
-yarn add -E -D next-superjson-plugin@0.6.1 superjson
+yarn add -D next-superjson-plugin superjson
     ```
 
   </Tabs.Tab>
   <Tabs.Tab>
     ```bash
-npm install --save-dev -E next-superjson-plugin@0.6.1 superjson
+npm install --save-dev next-superjson-plugin superjson
     ```
   </Tabs.Tab>
   <Tabs.Tab>
     ```bash
-pnpm install -E -D next-superjson-plugin@0.6.1 superjson
+pnpm install -D next-superjson-plugin superjson
     ```
   </Tabs.Tab>
 </Tabs>
