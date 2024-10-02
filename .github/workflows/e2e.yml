@@ -25,6 +25,8 @@ jobs:
         run: docker compose up -d
       - name: Install dependencies
         run: yarn install
+      - name: Build packages
+        run: yarn turbo run build --filter=!apps/*"
       - name: Run linter
         run: yarn lint
       - name: Run typecheck

@@ -15,7 +15,6 @@
     "start": {},
     "build": {
       "dependsOn": [
-        "^typecheck",
         "^build"
       ],
       "outputs": [
