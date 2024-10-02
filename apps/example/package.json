@@ -9,7 +9,6 @@
     "lint": "next lint",
     "database": "prisma migrate dev && prisma db seed",
     "reset-database": "prisma migrate reset --force && prisma migrate dev && prisma db seed",
-    "postinstall": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "test:e2e": "playwright test"
