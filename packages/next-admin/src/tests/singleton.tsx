@@ -5,6 +5,7 @@ import React from "react";
 
 import prisma from "@prisma/client";
 import { NextAdminOptions, Schema } from "../types";
+import { getJsonSchema } from "../utils/server";
 
 jest.mock("@prisma/client", () => ({
   __esModule: true,
@@ -612,62 +613,7 @@ beforeEach(() => {
 
 export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
 
-export const schema: Schema = {
-  $schema: "http://json-schema.org/draft-07/schema#",
-  type: "object",
-  definitions: {
-    User: {
-      properties: {
-        id: { $ref: "#/definitions/Post" },
-        name: { type: "string" },
-        email: { type: "string" },
-        role: { type: "string" },
-        createdAt: { type: "string", format: "date-time" },
-        updatedAt: { type: "string", format: "date-time" },
-        birthDate: { type: "string", format: "date-time" },
-      },
-    },
-    Post: {
-      properties: {
-        id: { type: "string" },
-        title: { type: "string" },
-        content: { type: "string" },
-        published: { type: "boolean" },
-        author: { $ref: "#/definitions/User" },
-        authorId: { type: "integer" },
-        order: { type: "number" },
-      },
-    },
-    Category: {
-      properties: {
-        id: { type: "string" },
-        name: { type: "string" },
-        createdAt: { type: "string", format: "date-time" },
-        updatedAt: { type: "string", format: "date-time" },
-      },
-    },
-    Profile: {
-      properties: {
-        id: { type: "string" },
-        bio: { type: "string" },
-        user: { $ref: "#/definitions/User" },
-        userId: { type: "integer" },
-        createdAt: { type: "string", format: "date-time" },
-        updatedAt: { type: "string", format: "date-time" },
-      },
-    },
-    CategoriesOnPosts: {
-      properties: {
-        id: { type: "string" },
-        postId: { type: "integer" },
-        categoryId: { type: "integer" },
-        order: { type: "number" },
-        category: { $ref: "#/definitions/Category" },
-        post: { $ref: "#/definitions/Post" },
-      },
-    },
-  },
-};
+export const schema = getJsonSchema();
 
 export const options: NextAdminOptions = {
   model: {
