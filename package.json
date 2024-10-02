@@ -22,11 +22,11 @@
     "reset-database": "dotenv turbo run reset-database",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "publish-package": "yarn build:next-admin && changeset publish",
-    "changeset-version": "(changeset version) && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md"
+    "changeset-version": "(changeset version) && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install"
   },
   "devDependencies": {
     "dotenv-cli": "7.2.1",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "prettier": "latest",
     "turbo": "latest"
   },
@@ -38,7 +38,7 @@
     "@radix-ui/react-slot": "^1.0.2",
     "prettier-plugin-tailwindcss": "^0.6.6"
   },
-  "packageManager": "yarn@1.22.19",
+  "packageManager": "yarn@4.5.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/premieroctet/next-admin.git"

@@ -14,6 +14,7 @@ export const getNextAdminProps = async ({
   apiBasePath,
   options,
   req,
+  locale,
 }: Omit<GetNextAdminPropsParams, "params" | "searchParams" | "isAppDir"> & {
   req: IncomingMessage;
 }) => {
@@ -29,6 +30,7 @@ export const getNextAdminProps = async ({
     searchParams: requestOptions,
     params,
     isAppDir: false,
+    locale,
   });
 
   return { props };
