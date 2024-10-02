@@ -3,6 +3,7 @@
   "version": "0.0.0",
   "description": "Prisma generator for Next-Admin",
   "bin": "dist/index.js",
+  "main": "dist/index.js",
   "keywords": [
     "next.js",
     "prisma",
@@ -28,7 +29,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc -w",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@premieroctet/next-admin-json-schema": "workspace:^",

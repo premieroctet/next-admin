@@ -11,7 +11,7 @@ generatorHandler({
   onManifest: () => ({
     defaultOutput: path.resolve(
       path.join(
-        require.resolve("@premieroctet/next-admin"),
+        require.resolve("@premieroctet/next-admin-generator-prisma"),
         "..",
         "..",
         "..",

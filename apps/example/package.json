@@ -11,7 +11,8 @@
     "reset-database": "prisma migrate reset --force && prisma migrate dev && prisma db seed",
     "prisma:migrate:dev": "prisma migrate dev",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "clean": "rm -rf .next"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -44,7 +45,6 @@
     "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.24",
     "prisma": "^5.13.0",
-    "prisma-json-schema-generator": "^5.1.1",
     "tailwindcss": "^3.3.2",
     "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",

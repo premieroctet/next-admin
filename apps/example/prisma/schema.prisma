@@ -6,11 +6,6 @@ generator client {
   binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
-generator jsonSchema {
-  provider              = "prisma-json-schema-generator"
-  includeRequiredFields = "true"
-}
-
 generator nextAdmin {
   provider = "next-admin-generator-prisma"
 }

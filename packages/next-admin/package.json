@@ -34,8 +34,8 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "tsc": "tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "exports": {
     ".": {
@@ -78,7 +78,6 @@
     "@prisma/client": ">=4",
     "next": ">=12",
     "prisma": ">=4",
-    "prisma-json-schema-generator": ">=3 <=5.1.1",
     "react": ">=17",
     "react-dom": ">=17",
     "typescript": ">=4"

@@ -29,7 +29,8 @@
     "build": "tsx scripts/build.ts",
     "dev": "tsx scripts/dev.ts",
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@inquirer/prompts": "^5.5.0",

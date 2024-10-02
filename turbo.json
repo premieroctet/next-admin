@@ -37,7 +37,8 @@
     "typecheck": {},
     "reset-database": {
       "cache": false
-    }
+    },
+    "clean": {}
   },
   "ui": "stream"
 }
