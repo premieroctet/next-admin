@@ -282,7 +282,7 @@ experimental: {
     }
 
     extraInstructions = `You will need to do the following manually:
-- ${usesBabel ? `${packageManagerData.installDevCmd} babel-plugin-superjson-next superjson@^1` : `${packageManagerData.installDevCmd} next-superjson-plugin superjson`}
+- ${usesBabel ? `${packageManagerData.name} ${packageManagerData.installDevCmd} babel-plugin-superjson-next superjson@^1` : `${packageManagerData.name} ${packageManagerData.installDevCmd} next-superjson-plugin superjson`}
 - ${superjsonInstructions}
 - Add "@premieroctet/next-admin" to your transpilePackages array in the Next.js configuration file 
 `;

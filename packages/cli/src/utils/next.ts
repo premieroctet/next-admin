@@ -31,7 +31,7 @@ export const getBabelUsage = (basePath: string) => {
 
 export const getAppFilePath = (basePath: string) => {
   const appFilePath = globSync(
-    ["src/_app.{js,jsx,ts,tsx}", "_app.{js,jsx,ts,tsx}"],
+    ["src/pages/_app.{js,jsx,ts,tsx}", "pages/_app.{js,jsx,ts,tsx}"],
     { cwd: basePath }
   );
 
