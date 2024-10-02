@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-cli
 
+## 0.0.4
+
+### Patch Changes
+
+- [1751f93](https://github.com/premieroctet/next-admin/commit/1751f93): fix: add missing package name in install instructions in CLI
+
 ## 0.0.3
 
 ### Patch Changes
