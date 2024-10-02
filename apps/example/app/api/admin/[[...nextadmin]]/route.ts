@@ -1,6 +1,5 @@
 import { options } from "@/options";
 import { prisma } from "@/prisma";
-import schema from "@/prisma/json-schema/json-schema.json";
 import { createHandler } from "@premieroctet/next-admin/appHandler";
 
 const { run } = createHandler({
