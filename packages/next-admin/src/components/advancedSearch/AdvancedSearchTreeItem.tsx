@@ -1,14 +1,14 @@
-import { forwardRef, MouseEvent } from "react";
+import { Bars2Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   SimpleTreeItemWrapper,
   TreeItemComponentProps,
 } from "dnd-kit-sortable-tree";
-import { Bars2Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import { forwardRef, MouseEvent } from "react";
 import { UIQueryBlock } from "../../utils/advancedSearch";
-import AdvancedSearchFieldCondition from "./AdvancedSearchFieldCondition";
 import Button from "../radix/Button";
 import { useAdvancedSearchContext } from "./AdvancedSearchContext";
 import AdvancedSearchDropdown from "./AdvancedSearchDropdown";
+import AdvancedSearchFieldCondition from "./AdvancedSearchFieldCondition";
 import AdvancedSearchInput from "./AdvancedSearchInput";
 
 type Props = TreeItemComponentProps<UIQueryBlock>;

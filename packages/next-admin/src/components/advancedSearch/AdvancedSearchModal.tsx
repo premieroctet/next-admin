@@ -1,7 +1,18 @@
 // import { Dialog, DialogBackdrop, DialogPanel } from "@headlessui/react";
+import { Transition, TransitionChild } from "@headlessui/react";
 import { SortableTree } from "dnd-kit-sortable-tree";
-import { Fragment, useCallback, useMemo } from "react";
 import unset from "lodash.unset";
+import update from "lodash.update";
+import { Fragment, useCallback, useMemo } from "react";
+import { useI18n } from "../../context/I18nContext";
+import useAdvancedSearch from "../../hooks/useAdvancedSearch";
+import { ModelName, Schema } from "../../types";
+import {
+  cleanEmptyBlocks,
+  setInternalPathToBlocks,
+  UIQueryBlock,
+} from "../../utils/advancedSearch";
+import Button from "../radix/Button";
 import {
   DialogContent,
   DialogOverlay,
@@ -9,20 +20,9 @@ import {
   DialogRoot,
   DialogTitle,
 } from "../radix/Dialog";
-import { ModelName, Schema } from "../../types";
-import useAdvancedSearch from "../../hooks/useAdvancedSearch";
-import AdvancedSearchTree from "./AdvancedSearchTreeItem";
-import AdvancedSearchDropdown from "./AdvancedSearchDropdown";
-import {
-  cleanEmptyBlocks,
-  setInternalPathToBlocks,
-  UIQueryBlock,
-} from "../../utils/advancedSearch";
 import { AdvancedSearchContext } from "./AdvancedSearchContext";
-import update from "lodash.update";
-import { Transition, TransitionChild } from "@headlessui/react";
-import { useI18n } from "../../context/I18nContext";
-import Button from "../radix/Button";
+import AdvancedSearchDropdown from "./AdvancedSearchDropdown";
+import AdvancedSearchTree from "./AdvancedSearchTreeItem";
 
 type Props = {
   isOpen: boolean;

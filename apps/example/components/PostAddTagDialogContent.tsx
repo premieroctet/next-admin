@@ -21,7 +21,6 @@ const AddTagDialog = ({ data, onClose }: Props) => {
           type: "success",
           message: "Tag added successfully",
         });
-
       })
       .catch((e) => {
         console.error(e);

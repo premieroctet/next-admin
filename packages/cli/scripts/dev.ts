@@ -1,12 +1,12 @@
-import * as esbuild from 'esbuild';
-import { buildOptions } from './options';
+import * as esbuild from "esbuild";
+import { buildOptions } from "./options";
 
 const dev = async () => {
   const ctx = await esbuild.context({
-    ...buildOptions
-  })
+    ...buildOptions,
+  });
 
-  await ctx.watch()
-}
+  await ctx.watch();
+};
 
-dev()
+dev();
