@@ -1,8 +1,8 @@
-import z from "zod";
-import set from "lodash.set";
 import get from "lodash.get";
-import { ModelName, ModelOptions, Schema, SchemaModel } from "../types";
+import set from "lodash.set";
+import z from "zod";
 import { TranslationFn } from "../context/I18nContext";
+import { ModelName, ModelOptions, Schema, SchemaModel } from "../types";
 
 export type QueryCondition =
   | "equals"
@@ -65,7 +65,7 @@ const filterSchema: z.ZodType<Filter> = z.record(
   z.union([
     z.record(
       queryConditionsSchema,
-      z.union([z.string(), z.number(), z.boolean(), z.null()])
+      z.union([z.string(), z.number(), z.boolean(), z.null(), z.array(z.any())])
     ),
     z.lazy(() => filterSchema),
     z.lazy(() => relationshipSchema),
@@ -101,16 +101,17 @@ export const getQueryCondition = (condition: string) => {
   }
 };
 
-export const contentTypeFromSchemaType = (
-  schemaType: Schema["type"],
-  format: Schema["format"]
-) => {
+export const contentTypeFromSchemaType = (schemaProperty: Schema) => {
+  const { type: schemaType, format, enum: schemaEnum } = schemaProperty;
   const type = Array.isArray(schemaType) ? schemaType[0] : schemaType;
 
   switch (type) {
     case "string": {
       if (format === "date-time") {
         return "datetime";
+      }
+      if (schemaEnum) {
+        return "enum";
       }
       return "text";
     }
@@ -140,7 +141,9 @@ export type UIQueryBlock = (
       path: string;
       condition: QueryCondition;
       value: string | number | boolean | null;
-      contentType: "text" | "number" | "datetime" | "boolean";
+      contentType: "text" | "number" | "datetime" | "boolean" | "enum";
+      enum?: string[];
+      defaultValue?: string | number | boolean | null;
       canHaveChildren: false;
       // internalPath is used to keep track of the path in the query block
       internalPath?: string;
@@ -213,7 +216,7 @@ const getConditionFromValue = (
 
 const getQueryBlockValue = (
   value: FilterValue | FilterValue[],
-  contentType: "text" | "number" | "datetime" | "boolean",
+  contentType: "text" | "number" | "datetime" | "boolean" | "enum",
   condition: QueryCondition
 ) => {
   if (contentType === "datetime") {
@@ -291,8 +294,7 @@ export const buildUIBlocks = <M extends ModelName>(
                   | boolean
                   | null;
                 const contentType = contentTypeFromSchemaType(
-                  schemaProperty.type,
-                  schemaProperty.format
+                  schemaProperty as Schema
                 );
                 return {
                   type: "filter",
@@ -304,6 +306,10 @@ export const buildUIBlocks = <M extends ModelName>(
                     queryCondition
                   ),
                   id: crypto.randomUUID(),
+                  ...(contentType === "enum"
+                    ? { enum: schemaProperty.enum }
+                    : {}),
+                  defaultValue: schemaProperty.default,
                   contentType: contentType,
                   canHaveChildren: false,
                   nullable: isFieldNullable(schemaProperty.type),
@@ -388,13 +394,17 @@ const getValueForUiBlock = (block: UIQueryBlock) => {
     }
 
     if (block.condition === "in" || block.condition === "notIn") {
-      return (block.value as string).split(", ").map((val) => {
-        if (block.contentType === "number") {
-          return +val;
-        }
+      return (block.value as string)
+        .split(",")
+        .map((val) => {
+          val = val.trim();
+          if (block.contentType === "number") {
+            return +val;
+          }
 
-        return val;
-      });
+          return val;
+        })
+        .filter(Boolean);
     }
 
     if (block.contentType === "number" && !!block.value) {

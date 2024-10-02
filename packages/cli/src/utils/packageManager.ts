@@ -51,10 +51,12 @@ export const getPackageManager = (
   }
 };
 
-export const getDataForPackageManager = (packageManager: PackageManager): PackageManagerData => {
+export const getDataForPackageManager = (
+  packageManager: PackageManager
+): PackageManagerData => {
   return {
     name: packageManager,
     installCmd: packageManagerInstallCmd[packageManager],
     installDevCmd: packageManagerInstallDevCmd[packageManager],
   };
-}
+};

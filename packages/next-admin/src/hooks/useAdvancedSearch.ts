@@ -1,13 +1,13 @@
 import { useState } from "react";
+import { useConfig } from "../context/ConfigContext";
+import { useI18n } from "../context/I18nContext";
+import { ModelName, Schema } from "../types";
 import {
   buildQueryBlocks,
   buildUIBlocks,
   validateQuery,
 } from "../utils/advancedSearch";
 import { useRouterInternal } from "./useRouterInternal";
-import { ModelName, Schema } from "../types";
-import { useConfig } from "../context/ConfigContext";
-import { useI18n } from "../context/I18nContext";
 
 type UseAdvancedSearchParams<M extends ModelName> = {
   resource: M;
@@ -39,7 +39,7 @@ const useAdvancedSearch = <M extends ModelName>({
   });
 
   const submitSearch = () => {
-    if (uiBlocks && uiBlocks.length) {
+    if (uiBlocks?.length) {
       router.setQuery(
         {
           q: JSON.stringify(buildQueryBlocks(uiBlocks, { resource, schema })),

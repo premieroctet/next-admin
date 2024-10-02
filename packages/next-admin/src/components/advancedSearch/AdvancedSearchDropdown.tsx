@@ -34,7 +34,10 @@ const AdvancedSearchDropdown = ({
     <Dropdown>
       <DropdownTrigger asChild>
         {trigger || (
-          <Button variant="ghost" className="justify-between gap-2 border dark:border-dark-nextadmin-border-strong">
+          <Button
+            variant="ghost"
+            className="dark:border-dark-nextadmin-border-strong justify-between gap-2 border"
+          >
             <div className="flex items-center gap-2">
               <PlusIcon className="h-4 w-4" aria-hidden="true" />
               {t("search.advanced.add")}
