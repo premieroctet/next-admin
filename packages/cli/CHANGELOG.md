@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-cli
 
+## 0.0.3
+
+### Patch Changes
+
+- [62436a5](https://github.com/premieroctet/next-admin/commit/62436a5): fix: update for page router
+
 ## 0.0.2
 
 ### Patch Changes

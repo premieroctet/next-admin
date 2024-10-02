@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 6.1.3
+
+### Patch Changes
+
+- [62436a5](https://github.com/premieroctet/next-admin/commit/62436a5): fix: pass locale to page router props ([#452](https://github.com/premieroctet/next-admin/issues/452))
+
 ## 6.1.2
 
 ### Patch Changes
