@@ -1,4 +1,4 @@
-import type { JSONSchema7Definition, JSONSchema7 } from "json-schema";
+import type { JSONSchema7 } from "json-schema";
 
 export type NextAdminJsonSchemaDataType =
   | "BigInt"
@@ -13,9 +13,29 @@ export type NextAdminJsonSchemaDataType =
 
 export type NextAdminJsonSchemaRelation = {
   $ref: string;
+  /**
+   * The relation field name in the distant object
+   *
+   * Example: posts
+   */
   fromField: string;
+  /**
+   * The db relation field name in the current object
+   *
+   * Example: author_id
+   */
   fromFieldDbName?: string;
+  /**
+   * The relation field name in the current object
+   *
+   * Example: posts
+   */
   toField: string;
+  /**
+   * The db relation field name in the distant object
+   *
+   * Example: id
+   */
   toFieldDbName?: string;
 };
 
