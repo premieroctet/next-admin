@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 6.1.5
+
+### Patch Changes
+
+- [6077955](https://github.com/premieroctet/next-admin/commit/6077955): fix: default boolean display ([#466](https://github.com/premieroctet/next-admin/issues/466))
+- [c25f61c](https://github.com/premieroctet/next-admin/commit/c25f61c): fix: crash on undefined relationship length ([#465](https://github.com/premieroctet/next-admin/issues/465))
+
 ## 6.1.4
 
 ### Patch Changes

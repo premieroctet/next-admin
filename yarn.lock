@@ -2729,7 +2729,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@premieroctet/next-admin@npm:6.1.4, @premieroctet/next-admin@workspace:packages/next-admin":
+"@premieroctet/next-admin@npm:6.1.5, @premieroctet/next-admin@workspace:packages/next-admin":
   version: 0.0.0-use.local
   resolution: "@premieroctet/next-admin@workspace:packages/next-admin"
   dependencies:
@@ -6949,7 +6949,7 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.0.0"
     "@heroicons/react": "npm:^2.1.1"
-    "@premieroctet/next-admin": "npm:6.1.4"
+    "@premieroctet/next-admin": "npm:6.1.5"
     "@types/node": "npm:^17.0.12"
     "@types/react": "npm:^18.2.0"
     "@types/react-dom": "npm:^18.2.0"
@@ -8012,7 +8012,7 @@ __metadata:
     "@heroicons/react": "npm:^2.0.18"
     "@picocss/pico": "npm:^1.5.7"
     "@playwright/test": "npm:^1.37.0"
-    "@premieroctet/next-admin": "npm:6.1.4"
+    "@premieroctet/next-admin": "npm:6.1.5"
     "@prisma/client": "npm:5.14.0"
     "@tremor/react": "npm:^3.2.2"
     "@types/node": "npm:^17.0.12"
