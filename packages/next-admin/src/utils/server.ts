@@ -252,7 +252,7 @@ export const fillRelationInSchema =
         if (fieldKind === "object") {
           const modelNameRelation = fieldType as ModelName;
 
-          if (relationToFields!.length > 0) {
+          if (relationToFields?.length) {
             //Relation One-to-Many, Many side
             const enumeration: Enumeration[] = [];
             schema.definitions[modelName].properties[fieldName] = {
@@ -439,8 +439,8 @@ export const findRelationInData = (
        * because one side of a one-to-one relation will not have relationFromFields
        */
       if (
-        (dmmfPropertyRelationFromFields!.length > 0 &&
-          dmmfPropertyRelationToFields!.length > 0) ||
+        (dmmfPropertyRelationFromFields?.length &&
+          dmmfPropertyRelationToFields?.length) ||
         !dmmfProperty.isList
       ) {
         const idProperty = getModelIdProperty(dmmfProperty.type as ModelName);
