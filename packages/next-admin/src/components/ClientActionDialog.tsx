@@ -42,9 +42,16 @@ const ClientActionDialog = <M extends ModelName>({
 
   useEffect(() => {
     setIsLoading(true);
-    fetch(
-      `${apiBasePath}/${slugify(resource)}/raw?ids=${resourceIds.join(",")}`
-    )
+    const params = new URLSearchParams();
+
+    params.set("ids", resourceIds.join(","));
+
+    if (action.depth) {
+      // Avoid negative depth
+      params.set("depth", Math.max(1, action.depth).toString());
+    }
+
+    fetch(`${apiBasePath}/${slugify(resource)}/raw?${params.toString()}`)
       .then((res) => res.json())
       .then(setData)
       .finally(() => {

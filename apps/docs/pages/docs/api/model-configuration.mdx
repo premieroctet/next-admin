@@ -652,6 +652,12 @@ The `actions` property is an array of objects that allows you to define a set of
       description:
         "a message that will be displayed when the action fails if action doesn't return a message object or throw an error with a message",
     },
+    {
+      name: "depth",
+      type: "Number",
+      description:
+        "a number that defines the depth of the relations to select in the resource. Use this with caution, a number too high can potentially cause slower queries. Defaults to 2.",
+    },
   ]}
 />
 

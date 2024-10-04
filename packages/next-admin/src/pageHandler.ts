@@ -90,7 +90,18 @@ export const createHandler = <P extends string = "nextadmin">({
         ids = ids?.split(",").map((id: string) => formatId(resource, id));
       }
 
-      const data = await getRawData({ prisma, resource, resourceIds: ids });
+      const depth = req.query.depth;
+
+      if (depth && isNaN(Number(depth))) {
+        return res.status(400).json({ error: "Depth should be a number" });
+      }
+
+      const data = await getRawData({
+        prisma,
+        resource,
+        resourceIds: ids,
+        maxDepth: depth ? Number(depth) : undefined,
+      });
 
       return res.json(data);
     })
