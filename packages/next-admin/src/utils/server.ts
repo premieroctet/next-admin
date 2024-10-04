@@ -252,7 +252,7 @@ export const fillRelationInSchema =
         if (fieldKind === "object") {
           const modelNameRelation = fieldType as ModelName;
 
-          if (relationToFields!.length > 0) {
+          if (relationToFields?.length) {
             //Relation One-to-Many, Many side
             const enumeration: Enumeration[] = [];
             schema.definitions[modelName].properties[fieldName] = {
