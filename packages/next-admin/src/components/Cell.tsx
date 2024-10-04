@@ -83,7 +83,7 @@ export default function Cell({ cell, formatter, copyable }: Props) {
               "bg-nextadmin-background-subtle dark:bg-dark-nextadmin-background-subtle text-nextadmin-brand-subtle dark:text-dark-nextadmin-content-subtle"
             )}
           >
-            <p>{cellValue}</p>
+            <p>{cellValue?.toString()}</p>
           </div>
         );
       }
