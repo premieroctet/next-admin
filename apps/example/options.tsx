@@ -1,5 +1,5 @@
-import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 import AddTagDialog from "@/components/PostAddTagDialogContent";
+import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
