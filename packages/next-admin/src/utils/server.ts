@@ -313,7 +313,8 @@ export const transformData = <M extends ModelName>(
   const model = models.find((model) => model.name === modelName);
   if (!model) return data;
 
-  return Object.keys(data).reduce((acc, key) => {
+  return Object.keys(data).reduce(async (accP, key) => {
+    const acc = await accP;
     const field = model.fields?.find((field) => field.name === key);
     const fieldKind = field?.kind;
     const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
@@ -322,7 +323,7 @@ export const transformData = <M extends ModelName>(
       editOptions?.fields?.[key as Field<M>]?.relationshipSearchField;
 
     if (get) {
-      acc[key] = get(data[key]);
+      acc[key] = await get(data[key]);
     } else if (fieldKind === "enum") {
       const value = data[key];
       if (Array.isArray(value)) {
@@ -410,7 +411,7 @@ export const transformData = <M extends ModelName>(
       }
     }
     return acc;
-  }, {} as any);
+  }, Promise.resolve({}) as any);
 };
 
 /**
