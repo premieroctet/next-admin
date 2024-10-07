@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin-json-schema",
-  "version": "0.0.0",
+  "version": "0.0.1-rc.0",
   "description": "JSON Schema helpers for Next-Admin",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
