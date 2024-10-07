@@ -661,6 +661,38 @@ export const getDataItem = async <M extends ModelName>({
   return data;
 };
 
+type DeepIncludeRecord = Record<string, true | any>;
+
+const includeDataByDepth = <M extends ModelName>(
+  model: Prisma.DMMF.Model,
+  currentDepth: number,
+  maxDepth: number
+) => {
+  const include = model?.fields.reduce((acc, field) => {
+    if (field.kind === "object") {
+      /**
+       * We substract because, if the condition matches,
+       * we will have all the fields in the related model, which are
+       * counted in currentDepth + 1
+       */
+      if (currentDepth < maxDepth - 1) {
+        acc[field.name] = {
+          include: includeDataByDepth(
+            getPrismaModelForResource(field.type as M)!,
+            currentDepth + 1,
+            maxDepth
+          ),
+        };
+      } else {
+        acc[field.name] = true;
+      }
+    }
+    return acc;
+  }, {} as DeepIncludeRecord);
+
+  return include;
+};
+
 /**
  * Get raw data from Prisma (2-deep nested relations)
  * @param prisma
@@ -672,22 +704,16 @@ export const getRawData = async <M extends ModelName>({
   prisma,
   resource,
   resourceIds,
+  maxDepth = 2,
 }: {
   prisma: PrismaClient;
   resource: M;
   resourceIds: Array<string | number>;
+  maxDepth?: number;
 }): Promise<Model<M>[]> => {
   const modelDMMF = getPrismaModelForResource(resource);
 
-  const include = modelDMMF?.fields.reduce(
-    (acc, field) => {
-      if (field.kind === "object") {
-        acc[field.name] = true;
-      }
-      return acc;
-    },
-    {} as Record<string, true>
-  );
+  const include = includeDataByDepth(modelDMMF!, 1, maxDepth);
 
   // @ts-expect-error
   const data = await prisma[resource].findMany({

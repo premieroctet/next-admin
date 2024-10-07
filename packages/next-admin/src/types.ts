@@ -549,6 +549,12 @@ export type BareModelAction<M extends ModelName> = {
   canExecute?: (item: Model<M>) => boolean;
   icon?: keyof typeof OutlineIcons;
   style?: ActionStyle;
+  /**
+   * Max depth of the related records to select
+   *
+   * @default 2
+   */
+  depth?: number;
 };
 
 export type ServerAction = {

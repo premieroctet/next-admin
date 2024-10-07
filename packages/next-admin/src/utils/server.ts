@@ -50,10 +50,14 @@ export const getEnableToExecuteActions = async <M extends ModelName>(
   actions?: Omit<ModelAction<M>, "action">[]
 ): Promise<OutputModelAction | undefined> => {
   if (actions?.some((action) => action.canExecute)) {
+    const maxDepth = Math.max(0, ...actions.map((action) => action.depth ?? 0));
+
     const data: Model<typeof resource>[] = await getRawData<typeof resource>({
       prisma,
       resource,
       resourceIds: ids,
+      // Apply the default value if its 0
+      maxDepth: maxDepth || undefined,
     });
 
     return actions?.reduce(
