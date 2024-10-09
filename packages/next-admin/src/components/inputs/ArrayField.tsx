@@ -3,25 +3,26 @@ import { JSONSchema7 } from "json-schema";
 import type {
   Enumeration,
   Field,
+  FormProps,
   ModelName,
   SchemaProperty,
 } from "../../types";
 import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import ScalarArrayField from "./ScalarArray/ScalarArrayField";
+import { useResource } from "../../context/ResourceContext";
 
 const ArrayField = (props: FieldProps) => {
+  const {resource, modelSchema } = useResource();
   const { formData, onChange, name, disabled, schema, required } = props;
 
-  const childSchema = schema.items as JSONSchema7;
+  const resourceDefinition: FormProps<typeof resource>["schema"] = modelSchema!;
 
-  if (
-    (childSchema.type === "string" ||
-      childSchema.type === "number" ||
-      childSchema.type === "integer") &&
-    schema.type === "array" &&
-    // @ts-expect-error
-    !childSchema.relation
-  ) {
+  const field =
+    resourceDefinition.properties[
+      name as keyof typeof resourceDefinition.properties
+    ];
+
+  if (field?.__nextadmin?.kind === "scalar" && field?.__nextadmin?.isList) {
     return (
       <ScalarArrayField
         name={name}
@@ -33,7 +34,10 @@ const ArrayField = (props: FieldProps) => {
     );
   }
 
-  const options = schema.enum as Enumeration[] | undefined;
+  const options =
+    field?.__nextadmin?.kind === "enum"
+      ? (schema.enum as Enumeration[])
+      : undefined;
 
   return (
     <MultiSelectWidget

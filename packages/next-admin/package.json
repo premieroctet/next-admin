@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin",
-  "version": "6.0.1",
+  "version": "7.0.0-rc.1",
   "description": "Next-Admin provides a customizable and turnkey admin dashboard for applications built with Next.js and powered by the Prisma ORM. It aims to simplify the development process by providing a turnkey admin system that can be easily integrated into your project.",
   "keywords": [
     "next.js",
@@ -34,7 +34,8 @@
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "tsc": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "exports": {
     ".": {
@@ -77,7 +78,6 @@
     "@prisma/client": ">=4",
     "next": ">=12",
     "prisma": ">=4",
-    "prisma-json-schema-generator": ">=3 <=5.1.1",
     "react": ">=17",
     "react-dom": ">=17",
     "typescript": ">=4"
@@ -89,7 +89,7 @@
     "@headlessui/react": "^2.1.5",
     "@heroicons/react": "^2.0.18",
     "@picocss/pico": "^1.5.7",
-    "@radix-ui/react-checkbox": "^1.0.4",
+    "@radix-ui/react-checkbox": "^1.1.1",
     "@radix-ui/react-dialog": "^1.0.5",
     "@radix-ui/react-dropdown-menu": "^2.0.6",
     "@radix-ui/react-select": "^1.2.2",
@@ -119,6 +119,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@premieroctet/next-admin-json-schema": "workspace:^",
     "@testing-library/react": "^14.1.2",
     "@types/body-parser": "^1.19.2",
     "@types/jest": "^29.5.1",
@@ -133,7 +134,7 @@
     "autoprefixer": "^10.4.14",
     "concurrently": "^8.0.1",
     "eslint": "^7.32.0",
-    "eslint-config-custom": "*",
+    "eslint-config-custom": "workspace:*",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.7.0",
     "jest-mock-extended": "^3.0.4",
@@ -142,7 +143,7 @@
     "tailwindcss": "^3.2.7",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "tsconfig": "*",
+    "tsconfig": "workspace:*",
     "tsup": "^6.7.0",
     "typescript": "^5.1.6"
   },

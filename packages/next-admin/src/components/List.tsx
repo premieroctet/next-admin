@@ -54,7 +54,6 @@ export type ListProps = {
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   schema: Schema;
-  actionsMap: NonNullable<AdminComponentProps["actionsMap"]>;
 };
 
 function List({
@@ -66,7 +65,6 @@ function List({
   title,
   icon,
   schema,
-  actionsMap,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();

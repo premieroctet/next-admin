@@ -19,7 +19,7 @@ const Badge = ({ isActive, onClick, ...props }: BadgeProps) => {
     <div
       {...props}
       className={clsx(
-        "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis text-nextadmin-content-inverted dark:text-dark-nextadmin-content-subtle ring-nextadmin-border-default dark:ring-dark-nextadmin-border-default bg-nextadmin-dackground-default dark:bg-dark-nextadmin-background-strong peer flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1 text-sm font-medium ring-1",
+        "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis text-nextadmin-content-inverted dark:text-dark-nextadmin-content-subtle ring-nextadmin-border-default dark:ring-dark-nextadmin-border-default bg-nextadmin-background-default dark:bg-dark-nextadmin-background-strong peer flex cursor-pointer select-none items-center gap-2 rounded-md px-2 py-1 text-sm font-medium ring-1",
         props.className
       )}
     >

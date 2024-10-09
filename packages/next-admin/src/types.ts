@@ -1,13 +1,13 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
+import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { UiSchema } from "@rjsf/utils";
-import type { JSONSchema7 } from "json-schema";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
 
-declare type JSONSchema7Definition = JSONSchema7 & {
+declare type JSONSchema7Definition = NextAdminJSONSchema & {
   relation?: ModelName;
   relationName?: string;
 };
@@ -534,11 +534,37 @@ type CustomFieldsType = {
 
 export type ActionStyle = "default" | "destructive";
 
+export type MessageData = {
+  type: "error" | "info" | "success";
+  message: string;
+};
+
+export type MessageContextType = {
+  showMessage: (message: MessageData) => void;
+  message: MessageData | null;
+  hideMessage: () => void;
+};
+
+export type BareModelAction<M extends ModelName> = {
+  title: string;
+  id: string;
+  canExecute?: (item: Model<M>) => boolean;
+  icon?: keyof typeof OutlineIcons;
+  style?: ActionStyle;
+  /**
+   * Max depth of the related records to select
+   *
+   * @default 2
+   */
+  depth?: number;
+};
+
 export type ServerAction = {
-  action: (ids: string[] | number[]) => Promise<void>;
+  type: "server";
+  action: (ids: string[] | number[]) => Promise<void | MessageData>;
   successMessage?: string;
   errorMessage?: string;
-};
+} & BareModelAction<ModelName>;
 
 export type ClientAction<T extends ModelName> = {
   type: "dialog";
@@ -547,17 +573,20 @@ export type ClientAction<T extends ModelName> = {
    * Class name to apply to the dialog content
    */
   className?: string;
-};
+} & BareModelAction<T>;
 
-export type ModelAction<T extends ModelName> = (
-  | ServerAction
-  | ClientAction<T>
-) & {
-  title: string;
-  id: string;
-  icon?: keyof typeof OutlineIcons;
-  style?: ActionStyle;
-};
+export type ModelAction<T extends ModelName> = ServerAction | ClientAction<T>;
+
+export type UnionModelAction = {
+  [M in ModelName]: ModelAction<M>;
+}[ModelName];
+
+export type OutputModelAction = (Omit<
+  UnionModelAction,
+  "action" | "canExecute"
+> & {
+  allowedIds?: string[] | number[];
+})[];
 
 export type ModelIcon = keyof typeof OutlineIcons;
 
@@ -592,7 +621,7 @@ export type ModelOptions<T extends ModelName> = {
      * an object containing the aliases of the model fields as keys, and the field name.
      */
     aliases?: Partial<Record<Field<P>, string>> & { [key: string]: string };
-    actions?: ModelAction<T>[];
+    actions?: ModelAction<P>[];
     /**
      * the outline HeroIcon name displayed in the sidebar and pages title
      * @type ModelIcon
@@ -688,7 +717,7 @@ export type NextAdminOptions = {
 /** Type for Schema */
 
 export type SchemaProperty<M extends ModelName> = {
-  [P in Field<M>]?: JSONSchema7 & {
+  [P in Field<M>]?: NextAdminJSONSchema & {
     items?: JSONSchema7Definition;
     relation?: ModelName;
     relationName?: string;
@@ -696,7 +725,7 @@ export type SchemaProperty<M extends ModelName> = {
 };
 
 export type SchemaModel<M extends ModelName> = Partial<
-  Omit<JSONSchema7, "properties">
+  Omit<NextAdminJSONSchema, "properties">
 > & {
   properties: SchemaProperty<M>;
 };
@@ -705,7 +734,7 @@ export type SchemaDefinitions = {
   [M in ModelName]: SchemaModel<M>;
 };
 
-export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
+export type Schema = Partial<Omit<NextAdminJSONSchema, "definitions">> & {
   definitions: SchemaDefinitions;
 };
 
@@ -826,8 +855,7 @@ export type AdminComponentProps<M extends ModelName = ModelName> = {
    */
   pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
-  actions?: Omit<ModelAction<ModelName>, "action">[];
-  actionsMap?: Record<string, React.ReactElement>;
+  actions?: OutputModelAction;
   translations?: Translations;
   /**
    * Global admin title
@@ -858,6 +886,7 @@ export type MainLayoutProps<M extends ModelName = ModelName> = Pick<
   | "externalLinks"
   | "options"
   | "resourcesIdProperty"
+  | "schema"
 >;
 
 export type CustomUIProps = {
@@ -995,10 +1024,6 @@ export type GetNextAdminPropsParams = {
    */
   options?: NextAdminOptions;
   /**
-   * `schema` is an object that represents the JSON schema of your Prisma schema.
-   */
-  schema: any;
-  /**
    * `prisma` is an instance of PrismaClient.
    */
   prisma: PrismaClient;
@@ -1057,18 +1082,15 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    * @default "nextadmin"
    */
   paramKey?: P;
-  /**
-   * Generated JSON schema from Prisma
-   */
-  schema: any;
 };
 
 export type FormProps<M extends ModelName> = {
-  data: any;
+  data: Model<M>;
   id?: string | number;
   validation?: PropertyValidationError[];
   disabled?: boolean;
-  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  customInputs?: Record<Field<M>, React.ReactElement | undefined>;
+  schema: SchemaDefinitions[M];
 };
 
 export type FormWrapperProps<M extends ModelName> = {
@@ -1076,6 +1098,7 @@ export type FormWrapperProps<M extends ModelName> = {
   resource: M;
   modelSchema: SchemaModel<M>;
   uiSchema: UiSchema;
+  schema: SchemaDefinitions[M];
   slug?: string;
   validation?: PropertyValidationError[];
   title: string;
@@ -1088,6 +1111,7 @@ export type FormWrapperProps<M extends ModelName> = {
 
 export type MenuProps<M extends ModelName> = {
   resource?: M;
+  schema: SchemaDefinitions[M];
   resources?: ModelName[];
   resourcesTitles?: Record<ModelName, string | undefined>;
   customPages?: AdminComponentProps["customPages"];
@@ -1102,5 +1126,5 @@ export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
   resource: ModelName;
   resourceIds: Array<string | number>;
   data: Array<Model<T>>;
-  onClose?: () => void;
+  onClose: (message?: MessageData) => void;
 }>;

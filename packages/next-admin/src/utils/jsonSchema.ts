@@ -1,14 +1,17 @@
-import { Prisma } from "@prisma/client";
 import { UiSchema } from "@rjsf/utils";
 import {
   EditFieldsOptions,
   Field,
-  Model,
   ModelName,
   Schema,
+  SchemaDefinitions,
   SchemaModel,
-  SchemaProperty,
 } from "../types";
+
+export type Schemas = {
+  schema: any;
+  uiSchema: UiSchema;
+};
 
 function filterProperties(properties: any): Record<string, any> {
   const filteredProperties = {};
@@ -42,9 +45,8 @@ export function getSchemaForResource(schema: Schema, resource: string) {
 }
 
 export function getSchemas<M extends ModelName>(
-  schema: SchemaModel<M>,
-  dmmfSchema: readonly Prisma.DMMF.Field[],
-  data?: Model<M>,
+  data: any,
+  schema: SchemaDefinitions[M],
   editFieldsOptions?: EditFieldsOptions<M>
 ): { schema: SchemaModel<M>; uiSchema: UiSchema } {
   const uiSchema: UiSchema = {};
@@ -64,37 +66,32 @@ export function getSchemas<M extends ModelName>(
     { requiredFields: [], disabledFields: [] }
   );
 
-  if (schema && dmmfSchema) {
-    (Object.keys(schema.properties) as (keyof SchemaProperty<M>)[]).forEach(
-      (property: Field<M>) => {
-        const dmmfProperty = dmmfSchema.find(
-          (dmmfProperty) => dmmfProperty.name === property
-        );
+  const properties = schema.properties!;
 
-        if (
-          dmmfProperty &&
-          requiredFields?.includes(dmmfProperty.name) &&
-          !schema.required?.includes(dmmfProperty.name)
-        ) {
-          schema.required = [...(schema.required ?? []), dmmfProperty.name];
-        }
+  Object.keys(properties).forEach((property) => {
+    if (
+      requiredFields?.includes(property) &&
+      !schema.required?.includes(property)
+    ) {
+      schema.required = [...(schema.required ?? []), property];
+    }
 
-        if (
-          dmmfProperty &&
-          (dmmfProperty.isId ||
-            dmmfProperty.name === "createdAt" ||
-            dmmfProperty?.isUpdatedAt ||
-            disabledFields?.includes(dmmfProperty.name))
-        ) {
-          data
-            ? (uiSchema[property as string] = {
-                ...uiSchema[property as string],
-                "ui:disabled": true,
-              })
-            : delete schema.properties[property];
-        }
-      }
-    );
-  }
+    if (
+      properties[property as keyof typeof properties]?.__nextadmin?.disabled ||
+      disabledFields?.includes(property)
+    ) {
+      data
+        ? (uiSchema[property] = {
+            ...uiSchema[property],
+            "ui:disabled": true,
+          })
+        : delete properties[property as keyof typeof properties];
+    }
+  });
   return { uiSchema, schema };
 }
+
+export const getDefinitionFromRef = (schema: Schema, ref: string) => {
+  const [definition] = ref.split("/").reverse();
+  return schema.definitions[definition as keyof typeof schema.definitions];
+};

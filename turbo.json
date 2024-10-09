@@ -34,9 +34,11 @@
     "test:coverage": {},
     "test:e2e": {},
     "database": {},
+    "typecheck": {},
     "reset-database": {
       "cache": false
-    }
+    },
+    "clean": {}
   },
   "ui": "stream"
 }

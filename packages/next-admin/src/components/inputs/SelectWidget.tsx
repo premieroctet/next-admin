@@ -41,7 +41,7 @@ const SelectWidget = ({
   const { basePath, toModelName } = useConfig();
   const { resource } = useResource();
 
-  const handleChange = (option: Enumeration) => {
+  const handleChange = (option: Enumeration | null) => {
     setFieldDirty(props.name);
     onChange(option);
     onClose();
@@ -109,7 +109,7 @@ const SelectWidget = ({
                 className="flex items-center"
                 onClick={(e) => {
                   e.preventDefault();
-                  onChange({});
+                  handleChange(null);
                 }}
               >
                 <XMarkIcon className="h-5 w-5 cursor-pointer text-gray-400" />

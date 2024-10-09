@@ -18,16 +18,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Enable corepack
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install Dependencies
         run: yarn install
 
+      - name: Build required packages
+        run: yarn turbo run build --filter=@premieroctet/next-admin-json-schema --filter=@premieroctet/next-admin-generator-prisma
+
+      - name: Generate Prisma client
+        run: cd apps/example && yarn prisma generate
+
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install --global vercel@37.6.1
 
       - name: Pull Vercel Environment Information (Docs)
         run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}

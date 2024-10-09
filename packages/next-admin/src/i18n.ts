@@ -3,6 +3,7 @@ import { Translations } from "./types";
 export const defaultTranslations: Translations = {
   "actions.delete.label": "Delete",
   "actions.label": "Action",
+  "actions.some_failed_condition": "Some record cannot complete the action",
   "export.label": "Export",
   "actions.create.label": "Create",
   "actions.edit.label": "Edit",

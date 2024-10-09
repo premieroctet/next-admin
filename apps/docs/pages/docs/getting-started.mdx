@@ -8,24 +8,49 @@ import { Callout, Steps, Tabs } from "nextra/components";
 
 The following guide will help you get started with Next-Admin.
 
+<Tabs items={["CLI", "Manually"]}>
+
+<Tabs.Tab>
+
+<Callout type="info">
+  The CLI is in its early stages of development and might be the subject of
+  unexpected behaviors. If you encounter any issues, please report them on the
+  [GitHub repository](https://github.com/premieroctet/next-admin/issues).
+</Callout>
+
+You can initialize the required files to use Next-Admin in your project using the CLI.
+
+```bash
+npx @premieroctet/next-admin-cli@latest init
+```
+
+Make sure to check the available options by running the following command:
+
+```bash
+npx @premieroctet/next-admin-cli@latest init --help
+```
+
+</Tabs.Tab>
+
+<Tabs.Tab>
 <Steps>
 ### Installation
 
 <Tabs items={["yarn", "npm", "pnpm"]}>
   <Tabs.Tab>
     ```bash copy
-yarn add @premieroctet/next-admin prisma-json-schema-generator
+yarn add @premieroctet/next-admin @premieroctet/next-admin-generator-prisma
     ```
 
   </Tabs.Tab>
   <Tabs.Tab>
     ```bash copy
-npm install -S @premieroctet/next-admin prisma-json-schema-generator
+npm install -S @premieroctet/next-admin @premieroctet/next-admin-generator-prisma
     ```
   </Tabs.Tab>
   <Tabs.Tab>
     ```bash copy
-pnpm install -S @premieroctet/next-admin prisma-json-schema-generator
+pnpm install -S @premieroctet/next-admin @premieroctet/next-admin-generator-prisma
     ```
   </Tabs.Tab>
 </Tabs>
@@ -55,9 +80,8 @@ Next-Admin relies on [Prisma](https://www.prisma.io/) for the database. If you d
 You have to add the `jsonSchema` generator to your `schema.prisma` file:
 
 ```prisma copy filename="schema.prisma"
-generator jsonSchema {
-  provider = "prisma-json-schema-generator"
-  includeRequiredFields = "true"
+generator nextAdmin {
+  provider = "next-admin-generator-prisma"
 }
 ```
 
@@ -80,7 +104,6 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
     import { NextAdmin, PageProps } from "@premieroctet/next-admin";
     import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
     import { prisma } from "@/prisma";
-    import schema from "@/prisma/json-schema/json-schema.json";
     import "@/styles.css" // .css file containing tailiwnd rules
 
     export default async function AdminPage({
@@ -93,7 +116,6 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
         basePath: "/admin",
         apiBasePath: "/api/admin",
         prisma,
-        schema,
         /*options*/
       });
 
@@ -124,8 +146,6 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
     import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
     import { GetServerSideProps } from "next";
     import { prisma } from " @/prisma";
-    import schema from "@/prisma/json-schema/json-schema.json";
-    import "@/styles.css";
 
     export default function Admin(props: AdminComponentProps) {
       return (
@@ -141,7 +161,6 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
         basePath: "/pagerouter/admin",
         apiBasePath: "/api/pagerouter/admin",
         prisma,
-        schema,
         /*options*/
         req,
       });
@@ -149,6 +168,9 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
 
     <Callout type="info">
       Do not forget to add the `options` prop to `<NextAdmin />` component and `getNextAdminProps` function, if you are using it.
+    </Callout>
+    <Callout type="info">
+      Your CSS file should be imported in the `_app.js` / `_app.tsx` file. This is mandatory per the [Next.js documentation](https://nextjs.org/docs/messages/css-global). In most apps, you might have a different tailwind configuration living with the Next-Admin one. In that case, to avoid any conflicts, you can create an [App Router layout file](https://nextjs.org/docs/app/building-your-application/routing/layouts-and-templates#layouts) which imports the CSS file.
     </Callout>
 
     #### SuperJson configuration
@@ -190,18 +212,18 @@ Add the `babel-plugin-superjson-next` plugin to your `.babelrc` file:
 <Tabs items={["yarn", "npm", "pnpm"]}>
   <Tabs.Tab>
     ```bash
-yarn add -E -D next-superjson-plugin@0.6.1 superjson
+yarn add -D next-superjson-plugin superjson
     ```
 
   </Tabs.Tab>
   <Tabs.Tab>
     ```bash
-npm install --save-dev -E next-superjson-plugin@0.6.1 superjson
+npm install --save-dev next-superjson-plugin superjson
     ```
   </Tabs.Tab>
   <Tabs.Tab>
     ```bash
-pnpm install -E -D next-superjson-plugin@0.6.1 superjson
+pnpm install -D next-superjson-plugin superjson
     ```
   </Tabs.Tab>
 </Tabs>
@@ -239,13 +261,11 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
 
     ```ts copy filename="app/api/admin/[[...nextadmin]]/route.ts"
     import { prisma } from "@/prisma";
-    import schema from "@/prisma/json-schema/json-schema.json";
     import { createHandler } from "@premieroctet/next-admin/appHandler";
 
     const { run } = createHandler({
       apiBasePath: "/api/admin",
       prisma,
-      schema,
       /*options*/
     });
 
@@ -258,7 +278,6 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
       ```ts copy filename="pages/api/admin/[[...nextadmin]].ts"
       import { prisma } from "@/prisma";
       import { createHandler } from "@premieroctet/next-admin/pageHandler";
-      import schema from "@/prisma/json-schema/json-schema.json";
 
       export const config = {
         api: {
@@ -269,7 +288,6 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
       const { run } = createHandler({
         apiBasePath: "/api/admin",
         prisma,
-        schema: schema,
         /*options*/,
       });
 
@@ -297,6 +315,9 @@ The `NextAdmin` component accepts an optional `options` prop. In the blocks abov
 </Callout>
 
 </Steps>
+</Tabs.Tab>
+
+</Tabs>
 
 ### Usage
 

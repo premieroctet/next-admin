@@ -117,6 +117,17 @@
       "label": "Exporter"
     },
     "actions": {
+      "some_failed_condition": "Certains éléments ne peuvent pas effectuer cette action",
+      "post": {
+        "publish": {
+          "title": "Publier",
+          "success": "Article publié avec succès"
+        },
+        "add-tag": {
+          "title": "Ajouter un tag",
+          "success": "Tag ajouté avec succès"
+        }
+      },
       "user": {
         "email": {
           "title": "Envoyer un email",

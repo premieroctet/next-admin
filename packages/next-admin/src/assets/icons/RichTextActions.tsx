@@ -182,3 +182,91 @@ export const Heading = ({
     </svg>
   );
 };
+
+export const AlignLeft = ({
+  className,
+  ...props
+}: React.SVGAttributes<SVGElement>) => {
+  return (
+    <svg
+      width="15"
+      height="12"
+      viewBox="0 0 15 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+      className={clsx(className)}
+    >
+      <path d="M1 5C0.446875 5 0 5.44687 0 6C0 6.55313 0.446875 7 1 7H8C8.55313 7 9 6.55313 9 6C9 5.44687 8.55313 5 8 5H1Z" />
+      <path d="M0 6C0 5.44687 0.446875 5 1 5H8C8.55313 5 9 5.44687 9 6C9 6.55313 8.55313 7 8 7H1C0.446875 7 0 6.55313 0 6Z" />
+      <path d="M0 11C0 10.4469 0.446875 10 1 10H14C14.5531 10 15 10.4469 15 11C15 11.5531 14.5531 12 14 12H1C0.446875 12 0 11.5531 0 11Z" />
+      <path d="M0 1C0 0.446875 0.446875 0 1 0H14C14.5531 0 15 0.446875 15 1C15 1.55313 14.5531 2 14 2H1C0.446875 2 0 1.55313 0 1Z" />
+    </svg>
+  );
+};
+
+export const AlignCenter = ({
+  className,
+  ...props
+}: React.SVGAttributes<SVGElement>) => {
+  return (
+    <svg
+      width="15"
+      height="12"
+      viewBox="0 0 15 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+      className={clsx(className)}
+    >
+      <path d="M4 5C3.44687 5 3 5.44687 3 6C3 6.55313 3.44687 7 4 7H11C11.5531 7 12 6.55313 12 6C12 5.44687 11.5531 5 11 5H4Z" />
+      <path d="M3 6C3 5.44687 3.44687 5 4 5H11C11.5531 5 12 5.44687 12 6C12 6.55313 11.5531 7 11 7H4C3.44687 7 3 6.55313 3 6Z" />
+      <path d="M0 11C0 10.4469 0.446875 10 1 10H14C14.5531 10 15 10.4469 15 11C15 11.5531 14.5531 12 14 12H1C0.446875 12 0 11.5531 0 11Z" />
+      <path d="M0 1C0 0.446875 0.446875 0 1 0H14C14.5531 0 15 0.446875 15 1C15 1.55313 14.5531 2 14 2H1C0.446875 2 0 1.55313 0 1Z" />
+    </svg>
+  );
+};
+
+export const AlignRight = ({
+  className,
+  ...props
+}: React.SVGAttributes<SVGElement>) => {
+  return (
+    <svg
+      width="15"
+      height="12"
+      viewBox="0 0 15 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+      className={clsx(className)}
+    >
+      <path d="M7 5C6.44687 5 6 5.44687 6 6C6 6.55313 6.44687 7 7 7H14C14.5531 7 15 6.55313 15 6C15 5.44687 14.5531 5 14 5H7Z" />
+      <path d="M6 6C6 5.44687 6.44687 5 7 5H14C14.5531 5 15 5.44687 15 6C15 6.55313 14.5531 7 14 7H7C6.44687 7 6 6.55313 6 6Z" />
+      <path d="M0 11C0 10.4469 0.446875 10 1 10H14C14.5531 10 15 10.4469 15 11C15 11.5531 14.5531 12 14 12H1C0.446875 12 0 11.5531 0 11Z" />
+      <path d="M0 1C0 0.446875 0.446875 0 1 0H14C14.5531 0 15 0.446875 15 1C15 1.55313 14.5531 2 14 2H1C0.446875 2 0 1.55313 0 1Z" />
+    </svg>
+  );
+};
+
+export const AlignJustify = ({
+  className,
+  ...props
+}: React.SVGAttributes<SVGElement>) => {
+  return (
+    <svg
+      width="15"
+      height="12"
+      viewBox="0 0 15 12"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      {...props}
+      className={clsx(className)}
+    >
+      <path d="M1 5C0.446875 5 0 5.44687 0 6C0 6.55313 0.446875 7 1 7H14C14.5531 7 15 6.55313 15 6C15 5.44687 14.5531 5 14 5H1Z" />
+      <path d="M0 6C0 5.44687 0.446875 5 1 5H14C14.5531 5 15 5.44687 15 6C15 6.55313 14.5531 7 14 7H1C0.446875 7 0 6.55313 0 6Z" />
+      <path d="M0 11C0 10.4469 0.446875 10 1 10H14C14.5531 10 15 10.4469 15 11C15 11.5531 14.5531 12 14 12H1C0.446875 12 0 11.5531 0 11Z" />
+      <path d="M0 1C0 0.446875 0.446875 0 1 0H14C14.5531 0 15 0.446875 15 1C15 1.55313 14.5531 2 14 2H1C0.446875 2 0 1.55313 0 1Z" />
+    </svg>
+  );
+};

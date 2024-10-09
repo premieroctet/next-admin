@@ -28,6 +28,7 @@ export const MainLayout = ({
   options,
   apiBasePath,
   resourcesIdProperty,
+  schema,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
@@ -40,6 +41,7 @@ export const MainLayout = ({
       apiBasePath={apiBasePath}
       resourcesIdProperty={resourcesIdProperty!}
       resources={resources}
+      schema={schema}
     >
       <I18nProvider translations={mergedTranslations}>
         <ThemeProvider

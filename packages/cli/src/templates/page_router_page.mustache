@@ -1,0 +1,23 @@
+import { {{#isTypescript}} AdminComponentProps,{{/isTypescript}} NextAdmin } from "@premieroctet/next-admin";
+import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
+{{#isTypescript}}import { GetServerSideProps } from "next";{{/isTypescript}}
+import prisma from "{{prismaClientPath}}";
+import options from "{{optionsPath}}";
+ 
+export default function Admin(props{{#isTypescript}}: AdminComponentProps{{/isTypescript}}) {
+  return (
+    <NextAdmin
+      {...props}
+      options={options}
+    />
+  );
+}
+ 
+export const getServerSideProps{{#isTypescript}}: GetServerSideProps{{/isTypescript}} = async ({ req }) =>
+  await getNextAdminProps({
+    basePath: "{{pageBasePath}}",
+    apiBasePath: "{{apiBasePath}}",
+    prisma,
+    options,
+    req,
+  });

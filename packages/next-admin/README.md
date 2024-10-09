@@ -25,10 +25,18 @@
 
 ## Installation
 
+### With the CLI
+
+```shell copy
+npx @premieroctet/next-admin-cli@latest init
+```
+
+### Manually
+
 To install the library, run the following command:
 
 ```shell copy
-yarn add @premieroctet/next-admin prisma-json-schema-generator
+yarn add @premieroctet/next-admin @premieroctet/next-admin-generator-prisma
 ```
 
 ## Documentation

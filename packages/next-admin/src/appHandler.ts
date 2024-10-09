@@ -5,6 +5,7 @@ import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
 import {
   CreateAppHandlerParams,
+  ModelAction,
   Permission,
   RequestContext,
   ServerAction,
@@ -16,7 +17,7 @@ import {
   getFormValuesFromFormData,
   getResourceFromParams,
   getResources,
-  transformSchema,
+  globalSchema,
 } from "./utils/server";
 
 export const createHandler = <P extends string = "nextadmin">({
@@ -25,7 +26,6 @@ export const createHandler = <P extends string = "nextadmin">({
   prisma,
   paramKey = "nextadmin" as P,
   onRequest,
-  schema,
 }: CreateAppHandlerParams<P>) => {
   const router = createEdgeRouter<NextRequest, RequestContext<P>>();
   const resources = getResources(options);
@@ -58,11 +58,25 @@ export const createHandler = <P extends string = "nextadmin">({
         ?.split(",")
         .map((id) => formatId(resource, id));
 
+      const depth = req.nextUrl.searchParams.get("depth");
+
       if (!ids) {
         return NextResponse.json({ error: "No ids provided" }, { status: 400 });
       }
 
-      const data = await getRawData({ prisma, resource, resourceIds: ids });
+      if (depth && isNaN(Number(depth))) {
+        return NextResponse.json(
+          { error: "Depth should be a number" },
+          { status: 400 }
+        );
+      }
+
+      const data = await getRawData({
+        prisma,
+        resource,
+        resourceIds: ids,
+        maxDepth: depth ? Number(depth) : undefined,
+      });
 
       return NextResponse.json(data);
     })
@@ -121,25 +135,25 @@ export const createHandler = <P extends string = "nextadmin">({
 
       if (!resource) {
         return NextResponse.json(
-          { error: "Resource not found" },
+          { type: "error", message: "Resource not found" },
           { status: 404 }
         );
       }
 
-      const modelAction = options?.model?.[resource]?.actions?.find(
-        (action) => action.id === id
-      );
+      const modelAction = (
+        options?.model?.[resource]?.actions as ModelAction<typeof resource>[]
+      )?.find((action) => action.id === id);
 
       if (!modelAction) {
         return NextResponse.json(
-          { error: "Action not found" },
+          { type: "error", message: "Action not found" },
           { status: 404 }
         );
       }
 
       if ("type" in modelAction && modelAction.type === "dialog") {
         return NextResponse.json(
-          { error: "Action not found" },
+          { type: "error", message: "Action not found" },
           { status: 404 }
         );
       }
@@ -147,12 +161,14 @@ export const createHandler = <P extends string = "nextadmin">({
       const body = await req.json();
 
       try {
-        await (modelAction as ServerAction).action(body as string[] | number[]);
+        const result = await (modelAction as ServerAction).action(
+          body as string[] | number[]
+        );
 
-        return NextResponse.json({ ok: true });
+        return NextResponse.json(result ?? null);
       } catch (e) {
         return NextResponse.json(
-          { error: (e as Error).message },
+          { type: "error", message: (e as Error).message },
           { status: 500 }
         );
       }
@@ -208,7 +224,7 @@ export const createHandler = <P extends string = "nextadmin">({
           body: transformedBody ?? body,
           id,
           options,
-          schema,
+          schema: globalSchema,
         });
 
         if (response.error) {

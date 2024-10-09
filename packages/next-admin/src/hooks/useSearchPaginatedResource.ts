@@ -13,8 +13,8 @@ const useSearchPaginatedResource = ({
   initialOptions,
 }: UseSearchPaginatedResourceParams) => {
   const [isPending, setIsPending] = useState(false);
-  const { apiBasePath } = useConfig();
   const { resource } = useResource();
+  const { apiBasePath, schema } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
   const [allOptions, setAllOptions] = useState<Enumeration[]>(
@@ -26,9 +26,19 @@ const useSearchPaginatedResource = ({
   const runSearch = async (query: string, resetOptions = true) => {
     const perPage = 25;
 
-    const relationModel =
-      modelSchema?.properties[fieldName]?.relation ||
-      modelSchema?.properties[fieldName]?.items?.relation;
+    const schemaResourceProperties = schema.definitions[resource!].properties;
+
+    const schemaFieldEntry = Object.entries(schemaResourceProperties).find(
+      ([key]) => key === fieldName
+    );
+
+    if (!schemaFieldEntry) {
+      return;
+    }
+
+    const [, schemaField] = schemaFieldEntry;
+
+    const relationModel = schemaField?.__nextadmin?.type;
 
     if (!relationModel) {
       return;

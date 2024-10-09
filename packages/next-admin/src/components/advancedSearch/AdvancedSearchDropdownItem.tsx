@@ -1,15 +1,16 @@
-import { DropdownItem } from "../radix/Dropdown";
-import { ModelName, Schema } from "../../types";
-import { MouseEvent, useMemo, useState } from "react";
-import { ChevronDownIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import clsx from "clsx";
+import { MouseEvent, useMemo, useState } from "react";
+import { useConfig } from "../../context/ConfigContext";
+import { useI18n } from "../../context/I18nContext";
+import { ModelName, Schema } from "../../types";
 import {
   contentTypeFromSchemaType,
   isFieldNullable,
   isSchemaPropertyScalarArray,
   UIQueryBlock,
 } from "../../utils/advancedSearch";
-import { useConfig } from "../../context/ConfigContext";
+import { DropdownItem } from "../radix/Dropdown";
 
 type Props = {
   property: string;
@@ -29,6 +30,7 @@ const AdvancedSearchDropdownItem = ({
   displayPath,
 }: Props) => {
   const { options } = useConfig();
+  const { t } = useI18n();
   const schemaDef = schema.definitions[resource];
   const schemaProperty =
     schemaDef.properties[property as keyof typeof schemaDef.properties];
@@ -66,8 +68,11 @@ const AdvancedSearchDropdownItem = ({
   }, [hasChildren, schemaProperty, schema]);
 
   const aliases = options?.model?.[resource]?.aliases;
-  const displayedProperty =
-    aliases?.[property as keyof typeof aliases] ?? property;
+  const displayedProperty = t(
+    `model.${resource}.fields.${property}`,
+    {},
+    aliases?.[property as keyof typeof aliases] ?? property
+  );
 
   const onClick = (evt: MouseEvent<HTMLDivElement>) => {
     if (hasChildren) {
@@ -78,10 +83,13 @@ const AdvancedSearchDropdownItem = ({
         type: "filter",
         path: [path, property].filter(Boolean).join("."),
         value: "",
-        contentType: contentTypeFromSchemaType(
-          schemaProperty!.type,
-          schemaProperty?.format
-        ),
+        contentType: contentTypeFromSchemaType(schemaProperty as Schema),
+        enum: (schemaProperty?.enum?.filter(Boolean) ?? []) as string[],
+        defaultValue: schemaProperty?.default as
+          | string
+          | number
+          | boolean
+          | null,
         canHaveChildren: false,
         condition: "equals",
         id: crypto.randomUUID(),

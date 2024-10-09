@@ -7,10 +7,11 @@ export type ConfigContextType = {
   basePath: string;
   isAppDir?: boolean;
   apiBasePath: string;
-  resourcesIdProperty: Record<ModelName, string> | null;
   resources?: ModelName[];
-  schema?: Schema;
   toModelName: (str: string) => ModelName;
+  resource?: ModelName;
+  resourcesIdProperty: Record<ModelName, string> | null;
+  schema: Schema;
 };
 
 const ConfigContext = React.createContext<ConfigContextType>(
@@ -23,9 +24,10 @@ type ProviderProps = {
   options?: NextAdminOptions;
   children: React.ReactNode;
   isAppDir?: boolean;
-  resourcesIdProperty: Record<ModelName, string> | null;
   resources?: ModelName[];
-  schema?: Schema;
+  resource?: ModelName;
+  resourcesIdProperty: Record<ModelName, string> | null;
+  schema: Schema;
 };
 
 export const ConfigProvider = ({ children, ...props }: ProviderProps) => {

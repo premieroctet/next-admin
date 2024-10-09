@@ -1,5 +1,63 @@
 # @premieroctet/next-admin
 
+## 6.1.6
+
+### Patch Changes
+
+- [56ea03b](https://github.com/premieroctet/next-admin/commit/56ea03b): feat: add depth selection for actions ([#443](https://github.com/premieroctet/next-admin/issues/443))
+- [81b2e54](https://github.com/premieroctet/next-admin/commit/81b2e54): Fix relation one-to-many - nullable relation
+- [3225788](https://github.com/premieroctet/next-admin/commit/3225788): Fix image (get async)
+
+## 6.1.5
+
+### Patch Changes
+
+- [6077955](https://github.com/premieroctet/next-admin/commit/6077955): fix: default boolean display ([#466](https://github.com/premieroctet/next-admin/issues/466))
+- [c25f61c](https://github.com/premieroctet/next-admin/commit/c25f61c): fix: crash on undefined relationship length ([#465](https://github.com/premieroctet/next-admin/issues/465))
+
+## 6.1.4
+
+### Patch Changes
+
+- [11dff98](https://github.com/premieroctet/next-admin/commit/11dff98): Fix in/notin operators in advanced filters
+
+## 6.1.3
+
+### Patch Changes
+
+- [62436a5](https://github.com/premieroctet/next-admin/commit/62436a5): fix: pass locale to page router props ([#452](https://github.com/premieroctet/next-admin/issues/452))
+
+## 6.1.2
+
+### Patch Changes
+
+- [017a2e0](https://github.com/premieroctet/next-admin/commit/017a2e0): Add refresh on action perform (list and form)
+- [89b38df](https://github.com/premieroctet/next-admin/commit/89b38df): add refresh on dialog action
+
+## 6.1.1
+
+### Patch Changes
+
+- [003805d](https://github.com/premieroctet/next-admin/commit/003805d): fix: correctly display path in advanced search
+- [84ae5d6](https://github.com/premieroctet/next-admin/commit/84ae5d6): improve dialog UI
+
+## 6.1.0
+
+### Minor Changes
+
+- [68700e6](https://github.com/premieroctet/next-admin/commit/68700e6): - Allow custom actions messages
+  - Allow custom dialog actions messages
+  - `type` prop is now required on `actions` items
+  - `action` function now can return a Message object to display a message after the action is done
+  - Error thrown by `action` function are now caught and displayed in a message
+  - `onClose` prop can now receive a Message object to display a message after the dialog is closed
+
+### Patch Changes
+
+- [0ccbbab](https://github.com/premieroctet/next-admin/commit/0ccbbab): Add align on RichText Editor
+- [a338dda](https://github.com/premieroctet/next-admin/commit/a338dda): Add conditional action through `canExecute` function
+- [68700e6](https://github.com/premieroctet/next-admin/commit/68700e6): Fix form action message
+
 ## 6.0.1
 
 ### Patch Changes

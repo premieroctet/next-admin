@@ -1,0 +1,21 @@
+import { NextAdmin{{#isTypescript}}, PageProps{{/isTypescript}} } from "@premieroctet/next-admin";
+import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
+import prisma from "{{prismaClientPath}}";
+import "{{stylesPath}}";
+import options from "{{optionsPath}}";
+
+export default async function AdminPage({
+  params,
+  searchParams,
+}{{#isTypescript}}: PageProps{{/isTypescript}}) {
+  const props = await getNextAdminProps({
+    params: params.nextadmin,
+    searchParams,
+    basePath: "{{pageBasePath}}",
+    apiBasePath: "{{apiBasePath}}",
+    prisma,
+    options
+  });
+ 
+  return <NextAdmin {...props} />;
+}

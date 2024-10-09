@@ -91,7 +91,7 @@ const widgets: RjsfForm["props"]["widgets"] = {
 
 export const Form = <M extends ModelName>({
   data,
-  id,
+  schema,
   validation: validationProp,
   customInputs,
   disabled = false,
@@ -546,7 +546,7 @@ export const Form = <M extends ModelName>({
             extraErrors={extraErrors}
             fields={fields}
             disabled={allDisabled}
-            formContext={{ isPending }}
+            formContext={{ isPending, schema }}
             templates={{
               ...templates,
               ButtonTemplates: { SubmitButton: submitButton },
@@ -567,7 +567,7 @@ export const FormWrapper = <M extends ModelName>(
   props: FormWrapperProps<M>
 ) => {
   const { pathname } = useRouterInternal();
-  const { data, modelSchema, uiSchema, resource } = props;
+  const { data, modelSchema, uiSchema, resource, schema } = props;
   const [id] =
     pathname.split("/").slice(-1)[0] !== "new"
       ? pathname.split("/").slice(-1)
@@ -579,9 +579,10 @@ export const FormWrapper = <M extends ModelName>(
       modelSchema={modelSchema}
       uiSchema={uiSchema}
     >
+      <MessageProvider>
       <ClientActionDialogProvider>
         <FormHeader {...props} />
-        <MessageProvider>
+        
           <FormDataProvider>
             <FormStateProvider>
               <div className="relative h-full">
@@ -596,6 +597,7 @@ export const FormWrapper = <M extends ModelName>(
                             id={id}
                             validation={props.validation}
                             customInputs={props.customInputs}
+                            schema={schema}
                           />
                         );
                       }}
@@ -605,8 +607,9 @@ export const FormWrapper = <M extends ModelName>(
               </div>
             </FormStateProvider>
           </FormDataProvider>
-        </MessageProvider>
+        
       </ClientActionDialogProvider>
+      </MessageProvider>
     </ResourceProvider>
   );
 };

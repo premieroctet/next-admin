@@ -9,11 +9,11 @@ import { formatSearchFields, getParamsFromUrl } from "./utils/server";
 // Router
 export const getNextAdminProps = async ({
   prisma,
-  schema,
   basePath,
   apiBasePath,
   options,
   req,
+  locale,
 }: Omit<GetNextAdminPropsParams, "params" | "searchParams" | "isAppDir"> & {
   req: IncomingMessage;
 }) => {
@@ -23,12 +23,12 @@ export const getNextAdminProps = async ({
   const props = await getPropsFromParams({
     options,
     prisma,
-    schema,
     basePath,
     apiBasePath,
     searchParams: requestOptions,
     params,
     isAppDir: false,
+    locale,
   });
 
   return { props };

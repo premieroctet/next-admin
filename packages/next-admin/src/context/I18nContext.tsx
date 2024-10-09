@@ -6,12 +6,14 @@ type Props = {
   translations: Translations;
 };
 
+export type TranslationFn = (
+  key: string,
+  options?: { [key: string]: any },
+  fallback?: string
+) => string;
+
 const I18nContext = createContext<{
-  t: (
-    key: string,
-    options?: { [key: string]: any },
-    fallback?: string
-  ) => string;
+  t: TranslationFn;
 }>({
   t: () => "",
 });
@@ -20,7 +22,7 @@ export const I18nProvider = ({
   translations,
   children,
 }: PropsWithChildren<Props>) => {
-  const t = (
+  const t: TranslationFn = (
     key: string,
     options?: { [key: string]: any },
     fallback?: string

@@ -7,8 +7,8 @@ test.describe("User's custom actions", () => {
     await expect(page.getByTestId("actions-dropdown")).not.toBeVisible();
 
     const checkboxes = page.locator('table button[role="checkbox"]');
-    await checkboxes.first().check();
     await checkboxes.nth(2).check();
+    await checkboxes.nth(3).check();
 
     await expect(page.getByTestId("actions-dropdown")).toBeVisible();
     await page.getByTestId("actions-dropdown").click();

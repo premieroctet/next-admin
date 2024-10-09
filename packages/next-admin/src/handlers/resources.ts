@@ -8,6 +8,7 @@ import {
   ModelName,
   NextAdminOptions,
   Permission,
+  Schema,
   SubmitResourceResponse,
   UploadParameters,
 } from "../types";
@@ -16,7 +17,6 @@ import { getDataItem } from "../utils/prisma";
 import {
   formattedFormData,
   getModelIdProperty,
-  getPrismaModelForResource,
   parseFormData,
 } from "../utils/server";
 import { uncapitalize } from "../utils/tools";
@@ -51,7 +51,7 @@ type SubmitResourceParams = {
   body: Record<string, string | UploadParameters | null>;
   id?: string | number;
   options?: NextAdminOptions;
-  schema: any;
+  schema: Schema;
 };
 
 export const submitResource = async ({
@@ -64,8 +64,8 @@ export const submitResource = async ({
 }: SubmitResourceParams): Promise<SubmitResourceResponse> => {
   const { __admin_redirect: redirect, ...formValues } = body;
 
-  const dmmfSchema = getPrismaModelForResource(resource);
-  const parsedFormData = parseFormData(formValues, dmmfSchema?.fields!);
+  const schemaDefinition = schema.definitions[resource];
+  const parsedFormData = parseFormData(formValues, schemaDefinition);
   const resourceIdField = getModelIdProperty(resource);
 
   const fields = options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
@@ -76,14 +76,7 @@ export const submitResource = async ({
     validate(parsedFormData, fields);
 
     const { formattedData, complementaryFormattedData, errors } =
-      await formattedFormData(
-        formValues,
-        dmmfSchema?.fields!,
-        schema,
-        resource,
-        id,
-        fields
-      );
+      await formattedFormData(formValues, schema, resource, id, fields);
 
     if (errors.length) {
       return {

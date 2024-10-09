@@ -1,7 +1,9 @@
+import AddTagDialog from "@/components/PostAddTagDialogContent";
 import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
+import { prisma } from "./prisma";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
@@ -29,8 +31,8 @@ export const options: NextAdminOptions = {
           "email",
           "posts",
           "role",
-          "birthDate",
-          "profile",
+          // "birthDate",
+          // "profile",
         ],
         search: ["name", "email", "role"],
         copy: ["email"],
@@ -41,6 +43,15 @@ export const options: NextAdminOptions = {
             value: {
               role: {
                 equals: "ADMIN",
+              },
+            },
+          },
+          {
+            name: "@premieroctet.com",
+            active: false,
+            value: {
+              email: {
+                endsWith: "@premieroctet.com",
               },
             },
           },
@@ -161,11 +172,16 @@ export const options: NextAdminOptions = {
       },
       actions: [
         {
+          type: "server",
           id: "submit-email",
           icon: "EnvelopeIcon",
           title: "actions.user.email.title",
           action: async (ids) => {
             console.log("Sending email to " + ids.length + " users");
+            return {
+              type: "success",
+              message: "Email sent successfully",
+            };
           },
           successMessage: "actions.user.email.success",
           errorMessage: "actions.user.email.error",
@@ -173,9 +189,11 @@ export const options: NextAdminOptions = {
         {
           type: "dialog",
           icon: "EyeIcon",
+          canExecute: (item) => item.role === "ADMIN",
           id: "user-details",
           title: "actions.user.details.title",
           component: <UserDetailsDialog />,
+          depth: 3,
         },
       ],
     },
@@ -184,6 +202,40 @@ export const options: NextAdminOptions = {
       title: "Posts",
       icon: "NewspaperIcon",
       permissions: ["edit", "delete", "create"],
+      actions: [
+        {
+          type: "server",
+          id: "publish",
+          icon: "CheckIcon",
+          title: "actions.post.publish.title",
+          action: async (ids) => {
+            console.log("Publishing " + ids.length + " posts");
+            await prisma.post.updateMany({
+              where: {
+                id: {
+                  in: ids.map((id) => Number(id)),
+                },
+              },
+              data: {
+                published: true,
+              },
+            });
+            return {
+              type: "success",
+              message: "actions.post.publish.success",
+            };
+          },
+          successMessage: "actions.post.publish.success",
+          errorMessage: "actions.post.publish.error",
+        },
+        {
+          type: "dialog",
+          icon: "TagIcon",
+          id: "add-tag",
+          title: "actions.post.add-tag.title",
+          component: <AddTagDialog />,
+        },
+      ],
       list: {
         exports: [
           { format: "CSV", url: "/api/posts/export?format=csv" },
@@ -197,6 +249,22 @@ export const options: NextAdminOptions = {
           "categories",
           "rate",
           "tags",
+        ],
+        filters: [
+          {
+            name: "Published",
+            active: false,
+            value: {
+              published: true,
+            },
+          },
+          {
+            name: "Unpublished",
+            active: false,
+            value: {
+              published: false,
+            },
+          },
         ],
         search: ["title", "content", "tags", "author.name"],
         fields: {
@@ -275,6 +343,7 @@ export const options: NextAdminOptions = {
           posts: {
             display: "list",
             relationshipSearchField: "post",
+            orderField: "order",
           },
         },
       },
