@@ -1,13 +1,15 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
+import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { UiSchema } from "@rjsf/utils";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
-import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 
 declare type JSONSchema7Definition = NextAdminJSONSchema & {
   relation?: ModelName;
+  relationName?: string;
 };
 
 type OmitNever<T> = { [K in keyof T as T[K] extends never ? never : K]: T[K] };
@@ -718,6 +720,7 @@ export type SchemaProperty<M extends ModelName> = {
   [P in Field<M>]?: NextAdminJSONSchema & {
     items?: JSONSchema7Definition;
     relation?: ModelName;
+    relationName?: string;
   };
 };
 
@@ -733,6 +736,11 @@ export type SchemaDefinitions = {
 
 export type Schema = Partial<Omit<NextAdminJSONSchema, "definitions">> & {
   definitions: SchemaDefinitions;
+};
+
+export type Schemas = {
+  schema: Schema;
+  uiSchema: UiSchema;
 };
 
 export type AdminFormData<M extends ModelName> = {
@@ -812,12 +820,14 @@ export type AdminUser = {
   logout?: [RequestInfo, RequestInit?] | (() => void | Promise<void>) | string;
 };
 
-export type AdminComponentProps = {
+export type AdminComponentProps<M extends ModelName = ModelName> = {
   basePath: string;
   apiBasePath: string;
-  schema: Schema;
-  data?: ListData<ModelName>;
-  resource?: ModelName;
+  schema?: Schema;
+  modelSchema?: SchemaModel<M>;
+  uiSchema?: UiSchema;
+  data?: ListData<M> | Model<M>;
+  resource?: M;
   slug?: string;
   /**
    * Page router only
@@ -858,8 +868,8 @@ export type AdminComponentProps = {
   externalLinks?: ExternalLink[];
 };
 
-export type MainLayoutProps = Pick<
-  AdminComponentProps,
+export type MainLayoutProps<M extends ModelName = ModelName> = Pick<
+  AdminComponentProps<M>,
   | "resource"
   | "resources"
   | "resourcesTitles"
@@ -948,6 +958,7 @@ export type TranslationKeys =
   | "form.widgets.file_upload.drag_and_drop"
   | "form.widgets.file_upload.delete"
   | "form.widgets.multiselect.select"
+  | "form.widgets.multiselect.create"
   | "form.widgets.scalar_array.add"
   | "selector.loading"
   | "theme.dark"
@@ -1073,17 +1084,42 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   paramKey?: P;
 };
 
-export type FormProps = {
-  data: any;
-  schema: SchemaDefinitions[ModelName];
-  resource: ModelName;
+export type FormProps<M extends ModelName> = {
+  data: Model<M>;
+  id?: string | number;
+  validation?: PropertyValidationError[];
+  disabled?: boolean;
+  customInputs?: Record<Field<M>, React.ReactElement | undefined>;
+  schema: SchemaDefinitions[M];
+};
+
+export type FormWrapperProps<M extends ModelName> = {
+  data?: Model<M>;
+  resource: M;
+  modelSchema: SchemaModel<M>;
+  uiSchema: UiSchema;
+  schema: SchemaDefinitions[M];
   slug?: string;
   validation?: PropertyValidationError[];
   title: string;
   customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
-  actions?: AdminComponentProps["actions"];
+  actions?: AdminComponentProps<M>["actions"];
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;
+  resources: ModelName[];
+};
+
+export type MenuProps<M extends ModelName> = {
+  resource?: M;
+  schema: SchemaDefinitions[M];
+  resources?: ModelName[];
+  resourcesTitles?: Record<ModelName, string | undefined>;
+  customPages?: AdminComponentProps["customPages"];
+  configuration?: SidebarConfiguration;
+  resourcesIcons: AdminComponentProps["resourcesIcons"];
+  user?: AdminComponentProps["user"];
+  externalLinks?: AdminComponentProps["externalLinks"];
+  title?: string;
 };
 
 export type ClientActionDialogContentProps<T extends ModelName> = Partial<{

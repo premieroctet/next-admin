@@ -1,19 +1,18 @@
-import { RJSFSchema } from "@rjsf/utils";
 import { useConfig } from "../../../context/ConfigContext";
 import useDataColumns from "../../../hooks/useDataColumns";
-import { Enumeration } from "../../../types";
+import { Enumeration, Field, ModelName, SchemaProperty } from "../../../types";
 import { DataTable } from "../../DataTable";
 
 type Props = {
   formData: Enumeration[];
-  schema: RJSFSchema;
+  propertySchema: SchemaProperty<ModelName>[Field<ModelName>];
   onRemoveClick: (value: any) => void;
   deletable: boolean;
 };
 
 const MultiSelectDisplayTable = ({
   formData,
-  schema,
+  propertySchema,
   deletable,
   onRemoveClick,
 }: Props) => {
@@ -22,8 +21,7 @@ const MultiSelectDisplayTable = ({
     data: formData?.map((data) => data.data),
     sortable: false,
     resourcesIdProperty: resourcesIdProperty!,
-    // @ts-expect-error
-    resource: schema.items?.relation,
+    resource: propertySchema!.items!.relation!,
   });
 
   return (
@@ -31,8 +29,7 @@ const MultiSelectDisplayTable = ({
       <DataTable
         columns={columns}
         data={formData?.map((data) => data.data)}
-        // @ts-expect-error
-        resource={schema.items?.relation}
+        resource={propertySchema!.items!.relation!}
         resourcesIdProperty={resourcesIdProperty!}
         rowSelection={{}}
         deletable={deletable}

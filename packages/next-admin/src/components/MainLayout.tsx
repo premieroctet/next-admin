@@ -39,8 +39,8 @@ export const MainLayout = ({
       basePath={`${localePath}${basePath}`}
       isAppDir={isAppDir}
       apiBasePath={apiBasePath}
-      resource={resource}
       resourcesIdProperty={resourcesIdProperty!}
+      resources={resources}
       schema={schema}
     >
       <I18nProvider translations={mergedTranslations}>

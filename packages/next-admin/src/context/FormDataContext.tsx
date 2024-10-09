@@ -14,13 +14,9 @@ const FormDataContext = createContext({
 export const useFormData = () => useContext(FormDataContext);
 
 const FormDataProvider = ({
-  data,
   children,
-}: PropsWithChildren<{ data: any }>) => {
-  const [formData, setFormData] = useState<any>(data);
-  useEffect(() => {
-    setFormData(data);
-  }, [data]);
+}: PropsWithChildren) => {
+  const [formData, setFormData] = useState<any>({});
 
   return (
     <FormDataContext.Provider value={{ formData, setFormData }}>
@@ -29,4 +25,8 @@ const FormDataProvider = ({
   );
 };
 
+export const FormDataConsumer = FormDataContext.Consumer;
+
 export default FormDataProvider;
+
+

@@ -5,6 +5,7 @@ import {
   ModelName,
   Schema,
   SchemaDefinitions,
+  SchemaModel,
 } from "../types";
 
 export type Schemas = {
@@ -31,7 +32,7 @@ function filterProperties(properties: any): Record<string, any> {
   return filteredProperties;
 }
 
-export function getSchemaForResource(schema: any, resource: string) {
+export function getSchemaForResource(schema: Schema, resource: string) {
   let resourceSchema =
     schema.definitions[resource as keyof typeof schema.definitions];
 
@@ -47,10 +48,8 @@ export function getSchemas<M extends ModelName>(
   data: any,
   schema: SchemaDefinitions[M],
   editFieldsOptions?: EditFieldsOptions<M>
-): Schemas & { edit: boolean; id?: string | number } {
+): { schema: SchemaModel<M>; uiSchema: UiSchema } {
   const uiSchema: UiSchema = {};
-  let edit = false;
-  let id;
 
   const { disabledFields, requiredFields } = Object.entries(
     editFieldsOptions ?? {}
@@ -68,18 +67,7 @@ export function getSchemas<M extends ModelName>(
   );
 
   const properties = schema.properties!;
-  const idProperty = Object.keys(properties).find((property) => {
-    const propertyData = properties[property as keyof typeof properties];
 
-    if (typeof propertyData === "boolean") {
-      return false;
-    }
-
-    return propertyData?.__nextadmin?.primaryKey;
-  });
-
-  edit = !!data?.[idProperty ?? "id"];
-  id = data?.[idProperty ?? "id"];
   Object.keys(properties).forEach((property) => {
     if (
       requiredFields?.includes(property) &&
@@ -92,7 +80,7 @@ export function getSchemas<M extends ModelName>(
       properties[property as keyof typeof properties]?.__nextadmin?.disabled ||
       disabledFields?.includes(property)
     ) {
-      edit
+      data
         ? (uiSchema[property] = {
             ...uiSchema[property],
             "ui:disabled": true,
@@ -100,7 +88,7 @@ export function getSchemas<M extends ModelName>(
         : delete properties[property as keyof typeof properties];
     }
   });
-  return { uiSchema, schema, edit, id };
+  return { uiSchema, schema };
 }
 
 export const getDefinitionFromRef = (schema: Schema, ref: string) => {

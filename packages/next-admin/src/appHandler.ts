@@ -11,7 +11,7 @@ import {
   ServerAction,
 } from "./types";
 import { hasPermission } from "./utils/permissions";
-import { getRawData } from "./utils/prisma";
+import { getDataItem, getRawData } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
@@ -79,6 +79,50 @@ export const createHandler = <P extends string = "nextadmin">({
       });
 
       return NextResponse.json(data);
+    })
+    .get(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
+      const resource = getResourceFromParams(ctx.params[paramKey], resources);
+
+      if (!resource) {
+        return NextResponse.json(
+          { error: "Resource not found" },
+          { status: 404 }
+        );
+      }
+
+      const id =
+        ctx.params[paramKey].length === 2
+          ? formatId(resource, ctx.params[paramKey].at(-1)!)
+          : undefined;
+
+      if (
+        (id && hasPermission(options?.model?.[resource], Permission.EDIT)) ||
+        (!id && hasPermission(options?.model?.[resource], Permission.CREATE))
+      ) {
+        let data;
+        if (id) {
+          data = await getDataItem({
+            prisma,
+            resource,
+            resourceId: id,
+            options,
+          });
+        }
+
+        let { uiSchema, schema: modelSchema } = await transformSchema(
+          resource,
+          schema,
+          options,
+          data
+        );
+
+        return NextResponse.json({ data: data ?? {}, modelSchema, uiSchema });
+      } else {
+        return NextResponse.json(
+          { error: "You don't have permission to view this resource" },
+          { status: 403 }
+        );
+      }
     })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, ctx) => {
       const id = ctx.params[paramKey].at(-1)!;
@@ -150,6 +194,18 @@ export const createHandler = <P extends string = "nextadmin">({
         ctx.params[paramKey].length === 2
           ? formatId(resource, ctx.params[paramKey].at(-1)!)
           : undefined;
+
+      console.log("id", id);
+
+      if (
+        (id && !hasPermission(options?.model?.[resource], Permission.EDIT)) ||
+        (!id && !hasPermission(options?.model?.[resource], Permission.CREATE))
+      ) {
+        return NextResponse.json(
+          { error: "You don't have permission to edit this resource" },
+          { status: 403 }
+        );
+      }
 
       const editOptions = options?.model?.[resource]?.edit;
 

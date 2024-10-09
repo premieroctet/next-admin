@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useConfig } from "../context/ConfigContext";
-import { Enumeration } from "../types";
+import { useResource } from "../context/ResourceContext";
+import { Enumeration, Field, ModelName } from "../types";
 
 type UseSearchPaginatedResourceParams = {
-  fieldName: string;
+  fieldName: Field<ModelName>;
   initialOptions?: Enumeration[];
 };
 
@@ -12,13 +13,15 @@ const useSearchPaginatedResource = ({
   initialOptions,
 }: UseSearchPaginatedResourceParams) => {
   const [isPending, setIsPending] = useState(false);
-  const { apiBasePath, schema, resource } = useConfig();
+  const { resource } = useResource();
+  const { apiBasePath, schema } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
   const [allOptions, setAllOptions] = useState<Enumeration[]>(
     initialOptions ?? []
   );
   const [hasNextPage, setHasNextPage] = useState(false);
+  const { modelSchema } = useResource();
 
   const runSearch = async (query: string, resetOptions = true) => {
     const perPage = 25;
@@ -35,7 +38,11 @@ const useSearchPaginatedResource = ({
 
     const [, schemaField] = schemaFieldEntry;
 
-    const model = schemaField.__nextadmin?.type;
+    const relationModel = schemaField?.__nextadmin?.type;
+
+    if (!relationModel) {
+      return;
+    }
 
     try {
       setIsPending(true);
@@ -47,7 +54,7 @@ const useSearchPaginatedResource = ({
         body: JSON.stringify({
           originModel: resource!,
           property: fieldName,
-          model,
+          model: relationModel,
           query,
           page: searchPage.current,
           perPage,

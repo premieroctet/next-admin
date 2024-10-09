@@ -1,13 +1,15 @@
-import { RJSFSchema } from "@rjsf/utils";
 import clsx from "clsx";
+import { useState } from "react";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
 import { useConfig } from "../../../context/ConfigContext";
 import { useFormState } from "../../../context/FormStateContext";
 import { useI18n } from "../../../context/I18nContext";
+import { useResource } from "../../../context/ResourceContext";
 import useClickOutside from "../../../hooks/useCloseOnOutsideClick";
 import { useDisclosure } from "../../../hooks/useDisclosure";
-import { Enumeration, Field, ModelName } from "../../../types";
+import { Enumeration, Field, ModelName, SchemaProperty } from "../../../types";
 import Button from "../../radix/Button";
+import EmbeddedFormModal from "../EmbeddedForm/EmbeddedFormModal";
 import { Selector } from "../Selector";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectDisplayTable from "./MultiSelectDisplayTable";
@@ -20,18 +22,23 @@ type Props = {
   name: string;
   disabled: boolean;
   required?: boolean;
-  schema: RJSFSchema;
+  propertySchema: SchemaProperty<ModelName>[Field<ModelName>];
 };
 
 const MultiSelectWidget = (props: Props) => {
-  const { options: globalOptions, resource } = useConfig();
+  const { options: globalOptions } = useConfig();
+  const { resource } = useResource();
   const { onToggle, isOpen, onClose } = useDisclosure();
+  const [isModalOpen, setIsOpen] = useState(false);
   const containerRef = useClickOutside<HTMLDivElement>(() => onClose());
-  const { formData, onChange, options, name, schema } = props;
+  const { formData, onChange, options, name, propertySchema } = props;
   const { t } = useI18n();
   const { setFieldDirty } = useFormState();
   const fieldOptions =
     globalOptions?.model?.[resource!]?.edit?.fields?.[name as Field<ModelName>];
+
+  const relationModel = 
+    propertySchema?.relation || propertySchema?.items?.relation;
 
   const onRemoveClick = (value: any) => {
     setFieldDirty(name);
@@ -46,8 +53,9 @@ const MultiSelectWidget = (props: Props) => {
       : "select";
 
   const fieldSortable =
+    displayMode === "list" &&
     // @ts-expect-error
-    displayMode === "list" && (!!fieldOptions?.orderField || !!schema.enum);
+    (!!fieldOptions?.orderField || !!propertySchema?.enum);
 
   const select = (
     <select
@@ -92,7 +100,7 @@ const MultiSelectWidget = (props: Props) => {
                 <MultiSelectItem
                   key={index}
                   item={value}
-                  schema={schema}
+                  propertySchema={propertySchema}
                   onRemoveClick={onRemoveClick}
                   deletable={!props.disabled}
                 />
@@ -109,7 +117,7 @@ const MultiSelectWidget = (props: Props) => {
         <div className="space-y-2">
           <MultiSelectDisplayList
             formData={formData}
-            schema={schema}
+            propertySchema={propertySchema}
             onRemoveClick={onRemoveClick}
             deletable={!props.disabled}
             sortable={fieldSortable}
@@ -118,23 +126,40 @@ const MultiSelectWidget = (props: Props) => {
               onChange(value);
             }}
           />
-
-          <Button
-            aria-disabled={props.disabled}
-            type="button"
-            disabled={props.disabled}
-            className="relative"
-          >
-            {select}
-            {t("form.widgets.multiselect.select")}
-          </Button>
+          {isModalOpen && (
+            <EmbeddedFormModal
+              originalResource={resource}
+              resource={relationModel as ModelName}
+              onClose={() => setIsOpen(false)}
+            />
+          )}
+          <div className="flex gap-2">
+            <Button
+              aria-disabled={props.disabled}
+              type="button"
+              disabled={props.disabled}
+              className="relative"
+            >
+              {select}
+              {t("form.widgets.multiselect.select")}
+            </Button>
+            <Button
+              aria-disabled={props.disabled}
+              type="button"
+              disabled={props.disabled}
+              className="relative"
+              onClick={() => setIsOpen(true)}
+            >
+              {t("form.widgets.multiselect.create")}
+            </Button>
+          </div>
         </div>
       )}
       {displayMode === "table" && (
         <div className="space-y-2">
           <MultiSelectDisplayTable
             formData={formData}
-            schema={schema}
+            propertySchema={propertySchema}
             onRemoveClick={onRemoveClick}
             deletable={!props.disabled}
           />
@@ -154,7 +179,7 @@ const MultiSelectWidget = (props: Props) => {
       <Selector
         ref={containerRef}
         open={isOpen}
-        name={name}
+        name={name as Field<ModelName>}
         options={options?.length ? options : undefined}
         onChange={(option: Enumeration) => {
           setFieldDirty(name);

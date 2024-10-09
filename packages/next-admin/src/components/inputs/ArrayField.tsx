@@ -1,13 +1,21 @@
 import { FieldProps } from "@rjsf/utils";
+import { JSONSchema7 } from "json-schema";
+import type {
+  Enumeration,
+  Field,
+  FormProps,
+  ModelName,
+  SchemaProperty,
+} from "../../types";
 import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import ScalarArrayField from "./ScalarArray/ScalarArrayField";
-import type { Enumeration, FormProps, ModelName } from "../../types";
+import { useResource } from "../../context/ResourceContext";
 
 const ArrayField = (props: FieldProps) => {
-  const { formData, onChange, name, disabled, schema, required, formContext } =
-    props;
+  const {resource, modelSchema } = useResource();
+  const { formData, onChange, name, disabled, schema, required } = props;
 
-  const resourceDefinition: FormProps["schema"] = formContext.schema;
+  const resourceDefinition: FormProps<typeof resource>["schema"] = modelSchema!;
 
   const field =
     resourceDefinition.properties[
@@ -38,7 +46,7 @@ const ArrayField = (props: FieldProps) => {
       name={name}
       disabled={disabled ?? false}
       required={required}
-      schema={schema}
+      propertySchema={schema as SchemaProperty<ModelName>[Field<ModelName>]}
       options={options}
     />
   );
