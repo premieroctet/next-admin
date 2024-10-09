@@ -58,11 +58,25 @@ export const createHandler = <P extends string = "nextadmin">({
         ?.split(",")
         .map((id) => formatId(resource, id));
 
+      const depth = req.nextUrl.searchParams.get("depth");
+
       if (!ids) {
         return NextResponse.json({ error: "No ids provided" }, { status: 400 });
       }
 
-      const data = await getRawData({ prisma, resource, resourceIds: ids });
+      if (depth && isNaN(Number(depth))) {
+        return NextResponse.json(
+          { error: "Depth should be a number" },
+          { status: 400 }
+        );
+      }
+
+      const data = await getRawData({
+        prisma,
+        resource,
+        resourceIds: ids,
+        maxDepth: depth ? Number(depth) : undefined,
+      });
 
       return NextResponse.json(data);
     })

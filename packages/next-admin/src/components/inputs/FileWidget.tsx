@@ -9,12 +9,12 @@ import { ChangeEvent, useEffect, useRef, useState } from "react";
 import Loader from "../../assets/icons/Loader";
 import { useFormState } from "../../context/FormStateContext";
 import { useI18n } from "../../context/I18nContext";
-import { getFilenameFromUrl, isImageType } from "../../utils/file";
+import { getFilenameFromUrl } from "../../utils/file";
 
 const FileWidget = (props: WidgetProps) => {
   const [file, setFile] = useState<File>();
   const [errors, setErrors] = useState(props.rawErrors);
-  const [fileIsImage, setFileIsImage] = useState(false);
+  const [fileIsImage, setFileIsImage] = useState(true);
   const [filename, setFilename] = useState<string | null>(null);
   const [fileUrl, setFileUrl] = useState<string | null>(props.value);
   const [isPending, setIsPending] = useState(false);
@@ -35,12 +35,22 @@ const FileWidget = (props: WidgetProps) => {
   useEffect(() => {
     if (props.value) {
       setIsPending(true);
-      setFileUrl(props.value);
+
+      const image = document.createElement("img");
+      image.src = props.value as string;
+      image.onload = () => {
+        setFileIsImage(true);
+        setIsPending(false);
+      };
+      image.onerror = (e) => {
+        console.error(e);
+        setFileIsImage(false);
+        setIsPending(false);
+      };
       const filename = getFilenameFromUrl(props.value);
       if (filename) {
         setFilename(filename);
       }
-      setFileIsImage(isImageType(props.value));
       setIsPending(false);
     } else {
       setIsPending(false);

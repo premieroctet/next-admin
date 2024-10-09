@@ -65,10 +65,14 @@ export const getEnableToExecuteActions = async <M extends ModelName>(
   actions?: Omit<ModelAction<M>, "action">[]
 ): Promise<OutputModelAction | undefined> => {
   if (actions?.some((action) => action.canExecute)) {
+    const maxDepth = Math.max(0, ...actions.map((action) => action.depth ?? 0));
+
     const data: Model<typeof resource>[] = await getRawData<typeof resource>({
       prisma,
       resource,
       resourceIds: ids,
+      // Apply the default value if its 0
+      maxDepth: maxDepth || undefined,
     });
 
     return actions?.reduce(
@@ -348,7 +352,8 @@ export const transformData = <M extends ModelName>(
 
   const schemaProperties = model.properties;
 
-  return Object.keys(data).reduce((acc, key) => {
+  return Object.keys(data).reduce(async (accP, key) => {
+    const acc = await accP;
     const field = schemaProperties[key as keyof typeof schemaProperties];
     const fieldKind = field?.__nextadmin?.kind;
     const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
@@ -357,7 +362,7 @@ export const transformData = <M extends ModelName>(
       editOptions?.fields?.[key as Field<M>]?.relationshipSearchField;
 
     if (get) {
-      acc[key] = get(data[key]);
+      acc[key] = await get(data[key]);
     } else if (fieldKind === "enum") {
       const value = data[key];
       if (Array.isArray(value)) {
@@ -450,7 +455,7 @@ export const transformData = <M extends ModelName>(
       }
     }
     return acc;
-  }, {} as any);
+  }, Promise.resolve({}) as any);
 };
 
 /**

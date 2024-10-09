@@ -1,9 +1,6 @@
-import { $Enums, Prisma, PrismaClient } from "@prisma/client";
+import type { NextAdminJsonSchemaData } from "@premieroctet/next-admin-json-schema";
+import { Prisma, PrismaClient } from "@prisma/client";
 import { cloneDeep } from "lodash";
-import type {
-  NextAdminJSONSchema,
-  NextAdminJsonSchemaData,
-} from "@premieroctet/next-admin-json-schema";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   EditOptions,
@@ -22,17 +19,17 @@ import {
   Select,
 } from "../types";
 import { validateQuery } from "./advancedSearch";
+import { getDefinitionFromRef } from "./jsonSchema";
 import {
   enumValueForEnumType,
   findRelationInData,
   getModelIdProperty,
   getToStringForRelations,
-  modelHasIdField,
   globalSchema,
+  modelHasIdField,
   transformData,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
-import { getDefinitionFromRef } from "./jsonSchema";
 
 type CreateNestedWherePredicateParams<M extends ModelName> = {
   field: NextAdminJsonSchemaData & { name: string };
@@ -702,6 +699,39 @@ export const getDataItem = async <M extends ModelName>({
   return data;
 };
 
+type DeepIncludeRecord = Record<string, true | any>;
+
+const includeDataByDepth = <M extends ModelName>(
+  modelProperties: SchemaDefinitions[ModelName]["properties"],
+  currentDepth: number,
+  maxDepth: number
+) => {
+  const include = Object.entries(modelProperties)?.reduce(
+    (acc, [name, field]) => {
+      if (field.__nextadmin?.kind === "object") {
+        /**
+         * We substract because, if the condition matches,
+         * we will have all the fields in the related model, which are
+         * counted in currentDepth + 1
+         */
+        if (currentDepth < maxDepth - 1) {
+          const nextModel =
+            globalSchema.definitions[field.__nextadmin.type as M].properties;
+          acc[name] = {
+            include: includeDataByDepth(nextModel, currentDepth + 1, maxDepth),
+          };
+        } else {
+          acc[name] = true;
+        }
+      }
+      return acc;
+    },
+    {} as DeepIncludeRecord
+  );
+
+  return include;
+};
+
 /**
  * Get raw data from Prisma (2-deep nested relations)
  * @param prisma
@@ -713,25 +743,19 @@ export const getRawData = async <M extends ModelName>({
   prisma,
   resource,
   resourceIds,
+  maxDepth = 2,
 }: {
   prisma: PrismaClient;
   resource: M;
   resourceIds: Array<string | number>;
+  maxDepth?: number;
 }): Promise<Model<M>[]> => {
   const model = globalSchema.definitions[
     resource
   ] as SchemaDefinitions[ModelName];
   const modelProperties = model.properties;
 
-  const include = Object.entries(modelProperties).reduce(
-    (acc, [name, field]) => {
-      if (field.__nextadmin?.kind === "object") {
-        acc[name] = true;
-      }
-      return acc;
-    },
-    {} as Record<string, true>
-  );
+  const include = includeDataByDepth(modelProperties!, 1, maxDepth);
 
   // @ts-expect-error
   const data = await prisma[resource].findMany({

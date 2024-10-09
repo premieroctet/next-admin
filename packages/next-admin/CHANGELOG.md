@@ -5,6 +5,13 @@
 ### Major Changes
 
 - [1fa56bc](https://github.com/premieroctet/next-admin/commit/1fa56bc): feat: add custom generator ([#414](https://github.com/premieroctet/next-admin/issues/414))
+## 6.1.6
+
+### Patch Changes
+
+- [56ea03b](https://github.com/premieroctet/next-admin/commit/56ea03b): feat: add depth selection for actions ([#443](https://github.com/premieroctet/next-admin/issues/443))
+- [81b2e54](https://github.com/premieroctet/next-admin/commit/81b2e54): Fix relation one-to-many - nullable relation
+- [3225788](https://github.com/premieroctet/next-admin/commit/3225788): Fix image (get async)
 
 ## 6.1.5
 

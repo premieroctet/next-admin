@@ -1,5 +1,5 @@
-import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 import AddTagDialog from "@/components/PostAddTagDialogContent";
+import UserDetailsDialog from "@/components/UserDetailsDialogContent";
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
@@ -189,6 +189,7 @@ export const options: NextAdminOptions = {
           id: "user-details",
           title: "actions.user.details.title",
           component: <UserDetailsDialog />,
+          depth: 3,
         },
       ],
     },
