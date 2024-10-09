@@ -9,10 +9,10 @@
     "lint": "next lint",
     "database": "prisma migrate dev && prisma db seed",
     "reset-database": "prisma migrate reset --force && prisma migrate dev && prisma db seed",
-    "postinstall": "prisma generate",
     "prisma:migrate:dev": "prisma migrate dev",
     "vercel-build": "prisma generate && prisma migrate deploy && next build",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "clean": "rm -rf .next"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
@@ -20,7 +20,7 @@
   "dependencies": {
     "@heroicons/react": "^2.0.18",
     "@picocss/pico": "^1.5.7",
-    "@premieroctet/next-admin": "6.1.6",
+    "@premieroctet/next-admin": "7.0.0-rc.1",
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
     "babel-plugin-superjson-next": "^0.4.5",
@@ -35,6 +35,7 @@
   "devDependencies": {
     "@babel/core": "^7.0.0",
     "@playwright/test": "^1.37.0",
+    "@premieroctet/next-admin-generator-prisma": "workspace:*",
     "@types/node": "^17.0.12",
     "@types/react": "^18.2.0",
     "@types/react-datepicker": "^4.19.3",
@@ -44,7 +45,6 @@
     "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.24",
     "prisma": "^5.13.0",
-    "prisma-json-schema-generator": "^5.1.1",
     "tailwindcss": "^3.3.2",
     "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",

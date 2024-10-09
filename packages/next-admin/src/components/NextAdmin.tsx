@@ -21,7 +21,6 @@ export function NextAdmin({
   resources,
   slug,
   total,
-  dmmfSchema,
   dashboard,
   validation,
   isAppDir,
@@ -83,7 +82,6 @@ export function NextAdmin({
           data={data}
           slug={slug}
           schema={modelSchema}
-          dmmfSchema={dmmfSchema!}
           resource={resource!}
           validation={validation}
           title={resourceTitle!}
@@ -127,8 +125,8 @@ export function NextAdmin({
         user={user}
         externalLinks={externalLinks}
         options={options}
-        dmmfSchema={dmmfSchema}
         resourcesIdProperty={resourcesIdProperty!}
+        schema={schema}
       >
         {renderMainComponent()}
       </MainLayout>

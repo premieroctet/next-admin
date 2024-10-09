@@ -327,6 +327,7 @@ export const options: NextAdminOptions = {
           posts: {
             display: "list",
             relationshipSearchField: "post",
+            orderField: "order",
           },
         },
       },
