@@ -1,10 +1,17 @@
 # @premieroctet/next-admin
 
+## 7.0.0-rc.1
+
+### Patch Changes
+
+- [6e060f2](https://github.com/premieroctet/next-admin/commit/6e060f2): Merge main
+
 ## 7.0.0-rc.0
 
 ### Major Changes
 
 - [1fa56bc](https://github.com/premieroctet/next-admin/commit/1fa56bc): feat: add custom generator ([#414](https://github.com/premieroctet/next-admin/issues/414))
+
 ## 6.1.6
 
 ### Patch Changes
