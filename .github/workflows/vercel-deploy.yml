@@ -36,7 +36,7 @@ jobs:
         run: cd apps/example && yarn prisma generate
 
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install --global vercel@37.6.1
 
       - name: Pull Vercel Environment Information (Docs)
         run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
