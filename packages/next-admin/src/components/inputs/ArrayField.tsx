@@ -1,17 +1,20 @@
 import { FieldProps } from "@rjsf/utils";
 import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import ScalarArrayField from "./ScalarArray/ScalarArrayField";
-import type { Enumeration, FormProps } from "../../types";
+import type { Enumeration, FormProps, ModelName } from "../../types";
 
 const ArrayField = (props: FieldProps) => {
   const { formData, onChange, name, disabled, schema, required, formContext } =
     props;
 
-  const dmmfSchema = formContext.dmmfSchema as FormProps["dmmfSchema"];
+  const resourceDefinition: FormProps["schema"] = formContext.schema;
 
-  const dmmfField = dmmfSchema.find((field) => field.name === name);
+  const field =
+    resourceDefinition.properties[
+      name as keyof typeof resourceDefinition.properties
+    ];
 
-  if (dmmfField?.kind === "scalar" && dmmfField?.isList) {
+  if (field?.__nextadmin?.kind === "scalar" && field?.__nextadmin?.isList) {
     return (
       <ScalarArrayField
         name={name}
@@ -24,7 +27,9 @@ const ArrayField = (props: FieldProps) => {
   }
 
   const options =
-    dmmfField?.kind === "enum" ? (schema.enum as Enumeration[]) : undefined;
+    field?.__nextadmin?.kind === "enum"
+      ? (schema.enum as Enumeration[])
+      : undefined;
 
   return (
     <MultiSelectWidget

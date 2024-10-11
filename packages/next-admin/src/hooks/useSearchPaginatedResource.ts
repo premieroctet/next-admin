@@ -12,7 +12,7 @@ const useSearchPaginatedResource = ({
   initialOptions,
 }: UseSearchPaginatedResourceParams) => {
   const [isPending, setIsPending] = useState(false);
-  const { apiBasePath, dmmfSchema, resource } = useConfig();
+  const { apiBasePath, schema, resource } = useConfig();
   const searchPage = useRef(1);
   const totalSearchedItems = useRef(0);
   const [allOptions, setAllOptions] = useState<Enumeration[]>(
@@ -23,13 +23,19 @@ const useSearchPaginatedResource = ({
   const runSearch = async (query: string, resetOptions = true) => {
     const perPage = 25;
 
-    const fieldFromDmmf = dmmfSchema?.find((field) => field.name === fieldName);
+    const schemaResourceProperties = schema.definitions[resource!].properties;
 
-    if (!fieldFromDmmf) {
+    const schemaFieldEntry = Object.entries(schemaResourceProperties).find(
+      ([key]) => key === fieldName
+    );
+
+    if (!schemaFieldEntry) {
       return;
     }
 
-    const model = fieldFromDmmf.type;
+    const [, schemaField] = schemaFieldEntry;
+
+    const model = schemaField.__nextadmin?.type;
 
     try {
       setIsPending(true);

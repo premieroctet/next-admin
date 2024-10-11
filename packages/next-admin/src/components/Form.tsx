@@ -88,7 +88,6 @@ const widgets: RjsfForm["props"]["widgets"] = {
 const Form = ({
   data,
   schema,
-  dmmfSchema,
   resource,
   validation: validationProp,
   customInputs,
@@ -109,7 +108,6 @@ const Form = ({
   const { edit, id, ...schemas } = getSchemas(
     data,
     schema,
-    dmmfSchema,
     modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
   );
   const { router } = useRouterInternal();
@@ -549,7 +547,7 @@ const Form = ({
             extraErrors={extraErrors}
             fields={fields}
             disabled={allDisabled}
-            formContext={{ isPending, dmmfSchema }}
+            formContext={{ isPending, schema }}
             templates={{
               ...templates,
               ButtonTemplates: { SubmitButton: submitButton },

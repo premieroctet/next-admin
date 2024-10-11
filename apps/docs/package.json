@@ -6,11 +6,12 @@
     "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rm -rf .next"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
-    "@premieroctet/next-admin": "6.1.6",
+    "@premieroctet/next-admin": "7.0.0-rc.1",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.8",
     "mini-svg-data-uri": "^1.4.4",

@@ -92,7 +92,7 @@ export const initAction = async ({
     await execa(
       packageManagerData.name,
       parseCommandString(
-        `${packageManagerData.installDevCmd} prisma-json-schema-generator tailwindcss`
+        `${packageManagerData.installDevCmd} @premieroctet/next-admin-generator-prisma tailwindcss`
       )
     );
   } catch (e) {
@@ -190,17 +190,11 @@ export const initAction = async ({
     basePath,
     prismaClientPath.replace(/\.(ts|tsx|js|jsx)$/, "")
   );
-  const jsonSchemaPath = path.join(
-    path.dirname(schemaPath),
-    "json-schema",
-    "json-schema.json"
-  );
 
   const pageContent = writeToTemplate(
     routerRootPath.type === "page" ? "page_router_page" : "app_router_page",
     {
       prismaClientPath: getRelativePath(pageFilePath, prismaPath),
-      jsonSchemaPath: getRelativePath(pageFilePath, jsonSchemaPath),
       stylesPath: getRelativePath(
         pageFilePath,
         path.join(basePath, NEXTADMIN_CSS_FILENAME)
@@ -221,7 +215,6 @@ export const initAction = async ({
     routerRootPath.type === "page" ? "page_router_api" : "app_router_api",
     {
       prismaClientPath: getRelativePath(apiFilePath, prismaPath),
-      jsonSchemaPath: getRelativePath(apiFilePath, jsonSchemaPath),
       optionsPath: getRelativePath(
         apiFilePath,
         path.join(basePath, NEXTADMIN_OPTIONS_FILENAME)
