@@ -2733,7 +2733,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@premieroctet/next-admin-generator-prisma@workspace:packages/generator-prisma"
   dependencies:
-    "@premieroctet/next-admin-json-schema": "workspace:^"
+    "@premieroctet/next-admin-json-schema": "workspace:*"
     "@prisma/generator-helper": "npm:^5.20.0"
     "@prisma/internals": "npm:^5.20.0"
     "@types/json-schema": "npm:^7.0.15"
@@ -2747,7 +2747,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@premieroctet/next-admin-json-schema@workspace:^, @premieroctet/next-admin-json-schema@workspace:packages/json-schema":
+"@premieroctet/next-admin-json-schema@workspace:*, @premieroctet/next-admin-json-schema@workspace:^, @premieroctet/next-admin-json-schema@workspace:packages/json-schema":
   version: 0.0.0-use.local
   resolution: "@premieroctet/next-admin-json-schema@workspace:packages/json-schema"
   dependencies:
