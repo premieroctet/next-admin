@@ -1,18 +1,21 @@
 import {
   ArrowTopRightOnSquareIcon,
+  PencilSquareIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
 import Link from "next/link";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";
 import { useFormState } from "../../context/FormStateContext";
+import { useResource } from "../../context/ResourceContext";
 import useClickOutside from "../../hooks/useCloseOnOutsideClick";
 import { useDisclosure } from "../../hooks/useDisclosure";
-import { Enumeration } from "../../types";
+import { Enumeration, Field, ModelName } from "../../types";
 import { slugify } from "../../utils/tools";
+import EmbeddedFormModal from "./EmbeddedForm/EmbeddedFormModal";
 import { Selector } from "./Selector";
 
 const SelectWidget = ({
@@ -24,6 +27,7 @@ const SelectWidget = ({
   ...props
 }: WidgetProps) => {
   const { isOpen, onToggle, onClose } = useDisclosure();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const containerRef = useClickOutside<HTMLDivElement>(() => {
     onClose();
   });
@@ -34,7 +38,8 @@ const SelectWidget = ({
   );
   const { setFieldDirty } = useFormState();
 
-  const { basePath } = useConfig();
+  const { basePath, toModelName } = useConfig();
+  const { resource } = useResource();
 
   const handleChange = (option: Enumeration | null) => {
     setFieldDirty(props.name);
@@ -80,6 +85,37 @@ const SelectWidget = ({
           {value?.label || props.placeholder}
         </span>
         <div className="relative z-10 flex cursor-pointer space-x-3">
+          {hasValue && !disabled && (
+            <>
+              {props.schema.relation && (
+                <>
+                  <PencilSquareIcon
+                    onClick={() => {
+                      setIsModalOpen(true);
+                    }}
+                    className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer"
+                  />
+                  {isModalOpen && (
+                    <EmbeddedFormModal
+                      originalResource={resource}
+                      id={value?.value}
+                      resource={toModelName(props.schema.relation)}
+                      onClose={() => setIsModalOpen(false)}
+                    />
+                  )}
+                </>
+              )}
+              <button
+                className="flex items-center"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleChange(null);
+                }}
+              >
+                <XMarkIcon className="h-5 w-5 cursor-pointer text-gray-400" />
+              </button>
+            </>
+          )}
           {hasValue && props.schema.relation && (
             <Link
               href={`${basePath}/${slugify(
@@ -89,17 +125,6 @@ const SelectWidget = ({
             >
               <ArrowTopRightOnSquareIcon className="h-5 w-5 cursor-pointer text-gray-400" />
             </Link>
-          )}
-          {hasValue && !disabled && (
-            <button
-              className="flex items-center"
-              onClick={(e) => {
-                e.preventDefault();
-                handleChange(null);
-              }}
-            >
-              <XMarkIcon className="h-5 w-5 cursor-pointer text-gray-400" />
-            </button>
           )}
           {!disabled && (
             <div
@@ -119,7 +144,7 @@ const SelectWidget = ({
         ref={containerRef}
         open={isOpen}
         options={enumOptions?.length ? enumOptions : undefined}
-        name={props.name}
+        name={props.name as Field<ModelName>}
         onChange={handleChange}
         selectedOptions={hasValue ? [value?.value] : []}
       />

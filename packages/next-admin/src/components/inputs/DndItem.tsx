@@ -3,11 +3,15 @@ import { CSS } from "@dnd-kit/utilities";
 import {
   ArrowTopRightOnSquareIcon,
   Bars2Icon,
+  PencilSquareIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
 import Link from "next/link";
-import { ReactElement } from "react";
+import { ReactElement, useState } from "react";
+import { useResource } from "../../context/ResourceContext";
+import { ModelName } from "../../types";
+import EmbeddedFormModal from "./EmbeddedForm/EmbeddedFormModal";
 
 type Props = {
   label: string | ReactElement;
@@ -26,6 +30,10 @@ const DndItem = ({
   href,
   value,
 }: Props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [resource, id] = href?.split("/").slice(-2) ?? [];
+  const { resource: originalResource } = useResource();
+
   const {
     attributes,
     listeners,
@@ -65,20 +73,35 @@ const DndItem = ({
         )}
         {label}
       </div>
-      {(href || deletable) && (
-        <div className="flex items-center space-x-3">
-          {!!href && (
+
+      <div className="flex items-center space-x-3">
+        {isOpen && (
+          <EmbeddedFormModal
+            originalResource={originalResource}
+            id={id}
+            resource={resource as ModelName}
+            onClose={() => setIsOpen(false)}
+          />
+        )}
+        {!!href && (
+          <>
+            <PencilSquareIcon
+              onClick={() => {
+                setIsOpen(true);
+              }}
+              className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer"
+            />
             <Link href={href} className="flex items-center">
               <ArrowTopRightOnSquareIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer" />
             </Link>
-          )}
-          {deletable && (
-            <div onClick={() => onRemoveClick()}>
-              <XMarkIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer" />
-            </div>
-          )}
-        </div>
-      )}
+          </>
+        )}
+        {deletable && (
+          <div onClick={() => onRemoveClick()}>
+            <XMarkIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer" />
+          </div>
+        )}
+      </div>
     </li>
   );
 };

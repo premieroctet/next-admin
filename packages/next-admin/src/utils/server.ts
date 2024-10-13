@@ -1,6 +1,8 @@
+import { UiSchema } from "@rjsf/utils";
 import { Prisma, PrismaClient } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
+import { cloneDeep } from "lodash";
 import { NextApiRequest } from "next";
 import { Writable } from "node:stream";
 import {
@@ -18,10 +20,10 @@ import {
   OutputModelAction,
   ScalarField,
   Schema,
-  SchemaDefinitions,
-  SchemaProperty,
+  SchemaModel,
   UploadParameters,
 } from "../types";
+import { getSchemaForResource, getSchemas } from "./jsonSchema";
 import { getRawData } from "./prisma";
 import { isNativeFunction, isUploadParameters, pipe } from "./tools";
 
@@ -326,6 +328,60 @@ export const fillRelationInSchema =
               enum: enumeration,
             };
 
+            const required = schema.definitions[modelName].required;
+            const relationFromFieldsRequired = relationFromFields?.every(
+              (field) => required?.includes(field)
+            );
+
+            if (relationFromFieldsRequired) {
+              required?.push(fieldName);
+              schema.definitions[modelName].required = required;
+            }
+            const fieldValue =
+              schema.definitions[modelName].properties[
+                field.name as Field<typeof modelName>
+              ];
+
+            if (fieldValue) {
+              const enumeration: Enumeration[] = [];
+
+              if (fieldValue.type === "array") {
+                //Relation Many-to-One
+                fieldValue.items = {
+                  type: "string",
+                  relation: modelNameRelation,
+                  relationName: relationName,
+                  enum: enumeration,
+                };
+
+                const extendedRelationProperty =
+                  // prettier-ignore
+                  // @ts-expect-error
+                  options?.model?.[modelName]?.edit?.fields?.[fieldName]?.relationshipSearchField;
+
+                if (extendedRelationProperty) {
+                  const extendedRelationField = getDeepRelationModel(
+                    modelNameRelation,
+                    extendedRelationProperty
+                  );
+
+                  const extendedModelRelationIdField =
+                    extendedRelationField?.type as ModelName;
+
+                  fieldValue.items = {
+                    ...fieldValue.items,
+                    relation: extendedModelRelationIdField,
+                  };
+                }
+              } else {
+                //Relation One-to-One
+                fieldValue.type = "string";
+                fieldValue.relation = modelNameRelation;
+                relationName && (fieldValue.relationName = relationName);
+                fieldValue.enum = enumeration;
+                delete fieldValue.anyOf;
+              }
+            }
             delete fieldValue.anyOf;
           }
         }
@@ -1004,25 +1060,37 @@ export const formatSearchFields = (uri: string) =>
  * Centralizes the transformation of the schema
  *
  * @param resource
- * @param edit
- * @param prisma
- * @param searchParams
+ * @param schema
  * @param options
+ * @param data
  * @returns
  */
-export const transformSchema = <M extends ModelName>(
+export const transformSchema = async <M extends ModelName>(
   resource: M,
-  edit: EditOptions<M>,
-  options?: NextAdminOptions
-) =>
-  pipe<Schema>(
+  schema: Schema,
+  options?: NextAdminOptions,
+  data?: Model<M>
+): Promise<{ schema: SchemaModel<M>; uiSchema: UiSchema }> => {
+  const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
+
+  const transformedSchema = await pipe<Schema>(
     removeHiddenProperties(resource, edit),
     changeFormatInSchema(resource, edit),
     fillRelationInSchema(resource, options),
     fillDescriptionInSchema(resource, edit),
     addCustomProperties(resource, edit),
-    orderSchema(resource, options)
+    orderSchema(resource, options),
+    visiblePropertiesInSchema(resource, edit, data)
+  )(cloneDeep(schema));
+
+  const dmmfSchema = getPrismaModelForResource(resource);
+  const modelSchema: SchemaModel<M> = getSchemaForResource(
+    transformedSchema,
+    resource
   );
+
+  return getSchemas<M>(modelSchema!, dmmfSchema?.fields!, data, edit?.fields);
+};
 
 export const applyVisiblePropertiesInSchema = <M extends ModelName>(
   resource: M,
@@ -1050,6 +1118,28 @@ export const applyVisiblePropertiesInSchema = <M extends ModelName>(
   }
   return schema;
 };
+
+export const visiblePropertiesInSchema =
+  <M extends ModelName>(resource: M, edit: EditOptions<M>, data?: any) =>
+  (schema: Schema) => {
+    const modelName = resource;
+    const model = models.find((model) => model.name === modelName);
+    if (!model) return schema;
+    const display = edit?.display;
+    const fields = edit?.fields;
+    if (display) {
+      display.forEach((property) => {
+        if (
+          schema.definitions?.[modelName]?.properties &&
+          fields?.[property]?.visible?.(data) === false
+        ) {
+          // @ts-expect-error
+          delete schema.definitions[modelName].properties[property];
+        }
+      });
+    }
+    return schema;
+  };
 
 const fillDescriptionInSchema = <M extends ModelName>(
   resource: M,

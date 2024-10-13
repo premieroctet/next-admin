@@ -21,12 +21,7 @@ import Image from "next/image";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import {
-  AdminComponentProps,
-  ModelIcon,
-  ModelName,
-  SidebarConfiguration,
-} from "../types";
+import { MenuProps, ModelIcon, ModelName } from "../types";
 import { slugify } from "../utils/tools";
 import Divider from "./Divider";
 import ResourceIcon from "./common/ResourceIcon";
@@ -45,19 +40,7 @@ const ColorSchemeSwitch = dynamic(() => import("./ColorSchemeSwitch"), {
   ssr: false,
 });
 
-export type MenuProps = {
-  resource?: ModelName;
-  resources?: ModelName[];
-  resourcesTitles?: Record<ModelName, string | undefined>;
-  customPages?: AdminComponentProps["customPages"];
-  configuration?: SidebarConfiguration;
-  resourcesIcons: AdminComponentProps["resourcesIcons"];
-  user?: AdminComponentProps["user"];
-  externalLinks?: AdminComponentProps["externalLinks"];
-  title?: string;
-};
-
-export default function Menu({
+export default function Menu<M extends ModelName = ModelName>({
   resources,
   resource: currentResource,
   resourcesTitles,
@@ -67,7 +50,7 @@ export default function Menu({
   user,
   externalLinks,
   title,
-}: MenuProps) {
+}: MenuProps<M>) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const { basePath } = useConfig();
   const { pathname } = useRouterInternal();

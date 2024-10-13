@@ -1,12 +1,12 @@
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import { RJSFSchema } from "@rjsf/utils";
-import { Enumeration } from "../../../types";
+import { Enumeration, Field, ModelName, SchemaProperty } from "../../../types";
 import MultiSelectDisplayListItem from "./MultiSelectDisplayListItem";
 
 type Props = {
   formData: any;
-  schema: RJSFSchema;
+  propertySchema: SchemaProperty<ModelName>[Field<ModelName>];
   onRemoveClick: (value: Enumeration["value"]) => void;
   deletable: boolean;
   sortable?: boolean;
@@ -15,7 +15,7 @@ type Props = {
 
 const MultiSelectDisplayList = ({
   formData,
-  schema,
+  propertySchema,
   onRemoveClick,
   deletable = true,
   sortable = false,
@@ -48,7 +48,7 @@ const MultiSelectDisplayList = ({
               onRemoveClick={onRemoveClick}
               deletable={deletable}
               sortable={sortable}
-              schema={schema}
+              propertySchema={propertySchema}
             />
           );
         })}

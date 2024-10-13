@@ -1,8 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { cloneDeep } from "lodash";
 import {
   AdminComponentProps,
-  EditOptions,
   GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
   MainLayoutProps,
@@ -15,6 +13,7 @@ import { getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList } from "./prisma";
 import {
   applyVisiblePropertiesInSchema,
+  getEnableToExecuteActions,
   getEnableToExecuteActions,
   getModelIdProperty,
   getResourceFromParams,
@@ -159,29 +158,28 @@ export async function getPropsFromParams({
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
 
-      const edit = options?.model?.[resource]?.edit as EditOptions<
-        typeof resource
-      >;
+      const data = resourceId
+        ? await getDataItem({
+            prisma,
+            resource,
+            resourceId,
+            options,
+            locale,
+            isAppDir,
+          })
+        : undefined;
 
-      let deepCopySchema = await transformSchema(
+      let { uiSchema, schema: modelSchema } = await transformSchema(
         resource,
-        edit,
-        options
-      )(cloneDeep(globalSchema));
+        schema,
+        options,
+        data
+      );
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
 
       if (resourceId !== undefined) {
-        const data = await getDataItem({
-          prisma,
-          resource,
-          resourceId,
-          options,
-          locale,
-          isAppDir,
-        });
-
         const toStringFunction = getToStringForModel(
           options?.model?.[resource]
         );
@@ -209,7 +207,8 @@ export async function getPropsFromParams({
           resource,
           data,
           slug,
-          schema: deepCopySchema,
+          modelSchema,
+          uiSchema,
           customInputs,
           actions: serializedActions,
         };
@@ -219,7 +218,7 @@ export async function getPropsFromParams({
         return {
           ...defaultProps,
           resource,
-          schema: deepCopySchema,
+          modelSchema: modelSchema,
           customInputs,
         };
       }

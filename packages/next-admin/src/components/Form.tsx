@@ -11,6 +11,7 @@ import {
   FieldTemplateProps,
   getSubmitButtonOptions,
   ObjectFieldTemplateProps,
+  RJSFSchema,
   SubmitButtonProps,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
@@ -30,21 +31,24 @@ import React, {
 import { twMerge } from "tailwind-merge";
 import ClientActionDialogProvider from "../context/ClientActionDialogContext";
 import { useConfig } from "../context/ConfigContext";
-import FormDataProvider, { useFormData } from "../context/FormDataContext";
+import FormDataProvider, {
+  FormDataConsumer,
+  useFormData,
+} from "../context/FormDataContext";
 import FormStateProvider, { useFormState } from "../context/FormStateContext";
 import { useI18n } from "../context/I18nContext";
 import { MessageProvider, useMessage } from "../context/MessageContext";
+import ResourceProvider, { useResource } from "../context/ResourceContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
-  EditFieldsOptions,
   Field,
   FormProps,
+  FormWrapperProps,
   ModelName,
   ModelOptions,
   Permission,
 } from "../types";
-import { getSchemas } from "../utils/jsonSchema";
 import { formatLabel, slugify } from "../utils/tools";
 import FormHeader from "./FormHeader";
 import ArrayField from "./inputs/ArrayField";
@@ -85,15 +89,17 @@ const widgets: RjsfForm["props"]["widgets"] = {
   TextareaWidget: TextareaWidget,
 };
 
-const Form = ({
+export const Form = <M extends ModelName>({
   data,
   schema,
-  resource,
   validation: validationProp,
   customInputs,
-}: FormProps) => {
+  disabled = false,
+}: FormProps<M>) => {
   const [validation, setValidation] = useState(validationProp);
   const { basePath, options, apiBasePath } = useConfig();
+  const { resource, modelSchema, uiSchema } = useResource();
+
   const modelOptions: ModelOptions<typeof resource>[typeof resource] =
     options?.model?.[resource];
   const canDelete =
@@ -105,16 +111,12 @@ const Form = ({
   const canCreate =
     !modelOptions?.permissions ||
     modelOptions?.permissions?.includes(Permission.CREATE);
-  const { edit, id, ...schemas } = getSchemas(
-    data,
-    schema,
-    modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
-  );
   const { router } = useRouterInternal();
+  const edit = !!data;
   const { t } = useI18n();
   const formRef = useRef<RjsfForm>(null);
   const [isPending, setIsPending] = useState(false);
-  const allDisabled = edit && !canEdit;
+  const allDisabled = (edit && !canEdit) || disabled;
   const { runDeletion } = useDeleteAction(resource);
   const { showMessage } = useMessage();
   const { cleanAll } = useFormState();
@@ -206,7 +208,7 @@ const Form = ({
         </div>
       );
     },
-    [isPending, id]
+    [isPending]
   );
 
   const extraErrors: ErrorSchema | undefined = validation?.reduce(
@@ -468,6 +470,7 @@ const Form = ({
           />
         );
       }
+
       return (
         // @ts-expect-error
         <BaseInput
@@ -531,18 +534,14 @@ const Form = ({
   const RjsfFormComponent = useMemo(
     () =>
       forwardRef<RjsfForm>((_props, ref) => {
-        const { formData } = useFormData();
-
         return (
           <RjsfForm
             tagName={CustomForm}
             idPrefix=""
             idSeparator=""
-            {...schemas}
-            onChange={(e) => {
-              setFormData(e.formData);
-            }}
-            formData={formData}
+            schema={modelSchema as RJSFSchema}
+            uiSchema={uiSchema}
+            formData={data}
             validator={validator}
             extraErrors={extraErrors}
             fields={fields}
@@ -561,31 +560,56 @@ const Form = ({
     [submitButton]
   );
 
-  return (
-    <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
-        <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
-        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
-          <RjsfFormComponent ref={formRef} />
-        </div>
-      </div>
-    </div>
-  );
+  return <RjsfFormComponent ref={formRef} />;
 };
 
-const FormWrapper = (props: FormProps) => {
+export const FormWrapper = <M extends ModelName>(
+  props: FormWrapperProps<M>
+) => {
+  const { pathname } = useRouterInternal();
+  const { data, modelSchema, uiSchema, resource, schema } = props;
+  const [id] =
+    pathname.split("/").slice(-1)[0] !== "new"
+      ? pathname.split("/").slice(-1)
+      : [undefined];
+
   return (
-    <MessageProvider>
+    <ResourceProvider
+      resource={resource}
+      modelSchema={modelSchema}
+      uiSchema={uiSchema}
+    >
+      <MessageProvider>
       <ClientActionDialogProvider>
         <FormHeader {...props} />
-        <FormDataProvider data={props.data}>
-          <FormStateProvider>
-            <Form {...props} />
-          </FormStateProvider>
-        </FormDataProvider>
+        
+          <FormDataProvider>
+            <FormStateProvider>
+              <div className="relative h-full">
+                <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
+                  <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
+                  <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
+                    <FormDataConsumer>
+                      {({ formData }) => {
+                        return (
+                          <Form<M>
+                            data={{ ...data, ...formData }}
+                            id={id}
+                            validation={props.validation}
+                            customInputs={props.customInputs}
+                            schema={schema}
+                          />
+                        );
+                      }}
+                    </FormDataConsumer>
+                  </div>
+                </div>
+              </div>
+            </FormStateProvider>
+          </FormDataProvider>
+        
       </ClientActionDialogProvider>
-    </MessageProvider>
+      </MessageProvider>
+    </ResourceProvider>
   );
 };
-
-export default FormWrapper;

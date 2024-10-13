@@ -3,13 +3,14 @@ import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
+import { useResource } from "../context/ResourceContext";
+import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
-  EditFieldsOptions,
-  FormProps,
+  FormWrapperProps,
+  ModelName,
   ModelOptions,
   Permission,
 } from "../types";
-import { getSchemas } from "../utils/jsonSchema";
 import { slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
 import Breadcrumb from "./Breadcrumb";
@@ -20,23 +21,19 @@ export default function FormHeader({
   slug,
   icon,
   actions,
-  resource,
-  data,
-  schema,
-}: FormProps) {
+}: FormWrapperProps<ModelName>) {
   const { t } = useI18n();
   const { basePath, options } = useConfig();
+  const router = useRouterInternal();
+  const { resource } = useResource();
   const modelOptions: ModelOptions<typeof resource>[typeof resource] =
     options?.model?.[resource];
   const canCreate =
     !modelOptions?.permissions ||
     modelOptions?.permissions?.includes(Permission.CREATE);
 
-  const { edit, id } = getSchemas(
-    data,
-    schema,
-    modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
-  );
+  const [_resource, id] = router.pathname.split("/").slice(-2);
+  const edit = id && id !== "new";
 
   const breadcrumItems = [
     {

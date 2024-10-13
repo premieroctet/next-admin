@@ -1,10 +1,10 @@
 import { merge } from "lodash";
 import dynamic from "next/dynamic";
 import { AdminComponentProps, CustomUIProps } from "../types";
+import { getClientActionDialogs, getCustomInputs } from "../utils/options";
 import { getSchemaForResource } from "../utils/jsonSchema";
-import { getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
-import Form from "./Form";
+import { FormWrapper } from "./Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
 import PageLoader from "./PageLoader";
@@ -18,6 +18,8 @@ export function NextAdmin({
   data,
   resource,
   schema,
+  modelSchema,
+  uiSchema,
   resources,
   slug,
   total,
@@ -49,9 +51,6 @@ export function NextAdmin({
     resource ? options?.model?.[resource]?.actions : []
   );
 
-  const modelSchema =
-    resource && schema ? getSchemaForResource(schema, resource) : undefined;
-
   const resourceTitle = resourcesTitles?.[resource!] ?? resource;
   const resourceIcon = resourcesIcons?.[resource!];
 
@@ -78,11 +77,14 @@ export function NextAdmin({
         : getCustomInputs(resource!, options!);
 
       return (
-        <Form
+        <FormWrapper
           data={data}
           slug={slug}
-          schema={modelSchema}
+          modelSchema={modelSchema!}
+          uiSchema={uiSchema!}
+          schema={modelSchema!}
           resource={resource!}
+          resources={resources!}
           validation={validation}
           title={resourceTitle!}
           customInputs={customInputs}
