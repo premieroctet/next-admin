@@ -28,8 +28,7 @@
   "homepage": "https://next-admin.js.org/",
   "license": "MIT",
   "scripts": {
-    "js": "tsc",
-    "build": "npm run js",
+    "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "jest",
@@ -144,7 +143,6 @@
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",
-    "tsup": "^6.7.0",
     "typescript": "^5.1.6"
   },
   "optionalDependencies": {

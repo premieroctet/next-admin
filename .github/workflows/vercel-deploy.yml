@@ -30,7 +30,7 @@ jobs:
         run: yarn install
 
       - name: Build required packages
-        run: yarn turbo run build --filter=@premieroctet/next-admin-json-schema --filter=@premieroctet/next-admin-generator-prisma
+        run: yarn build:packages
 
       - name: Generate Prisma client
         run: cd apps/example && yarn prisma generate
