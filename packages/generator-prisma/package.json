@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin-generator-prisma",
-  "version": "0.0.1-rc.1",
+  "version": "0.0.1-rc.2",
   "description": "Prisma generator for Next-Admin",
   "bin": "dist/index.js",
   "main": "dist/index.js",
@@ -33,12 +33,12 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "@premieroctet/next-admin-json-schema": "workspace:*",
     "@prisma/generator-helper": "^5.20.0",
     "@prisma/internals": "^5.20.0",
     "prisma-json-schema-generator": "5.1.5"
   },
   "devDependencies": {
+    "@premieroctet/next-admin-json-schema": "workspace:^",
     "@types/json-schema": "^7.0.15",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",

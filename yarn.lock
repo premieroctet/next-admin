@@ -2579,7 +2579,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@premieroctet/next-admin-generator-prisma@workspace:packages/generator-prisma"
   dependencies:
-    "@premieroctet/next-admin-json-schema": "workspace:*"
+    "@premieroctet/next-admin-json-schema": "workspace:^"
     "@prisma/generator-helper": "npm:^5.20.0"
     "@prisma/internals": "npm:^5.20.0"
     "@types/json-schema": "npm:^7.0.15"
@@ -2593,7 +2593,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@premieroctet/next-admin-json-schema@workspace:*, @premieroctet/next-admin-json-schema@workspace:packages/json-schema":
+"@premieroctet/next-admin-json-schema@workspace:^, @premieroctet/next-admin-json-schema@workspace:packages/json-schema":
   version: 0.0.0-use.local
   resolution: "@premieroctet/next-admin-json-schema@workspace:packages/json-schema"
   dependencies:
@@ -2616,7 +2616,7 @@ __metadata:
     "@heroicons/react": "npm:^2.0.18"
     "@monaco-editor/react": "npm:^4.6.0"
     "@picocss/pico": "npm:^1.5.7"
-    "@premieroctet/next-admin-json-schema": "workspace:*"
+    "@premieroctet/next-admin-json-schema": "workspace:^"
     "@radix-ui/react-checkbox": "npm:^1.1.1"
     "@radix-ui/react-dialog": "npm:^1.0.5"
     "@radix-ui/react-dropdown-menu": "npm:^2.0.6"
