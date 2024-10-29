@@ -2,10 +2,6 @@
   "name": "next-admin",
   "version": "0.0.0",
   "private": true,
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
   "scripts": {
     "start": "turbo run start",
     "start:example": "turbo run start --filter=example",
@@ -22,7 +18,7 @@
     "database": "dotenv turbo run database",
     "reset-database": "dotenv turbo run reset-database",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "publish-packages": "yarn build:packages && changeset publish",
+    "publish-packages": "pnpm build:packages && changeset publish",
     "changeset-version": "(changeset version) && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md && YARN_ENABLE_IMMUTABLE_INSTALLS=false yarn install",
     "clean": "turbo run clean"
   },
@@ -40,13 +36,13 @@
     "@radix-ui/react-slot": "^1.0.2",
     "prettier-plugin-tailwindcss": "^0.6.6"
   },
-  "packageManager": "yarn@4.5.0",
+  "packageManager": "pnpm@9.12.3",
   "repository": {
     "type": "git",
     "url": "https://github.com/premieroctet/next-admin.git"
   },
   "homepage": "https://next-admin.js.org",
-  "resolutions": {
+  "overrides": {
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
     "prettier": ">= 3.0.0"

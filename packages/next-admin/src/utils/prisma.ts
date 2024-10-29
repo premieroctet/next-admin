@@ -1,6 +1,6 @@
 import type { NextAdminJsonSchemaData } from "@premieroctet/next-admin-json-schema";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash.clonedeep";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   EditOptions,

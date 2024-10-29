@@ -1,5 +1,4 @@
 "use client";
-import { Prisma } from "@prisma/client";
 import React, { useContext, useMemo } from "react";
 import { ModelName, NextAdminOptions, Schema } from "../types";
 

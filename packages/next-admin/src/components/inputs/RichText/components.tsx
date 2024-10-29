@@ -18,7 +18,7 @@ interface BaseProps {
 
 type ButtonProps = PropsWithChildren<
   {
-    format: any;
+    format: string;
     icon: React.ReactElement;
     title?: string;
   } & BaseProps

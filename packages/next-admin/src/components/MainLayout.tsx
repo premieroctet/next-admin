@@ -1,4 +1,4 @@
-import { merge } from "lodash";
+import merge from "lodash.merge";
 import { ThemeProvider } from "next-themes";
 import { PropsWithChildren } from "react";
 import { ColorSchemeProvider } from "../context/ColorSchemeContext";
