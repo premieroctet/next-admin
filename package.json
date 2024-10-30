@@ -25,6 +25,7 @@
   "devDependencies": {
     "dotenv-cli": "7.2.1",
     "eslint-config-custom": "workspace:*",
+    "playwright": "^1.48.2",
     "prettier": "latest",
     "turbo": "latest"
   },
