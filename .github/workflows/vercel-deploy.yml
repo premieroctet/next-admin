@@ -30,12 +30,12 @@ jobs:
         run: pnpm install
 
       - name: Build required packages
-        run: pnpm turbo run build --filter=@premieroctet/next-admin-json-schema --filter=@premieroctet/next-admin-generator-prisma
+        run: pnpm turbo run build --filter=@premieroctet/next-admin-json-schema --filter=@premieroctet/next-admin-generator-prisma && pnpm install
 
       - name: Generate Prisma client
         run: cd apps/example && pnpm prisma generate
 
-      - name: Build NextAdmin
+      - name: Build Next Admin packages
         run: pnpm turbo run build --filter=@premieroctet/next-admin
 
       - name: Install Vercel CLI
