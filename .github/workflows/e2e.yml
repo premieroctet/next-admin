@@ -14,40 +14,40 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
-          cache: "yarn"
+          cache: "pnpm"
       - name: Cache playwright dependencies
         id: cache-playwright
         uses: actions/cache@v3
         with:
           path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/yarn.lock') }}
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/pnpm-lock.yaml') }}
       - name: Start docker-compose
         run: docker compose up -d
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
       - name: Build required packages
-        run: yarn turbo run build --filter=@premieroctet/next-admin-json-schema --filter=@premieroctet/next-admin-generator-prisma
+        run: pnpm turbo run build --filter=@premieroctet/next-admin-json-schema --filter=@premieroctet/next-admin-generator-prisma
       - name: Generate Prisma client
-        run: cd apps/example && yarn prisma generate
+        run: cd apps/example && pnpm prisma generate
       - name: Run linter
-        run: yarn lint
+        run: pnpm lint
       - name: Run typecheck
-        run: yarn typecheck
+        run: pnpm typecheck
       - name: Install playwright dependencies
         if: steps.cache-playwright.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
       - name: Fill database
-        run: yarn database
+        run: pnpm database
       - name: Build packages
-        run: yarn build:example
+        run: pnpm build:example
       - name: Start server
-        run: yarn start:example &
+        run: pnpm start:example &
       - name: Run tests
         run: |
-          yarn test
-          yarn turbo test:e2e 
-          cd apps/example && yarn prisma db seed && cd -
-          BASE_URL=http://localhost:3000/pagerouter/admin yarn test:e2e
+          pnpm test
+          pnpm turbo test:e2e 
+          cd apps/example && pnpm prisma db seed && cd -
+          BASE_URL=http://localhost:3000/pagerouter/admin pnpm test:e2e
       - uses: actions/upload-artifact@v3
         if: always()
         with:

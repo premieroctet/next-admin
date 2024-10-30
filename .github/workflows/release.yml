@@ -25,16 +25,16 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
 
-      - name: Link
-        run: yarn lint
+      - name: Lint
+        run: pnpm lint
 
       - name: Create Release Pull Request or Publish (${{ github.ref_name }})
         uses: changesets/action@v1
         with:
-          version: yarn changeset-version
-          publish: yarn publish-packages
+          version: pnpm changeset-version
+          publish: pnpm publish-packages
           title: ${{github.ref_name}} — Version Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

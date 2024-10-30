@@ -29,7 +29,7 @@ The project workflow uses GitHub Actions to run tests, build, deploy (prod - pre
 To increase the version of a package, you need to create a `changeset` file. You can create a `changeset` file by running the following command:
 
 ```sh
-yarn changeset
+pnpm changeset
 ```
 
 Any PR without a `changeset` file will just trigger the tests and eventually deploy/preview the app.
@@ -57,7 +57,7 @@ Once a fix has been released, you can cherry-pick the fix on the `develop` branc
 To build all apps and packages, run the following command:
 
 ```
-yarn run build
+pnpm build
 ```
 
 ### Develop
@@ -65,9 +65,9 @@ yarn run build
 To develop all apps and packages, run the following command:
 
 ```
-yarn run dev
+pnpm dev
 docker-compose up
-cd apps/example && yarn database
+cd apps/example && pnpm database
 ```
 
 ### E2E

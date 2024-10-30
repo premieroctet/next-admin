@@ -12,8 +12,7 @@ import {
 } from "./utils";
 
 interface BaseProps {
-  className: string;
-  [key: string]: unknown;
+  className?: string;
 }
 
 type ButtonProps = PropsWithChildren<
@@ -21,6 +20,7 @@ type ButtonProps = PropsWithChildren<
     format: string;
     icon: React.ReactElement;
     title?: string;
+    disabled?: boolean;
   } & BaseProps
 >;
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -41,7 +41,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         toggleMark(editor, format);
       };
     } else {
-      active = isBlockActive(editor, format as TypeElement);
+      active = isBlockActive(editor, format as unknown as TypeElement);
       handleMouseDown = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
       ) => {

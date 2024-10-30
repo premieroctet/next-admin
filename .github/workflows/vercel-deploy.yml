@@ -27,13 +27,13 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
 
       - name: Build required packages
-        run: yarn build:packages
+        run: pnpm build:packages
 
       - name: Generate Prisma client
-        run: cd apps/example && yarn prisma generate
+        run: cd apps/example && pnpm prisma generate
 
       - name: Install Vercel CLI
         run: npm install --global vercel@37.6.1
