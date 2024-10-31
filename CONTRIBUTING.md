@@ -6,11 +6,14 @@ An auto generated admin from Prisma models for your Next.js app.
 
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `next-admin`: the admin library used by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+- `apps/docs`: a [Next.js](https://nextjs.org/) app
+- `apps/example`: a [Next.js](https://nextjs.org/) app that uses the `next-admin` package
+- `packages/next-admin`: the admin library used by both `web` and `docs` applications
+- `packages/cli`: a CLI to generate the admin in your Next.js app
+- `packages/generator-prisma`: a CLI to generate a json schema of your Prisma models
+- `packages/json-schema`: a packages to normalize the Prisma schema to a json schema (primarily used to type the generated and next-admin packages)
+- `packages/eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `packagestsconfig`: `tsconfig.json`s used throughout the monorepo
 
 ### Utilities
 
@@ -28,7 +31,7 @@ To setup the project, run the following command:
 pnpm install
 ```
 
-Then you need to create a `.env` file in the root of the project with the following content:
+Then you need to create a `.env` file in the `apps/example` project with the following content:
 
 ```
 DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
