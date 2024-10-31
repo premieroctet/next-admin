@@ -20,6 +20,54 @@ This turborepo has some additional tools already setup for you:
 - [ESLint](https://eslint.org/) for code linting
 - [Prettier](https://prettier.io) for code formatting
 
+### Setup 
+
+To setup the project, run the following command:
+
+```
+pnpm install
+```
+
+Then you need to create a `.env` file in the root of the project with the following content:
+
+```
+DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
+```
+
+And run the following command to setup the packages:
+
+```
+pnpm setup:packages
+```
+
+The `setup:packages` command will build packages, generate Prisma and then build `next-admin` package. 
+
+### Prisma (first time setup)
+
+To setup the database, run the following command:
+
+```
+pnpm database
+```
+
+### Develop
+
+To develop all apps and packages, run the following command:
+
+```
+pnpm dev
+docker-compose up
+cd apps/example && pnpm database
+```
+
+### Build
+
+To build all apps and packages, run the following command:
+
+```
+pnpm build
+```
+
 ### Workflow
 
 The project workflow uses GitHub Actions to run tests, build, deploy (prod - preview - docs) and publish packages. To handle versioning up and publishing, we use [Changesets](https://github.com/changesets/changesets)
@@ -51,24 +99,6 @@ If you want to fix a previous major version, you can create a PR on the relative
 ![schema-fix](https://github.com/premieroctet/next-admin/assets/7901622/18d463a2-7bea-4a62-bedb-968c58bc0cd2)
 
 Once a fix has been released, you can cherry-pick the fix on the `develop` branch if that fix is still relevant.
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-pnpm build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-pnpm dev
-docker-compose up
-cd apps/example && pnpm database
-```
 
 ### E2E
 

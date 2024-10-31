@@ -7,7 +7,6 @@ import { prisma } from "./prisma";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",
-
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,

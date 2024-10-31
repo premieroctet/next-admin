@@ -21,6 +21,7 @@
     "@heroicons/react": "^2.0.18",
     "@picocss/pico": "^1.5.7",
     "@premieroctet/next-admin": "workspace:*",
+    "@premieroctet/next-admin-generator-prisma": "workspace:*",
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
     "next": "14.0.3",
@@ -32,7 +33,6 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.37.0",
-    "@premieroctet/next-admin-generator-prisma": "workspace:*",
     "@types/node": "^17.0.12",
     "@types/react": "^18.2.0",
     "@types/react-datepicker": "^4.19.3",
