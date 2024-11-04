@@ -31,7 +31,8 @@ export const createHandler = <P extends string = "nextadmin">({
   const resources = getResources(options);
 
   if (onRequest) {
-    router.use(async (req, ctx, next) => {
+    router.use(async (req, ctxPromise, next) => {
+      const ctx = await ctxPromise;
       const response = await onRequest(req, ctx);
 
       if (response) {
@@ -44,7 +45,8 @@ export const createHandler = <P extends string = "nextadmin">({
 
   router
     .get(`${apiBasePath}/:model/raw`, async (req, ctx) => {
-      const resource = getResourceFromParams(ctx.params[paramKey], resources);
+      const params = await ctx.params;
+      const resource = getResourceFromParams(params[paramKey], resources);
 
       if (!resource) {
         return NextResponse.json(
@@ -81,13 +83,11 @@ export const createHandler = <P extends string = "nextadmin">({
       return NextResponse.json(data);
     })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, ctx) => {
-      const id = ctx.params[paramKey].at(-1)!;
+      const params = await ctx.params;
+      const id = params[paramKey].at(-1)!;
 
       // Make sure we don't have a false positive with a model that could be named actions
-      const resource = getResourceFromParams(
-        [ctx.params[paramKey][0]],
-        resources
-      );
+      const resource = getResourceFromParams([params[paramKey][0]], resources);
 
       if (!resource) {
         return NextResponse.json(
@@ -129,14 +129,15 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
     })
-    .post(`${apiBasePath}/options`, async (req, ctx) => {
+    .post(`${apiBasePath}/options`, async (req, _ctx) => {
       const body = await req.json();
       const data = await handleOptionsSearch(body, prisma, options);
 
       return NextResponse.json(data);
     })
     .post(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
-      const resource = getResourceFromParams(ctx.params[paramKey], resources);
+      const params = await ctx.params;
+      const resource = getResourceFromParams(params[paramKey], resources);
 
       if (!resource) {
         return NextResponse.json(
@@ -147,8 +148,8 @@ export const createHandler = <P extends string = "nextadmin">({
 
       const body = await getFormValuesFromFormData(await req.formData());
       const id =
-        ctx.params[paramKey].length === 2
-          ? formatId(resource, ctx.params[paramKey].at(-1)!)
+        params[paramKey].length === 2
+          ? formatId(resource, params[paramKey].at(-1)!)
           : undefined;
 
       const editOptions = options?.model?.[resource]?.edit;
@@ -195,7 +196,8 @@ export const createHandler = <P extends string = "nextadmin">({
       }
     })
     .delete(`${apiBasePath}/:model/:id`, async (req, ctx) => {
-      const resource = getResourceFromParams(ctx.params[paramKey], resources);
+      const params = await ctx.params;
+      const resource = getResourceFromParams(params[paramKey], resources);
 
       if (!resource) {
         return NextResponse.json(
@@ -212,7 +214,7 @@ export const createHandler = <P extends string = "nextadmin">({
       }
 
       await deleteResource({
-        body: [ctx.params[paramKey][1]],
+        body: [params[paramKey][1]],
         prisma,
         resource,
       });
@@ -220,7 +222,8 @@ export const createHandler = <P extends string = "nextadmin">({
       return NextResponse.json({ ok: true });
     })
     .delete(`${apiBasePath}/:model`, async (req, ctx) => {
-      const resource = getResourceFromParams(ctx.params[paramKey], resources);
+      const params = await ctx.params;
+      const resource = getResourceFromParams(params[paramKey], resources);
 
       if (!resource) {
         return NextResponse.json(
