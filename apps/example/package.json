@@ -23,17 +23,16 @@
     "@premieroctet/next-admin": "6.1.6",
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
-    "babel-plugin-superjson-next": "^0.4.5",
     "next": "^14.0.3",
     "next-intl": "^3.3.2",
-    "next-superjson-plugin": "^0.5.6",
+    "next-superjson": "^1.0.1",
+    "next-superjson-plugin": "^0.6.3",
     "react": "^18.2.0",
     "react-datepicker": "^4.24.0",
     "react-dom": "^18.2.0",
-    "superjson": "^1.12.2"
+    "superjson": "^2.2.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
     "@playwright/test": "^1.37.0",
     "@types/node": "^17.0.12",
     "@types/react": "^18.2.0",
