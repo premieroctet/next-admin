@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 6.1.7
+
+### Patch Changes
+
+- [cb7987d](https://github.com/premieroctet/next-admin/commit/cb7987d): Fix advanced filter on nullable field
+
 ## 6.1.6
 
 ### Patch Changes
