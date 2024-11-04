@@ -23,7 +23,7 @@
     "@premieroctet/next-admin": "6.1.6",
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
-    "next": "^14.0.3",
+    "next": "^15.0.2",
     "next-intl": "^3.3.2",
     "next-superjson": "^1.0.1",
     "next-superjson-plugin": "^0.6.3",
