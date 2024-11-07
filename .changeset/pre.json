@@ -1,0 +1,15 @@
+{
+  "mode": "pre",
+  "tag": "beta",
+  "initialVersions": {
+    "docs": "0.0.0",
+    "example": "0.0.0",
+    "@premieroctet/next-admin-cli": "0.0.4",
+    "eslint-config-custom": "0.0.0",
+    "@premieroctet/next-admin": "6.1.7",
+    "tsconfig": "0.0.0"
+  },
+  "changesets": [
+    "neat-beers-do"
+  ]
+}
