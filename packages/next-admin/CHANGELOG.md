@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 6.1.8
+
+### Patch Changes
+
+- [fa0b2af](https://github.com/premieroctet/next-admin/commit/fa0b2af118ba7ec5922ba42904385e9fa7adc2f3): Support Next 15
+
 ## 6.1.8-beta.0
 
 ### Patch Changes
