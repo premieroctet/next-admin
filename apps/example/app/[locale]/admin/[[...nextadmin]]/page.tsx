@@ -1,7 +1,8 @@
 import Dashboard from "@/components/Dashboard";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
-import { NextAdmin, PageProps } from "@premieroctet/next-admin";
+import schema from "@/prisma/json-schema/json-schema.json";
+import { NextAdmin, PromisePageProps } from "@premieroctet/next-admin";
 import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
 import { Metadata, Viewport } from "next";
 import { getMessages } from "next-intl/server";
@@ -15,11 +16,11 @@ export const metadata: Metadata = {
   icons: "/assets/logo.svg",
 };
 
-export default async function AdminPage({
-  params,
-  searchParams,
-}: Readonly<PageProps>) {
-  const props = await getNextAdminProps({
+export default async function AdminPage(props: PromisePageProps) {
+  const params = await props.params;
+  const searchParams = await props.searchParams;
+
+  const nextAdminProps = await getNextAdminProps({
     params: params.nextadmin,
     searchParams,
     basePath: "/admin",
@@ -42,7 +43,7 @@ export default async function AdminPage({
 
   return (
     <NextAdmin
-      {...props}
+      {...nextAdminProps}
       dashboard={<Dashboard />}
       user={{
         data: {

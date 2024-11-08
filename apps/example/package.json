@@ -22,14 +22,16 @@
     "@picocss/pico": "^1.5.7",
     "@premieroctet/next-admin": "workspace:*",
     "@premieroctet/next-admin-generator-prisma": "workspace:*",
+    "next-intl": "^3.3.2",
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
-    "next": "14.0.3",
-    "next-intl": "^3.3.2",
+    "next": "^15.0.2",
+    "next-superjson": "^1.0.1",
+    "next-superjson-plugin": "^0.6.3",
     "react": "^18.2.0",
     "react-datepicker": "^4.24.0",
     "react-dom": "^18.2.0",
-    "superjson": "^1.12.2"
+    "superjson": "^2.2.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.37.0",

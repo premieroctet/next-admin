@@ -985,10 +985,14 @@ export const colorSchemes = ["light", "dark", "system"];
 export type ColorScheme = (typeof colorSchemes)[number];
 export type BasicColorScheme = Exclude<ColorScheme, "system">;
 
-export type PageProps = Readonly<{
+export type PageProps = {
   params: { [key: string]: string[] | string };
   searchParams: { [key: string]: string | string[] | undefined } | undefined;
-}>;
+};
+
+export type PromisePageProps = {
+  [key in keyof PageProps]: Promise<PageProps[key]>;
+}
 
 export type GetNextAdminPropsParams = {
   /**
@@ -1035,7 +1039,7 @@ export type GetMainLayoutPropsParams = Omit<
 >;
 
 export type RequestContext<P extends string> = {
-  params: Record<P, string[]>;
+  params: Promise<Record<P, string[]>>;
 };
 
 export type CreateAppHandlerParams<P extends string = "nextadmin"> = {

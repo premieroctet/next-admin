@@ -1,5 +1,23 @@
 # @premieroctet/next-admin
 
+## 6.1.8
+
+### Patch Changes
+
+- [fa0b2af](https://github.com/premieroctet/next-admin/commit/fa0b2af118ba7ec5922ba42904385e9fa7adc2f3): Support Next 15
+
+## 6.1.8-beta.0
+
+### Patch Changes
+
+- [ba36b45](https://github.com/premieroctet/next-admin/commit/ba36b456e4530ae52b96bd1087e21e732e743cc2): Support Next 15
+
+## 6.1.7
+
+### Patch Changes
+
+- [cb7987d](https://github.com/premieroctet/next-admin/commit/cb7987d): Fix advanced filter on nullable field
+
 ## 6.1.6
 
 ### Patch Changes

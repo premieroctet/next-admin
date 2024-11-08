@@ -1,3 +1,4 @@
+import { JSONSchema7 } from "json-schema";
 import get from "lodash.get";
 import set from "lodash.set";
 import z from "zod";
@@ -330,8 +331,8 @@ export const buildUIBlocks = <M extends ModelName>(
 
                 const childResourceName = (
                   isArrayConditionKey
-                    ? schemaProperty.items?.$ref
-                    : schemaProperty.$ref
+                    ? schemaProperty.items?.$ref || (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref
+                    : schemaProperty.$ref || (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref
                 )
                   ?.split("/")
                   ?.at(-1)! as keyof typeof schema.definitions;
@@ -497,8 +498,14 @@ export const buildQueryBlocks = <M extends ModelName>(
             [path, basePath, "some"].filter(Boolean).join(".")
           );
         }
-      } else if (schemaProperty?.$ref) {
-        const childResource = schemaProperty.$ref.split("/").at(-1)!;
+      } else if (
+        schemaProperty &&
+        (schemaProperty?.$ref || (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref)
+      ) {
+        const ref =
+          schemaProperty.$ref ||
+          (schemaProperty.anyOf?.[0] as JSONSchema7)?.$ref;
+        const childResource = ref!.split("/").at(-1)!;
 
         if (!get(acc, [path, basePath].filter(Boolean))) {
           set(acc, [path, basePath].filter(Boolean).join("."), {});
