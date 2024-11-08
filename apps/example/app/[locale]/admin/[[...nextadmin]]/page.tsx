@@ -1,7 +1,6 @@
 import Dashboard from "@/components/Dashboard";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
-import schema from "@/prisma/json-schema/json-schema.json";
 import { NextAdmin, PromisePageProps } from "@premieroctet/next-admin";
 import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
 import { Metadata, Viewport } from "next";
