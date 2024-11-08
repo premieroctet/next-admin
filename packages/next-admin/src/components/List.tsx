@@ -271,11 +271,9 @@ function List({
                   }}
                 >
                   <SelectTrigger className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle max-h-[36px] max-w-[100px]">
-                    <SelectValue asChild>
                       <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
                         {pageSize}
                       </span>
-                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={"10"}>10</SelectItem>
