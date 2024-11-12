@@ -48,15 +48,12 @@ jobs:
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
 
-      - name: Intermediate cleanup
-        run: rm -rf .vercel
-
       - name: Pull Vercel Environment Information (Example)
         run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
       - name: Build Project Artifacts (Example)
-        run: pnpm install && vercel build ${{ inputs.extra_args }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: vercel build ${{ inputs.extra_args }} --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
       - name: Deploy Project Artifacts to Vercel (Example)
