@@ -27,7 +27,7 @@
     }
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && pnpm install",
     "dev": "tsc -w",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"

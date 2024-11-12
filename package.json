@@ -21,7 +21,7 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "publish-packages": "pnpm build:packages && changeset publish",
     "changeset-version": "(changeset version) && cp packages/next-admin/CHANGELOG.md apps/docs/pages/changelog/index.md && pnpm install",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean && pnpm recursive exec -- rm -rf node_modules && rm -rf node_modules && pnpm recursive exec -- rm -rf .turbo && rm -rf .turbo"
   },
   "devDependencies": {
     "dotenv-cli": "7.2.1",

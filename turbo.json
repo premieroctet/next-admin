@@ -10,6 +10,13 @@
   ],
   "tasks": {
     "start": {},
+    "@premieroctet/next-admin#build": {
+      "dependsOn": ["example#generate"]
+    },
+    "example#generate": {
+      "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"],
+      "cache": false
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
@@ -29,7 +36,8 @@
     "reset-database": {
       "cache": false
     },
-    "clean": {}
+    "clean": {},
+    "generate": {}
   },
   "ui": "stream"
 }
