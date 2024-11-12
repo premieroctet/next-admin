@@ -14,8 +14,7 @@
       "dependsOn": ["example#generate"]
     },
     "example#generate": {
-      "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"],
-      "cache": false
+      "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"]
     },
     "build": {
       "dependsOn": ["^build"],
