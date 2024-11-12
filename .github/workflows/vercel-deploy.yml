@@ -56,7 +56,7 @@ jobs:
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
       - name: Build Project Artifacts (Example)
-        run: vercel build ${{ inputs.extra_args }} --token=${{ secrets.VERCEL_TOKEN }}
+        run: pnpm install && vercel build ${{ inputs.extra_args }} --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
       - name: Deploy Project Artifacts to Vercel (Example)
