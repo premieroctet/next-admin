@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.0.0-rc.4
+
+### Patch Changes
+
+- Explictly install lodash.debounce
+
 ## 7.0.0-rc.3
 
 ### Patch Changes

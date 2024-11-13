@@ -392,6 +392,9 @@ importers:
       lodash.clonedeep:
         specifier: ^4.5.0
         version: 4.5.0
+      lodash.debounce:
+        specifier: ^4.0.8
+        version: 4.0.8
       lodash.get:
         specifier: ^4.4.2
         version: 4.4.2
@@ -526,9 +529,6 @@ importers:
       jest-mock-extended:
         specifier: ^3.0.4
         version: 3.0.7(jest@29.7.0(@types/node@18.19.61)(ts-node@10.9.2(@swc/core@1.4.17(@swc/helpers@0.5.13))(@types/node@18.19.61)(typescript@5.6.3)))(typescript@5.6.3)
-      lodash.debounce:
-        specifier: ^4.0.8
-        version: 4.0.8
       postcss:
         specifier: ^8.4.21
         version: 8.4.47
@@ -1853,7 +1853,7 @@ packages:
   '@radix-ui/react-context@1.1.1':
     resolution: {integrity: sha512-UASk9zi+crv9WteK/NU4PLvOoL3OuE6BWVKNF6hPRBtYBDXQ2u5iu3O59zUlJiTVvkyuycnqrztsHVJwcK9K+Q==}
     peerDependencies:
-      '@types/react': ^18.2.0
+      '@types/react': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
@@ -1932,7 +1932,7 @@ packages:
   '@radix-ui/react-id@1.1.0':
     resolution: {integrity: sha512-EJUrI8yYh7WOjNOqpoJaf1jlFIH2LvtgAl+YcFqNCa+4hj64ZXmPkAKOFs/ukjz3byN6bdb/AVUqHkI8/uWWMA==}
     peerDependencies:
-      '@types/react': ^18.2.0
+      '@types/react': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
@@ -1980,8 +1980,8 @@ packages:
   '@radix-ui/react-presence@1.1.1':
     resolution: {integrity: sha512-IeFXVi4YS1K0wVZzXNrbaaUvIJ3qdY+/Ih4eHFhWA9SwGR9UDX7Ck8abvL57C4cv3wwMvUE0OG69Qc3NCcTe/A==}
     peerDependencies:
-      '@types/react': ^18.2.0
-      '@types/react-dom': ^18.2.0
+      '@types/react': '*'
+      '@types/react-dom': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
       react-dom: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
     peerDependenciesMeta:
@@ -2094,7 +2094,7 @@ packages:
   '@radix-ui/react-use-layout-effect@1.1.0':
     resolution: {integrity: sha512-+FPE0rOdziWSrH9athwI1R0HDVbWlEhd+FR+aSDk4uWGmSJ9Z54sdZVDQPZAinJhJXwfT+qnj969mCsT2gfm5w==}
     peerDependencies:
-      '@types/react': ^18.2.0
+      '@types/react': '*'
       react: ^16.8 || ^17.0 || ^18.0 || ^19.0 || ^19.0.0-rc
     peerDependenciesMeta:
       '@types/react':
