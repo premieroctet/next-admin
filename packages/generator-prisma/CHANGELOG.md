@@ -1,5 +1,13 @@
 # @premieroctet/next-admin-generator-prisma
 
+## 0.0.1-rc.6
+
+### Patch Changes
+
+- Fix generator
+- Updated dependencies
+  - @premieroctet/next-admin-json-schema@0.0.1-rc.3
+
 ## 0.0.1-rc.1
 
 ### Patch Changes

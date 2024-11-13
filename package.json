@@ -24,6 +24,7 @@
     "clean": "turbo run clean"
   },
   "devDependencies": {
+    "changeset": "^0.2.6",
     "dotenv-cli": "7.2.1",
     "eslint-config-custom": "workspace:*",
     "playwright": "^1.48.2",

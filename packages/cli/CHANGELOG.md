@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-cli
 
+## 0.0.5-rc.3
+
+### Patch Changes
+
+- Fix generator
+
 ## 0.0.5-rc.1
 
 ### Patch Changes
