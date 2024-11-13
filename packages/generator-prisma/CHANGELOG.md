@@ -1,5 +1,16 @@
 # @premieroctet/next-admin-generator-prisma
 
+## 0.0.1
+
+### Patch Changes
+
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): feat: new json-schema libraries ([#414](https://github.com/premieroctet/next-admin/issues/414))
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Fix generator
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Change next-admin-json-schema dependenciy
+- Updated dependencies [[64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f)]
+- Updated dependencies [[64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f)]
+  - @premieroctet/next-admin-json-schema@0.0.1
+
 ## 0.0.1-rc.6
 
 ### Patch Changes
