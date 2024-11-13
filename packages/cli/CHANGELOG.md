@@ -1,5 +1,13 @@
 # @premieroctet/next-admin-cli
 
+## 0.0.5
+
+### Patch Changes
+
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Apply dist/
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Fix generator
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): feat: support new generator ([#414](https://github.com/premieroctet/next-admin/issues/414))
+
 ## 0.0.5-rc.3
 
 ### Patch Changes
