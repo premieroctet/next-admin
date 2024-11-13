@@ -1,5 +1,23 @@
 # @premieroctet/next-admin-cli
 
+## 0.0.5-rc.3
+
+### Patch Changes
+
+- Fix generator
+
+## 0.0.5-rc.1
+
+### Patch Changes
+
+- Apply dist/
+
+## 0.0.5-rc.0
+
+### Patch Changes
+
+- [1fa56bc](https://github.com/premieroctet/next-admin/commit/1fa56bc): feat: support new generator ([#414](https://github.com/premieroctet/next-admin/issues/414))
+
 ## 0.0.4
 
 ### Patch Changes

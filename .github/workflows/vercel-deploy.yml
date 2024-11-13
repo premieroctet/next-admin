@@ -27,10 +27,13 @@ jobs:
           node-version: 20
 
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
+
+      - name: Setup packages (Build)
+        run: pnpm build
 
       - name: Install Vercel CLI
-        run: npm install --global vercel@latest
+        run: npm install --global vercel@37.6.1
 
       - name: Pull Vercel Environment Information (Docs)
         run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}
@@ -44,9 +47,6 @@ jobs:
         run: vercel deploy ${{ inputs.extra_args }} --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_DOCS }}
-
-      - name: Intermediate cleanup
-        run: rm -rf .vercel
 
       - name: Pull Vercel Environment Information (Example)
         run: vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.VERCEL_TOKEN }}

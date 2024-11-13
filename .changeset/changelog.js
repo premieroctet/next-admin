@@ -35,7 +35,7 @@ const getDependencyReleaseLine = async (
 
   const changesetLinks = changesets.map(
     (changeset) => {
-      const commitShortId = changeset.commit.slice(0, 7);
+      const commitShortId = changeset.commit?.slice(0, 7);
       const commitLink = options?.repo ? `[${commitShortId}](https://github.com/${options.repo}/commit/${changeset.commit})` : commitShortId;
       return `- Updated dependencies${changeset.commit ? ` [${commitLink}]` : ""
         }`;

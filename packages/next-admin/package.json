@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin",
-  "version": "6.1.8",
+  "version": "7.0.0-rc.4",
   "description": "Next-Admin provides a customizable and turnkey admin dashboard for applications built with Next.js and powered by the Prisma ORM. It aims to simplify the development process by providing a turnkey admin system that can be easily integrated into your project.",
   "keywords": [
     "next.js",
@@ -28,14 +28,13 @@
   "homepage": "https://next-admin.js.org/",
   "license": "MIT",
   "scripts": {
-    "js": "tsc",
-    "build": "npm run js",
+    "build": "tsc",
     "dev": "tsc --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "tsc": "tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "exports": {
     ".": {
@@ -75,13 +74,13 @@
     }
   },
   "peerDependencies": {
-    "@prisma/client": ">=4",
+    "@prisma/client": ">=5",
     "next": ">=12",
-    "prisma": ">=4",
-    "prisma-json-schema-generator": ">=3 <=5.1.1",
+    "prisma": ">=5",
     "react": ">=17",
     "react-dom": ">=17",
-    "typescript": ">=4"
+    "typescript": ">=4",
+    "tailwindcss": ">=3"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.1.0",
@@ -106,9 +105,13 @@
     "body-parser": "^1.20.2",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
+    "csstype": "^3.1.3",
     "dnd-kit-sortable-tree": "^0.1.73",
     "formidable": "^3.5.1",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.debounce": "^4.0.8",
     "lodash.get": "^4.4.2",
+    "lodash.merge": "^4.6.2",
     "lodash.range": "^3.2.0",
     "lodash.set": "^4.3.2",
     "lodash.unset": "^4.5.2",
@@ -116,16 +119,21 @@
     "next-connect": "^1.0.0-next.3",
     "next-themes": "^0.3.0",
     "nextjs-toploader": "^1.6.6",
+    "nprogress": "^0.2.0",
     "tailwind-merge": "^2.3.0",
     "util": "^0.12.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@premieroctet/next-admin-json-schema": "workspace:*",
     "@testing-library/react": "^14.1.2",
     "@types/body-parser": "^1.19.2",
     "@types/jest": "^29.5.1",
     "@types/json-schema": "^7.0.11",
+    "@types/lodash.clonedeep": "^4.5.9",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/lodash.get": "^4.4.9",
+    "@types/lodash.merge": "^4.6.9",
     "@types/lodash.range": "^3.2.7",
     "@types/lodash.set": "^4.3.9",
     "@types/lodash.unset": "^4.5.9",
@@ -146,7 +154,6 @@
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",
-    "tsup": "^6.7.0",
     "typescript": "^5.1.6"
   },
   "optionalDependencies": {

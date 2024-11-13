@@ -2,7 +2,6 @@ import { {{#isTypescript}} AdminComponentProps,{{/isTypescript}} NextAdmin } fro
 import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 {{#isTypescript}}import { GetServerSideProps } from "next";{{/isTypescript}}
 import prisma from "{{prismaClientPath}}";
-import schema from "{{jsonSchemaPath}}";
 import options from "{{optionsPath}}";
  
 export default function Admin(props{{#isTypescript}}: AdminComponentProps{{/isTypescript}}) {
@@ -19,7 +18,6 @@ export const getServerSideProps{{#isTypescript}}: GetServerSideProps{{/isTypescr
     basePath: "{{pageBasePath}}",
     apiBasePath: "{{apiBasePath}}",
     prisma,
-    schema,
     options,
     req,
   });

@@ -11,7 +11,7 @@ import {
   toggleMark,
 } from "./utils";
 
-type BaseProps = {
+interface BaseProps {
   className?: string;
 }
 

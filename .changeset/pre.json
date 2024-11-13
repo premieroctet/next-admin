@@ -1,0 +1,24 @@
+{
+  "mode": "exit",
+  "tag": "rc",
+  "initialVersions": {
+    "docs": "0.0.0",
+    "example": "0.0.0",
+    "@premieroctet/next-admin-cli": "0.0.4",
+    "eslint-config-custom": "0.0.0",
+    "@premieroctet/next-admin-generator-prisma": "0.0.0",
+    "@premieroctet/next-admin-json-schema": "0.0.0",
+    "@premieroctet/next-admin": "6.1.5",
+    "tsconfig": "0.0.0"
+  },
+  "changesets": [
+    "cool-meals-obey",
+    "fifty-chairs-travel",
+    "four-comics-deny",
+    "giant-terms-march",
+    "lemon-bears-attend",
+    "modern-shirts-kick",
+    "nasty-clouds-deny",
+    "sour-garlics-dress"
+  ]
+}

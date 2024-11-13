@@ -17,6 +17,7 @@ import {
   getFormValuesFromFormData,
   getResourceFromParams,
   getResources,
+  globalSchema,
 } from "./utils/server";
 
 export const createHandler = <P extends string = "nextadmin">({
@@ -25,7 +26,6 @@ export const createHandler = <P extends string = "nextadmin">({
   prisma,
   paramKey = "nextadmin" as P,
   onRequest,
-  schema,
 }: CreateAppHandlerParams<P>) => {
   const router = createEdgeRouter<NextRequest, RequestContext<P>>();
   const resources = getResources(options);
@@ -169,7 +169,7 @@ export const createHandler = <P extends string = "nextadmin">({
           body: transformedBody ?? body,
           id,
           options,
-          schema,
+          schema: globalSchema,
         });
 
         if (response.error) {

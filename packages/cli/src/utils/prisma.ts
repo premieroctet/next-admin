@@ -11,9 +11,8 @@ export const updatePrismaSchema = async (schemaPath: string) => {
   if (!hasJsonSchemaProvider) {
     const updatedSchema = schema.replace(
       /(generator client {)/gm,
-      `generator jsonSchema {
-    provider              = "prisma-json-schema-generator"
-    includeRequiredFields = "true"
+      `generator nextAdmin {
+    provider              = "next-admin-generator-prisma"
   }\n$1`
     );
 

@@ -1,5 +1,6 @@
-import { $Enums, Prisma, PrismaClient } from "@prisma/client";
-import { cloneDeep } from "lodash";
+import type { NextAdminJsonSchemaData } from "@premieroctet/next-admin-json-schema";
+import { Prisma, PrismaClient } from "@prisma/client";
+import cloneDeep from "lodash.clonedeep";
 import { ITEMS_PER_PAGE } from "../config";
 import {
   EditOptions,
@@ -13,22 +14,25 @@ import {
   NextAdminOptions,
   Order,
   PrismaListRequest,
+  SchemaDefinitions,
+  SchemaProperty,
   Select,
 } from "../types";
 import { validateQuery } from "./advancedSearch";
+import { getDefinitionFromRef } from "./jsonSchema";
 import {
   enumValueForEnumType,
   findRelationInData,
   getModelIdProperty,
-  getPrismaModelForResource,
   getToStringForRelations,
+  globalSchema,
   modelHasIdField,
   transformData,
 } from "./server";
 import { capitalize, isScalar, uncapitalize } from "./tools";
 
 type CreateNestedWherePredicateParams<M extends ModelName> = {
-  field: Prisma.DMMF.Field;
+  field: NextAdminJsonSchemaData & { name: string };
   options?: NextAdminOptions;
   search: string;
   searchOptions?: Field<M>[];
@@ -43,23 +47,26 @@ const createNestedWherePredicate = <M extends ModelName>(
   }: CreateNestedWherePredicateParams<M>,
   acc: Record<string, any> = {}
 ) => {
-  const resource = getPrismaModelForResource(field.type as ModelName);
+  const resource = globalSchema.definitions[field.type as ModelName];
+  const resourceProperties = resource.properties;
 
   acc[field.name] = {
     OR: searchOptions
       ?.map((searchOption) => {
         const [_, subFieldName, ...rest] = searchOption.toString().split(".");
-        const subField = resource?.fields.find(
-          ({ name }) => name === subFieldName
-        );
+        const subField =
+          resourceProperties[subFieldName as keyof typeof resourceProperties];
 
         if (!subField) {
           return null;
-        } else if (subField.kind === "scalar") {
-          if (subField.isList) {
+        } else if (subField.__nextadmin?.kind === "scalar") {
+          if (subField.__nextadmin?.isList) {
             let searchTerm: string | number = search;
 
-            if (subField.type !== "String" && !isNaN(Number(search))) {
+            if (
+              subField.__nextadmin?.type !== "String" &&
+              !isNaN(Number(search))
+            ) {
               searchTerm = Number(search);
             }
 
@@ -68,7 +75,7 @@ const createNestedWherePredicate = <M extends ModelName>(
             };
           }
 
-          if (subField.type === "String") {
+          if (subField.__nextadmin?.type === "String") {
             // @ts-ignore
             const mode = Prisma?.QueryMode
               ? { mode: Prisma.QueryMode.insensitive }
@@ -77,20 +84,20 @@ const createNestedWherePredicate = <M extends ModelName>(
               [subFieldName]: { contains: search, ...mode },
             };
           }
-          if (subField.type === "Int" && !isNaN(Number(search))) {
+          if (subField.__nextadmin?.type === "Int" && !isNaN(Number(search))) {
             return { [subFieldName]: Number(search) };
           }
-        } else if (subField.kind === "object") {
+        } else if (subField.__nextadmin?.kind === "object") {
           const predicate = createNestedWherePredicate({
-            field: subField,
+            field: { ...subField.__nextadmin, name: subFieldName },
             options,
             search,
             searchOptions: [[subFieldName, ...rest].join(".")] as Field<M>[],
           });
 
-          if (subField.isList) {
-            predicate[subField.name] = {
-              some: predicate[subField.name],
+          if (subField.__nextadmin?.isList) {
+            predicate[subFieldName] = {
+              some: predicate[subFieldName],
             };
           }
 
@@ -123,67 +130,75 @@ export const createWherePredicate = <M extends ModelName>({
   const searchFilter = search
     ? {
         OR: fieldsFiltered
-          ?.filter((field) => {
+          ?.filter(([, field]) => {
             return (
-              field.kind === "scalar" ||
-              field.kind === "enum" ||
-              field.kind === "object"
+              field?.__nextadmin?.kind === "scalar" ||
+              field?.__nextadmin?.kind === "enum" ||
+              field?.__nextadmin?.kind === "object"
             );
           })
-          .map((field) => {
-            if (field.kind === "object") {
+          .map(([name, field]) => {
+            const fieldNextAdmin = field?.__nextadmin;
+
+            if (fieldNextAdmin?.kind === "object") {
               return createNestedWherePredicate({
-                field,
+                field: { ...fieldNextAdmin, name },
                 options,
                 search,
                 searchOptions: (
                   options?.model?.[resource]?.list?.search as string[]
                 )?.filter((searchOption) =>
-                  searchOption?.toString().startsWith(field.name)
+                  searchOption?.toString().startsWith(name)
                 ) as Field<M>[],
               });
             }
 
-            if (field.kind === "enum") {
+            if (fieldNextAdmin?.kind === "enum" && fieldNextAdmin?.enum) {
+              const enumDefinition = getDefinitionFromRef(
+                globalSchema,
+                fieldNextAdmin.enum.$ref
+              );
               const enumValueForSearchTerm = enumValueForEnumType(
-                field.type,
+                enumDefinition,
                 search
               );
 
-              if (enumValueForSearchTerm) {
+              if (enumValueForSearchTerm && enumDefinition?.enum) {
                 return {
-                  [field.name]:
-                    // @ts-expect-error
-                    $Enums[field.type as keyof typeof $Enums][
-                      enumValueForSearchTerm.name
-                    ],
+                  [name]: enumDefinition.enum.find(
+                    (val) => val === enumValueForSearchTerm
+                  ),
                 };
               }
             }
 
-            if (field.kind === "scalar" && field.isList) {
-              if (field.type !== "String" && Number.isNaN(Number(search))) {
+            if (fieldNextAdmin?.kind === "scalar" && fieldNextAdmin?.isList) {
+              if (
+                fieldNextAdmin?.type !== "String" &&
+                Number.isNaN(Number(search))
+              ) {
                 return null;
               }
 
               return {
-                [field.name]: {
-                  has: field.type === "String" ? search : Number(search),
+                [name]: {
+                  has:
+                    fieldNextAdmin?.type === "String" ? search : Number(search),
                 },
               };
             }
 
-            if (field.type === "String") {
+            if (fieldNextAdmin?.type === "String") {
               // @ts-ignore
               const mode = Prisma?.QueryMode
                 ? { mode: Prisma.QueryMode.insensitive }
                 : {};
               return {
-                [field.name]: { contains: search, ...mode },
+                [name]: { contains: search, ...mode },
               };
             }
-            if (field.type === "Int" && !isNaN(Number(search))) {
-              return { [field.name]: Number(search) };
+            if (fieldNextAdmin?.type === "Int" && !isNaN(Number(search))) {
+              return { [name]: Number(search) };
             }
             return null;
           })
@@ -207,14 +222,19 @@ export const createWherePredicate = <M extends ModelName>({
 const getFieldsFiltered = <M extends ModelName>(
   resource: M,
   options?: NextAdminOptions
-): readonly Prisma.DMMF.Field[] => {
-  const model = getPrismaModelForResource(resource);
+): [string, SchemaProperty<M>[Field<M>]][] => {
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
+  const modelProperties = model.properties;
 
-  let fieldsFiltered = model?.fields.filter((field) => field.kind === "scalar");
+  let fieldsFiltered = Object.entries(modelProperties).filter(
+    ([, field]) => field.__nextadmin?.kind === "scalar"
+  );
   const list = options?.model?.[resource]?.list as ListOptions<M>;
   if (list) {
     fieldsFiltered = list?.search
-      ? model?.fields.filter(({ name }) =>
+      ? Object.entries(modelProperties).filter(([name]) =>
           (list.search as string[])?.some((search) => {
             const searchNameSplit = search?.toString().split(".");
 
@@ -224,7 +244,7 @@ const getFieldsFiltered = <M extends ModelName>(
       : fieldsFiltered;
   }
 
-  return fieldsFiltered as readonly Prisma.DMMF.Field[];
+  return fieldsFiltered as Array<[string, SchemaProperty<M>[Field<M>]]>;
 };
 
 const getWherePredicateFromQueryParams = (query: string) => {
@@ -237,7 +257,10 @@ const preparePrismaListRequest = <M extends ModelName>(
   options?: NextAdminOptions,
   skipFilters: boolean = false
 ): PrismaListRequest<M> => {
-  const model = getPrismaModelForResource(resource);
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
+  const modelProperties = model.properties;
   const search = searchParams.get("search") || "";
   const advancedSearch = searchParams.get("q") || "";
   let filtersParams: string[] = [];
@@ -270,30 +293,30 @@ const preparePrismaListRequest = <M extends ModelName>(
     (searchParams.get("sortDirection") as Prisma.SortOrder) ??
     fieldSort?.direction;
 
-  const modelFieldSortParam = model?.fields.find(
-    ({ name }) => name === sortParam
-  );
+  const modelFieldSortParam =
+    modelProperties[sortParam as keyof typeof modelProperties];
+  const modelFieldNextAdminData = modelFieldSortParam?.__nextadmin;
 
   if (orderValue in Prisma.SortOrder) {
     if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
       orderBy[sortParam] = orderValue;
-    } else if (modelFieldSortParam?.kind === "object") {
-      if (modelFieldSortParam.isList) {
-        orderBy[modelFieldSortParam.name as Field<M>] = {
+    } else if (modelFieldNextAdminData?.kind === "object") {
+      if (modelFieldNextAdminData.isList) {
+        orderBy[sortParam as Field<M>] = {
           _count: orderValue,
         };
       } else {
         const modelFieldSortProperty =
           options?.model?.[resource]?.list?.fields?.[
-            modelFieldSortParam.name as Field<M>
+            sortParam as Field<M>
             // @ts-expect-error
           ]?.sortBy;
 
         const resourceSortByField =
           modelFieldSortProperty ??
-          getModelIdProperty(modelFieldSortParam.type as ModelName);
+          getModelIdProperty(modelFieldNextAdminData.type as ModelName);
 
-        orderBy[modelFieldSortParam.name as Field<M>] = {
+        orderBy[sortParam as Field<M>] = {
           [resourceSortByField]: orderValue,
         };
       }
@@ -347,13 +370,20 @@ export const optionsFromResource = async ({
     ]?.relationshipSearchField;
 
   if (relationshipField) {
-    const targetModel = getPrismaModelForResource(args.resource);
-    const modelField = targetModel?.fields.find(
-      (field) => field.name === relationshipField
-    );
+    const targetModel = globalSchema.definitions[args.resource];
 
-    if (modelField && modelField.type !== "scalar") {
-      args.resource = modelField.type as ModelName;
+    if (!targetModel) {
+      throw new Error(`Model ${args.resource} not found in schema`);
+    }
+
+    const targetModelProperties = targetModel.properties;
+    const modelField =
+      targetModelProperties[
+        relationshipField as keyof typeof targetModelProperties
+      ];
+
+    if (modelField && modelField.__nextadmin?.type !== "scalar") {
+      args.resource = modelField.__nextadmin?.type as ModelName;
     } else {
       console.warn(
         "Used relationshipSearch on a scalar field, ignoring property"
@@ -457,8 +487,10 @@ export const mapDataList = ({
   "resource" | "options" | "context" | "appDir"
 > & { fetchData: any[] }) => {
   const { resource, options } = args;
-  const dmmfSchema = getPrismaModelForResource(resource);
-  const data = findRelationInData(fetchData, dmmfSchema?.fields);
+  const data = findRelationInData(
+    fetchData,
+    globalSchema.definitions[resource]
+  );
   const listFields = options?.model?.[resource]?.list?.fields ?? {};
   const originalData = cloneDeep(data);
   data.forEach((item, index) => {
@@ -537,37 +569,42 @@ export const selectPayloadForModel = <M extends ModelName>(
   options?: EditOptions<M> | ListOptions<M>,
   level: "scalar" | "object" = "scalar"
 ) => {
-  const model = getPrismaModelForResource(resource);
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
+  const properties = model.properties;
   const idProperty = getModelIdProperty(resource);
 
   const displayKeys = options?.display;
-  let selectedFields = model?.fields.reduce(
-    (acc, field) => {
+  let selectedFields = Object.entries(properties).reduce(
+    (acc, [name, field]) => {
+      const fieldNextAdmin = field.__nextadmin;
+
       if (
-        (displayKeys && displayKeys.includes(field.name as Field<M>)) ||
+        (displayKeys && displayKeys.includes(name as Field<M>)) ||
         !displayKeys
       ) {
-        if (field.kind === "object" && level === "object") {
-          acc[field.name] = {
+        if (fieldNextAdmin?.kind === "object" && level === "object") {
+          acc[name] = {
             select: selectPayloadForModel(
-              field.type as ModelName,
+              fieldNextAdmin.type as ModelName,
               {},
               "scalar"
             ),
           };
 
           const orderField = (options as EditOptions<M>)?.fields?.[
-            field.name as Field<M>
+            name as Field<M>
             // @ts-expect-error
           ]?.orderField;
 
           if (orderField) {
-            acc[field.name].orderBy = {
+            acc[name].orderBy = {
               [orderField]: "asc",
             };
           }
         } else {
-          acc[field.name] = true;
+          acc[name] = true;
         }
       }
       return acc;
@@ -582,7 +619,6 @@ export const getDataItem = async <M extends ModelName>({
   prisma,
   resource,
   options,
-
   resourceId,
   locale,
   isAppDir,
@@ -592,22 +628,22 @@ export const getDataItem = async <M extends ModelName>({
   isAppDir?: boolean;
   locale?: string;
   resource: M;
-
   resourceId: string | number;
 }) => {
-  const dmmfSchema = getPrismaModelForResource(resource);
   const edit = options?.model?.[resource]?.edit as EditOptions<typeof resource>;
   const idProperty = getModelIdProperty(resource);
   const select = selectPayloadForModel(resource, edit, "object");
+  const schemaResourceProperties =
+    globalSchema.definitions[resource].properties;
 
   Object.entries(select).forEach(([key, value]) => {
-    const fieldTypeDmmf = dmmfSchema?.fields.find(
-      (field) => field.name === key
-    )?.type;
+    const fieldType =
+      schemaResourceProperties[key as keyof typeof schemaResourceProperties]
+        ?.__nextadmin?.type;
 
-    if (fieldTypeDmmf && dmmfSchema) {
+    if (fieldType) {
       const relatedResourceOptions =
-        options?.model?.[fieldTypeDmmf as ModelName]?.list;
+        options?.model?.[fieldType as ModelName]?.list;
 
       if (
         // @ts-expect-error
@@ -615,13 +651,13 @@ export const getDataItem = async <M extends ModelName>({
       ) {
         if (!relatedResourceOptions?.display) {
           throw new Error(
-            `'table' display mode set for field '${key}', but no list display is setup for model ${fieldTypeDmmf}`
+            `'table' display mode set for field '${key}', but no list display is setup for model ${fieldType}`
           );
         }
 
         select[key] = {
           select: selectPayloadForModel(
-            fieldTypeDmmf as ModelName,
+            fieldType as ModelName,
             relatedResourceOptions as ListOptions<ModelName>,
             "object"
           ),
@@ -637,11 +673,11 @@ export const getDataItem = async <M extends ModelName>({
   });
   Object.entries(data).forEach(([key, value]) => {
     if (Array.isArray(value)) {
-      const fieldTypeDmmf = dmmfSchema?.fields.find(
-        (field) => field.name === key
-      )?.type;
+      const fieldType =
+        schemaResourceProperties[key as keyof typeof schemaResourceProperties]
+          ?.__nextadmin?.type;
 
-      if (fieldTypeDmmf && dmmfSchema) {
+      if (fieldType) {
         if (
           // @ts-expect-error
           edit?.fields?.[key as Field<ModelName>]?.display === "table"
@@ -651,44 +687,47 @@ export const getDataItem = async <M extends ModelName>({
             appDir: isAppDir,
             fetchData: value,
             options,
-            resource: fieldTypeDmmf as ModelName,
+            resource: fieldType as ModelName,
           });
         }
       }
     }
   });
+
   data = transformData(data, resource, edit ?? {}, options);
+
   return data;
 };
 
 type DeepIncludeRecord = Record<string, true | any>;
 
 const includeDataByDepth = <M extends ModelName>(
-  model: Prisma.DMMF.Model,
+  modelProperties: SchemaDefinitions[ModelName]["properties"],
   currentDepth: number,
   maxDepth: number
 ) => {
-  const include = model?.fields.reduce((acc, field) => {
-    if (field.kind === "object") {
-      /**
-       * We substract because, if the condition matches,
-       * we will have all the fields in the related model, which are
-       * counted in currentDepth + 1
-       */
-      if (currentDepth < maxDepth - 1) {
-        acc[field.name] = {
-          include: includeDataByDepth(
-            getPrismaModelForResource(field.type as M)!,
-            currentDepth + 1,
-            maxDepth
-          ),
-        };
-      } else {
-        acc[field.name] = true;
+  const include = Object.entries(modelProperties)?.reduce(
+    (acc, [name, field]) => {
+      if (field.__nextadmin?.kind === "object") {
+        /**
+         * We substract because, if the condition matches,
+         * we will have all the fields in the related model, which are
+         * counted in currentDepth + 1
+         */
+        if (currentDepth < maxDepth - 1) {
+          const nextModel =
+            globalSchema.definitions[field.__nextadmin.type as M].properties;
+          acc[name] = {
+            include: includeDataByDepth(nextModel, currentDepth + 1, maxDepth),
+          };
+        } else {
+          acc[name] = true;
+        }
       }
-    }
-    return acc;
-  }, {} as DeepIncludeRecord);
+      return acc;
+    },
+    {} as DeepIncludeRecord
+  );
 
   return include;
 };
@@ -711,9 +750,12 @@ export const getRawData = async <M extends ModelName>({
   resourceIds: Array<string | number>;
   maxDepth?: number;
 }): Promise<Model<M>[]> => {
-  const modelDMMF = getPrismaModelForResource(resource);
+  const model = globalSchema.definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
+  const modelProperties = model.properties;
 
-  const include = includeDataByDepth(modelDMMF!, 1, maxDepth);
+  const include = includeDataByDepth(modelProperties!, 1, maxDepth);
 
   // @ts-expect-error
   const data = await prisma[resource].findMany({
