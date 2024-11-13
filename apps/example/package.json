@@ -27,7 +27,7 @@
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
     "next": "^15.0.2",
-    "next-superjson": "^1.0.1",
+    "next-superjson": "^1.0.7",
     "next-superjson-plugin": "^0.6.3",
     "react": "^18.2.0",
     "react-datepicker": "^4.24.0",
