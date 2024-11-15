@@ -420,6 +420,10 @@ export type ListOptions<T extends ModelName> = {
    * define a set of Prisma filters that user can choose in list
    */
   filters?: FilterWrapper<T>[];
+  /**
+   * define a set of Prisma filters that are always active in list
+   */
+  where?: Filter<T>[];
 };
 
 export type SubmitResourceResponse =

@@ -308,7 +308,10 @@ const preparePrismaListRequest = <M extends ModelName>(
     resource,
     options,
     search,
-    otherFilters: fieldFilters,
+    otherFilters: [
+      ...fieldFilters ?? [],
+      ...list?.where ?? []
+    ],
     advancedSearch,
   });
 
