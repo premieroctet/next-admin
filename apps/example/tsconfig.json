@@ -8,7 +8,8 @@
     "moduleResolution": "Bundler",
     "declaration": false,
     "declarationMap": false,
-    "composite": false
+    "composite": false,
+    "resolveJsonModule": true
   },
   "extends": "tsconfig/nextjs.json",
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],

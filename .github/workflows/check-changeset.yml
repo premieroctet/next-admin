@@ -18,6 +18,6 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
       - name: Check for changeset
-        run: yarn changeset status
+        run: pnpm changeset status

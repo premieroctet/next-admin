@@ -9,7 +9,6 @@ import { formatSearchFields, getParamsFromUrl } from "./utils/server";
 // Router
 export const getNextAdminProps = async ({
   prisma,
-  schema,
   basePath,
   apiBasePath,
   options,
@@ -24,7 +23,6 @@ export const getNextAdminProps = async ({
   const props = await getPropsFromParams({
     options,
     prisma,
-    schema,
     basePath,
     apiBasePath,
     searchParams: requestOptions,

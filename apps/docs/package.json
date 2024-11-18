@@ -6,15 +6,15 @@
     "dev": "next dev --port 3001",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "clean": "rm -rf .next"
   },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
-    "@premieroctet/next-admin": "6.1.8-beta.0",
     "clsx": "^2.1.0",
     "framer-motion": "^11.0.8",
     "mini-svg-data-uri": "^1.4.4",
-    "next": "^13.1.1",
+    "next": "^15.0.3",
     "nextra": "^2.13.2",
     "nextra-theme-docs": "^2.13.2",
     "react": "^18.2.0",
@@ -22,7 +22,6 @@
     "tailwind-merge": "^2.2.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.0.0",
     "@types/node": "^17.0.12",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.0",
@@ -30,8 +29,8 @@
     "eslint": "7.32.0",
     "eslint-config-custom": "workspace:*",
     "postcss": "^8",
-    "tailwindcss": "^3.3.0",
+    "tailwindcss": "^3.4.14",
     "tsconfig": "workspace:*",
-    "typescript": "^4.5.3"
+    "typescript": "^5.6.3"
   }
 }

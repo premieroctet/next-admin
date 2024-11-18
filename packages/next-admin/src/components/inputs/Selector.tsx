@@ -1,5 +1,5 @@
 import { Transition, TransitionChild } from "@headlessui/react";
-import debounce from "lodash/debounce";
+import debounce from "lodash.debounce";
 import {
   ChangeEvent,
   createRef,

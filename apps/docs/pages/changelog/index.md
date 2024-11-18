@@ -1,5 +1,53 @@
 # @premieroctet/next-admin
 
+## 7.0.0
+
+### Major Changes
+
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): feat: add custom generator ([#414](https://github.com/premieroctet/next-admin/issues/414))
+
+### Patch Changes
+
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Fix generator
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Explictly install lodash.debounce
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Merge main
+
+## 7.0.0-rc.4
+
+### Patch Changes
+
+- Explictly install lodash.debounce
+
+## 7.0.0-rc.3
+
+### Patch Changes
+
+- Fix generator
+
+## 7.0.0-rc.1
+
+### Patch Changes
+
+- [6e060f2](https://github.com/premieroctet/next-admin/commit/6e060f2): Merge main
+
+## 7.0.0-rc.0
+
+### Major Changes
+
+- [1fa56bc](https://github.com/premieroctet/next-admin/commit/1fa56bc): feat: add custom generator ([#414](https://github.com/premieroctet/next-admin/issues/414))
+
+## 6.1.8
+
+### Patch Changes
+
+- [fa0b2af](https://github.com/premieroctet/next-admin/commit/fa0b2af118ba7ec5922ba42904385e9fa7adc2f3): Support Next 15
+
+## 6.1.8-beta.0
+
+### Patch Changes
+
+- [ba36b45](https://github.com/premieroctet/next-admin/commit/ba36b456e4530ae52b96bd1087e21e732e743cc2): Support Next 15
+
 ## 6.1.7
 
 ### Patch Changes
