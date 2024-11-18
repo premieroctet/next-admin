@@ -3,7 +3,6 @@ import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import { GetServerSideProps } from "next";
 import { options } from "../../../pageRouterOptions";
 import { prisma } from "../../../prisma";
-import schema from "../../../prisma/json-schema/json-schema.json";
 import "../../../styles.css";
 
 const pageOptions = options;
@@ -28,7 +27,6 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) =>
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
     prisma,
-    schema,
     options: pageOptions,
     req,
   });

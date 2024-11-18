@@ -1,12 +1,12 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { JSONSchema7 } from "json-schema";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
+import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 
-declare type JSONSchema7Definition = JSONSchema7 & {
+declare type JSONSchema7Definition = NextAdminJSONSchema & {
   relation?: ModelName;
 };
 
@@ -329,6 +329,9 @@ export type Handler<
       type: string | null;
     },
     context: {
+      /**
+       * the resource ID if it exists, otherwise undefined
+      */
       resourceId: string | number | undefined;
     }
   ) => Promise<string>;
@@ -425,6 +428,10 @@ export type ListOptions<T extends ModelName> = {
    * define a set of Prisma filters that user can choose in list
    */
   filters?: FilterWrapper<T>[];
+  /**
+   * define a set of Prisma filters that are always active in list
+   */
+  where?: Filter<T>[];
 };
 
 export type SubmitResourceResponse =
@@ -720,14 +727,14 @@ export type NextAdminOptions = {
 /** Type for Schema */
 
 export type SchemaProperty<M extends ModelName> = {
-  [P in Field<M>]?: JSONSchema7 & {
+  [P in Field<M>]?: NextAdminJSONSchema & {
     items?: JSONSchema7Definition;
     relation?: ModelName;
   };
 };
 
 export type SchemaModel<M extends ModelName> = Partial<
-  Omit<JSONSchema7, "properties">
+  Omit<NextAdminJSONSchema, "properties">
 > & {
   properties: SchemaProperty<M>;
 };
@@ -736,7 +743,7 @@ export type SchemaDefinitions = {
   [M in ModelName]: SchemaModel<M>;
 };
 
-export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
+export type Schema = Partial<Omit<NextAdminJSONSchema, "definitions">> & {
   definitions: SchemaDefinitions;
 };
 
@@ -820,7 +827,7 @@ export type AdminUser = {
 export type AdminComponentProps = {
   basePath: string;
   apiBasePath: string;
-  schema?: Schema;
+  schema: Schema;
   data?: ListData<ModelName>;
   resource?: ModelName;
   slug?: string;
@@ -835,7 +842,6 @@ export type AdminComponentProps = {
   validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
-  dmmfSchema?: readonly Prisma.DMMF.Field[];
   isAppDir?: boolean;
   locale?: string;
   /**
@@ -882,7 +888,7 @@ export type MainLayoutProps = Pick<
   | "externalLinks"
   | "options"
   | "resourcesIdProperty"
-  | "dmmfSchema"
+  | "schema"
 >;
 
 export type CustomUIProps = {
@@ -991,10 +997,14 @@ export const colorSchemes = ["light", "dark", "system"];
 export type ColorScheme = (typeof colorSchemes)[number];
 export type BasicColorScheme = Exclude<ColorScheme, "system">;
 
-export type PageProps = Readonly<{
+export type PageProps = {
   params: { [key: string]: string[] | string };
   searchParams: { [key: string]: string | string[] | undefined } | undefined;
-}>;
+};
+
+export type PromisePageProps = {
+  [key in keyof PageProps]: Promise<PageProps[key]>;
+}
 
 export type GetNextAdminPropsParams = {
   /**
@@ -1019,10 +1029,6 @@ export type GetNextAdminPropsParams = {
    */
   options?: NextAdminOptions;
   /**
-   * `schema` is an object that represents the JSON schema of your Prisma schema.
-   */
-  schema: any;
-  /**
    * `prisma` is an instance of PrismaClient.
    */
   prisma: PrismaClient;
@@ -1045,7 +1051,7 @@ export type GetMainLayoutPropsParams = Omit<
 >;
 
 export type RequestContext<P extends string> = {
-  params: Record<P, string[]>;
+  params: Promise<Record<P, string[]>>;
 };
 
 export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
@@ -1081,16 +1087,11 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    * @default "nextadmin"
    */
   paramKey?: P;
-  /**
-   * Generated JSON schema from Prisma
-   */
-  schema: any;
 };
 
 export type FormProps = {
   data: any;
-  schema: any;
-  dmmfSchema: readonly Prisma.DMMF.Field[];
+  schema: SchemaDefinitions[ModelName];
   resource: ModelName;
   slug?: string;
   validation?: PropertyValidationError[];

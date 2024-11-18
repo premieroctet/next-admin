@@ -13,9 +13,9 @@ jobs:
       - name: Enable corepack
         run: corepack enable
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
       - name: Reset database
         env:
           POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
           POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
-        run: yarn reset-database
+        run: pnpm reset-database

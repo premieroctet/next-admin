@@ -1,0 +1,48 @@
+{
+  "name": "@premieroctet/next-admin-generator-prisma",
+  "version": "0.0.1",
+  "description": "Prisma generator for Next-Admin",
+  "bin": "dist/index.js",
+  "main": "dist/index.js",
+  "keywords": [
+    "next.js",
+    "prisma",
+    "admin",
+    "dashboard",
+    "react",
+    "typescript"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/premieroctet/next-admin.git",
+    "directory": "packages/generator-prisma"
+  },
+  "bugs": {
+    "url": "https://github.com/premieroctet/next-admin/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/premieroctet/next-admin/blob/main/LICENSE"
+    }
+  ],
+  "scripts": {
+    "build": "tsc && pnpm install",
+    "dev": "tsc -w",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@premieroctet/next-admin-json-schema": "workspace:^",
+    "@prisma/generator-helper": "^5.20.0",
+    "@prisma/internals": "^5.20.0",
+    "prisma-json-schema-generator": "5.1.5"
+  },
+  "devDependencies": {
+    "@types/json-schema": "^7.0.15",
+    "eslint": "^7.32.0",
+    "eslint-config-custom": "workspace:*",
+    "tsconfig": "workspace:*",
+    "typescript": "^5.6.2"
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin-cli",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "CLI for Next-Admin, an admin dashboard for Next.js applications.",
   "bin": "dist/index.js",
   "keywords": [
@@ -29,7 +29,8 @@
     "build": "tsx scripts/build.ts",
     "dev": "tsx scripts/dev.ts",
     "lint": "eslint \"**/*.{ts,tsx}\"",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
   },
   "dependencies": {
     "@inquirer/prompts": "^5.5.0",

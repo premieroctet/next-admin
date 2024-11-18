@@ -2,7 +2,7 @@
 import { EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import clsx from "clsx";
-import debounce from "lodash/debounce";
+import debounce from "lodash.debounce";
 import { ChangeEvent, useEffect, useState, useTransition } from "react";
 import { ITEMS_PER_PAGE } from "../config";
 import ClientActionDialogProvider from "../context/ClientActionDialogContext";
@@ -271,11 +271,9 @@ function List({
                   }}
                 >
                   <SelectTrigger className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle max-h-[36px] max-w-[100px]">
-                    <SelectValue asChild>
                       <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
                         {pageSize}
                       </span>
-                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={"10"}>10</SelectItem>

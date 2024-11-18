@@ -1,5 +1,5 @@
 import { Prisma } from "@prisma/client";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash.clonedeep";
 import {
   AdminComponentProps,
   EditOptions,
@@ -17,11 +17,11 @@ import {
   applyVisiblePropertiesInSchema,
   getEnableToExecuteActions,
   getModelIdProperty,
-  getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
   getToStringForModel,
+  globalSchema,
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
@@ -35,7 +35,6 @@ export async function getPropsFromParams({
   params,
   searchParams,
   options,
-  schema,
   prisma,
   isAppDir = true,
   locale,
@@ -44,7 +43,7 @@ export async function getPropsFromParams({
   apiBasePath,
 }: GetNextAdminPropsParams): Promise<
   | AdminComponentProps
-  | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
+  | Omit<AdminComponentProps, "resource" | "action">
   | Pick<
       AdminComponentProps,
       | "pageComponent"
@@ -54,6 +53,7 @@ export async function getPropsFromParams({
       | "message"
       | "resources"
       | "error"
+      | "schema"
     >
 > {
   const {
@@ -84,6 +84,7 @@ export async function getPropsFromParams({
     resourcesIcons,
     externalLinks,
     locale,
+    schema: globalSchema,
   };
 
   if (!params) return defaultProps;
@@ -152,14 +153,12 @@ export async function getPropsFromParams({
         data,
         total,
         error: error ?? (searchParams?.error as string),
-        schema,
         actions: serializedActions,
       };
     }
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
 
-      const dmmfSchema = getPrismaModelForResource(resource);
       const edit = options?.model?.[resource]?.edit as EditOptions<
         typeof resource
       >;
@@ -168,7 +167,7 @@ export async function getPropsFromParams({
         resource,
         edit,
         options
-      )(cloneDeep(schema));
+      )(cloneDeep(globalSchema));
       const customInputs = isAppDir
         ? getCustomInputs(resource, options)
         : undefined;
@@ -211,7 +210,6 @@ export async function getPropsFromParams({
           data,
           slug,
           schema: deepCopySchema,
-          dmmfSchema: dmmfSchema?.fields,
           customInputs,
           actions: serializedActions,
         };
@@ -222,7 +220,6 @@ export async function getPropsFromParams({
           ...defaultProps,
           resource,
           schema: deepCopySchema,
-          dmmfSchema: dmmfSchema?.fields,
           customInputs,
         };
       }
@@ -248,7 +245,6 @@ export const getMainLayoutProps = ({
 
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
-  const dmmfSchema = getPrismaModelForResource(resource!);
   const resourcesIdProperty = resources!.reduce(
     (acc, resource) => {
       acc[resource] = getModelIdProperty(resource);
@@ -297,7 +293,7 @@ export const getMainLayoutProps = ({
     resourcesIcons,
     externalLinks: options?.externalLinks,
     options: extractSerializable(options, isAppDir),
-    dmmfSchema: dmmfSchema?.fields,
     resourcesIdProperty: resourcesIdProperty,
+    schema: globalSchema,
   };
 };
