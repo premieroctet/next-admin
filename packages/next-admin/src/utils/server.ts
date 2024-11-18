@@ -943,7 +943,10 @@ export const formattedFormData = async <M extends ModelName>(
             } else {
               try {
                 const uploadResult = await uploadHandler(
-                  ...(formData[propertyName] as unknown as UploadParameters)
+                  ...(formData[propertyName] as unknown as UploadParameters),
+                  {
+                    resourceId,
+                  }
                 );
                 if (typeof uploadResult !== "string") {
                   console.warn(

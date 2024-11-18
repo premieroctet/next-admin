@@ -448,8 +448,10 @@ When you define a field, use the field's name as the key and the following objec
           an async function that is used only for formats <code>file</code> and{" "}
           <code>data-url</code>. It takes a Buffer object and an information
           object containing <code>name</code> and <code>type</code> properties
-          as parameters and must return a string. It can be useful to upload a
-          file to a remote provider
+          as parameters and must return a string. It has <code>context</code> as
+          a parameter, which holds record information such as the resource ID,
+          which does not exist during record creation. It can be useful to
+          upload a file to a remote provider
         </>
       ),
     },

@@ -317,7 +317,9 @@ export type Handler<
   get?: (input: T) => any;
   /**
    * an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider.
-   * @param file
+   * @param buffer
+   * @param infos
+   * @param context - This object contains record information, such as the resource ID.
    * @returns
    */
   upload?: (
@@ -325,6 +327,12 @@ export type Handler<
     infos: {
       name: string;
       type: string | null;
+    },
+    context: {
+      /**
+       * the resource ID if it exists, otherwise undefined
+      */
+      resourceId: string | number | undefined;
     }
   ) => Promise<string>;
   /**
