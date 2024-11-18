@@ -35,11 +35,11 @@ export const options: NextAdminOptions = {
         ],
         search: ["name", "email", "role"],
         copy: ["email"],
-        where: [{
-          role: {
-            equals: "USER",
-          },
-        }],
+        // where: [{
+        //   role: {
+        //     equals: "USER",
+        //   },
+        // }],
         filters: [
           {
             name: "is Admin",

@@ -1,5 +1,5 @@
 ---
-"@premieroctet/next-admin": minor
+"@premieroctet/next-admin": patch
 ---
 
 Add where clause to model options
