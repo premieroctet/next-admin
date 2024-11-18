@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- [46a3dba](https://github.com/premieroctet/next-admin/commit/46a3dbab9b40f535b880fc28f66c7ab39df4feec): Add where clause to model options
+- [46a3dba](https://github.com/premieroctet/next-admin/commit/46a3dbab9b40f535b880fc28f66c7ab39df4feec): Add where clause to model options - Thanks to [didrikmunther](https://github.com/didrikmunther)
 - [9959cfd](https://github.com/premieroctet/next-admin/commit/9959cfdd666ba2789e2fa06855014deb1f35a3ba): When uploading, include record information - Thanks to [@huinalam](https://github.com/huinalam)
 
 ## 7.0.0
