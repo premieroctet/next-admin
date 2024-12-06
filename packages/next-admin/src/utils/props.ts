@@ -12,7 +12,7 @@ import {
   NextAdminOptions,
 } from "../types";
 import { getCustomInputs } from "./options";
-import { getDataItem, getMappedDataList } from "./prisma";
+import { getDataItem, getMappedDataList, mapModelFilters } from "./prisma";
 import {
   applyVisiblePropertiesInSchema,
   getEnableToExecuteActions,
@@ -129,6 +129,13 @@ export async function getPropsFromParams({
         context: { locale },
         appDir: isAppDir,
       });
+
+      if (options?.model?.[resource]?.list?.filters) {
+        // @ts-expect-error
+        options.model[resource].list.filters = await mapModelFilters(
+          options.model[resource].list.filters
+        );
+      }
 
       const dataIds = data.map(
         (item) => item[getModelIdProperty(resource)].value

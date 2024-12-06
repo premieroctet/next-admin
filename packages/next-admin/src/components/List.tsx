@@ -14,6 +14,7 @@ import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
+  FilterWrapper,
   ListData,
   ListDataItem,
   ModelIcon,
@@ -91,7 +92,8 @@ function List({
   const hasDeletePermission =
     !modelOptions?.permissions || modelOptions?.permissions?.includes("delete");
 
-  const filterOptions = modelOptions?.list?.filters;
+  const filterOptions = modelOptions?.list
+    ?.filters as FilterWrapper<ModelName>[];
   if (
     !(modelOptions?.list?.search && modelOptions?.list?.search?.length === 0)
   ) {
@@ -271,9 +273,9 @@ function List({
                   }}
                 >
                   <SelectTrigger className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle max-h-[36px] max-w-[100px]">
-                      <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
-                        {pageSize}
-                      </span>
+                    <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
+                      {pageSize}
+                    </span>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={"10"}>10</SelectItem>

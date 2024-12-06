@@ -277,8 +277,16 @@ The `filters` property allow you to define a set of Prisma filters that user can
         </>
       ),
     },
+    {
+      name: "group",
+      type: "String",
+      description:
+        "an id that will be used to give filters with the same group name a radio like behavior",
+    },
   ]}
 />
+
+It can also be an async function that returns the above type so that you can have a dynamic list of filters.
 
 #### `list.exports` property
 

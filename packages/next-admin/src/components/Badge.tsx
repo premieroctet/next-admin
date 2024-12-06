@@ -1,5 +1,5 @@
 import clsx from "clsx";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Checkbox from "./radix/Checkbox";
 
 type BadgeProps = {
@@ -14,6 +14,10 @@ const Badge = ({ isActive, onClick, ...props }: BadgeProps) => {
     setActive((active) => !active);
     onClick?.(e);
   };
+
+  useEffect(() => {
+    setActive(isActive);
+  }, [isActive]);
 
   return (
     <div
