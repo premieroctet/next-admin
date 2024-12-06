@@ -38,20 +38,39 @@ const Filters = <T extends ModelName>({
   }, [query?.filters]);
 
   const toggleFilter = (name: string) => {
+    const toggledFilter = filters?.find((filter) => filter.name === name);
+
+    if (!toggledFilter) return;
+
+    const newFiltersNames = currentFilters
+      ?.map((filter) => {
+        let isActive = filter.active;
+
+        if (filter.name === name) {
+          isActive = !filter.active;
+        }
+
+        if (
+          filter.name !== toggledFilter.name &&
+          filter.group === toggledFilter.group
+        ) {
+          isActive = false;
+        }
+
+        return {
+          ...filter,
+          active: isActive,
+        };
+      })
+      .filter((filter) => filter.active)
+      .map((filter) => filter.name);
+
     router?.push({
       pathname: location.pathname,
       query: {
         ...query,
         page: 1,
-        filters: JSON.stringify(
-          currentFilters
-            ?.map((filter) => ({
-              ...filter,
-              active: filter.name === name ? !filter.active : filter.active,
-            }))
-            .filter((filter) => filter.active)
-            .map((filter) => filter.name)
-        ),
+        filters: JSON.stringify(newFiltersNames),
       },
     });
   };
