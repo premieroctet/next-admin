@@ -331,7 +331,7 @@ export type Handler<
     context: {
       /**
        * the resource ID if it exists, otherwise undefined
-      */
+       */
       resourceId: string | number | undefined;
     }
   ) => Promise<string>;
@@ -838,19 +838,22 @@ export type AdminComponentProps = {
     type: "success" | "info";
     content: string;
   };
-  error?: string;
+  error?: string | null;
   validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
   isAppDir?: boolean;
-  locale?: string;
+  locale?: string | null;
   /**
    * Mandatory for page router
    */
   options?: NextAdminOptions;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
   resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
-  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  customInputs?: Record<
+    Field<ModelName>,
+    React.ReactElement | undefined
+  > | null;
   resourcesIdProperty?: Record<ModelName, string>;
   /**
    * App router only
@@ -1004,7 +1007,7 @@ export type PageProps = {
 
 export type PromisePageProps = {
   [key in keyof PageProps]: Promise<PageProps[key]>;
-}
+};
 
 export type GetNextAdminPropsParams = {
   /**
@@ -1096,7 +1099,10 @@ export type FormProps = {
   slug?: string;
   validation?: PropertyValidationError[];
   title: string;
-  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  customInputs?: Record<
+    Field<ModelName>,
+    React.ReactElement<CustomInputProps> | undefined
+  >;
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;

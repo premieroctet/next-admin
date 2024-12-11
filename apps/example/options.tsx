@@ -24,22 +24,9 @@ export const options: NextAdminOptions = {
           format: "CSV",
           url: "/api/users/export",
         },
-        display: [
-          "id",
-          "name",
-          "email",
-          "posts",
-          "role",
-          // "birthDate",
-          // "profile",
-        ],
+        display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email", "role"],
         copy: ["email"],
-        // where: [{
-        //   role: {
-        //     equals: "USER",
-        //   },
-        // }],
         filters: [
           {
             name: "is Admin",

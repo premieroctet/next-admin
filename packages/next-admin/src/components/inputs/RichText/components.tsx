@@ -18,7 +18,7 @@ interface BaseProps {
 type ButtonProps = PropsWithChildren<
   {
     format: string;
-    icon: React.ReactElement;
+    icon: React.ReactElement<React.SVGAttributes<SVGSVGElement>>;
     title?: string;
     disabled?: boolean;
   } & BaseProps
