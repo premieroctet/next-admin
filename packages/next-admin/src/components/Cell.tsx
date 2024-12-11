@@ -3,18 +3,18 @@ import React, { ReactNode } from "react";
 import clsx from "clsx";
 import Link from "next/link";
 import { useConfig } from "../context/ConfigContext";
-import { ListDataFieldValue } from "../types";
+import { ListDataFieldValue, NextAdminContext } from "../types";
 import { getDisplayedValue } from "../utils/tools";
 import Clipboard from "./common/Clipboard";
 
 type Props = {
   cell: ListDataFieldValue;
-  formatter?: (cell: any) => ReactNode;
+  formatter?: (cell: any, context?: NextAdminContext) => ReactNode;
   copyable?: boolean;
 };
 
 export default function Cell({ cell, formatter, copyable }: Props) {
-  const { basePath } = useConfig();
+  const { basePath, nextAdminContext } = useConfig();
 
   let cellValue = cell?.__nextadmin_formatted;
 
@@ -34,7 +34,7 @@ export default function Cell({ cell, formatter, copyable }: Props) {
       );
     } else if (typeof cell === "object" && !isReactNode(cellValue)) {
       if (formatter) {
-        cellValue = formatter(cell?.value);
+        cellValue = formatter(cell?.value, nextAdminContext);
       }
 
       if (cell.type === "link") {

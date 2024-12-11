@@ -352,110 +352,114 @@ export const transformData = <M extends ModelName>(
 
   const schemaProperties = model.properties;
 
-  return Object.keys(data).reduce(async (accP, key) => {
-    const acc = await accP;
-    const field = schemaProperties[key as keyof typeof schemaProperties];
-    const fieldKind = field?.__nextadmin?.kind;
-    const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
-    const explicitManyToManyRelationField =
-      // @ts-expect-error
-      editOptions?.fields?.[key as Field<M>]?.relationshipSearchField;
+  return Object.keys(data).reduce(
+    async (accP, key) => {
+      const acc = await accP;
+      const field = schemaProperties[key as keyof typeof schemaProperties];
+      const fieldKind = field?.__nextadmin?.kind;
+      const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
+      const explicitManyToManyRelationField =
+        // @ts-expect-error
+        editOptions?.fields?.[key as Field<M>]?.relationshipSearchField;
 
-    if (get) {
-      acc[key] = await get(data[key]);
-    } else if (fieldKind === "enum") {
-      const value = data[key];
-      if (Array.isArray(value)) {
-        acc[key] = value.map((item) => {
-          return { label: item, value: item };
-        });
-      } else {
-        acc[key] = value ? { label: value, value } : null;
-      }
-    } else if (fieldKind === "object") {
-      const modelRelation = field?.__nextadmin?.type as ModelName;
-      const modelRelationIdField = getModelIdProperty(modelRelation);
-      let deepRelationModel:
-        | SchemaProperty<ModelName>[Field<ModelName>]
-        | undefined;
-      let deepModelRelationIdField: string;
+      if (get) {
+        acc[key] = await get(data[key]);
+      } else if (fieldKind === "enum") {
+        const value = data[key];
+        if (Array.isArray(value)) {
+          acc[key] = value.map((item) => {
+            return { label: item, value: item };
+          });
+        } else {
+          acc[key] = value ? { label: value, value } : null;
+        }
+      } else if (fieldKind === "object") {
+        const modelRelation = field?.__nextadmin?.type as ModelName;
+        const modelRelationIdField = getModelIdProperty(modelRelation);
+        let deepRelationModel:
+          | SchemaProperty<ModelName>[Field<ModelName>]
+          | undefined;
+        let deepModelRelationIdField: string;
 
-      if (explicitManyToManyRelationField) {
-        deepRelationModel = getDeepRelationModel(
-          modelRelation,
+        if (explicitManyToManyRelationField) {
+          deepRelationModel = getDeepRelationModel(
+            modelRelation,
+            explicitManyToManyRelationField
+          );
+          deepModelRelationIdField = getModelIdProperty(
+            deepRelationModel?.__nextadmin?.type as ModelName
+          );
+        }
+
+        const toStringForRelations = getToStringForRelations(
+          modelName,
+          key as Field<M>,
           explicitManyToManyRelationField
+            ? (deepRelationModel?.__nextadmin?.type as ModelName)
+            : modelRelation,
+          options
         );
-        deepModelRelationIdField = getModelIdProperty(
-          deepRelationModel?.__nextadmin?.type as ModelName
-        );
-      }
 
-      const toStringForRelations = getToStringForRelations(
-        modelName,
-        key as Field<M>,
-        explicitManyToManyRelationField
-          ? (deepRelationModel?.__nextadmin?.type as ModelName)
-          : modelRelation,
-        options
-      );
-
-      if (Array.isArray(data[key])) {
-        acc[key] = data[key].map((item: any) => {
-          if (
-            !!editOptions?.fields?.[key as Field<M>] &&
-            "display" in editOptions.fields[key as Field<M>]! &&
-            // @ts-expect-error
-            editOptions.fields[key as keyof ObjectField<M>]!.display === "table"
-          ) {
-            return {
-              data: item,
-              value: item[modelRelationIdField].value,
-            };
-          }
-
-          return {
-            label: explicitManyToManyRelationField
-              ? toStringForRelations(item[explicitManyToManyRelationField])
-              : toStringForRelations(item),
-            value: explicitManyToManyRelationField
-              ? item[explicitManyToManyRelationField]?.[
-                  deepModelRelationIdField
-                ]
-              : item[modelRelationIdField],
-            data: {
-              modelName: deepRelationModel?.__nextadmin?.type as ModelName,
-            },
-          };
-        });
-      } else {
-        acc[key] = data[key]
-          ? {
-              label: toStringForRelations(data[key]),
-              value: data[key][modelRelationIdField],
+        if (Array.isArray(data[key])) {
+          acc[key] = data[key].map((item: any) => {
+            if (
+              !!editOptions?.fields?.[key as Field<M>] &&
+              "display" in editOptions.fields[key as Field<M>]! &&
+              // @ts-expect-error
+              editOptions.fields[key as keyof ObjectField<M>]!.display ===
+                "table"
+            ) {
+              return {
+                data: item,
+                value: item[modelRelationIdField].value,
+              };
             }
-          : null;
-      }
-    } else if (
-      field?.__nextadmin?.isList &&
-      field.__nextadmin?.kind === "scalar"
-    ) {
-      acc[key] = data[key];
-    } else {
-      const fieldTypes = field?.__nextadmin?.type;
-      if (fieldTypes === "DateTime") {
-        acc[key] = data[key] ? data[key].toISOString() : null;
-      } else if (fieldTypes === "Json") {
-        acc[key] = data[key] ? JSON.stringify(data[key]) : null;
-      } else if (fieldTypes === "Decimal") {
-        acc[key] = data[key] ? Number(data[key]) : null;
-      } else if (fieldTypes === "BigInt") {
-        acc[key] = data[key] ? BigInt(data[key]).toString() : null;
+
+            return {
+              label: explicitManyToManyRelationField
+                ? toStringForRelations(item[explicitManyToManyRelationField])
+                : toStringForRelations(item),
+              value: explicitManyToManyRelationField
+                ? item[explicitManyToManyRelationField]?.[
+                    deepModelRelationIdField
+                  ]
+                : item[modelRelationIdField],
+              data: {
+                modelName: deepRelationModel?.__nextadmin?.type as ModelName,
+              },
+            };
+          });
+        } else {
+          acc[key] = data[key]
+            ? {
+                label: toStringForRelations(data[key]),
+                value: data[key][modelRelationIdField],
+              }
+            : null;
+        }
+      } else if (
+        field?.__nextadmin?.isList &&
+        field.__nextadmin?.kind === "scalar"
+      ) {
+        acc[key] = data[key];
       } else {
-        acc[key] = data[key] ? data[key] : null;
+        const fieldTypes = field?.__nextadmin?.type;
+        if (fieldTypes === "DateTime") {
+          acc[key] = data[key] ? data[key].toISOString() : null;
+        } else if (fieldTypes === "Json") {
+          acc[key] = data[key] ? JSON.stringify(data[key]) : null;
+        } else if (fieldTypes === "Decimal") {
+          acc[key] = data[key] ? Number(data[key]) : null;
+        } else if (fieldTypes === "BigInt") {
+          acc[key] = data[key] ? BigInt(data[key]).toString() : null;
+        } else {
+          acc[key] = data[key] ? data[key] : null;
+        }
       }
-    }
-    return acc;
-  }, Promise.resolve({}) as any);
+      return acc;
+    },
+    Promise.resolve({}) as any
+  );
 };
 
 /**
@@ -1136,11 +1140,16 @@ export const addCustomProperties =
         ] = {
           type: "string",
           description: fieldOptions?.helperText ?? "",
-          format: fieldOptions?.format,
         };
 
         if (fieldOptions.required) {
           schema.definitions[resource].required?.push(property);
+        }
+
+        if (fieldOptions.format) {
+          schema.definitions[resource].properties[
+            property as Field<typeof resource>
+          ]!.format = fieldOptions.format;
         }
       }
     });

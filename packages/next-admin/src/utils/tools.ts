@@ -55,7 +55,7 @@ export const extractSerializable = <T>(obj: T, isAppDir?: boolean): T => {
   } else if (isScalar(obj)) {
     return obj;
   } else {
-    return undefined as unknown as T;
+    return null as unknown as T;
   }
 };
 

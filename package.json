@@ -44,8 +44,9 @@
     "url": "https://github.com/premieroctet/next-admin.git"
   },
   "homepage": "https://next-admin.js.org",
-  "overrides": {
-    "@types/react": "^18.2.0",
-    "@types/react-dom": "^18.2.0"
+  "resolutions": {
+    "next": "15.1.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
   }
 }

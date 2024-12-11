@@ -2,10 +2,11 @@ import {
   BoltIcon,
   CodeBracketIcon,
   PlayCircleIcon,
-} from '@heroicons/react/24/outline'
-import { Callout, Card, Cards } from 'nextra/components'
+} from "@heroicons/react/24/outline";
+import { Callout, Card, Cards } from "nextra/components";
 
 # 🧞 Next Admin
+
 <Callout type="default">
   This documentation covers an older version of Next Admin. If you are using the
   latest version (`>=5.0.0` and above), please refer to the [current
@@ -13,15 +14,26 @@ import { Callout, Card, Cards } from 'nextra/components'
 </Callout>
 
 <Cards>
-  <Card icon={<BoltIcon/>} title="Installation" href="/v4/docs/getting-started" />
-  <Card icon={<PlayCircleIcon/>} title="Live demo" href="https://next-admin-po.vercel.app/admin" />
-  <Card icon={<CodeBracketIcon />} title="Source code" href="https://github.com/premieroctet/next-admin" />
+  <Cards.Card
+    icon={<BoltIcon />}
+    title="Installation"
+    href="/v4/docs/getting-started"
+  />
+  <Cards.Card
+    icon={<PlayCircleIcon />}
+    title="Live demo"
+    href="https://next-admin-po.vercel.app/admin"
+  />
+  <Cards.Card
+    icon={<CodeBracketIcon />}
+    title="Source code"
+    href="https://github.com/premieroctet/next-admin"
+  />
 </Cards>
 
 ###### `next-admin` is a library built on top of [Prisma](https://www.prisma.io/) and [Next.js](https://nextjs.org/) that allows you to easily manage and visualize your Prisma database in a nice graphical user interface (GUI).
 
 Get started by following the [installation guide](/v4/docs/getting-started) or check out the [live demo](https://next-admin-po.vercel.app/admin).
-
 
 ![Hello](/screenshot.png)
 

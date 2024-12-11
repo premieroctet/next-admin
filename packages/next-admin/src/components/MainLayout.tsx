@@ -42,6 +42,7 @@ export const MainLayout = ({
       resource={resource}
       resourcesIdProperty={resourcesIdProperty!}
       schema={schema}
+      nextAdminContext={{ locale }}
     >
       <I18nProvider translations={mergedTranslations}>
         <ThemeProvider

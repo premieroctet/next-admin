@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 import type { ChangeEvent, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
 import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
+import type React from "react";
 
 declare type JSONSchema7Definition = NextAdminJSONSchema & {
   relation?: ModelName;
@@ -258,7 +259,7 @@ export type EditFieldsOptions<T extends ModelName> = {
     /**
      * a React Element that should receive [`CustomInputProps`](#custominputprops). For App Router, this element must be a client component. Don't set any props, they will be passed automatically to the component.
      */
-    input?: React.ReactElement;
+    input?: React.ReactElement<CustomInputProps>;
     /**
      * a helper text that is displayed underneath the input.
      */
@@ -331,7 +332,7 @@ export type Handler<
     context: {
       /**
        * the resource ID if it exists, otherwise undefined
-      */
+       */
       resourceId: string | number | undefined;
     }
   ) => Promise<string>;
@@ -534,7 +535,7 @@ export type EditOptions<T extends ModelName> = {
 
 type CustomFieldsType = {
   [key: string]: {
-    input?: React.ReactElement;
+    input?: React.ReactElement<CustomInputProps>;
     tooltip?: string;
     format?: FormatOptions<any>;
     helperText?: string;
@@ -838,19 +839,22 @@ export type AdminComponentProps = {
     type: "success" | "info";
     content: string;
   };
-  error?: string;
+  error?: string | null;
   validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
   isAppDir?: boolean;
-  locale?: string;
+  locale?: string | null;
   /**
    * Mandatory for page router
    */
   options?: NextAdminOptions;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
   resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
-  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  customInputs?: Record<
+    Field<ModelName>,
+    React.ReactElement<CustomInputProps> | undefined
+  > | null;
   resourcesIdProperty?: Record<ModelName, string>;
   /**
    * App router only
@@ -892,7 +896,7 @@ export type MainLayoutProps = Pick<
 >;
 
 export type CustomUIProps = {
-  dashboard?: JSX.Element | (() => JSX.Element);
+  dashboard?: React.JSX.Element | (() => React.JSX.Element);
 };
 
 export type ActionFullParams = ActionParams & {
@@ -916,7 +920,7 @@ export type SubmitFormResult = {
 };
 
 export type NextAdminContext = {
-  locale?: string;
+  locale?: string | null;
   row?: any;
 };
 
@@ -1004,7 +1008,7 @@ export type PageProps = {
 
 export type PromisePageProps = {
   [key in keyof PageProps]: Promise<PageProps[key]>;
-}
+};
 
 export type GetNextAdminPropsParams = {
   /**
@@ -1096,7 +1100,10 @@ export type FormProps = {
   slug?: string;
   validation?: PropertyValidationError[];
   title: string;
-  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  customInputs?: Record<
+    Field<ModelName>,
+    React.ReactElement<CustomInputProps> | undefined
+  > | null;
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;

@@ -21,7 +21,9 @@ describe("extractSerializable", () => {
   });
   it("should return the object without function properties", () => {
     const obj = { f: () => {} };
-    expect(extractSerializable(obj)).toEqual({});
+    expect(extractSerializable(obj)).toEqual({
+      f: null,
+    });
   });
   it("should return the object with empty arrays and objects", () => {
     const obj = { a: [], b: {} };
@@ -29,7 +31,7 @@ describe("extractSerializable", () => {
   });
   it("should return the objet with null and undefined values", () => {
     const obj = { a: null, b: undefined };
-    expect(extractSerializable(obj)).toEqual({ a: null, b: undefined });
+    expect(extractSerializable(obj)).toEqual({ a: null, b: null });
   });
 });
 

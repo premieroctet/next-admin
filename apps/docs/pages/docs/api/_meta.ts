@@ -1,4 +1,4 @@
-{
+export default {
   "next-admin-component": {
     "title": "<NextAdmin/>"
   },

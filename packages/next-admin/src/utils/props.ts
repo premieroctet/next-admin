@@ -83,7 +83,7 @@ export async function getPropsFromParams({
     sidebar,
     resourcesIcons,
     externalLinks,
-    locale,
+    locale: locale ?? null,
     schema: globalSchema,
   };
 
@@ -152,7 +152,7 @@ export async function getPropsFromParams({
         resource,
         data,
         total,
-        error: error ?? (searchParams?.error as string),
+        error: error ?? (searchParams?.error as string) ?? null,
         actions: serializedActions,
       };
     }
@@ -168,9 +168,7 @@ export async function getPropsFromParams({
         edit,
         options
       )(cloneDeep(globalSchema));
-      const customInputs = isAppDir
-        ? getCustomInputs(resource, options)
-        : undefined;
+      const customInputs = isAppDir ? getCustomInputs(resource, options) : null;
 
       if (resourceId !== undefined) {
         const data = await getDataItem({

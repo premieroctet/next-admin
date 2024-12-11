@@ -25,7 +25,7 @@ export type SelectorProps = {
 export const Selector = forwardRef<HTMLDivElement, SelectorProps>(
   ({ open, name, onChange, options, selectedOptions }, ref) => {
     const currentQuery = useRef("");
-    const searchInput = createRef<HTMLInputElement>();
+    const searchInput = useRef<HTMLInputElement>(null);
     const { t } = useI18n();
     const {
       allOptions,
@@ -45,7 +45,6 @@ export const Selector = forwardRef<HTMLDivElement, SelectorProps>(
     });
 
     const containerRef = useRef<HTMLDivElement>(null);
-    useImperativeHandle(ref, () => containerRef.current!);
 
     useEffect(() => {
       if (open && searchInput.current) {
@@ -121,7 +120,12 @@ export const Selector = forwardRef<HTMLDivElement, SelectorProps>(
           leave="transition-all ease-linear"
           leaveFrom="opacity-100 translate-y-0"
           leaveTo="opacity-0 -translate-y-1"
-          ref={containerRef}
+          ref={(r) => {
+            containerRef.current = r as HTMLDivElement;
+            if (ref && typeof ref === "object") {
+              ref.current = r as HTMLDivElement;
+            }
+          }}
           onScroll={onScroll}
         >
           <div className="relative flex flex-col">
