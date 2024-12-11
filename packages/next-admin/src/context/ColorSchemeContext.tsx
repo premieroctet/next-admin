@@ -14,12 +14,14 @@ import {
 } from "react";
 import { BasicColorScheme, ColorScheme, colorSchemes } from "../types";
 
-const basicColorSchemeIcons: Record<BasicColorScheme | "system", JSX.Element> =
-  {
-    light: <SunIcon className="h-4 w-4" />,
-    dark: <MoonIcon className="h-4 w-4" />,
-    system: <ComputerDesktopIcon className="h-4 w-4" />,
-  };
+const basicColorSchemeIcons: Record<
+  BasicColorScheme | "system",
+  React.JSX.Element
+> = {
+  light: <SunIcon className="h-4 w-4" />,
+  dark: <MoonIcon className="h-4 w-4" />,
+  system: <ComputerDesktopIcon className="h-4 w-4" />,
+};
 
 type ColorSchemeContextType = {
   colorScheme: ColorScheme;
@@ -43,7 +45,7 @@ export const ColorSchemeProvider = ({ children }: ProviderProps) => {
   const { theme: colorScheme, setTheme: setColorScheme } = useTheme();
 
   const [colorSchemeIcon, setColorSchemeIcon] = useState<
-    JSX.Element | undefined
+    React.JSX.Element | undefined
   >(() => {
     return basicColorSchemeIcons[colorScheme!];
   });
