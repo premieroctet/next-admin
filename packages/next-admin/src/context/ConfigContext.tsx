@@ -1,6 +1,11 @@
 "use client";
 import React, { useContext, useMemo } from "react";
-import { ModelName, NextAdminOptions, Schema } from "../types";
+import {
+  ModelName,
+  NextAdminContext,
+  NextAdminOptions,
+  Schema,
+} from "../types";
 
 export type ConfigContextType = {
   options?: NextAdminOptions;
@@ -10,6 +15,7 @@ export type ConfigContextType = {
   resource?: ModelName;
   resourcesIdProperty: Record<ModelName, string> | null;
   schema: Schema;
+  nextAdminContext?: NextAdminContext;
 };
 
 const ConfigContext = React.createContext<ConfigContextType>(
@@ -25,6 +31,7 @@ type ProviderProps = {
   resource?: ModelName;
   resourcesIdProperty: Record<ModelName, string> | null;
   schema: Schema;
+  nextAdminContext?: NextAdminContext;
 };
 
 export const ConfigProvider = ({ children, ...props }: ProviderProps) => {

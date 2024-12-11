@@ -58,7 +58,7 @@ export const options: NextAdminOptions = {
           birthDate: {
             formatter: (date, context) => {
               return new Date(date as unknown as string)
-                ?.toLocaleString(context?.locale)
+                ?.toLocaleString(context?.locale ?? "en")
                 .split(/[\s,]+/)[0];
             },
           },

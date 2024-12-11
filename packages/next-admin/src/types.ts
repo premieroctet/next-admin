@@ -920,7 +920,7 @@ export type SubmitFormResult = {
 };
 
 export type NextAdminContext = {
-  locale?: string;
+  locale?: string | null;
   row?: any;
 };
 
