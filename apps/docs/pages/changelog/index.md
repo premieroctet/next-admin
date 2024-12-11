@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.0.2
+
+### Patch Changes
+
+- [bdb6ba0](https://github.com/premieroctet/next-admin/commit/bdb6ba0212a023f8bed10e57417a556c84c250ce): chore: upgrade to React 19, fix some serialization issues on Page Router
+
 ## 7.0.1
 
 ### Patch Changes
