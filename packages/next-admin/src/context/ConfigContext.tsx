@@ -12,7 +12,7 @@ export type ConfigContextType = {
   basePath: string;
   isAppDir?: boolean;
   apiBasePath: string;
-  resource?: ModelName;
+  resource?: ModelName | null;
   resourcesIdProperty: Record<ModelName, string> | null;
   schema: Schema;
   nextAdminContext?: NextAdminContext;
@@ -28,7 +28,7 @@ type ProviderProps = {
   options?: NextAdminOptions;
   children: React.ReactNode;
   isAppDir?: boolean;
-  resource?: ModelName;
+  resource?: ModelName | null;
   resourcesIdProperty: Record<ModelName, string> | null;
   schema: Schema;
   nextAdminContext?: NextAdminContext;

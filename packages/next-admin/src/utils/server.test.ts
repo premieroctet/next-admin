@@ -19,7 +19,7 @@ describe("Server utils", () => {
     });
 
     it("should not return a resource with /admin/Post", () => {
-      expect(getResourceFromParams(["Post"], ["User"])).toEqual(undefined);
+      expect(getResourceFromParams(["Post"], ["User"])).toEqual(null);
     });
   });
 

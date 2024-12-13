@@ -830,7 +830,7 @@ export type AdminComponentProps = {
   apiBasePath: string;
   schema: Schema;
   data?: ListData<ModelName>;
-  resource?: ModelName;
+  resource?: ModelName | null;
   slug?: string;
   /**
    * Page router only
