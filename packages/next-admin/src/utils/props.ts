@@ -132,8 +132,8 @@ export async function getPropsFromParams({
 
       if (options?.model?.[resource]?.list?.filters) {
         // @ts-expect-error
-        options.model[resource].list.filters = await mapModelFilters(
-          options.model[resource].list.filters
+        clientOptions.model[resource].list.filters = await mapModelFilters(
+          options.model![resource]!.list!.filters
         );
       }
 

@@ -271,7 +271,7 @@ export const mapModelFilters = async (
     })
   );
 
-  return newFilters.flat();
+  return newFilters.flat().filter(Boolean);
 };
 
 const preparePrismaListRequest = async <M extends ModelName>(
