@@ -109,7 +109,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
     export default async function AdminPage({
       params,
       searchParams,
-    }: PageProps) {
+    }: PageProps) { // or PromisePageProps for Next 15+
       const props = await getNextAdminProps({
         params: params.nextadmin,
         searchParams,
@@ -133,6 +133,12 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
 
     <Callout emoji="⚠️">
       Make sure to not use `use client` in the page.
+    </Callout>
+
+    <Callout emoji="⚠️">
+      Because we are using [next-themes](https://github.com/pacocoursey/next-themes) to handle dark mode,
+      you will need to add the `suppressHydrationWarning` to your the closest `<html>` tag of the admin page.
+      See [the next-themes docs](https://github.com/pacocoursey/next-themes?tab=readme-ov-file#with-app)
     </Callout>
 
   </Tabs.Tab>

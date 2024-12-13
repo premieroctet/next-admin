@@ -277,7 +277,13 @@ experimental: {
     extraInstructions = `You will need to do the following manually:
 - ${usesBabel ? `${packageManagerData.name} ${packageManagerData.installDevCmd} babel-plugin-superjson-next superjson@^1` : `${packageManagerData.name} ${packageManagerData.installDevCmd} next-superjson-plugin superjson`}
 - ${superjsonInstructions}
-- Add "@premieroctet/next-admin" to your transpilePackages array in the Next.js configuration file 
+- Add "@premieroctet/next-admin" to your transpilePackages array in the Next.js configuration file
+`;
+  }
+
+  if (routerRootPath.type === "app") {
+    extraInstructions = `You will need to do the following manually:
+- Add the suppressHydrationWarning prop to the closest <html> tag for the admin page
 `;
   }
 
