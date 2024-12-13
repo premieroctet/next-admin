@@ -7,6 +7,7 @@ import {
   Enumeration,
   Field,
   Filter,
+  FilterWrapper,
   ListOptions,
   Model,
   ModelName,
@@ -251,12 +252,34 @@ const getWherePredicateFromQueryParams = (query: string) => {
   return validateQuery(query);
 };
 
-const preparePrismaListRequest = <M extends ModelName>(
+export const mapModelFilters = async (
+  filters: ListOptions<ModelName>["filters"]
+): Promise<FilterWrapper<ModelName>[]> => {
+  if (!filters) {
+    return [];
+  }
+
+  const newFilters = await Promise.all(
+    filters.map(async (filter) => {
+      if (typeof filter === "function") {
+        const asyncFilters = await filter();
+
+        return asyncFilters;
+      }
+
+      return filter;
+    })
+  );
+
+  return newFilters.flat().filter(Boolean);
+};
+
+const preparePrismaListRequest = async <M extends ModelName>(
   resource: M,
   searchParams: any,
   options?: NextAdminOptions,
   skipFilters: boolean = false
-): PrismaListRequest<M> => {
+): Promise<PrismaListRequest<M>> => {
   const model = globalSchema.definitions[
     resource
   ] as SchemaDefinitions[ModelName];
@@ -275,7 +298,11 @@ const preparePrismaListRequest = <M extends ModelName>(
 
   const fieldSort = options?.model?.[resource]?.list?.defaultSort;
 
-  const fieldFilters = options?.model?.[resource]?.list?.filters
+  const filters = await mapModelFilters(
+    options?.model?.[resource]?.list?.filters
+  );
+
+  const fieldFilters = filters
     ?.filter((filter) => {
       if (Array.isArray(filtersParams)) {
         return filtersParams.includes(filter.name);
@@ -331,10 +358,7 @@ const preparePrismaListRequest = <M extends ModelName>(
     resource,
     options,
     search,
-    otherFilters: [
-      ...fieldFilters ?? [],
-      ...list?.where ?? []
-    ],
+    otherFilters: [...(fieldFilters ?? []), ...(list?.where ?? [])],
     advancedSearch,
   });
 
@@ -443,7 +467,7 @@ const fetchDataList = async (
   { prisma, resource, options, searchParams }: FetchDataListParams,
   skipFilters: boolean = false
 ) => {
-  const prismaListRequest = preparePrismaListRequest(
+  const prismaListRequest = await preparePrismaListRequest(
     resource,
     searchParams,
     options,
@@ -674,6 +698,7 @@ export const getDataItem = async <M extends ModelName>({
     select,
     where: { [idProperty]: resourceId },
   });
+
   Object.entries(data).forEach(([key, value]) => {
     if (Array.isArray(value)) {
       const fieldType =

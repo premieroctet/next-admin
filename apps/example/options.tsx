@@ -252,6 +252,19 @@ export const options: NextAdminOptions = {
               published: false,
             },
           },
+          async function byCategoryFilters() {
+            const categories = await prisma.category.findMany({
+              select: { id: true, name: true },
+              take: 5,
+            });
+
+            return categories.map((category) => ({
+              name: category.name,
+              value: { categories: { some: { id: category.id } } },
+              active: false,
+              group: "by_category_id",
+            }));
+          },
         ],
         search: ["title", "content", "tags", "author.name"],
         fields: {

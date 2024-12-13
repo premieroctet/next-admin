@@ -205,6 +205,10 @@ export type FilterWrapper<T extends ModelName> = {
    * @link https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators
    */
   value: Filter<T>;
+  /**
+   * An id that will be used to give filters with the same group name a radio like behavior
+   */
+  group?: string;
 };
 
 type RelationshipSearch<T> = {
@@ -428,7 +432,7 @@ export type ListOptions<T extends ModelName> = {
   /**
    * define a set of Prisma filters that user can choose in list
    */
-  filters?: FilterWrapper<T>[];
+  filters?: Array<FilterWrapper<T> | (() => Promise<FilterWrapper<T>[]>)>;
   /**
    * define a set of Prisma filters that are always active in list
    */
