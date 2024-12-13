@@ -46,7 +46,7 @@ const ColorSchemeSwitch = dynamic(() => import("./ColorSchemeSwitch"), {
 });
 
 export type MenuProps = {
-  resource?: ModelName;
+  resource?: ModelName | null;
   resources?: ModelName[];
   resourcesTitles?: Record<ModelName, string | undefined>;
   customPages?: AdminComponentProps["customPages"];
