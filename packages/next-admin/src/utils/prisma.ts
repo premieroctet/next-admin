@@ -699,8 +699,6 @@ export const getDataItem = async <M extends ModelName>({
     where: { [idProperty]: resourceId },
   });
 
-  console.dir(data, { depth: null });
-
   Object.entries(data).forEach(([key, value]) => {
     if (Array.isArray(value)) {
       const fieldType =
