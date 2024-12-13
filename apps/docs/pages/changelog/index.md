@@ -1,5 +1,17 @@
 # @premieroctet/next-admin
 
+## 7.1.0
+
+### Minor Changes
+
+- [07d8996](https://github.com/premieroctet/next-admin/commit/07d8996cf4c771fc0e70762518a083489e9d975a): feat: add dynamic filters ([#491](https://github.com/premieroctet/next-admin/issues/491))
+
+### Patch Changes
+
+- [e49ec99](https://github.com/premieroctet/next-admin/commit/e49ec991c538e49d3b593f20d31afd8120f5fb95): fix: broken clickoutside & example custom page
+- [71f65ec](https://github.com/premieroctet/next-admin/commit/71f65ece06137baee4a10a8cbbb97f3fd8023a46): fix: dnd on touch devices ([#461](https://github.com/premieroctet/next-admin/issues/461))
+- [b762132](https://github.com/premieroctet/next-admin/commit/b7621323bb80862a4d34ed3bcd1f69405bffc6c7): feat: update gear icon to logout icon ([#460](https://github.com/premieroctet/next-admin/issues/460))
+
 ## 7.0.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-cli
 
+## 0.0.6
+
+### Patch Changes
+
+- [248838e](https://github.com/premieroctet/next-admin/commit/248838e05921f4ac9225588ef184448858c65cea): chore: add extra instructions for app router
+
 ## 0.0.5
 
 ### Patch Changes
