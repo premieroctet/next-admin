@@ -6,6 +6,7 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import {
+  ArrowRightEndOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   Bars3Icon,
   XMarkIcon,
@@ -15,9 +16,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { Fragment, useState } from "react";
 
-import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
 import { useTheme } from "next-themes";
-import Image from "next/image";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
@@ -31,15 +30,6 @@ import { slugify } from "../utils/tools";
 import Divider from "./Divider";
 import ResourceIcon from "./common/ResourceIcon";
 import Button from "./radix/Button";
-import {
-  Dropdown,
-  DropdownBody,
-  DropdownContent,
-  DropdownItem,
-  DropdownLabel,
-  DropdownSeparator,
-  DropdownTrigger,
-} from "./radix/Dropdown";
 
 const ColorSchemeSwitch = dynamic(() => import("./ColorSchemeSwitch"), {
   ssr: false,
@@ -192,37 +182,15 @@ export default function Menu({
             {user.data.name}
           </span>
         </div>
-        {hasDropdown && (
-          <Dropdown>
-            <DropdownTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
-              >
-                <Cog6ToothIcon className="h-6 w-6" />
-              </Button>
-            </DropdownTrigger>
-            <DropdownBody>
-              <DropdownContent side="top" sideOffset={5} className="px-1 py-2">
-                <DropdownLabel className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted px-4 py-1 font-normal">
-                  {user.data.name}
-                </DropdownLabel>
-                <DropdownSeparator className="bg-nextadmin-border-default dark:bg-dark-nextadmin-border-emphasis" />
-                <DropdownItem asChild>
-                  <button
-                    type="button"
-                    onClick={logoutBind}
-                    className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
-                  >
-                    <PowerIcon className="h-4 w-4" />
-                    <span>{t("user.logout")}</span>
-                  </button>
-                </DropdownItem>
-              </DropdownContent>
-            </DropdownBody>
-          </Dropdown>
-        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
+          type="button"
+          onClick={logoutBind}
+        >
+          <ArrowRightEndOnRectangleIcon className="h-6 w-6" />
+        </Button>
       </div>
     );
   };
