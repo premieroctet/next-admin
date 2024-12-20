@@ -329,8 +329,8 @@ importers:
         specifier: ^2.1.5
         version: 2.2.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@heroicons/react':
-        specifier: ^2.0.18
-        version: 2.1.5(react@19.0.0)
+        specifier: ^2.2.0
+        version: 2.2.0(react@19.0.0)
       '@picocss/pico':
         specifier: ^1.5.7
         version: 1.5.13
@@ -1207,6 +1207,11 @@ packages:
 
   '@heroicons/react@2.1.5':
     resolution: {integrity: sha512-FuzFN+BsHa+7OxbvAERtgBTNeZpUjgM/MIizfVkSCL2/edriN0Hx/DWRCR//aPYwO5QX/YlgLGXk+E3PcfZwjA==}
+    peerDependencies:
+      react: 19.0.0
+
+  '@heroicons/react@2.2.0':
+    resolution: {integrity: sha512-LMcepvRaS9LYHJGsF0zzmgKCUim/X3N/DQKc4jepAXJ7l8QxJ1PmxJzqplF2Z3FE4PqBAIGyJAQ/w4B5dsqbtQ==}
     peerDependencies:
       react: 19.0.0
 
@@ -7523,6 +7528,10 @@ snapshots:
       tailwindcss: 3.4.14(ts-node@10.9.2(@swc/core@1.4.17(@swc/helpers@0.5.15))(@types/node@17.0.45)(typescript@5.6.3))
 
   '@heroicons/react@2.1.5(react@19.0.0)':
+    dependencies:
+      react: 19.0.0
+
+  '@heroicons/react@2.2.0(react@19.0.0)':
     dependencies:
       react: 19.0.0
 
