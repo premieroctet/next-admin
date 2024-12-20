@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.1.1
+
+### Patch Changes
+
+- [5cb3457](https://github.com/premieroctet/next-admin/commit/5cb3457d5ce05cff524fa149030a2b3e706660c7): chore: upgrade heroicons ([#505](https://github.com/premieroctet/next-admin/issues/505))
+
 ## 7.1.0
 
 ### Minor Changes
