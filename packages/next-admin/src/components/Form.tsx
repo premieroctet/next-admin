@@ -8,10 +8,11 @@ import RjsfForm from "@rjsf/core";
 import {
   BaseInputTemplateProps,
   ErrorSchema,
+  FieldProps,
   FieldTemplateProps,
   getSubmitButtonOptions,
   ObjectFieldTemplateProps,
-  SubmitButtonProps,
+  SubmitButtonProps
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
@@ -25,7 +26,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState,
+  useState
 } from "react";
 import { twMerge } from "tailwind-merge";
 import ClientActionDialogProvider from "../context/ClientActionDialogContext";
@@ -70,11 +71,6 @@ import {
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
 });
-
-const fields: RjsfForm["props"]["fields"] = {
-  ArrayField,
-  NullField,
-};
 
 const widgets: RjsfForm["props"]["widgets"] = {
   DateWidget: DateWidget,
@@ -309,6 +305,18 @@ const Form = ({
     [apiBasePath, id]
   );
 
+  const fields: RjsfForm["props"]["fields"] = {
+    ArrayField: (props: FieldProps) => {
+      const customInput = customInputs?.[props.name as Field<ModelName>]
+      const improvedCustomInput = customInput ? cloneElement(customInput, {
+        ...customInput.props,
+        mode: edit ? "edit" : "create",
+      }) : undefined;
+      return ArrayField({ ...props, customInput: improvedCustomInput })
+    },
+    NullField,
+  };
+
   const templates: RjsfForm["props"]["templates"] = {
     FieldTemplate: (props: FieldTemplateProps) => {
       const {
@@ -501,6 +509,9 @@ const Form = ({
         </span>
       ) : null;
     },
+    ButtonTemplates: {
+      SubmitButton: submitButton,
+    },
   };
 
   const CustomForm = forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>(
@@ -548,10 +559,7 @@ const Form = ({
             fields={fields}
             disabled={allDisabled}
             formContext={{ isPending, schema }}
-            templates={{
-              ...templates,
-              ButtonTemplates: { SubmitButton: submitButton },
-            }}
+            templates={templates}
             widgets={widgets}
             ref={ref}
             className="relative"

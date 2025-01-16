@@ -2,7 +2,7 @@ import * as OutlineIcons from "@heroicons/react/24/outline";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
-import type { ChangeEvent, ReactNode } from "react";
+import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
 import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 import type React from "react";
@@ -937,7 +937,7 @@ export type CustomInputProps = Partial<{
   disabled: boolean;
   required?: boolean;
   mode: "create" | "edit";
-}>;
+}> & ComponentProps<"input">;
 
 export type TranslationKeys =
   | "actions.delete.label"
