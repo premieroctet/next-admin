@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.1.2
+
+### Patch Changes
+
+- [97ac9bf](https://github.com/premieroctet/next-admin/commit/97ac9bf99b8bb49bd8711cfbf4d06727094bc5a6): Allow custom inputs in array field ([#510](https://github.com/premieroctet/next-admin/issues/510))
+
 ## 7.1.1
 
 ### Patch Changes
