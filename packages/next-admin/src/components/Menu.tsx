@@ -14,7 +14,7 @@ import {
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import { Fragment, useState } from "react";
+import { Fragment, useState, ReactNode } from "react";
 
 import { useTheme } from "next-themes";
 import { useConfig } from "../context/ConfigContext";
@@ -44,7 +44,7 @@ export type MenuProps = {
   resourcesIcons: AdminComponentProps["resourcesIcons"];
   user?: AdminComponentProps["user"];
   externalLinks?: AdminComponentProps["externalLinks"];
-  title?: string;
+  title?: ReactNode;
 };
 
 export default function Menu({
@@ -223,9 +223,13 @@ export default function Menu({
               href={basePath}
               className="flex h-[40px] items-center gap-2 overflow-hidden"
             >
-              <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
-                {title}
-              </div>
+              {typeof title === "string" ? (
+                <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
+                  {title}
+                </div>
+              ) : (
+                title
+              )}
             </Link>
           </div>
           <Divider />

@@ -686,7 +686,7 @@ export type NextAdminOptions = {
    *
    * @default "Admin"
    */
-  title?: string;
+  title?: ReactNode;
   /**
    * `model` is an object that represents the customization options for each model in your schema.
    */
@@ -872,7 +872,7 @@ export type AdminComponentProps = {
    *
    * @default "Admin"
    */
-  title?: string;
+  title?: ReactNode;
   sidebar?: SidebarConfiguration;
   user?: AdminUser;
   externalLinks?: ExternalLink[];
@@ -937,7 +937,8 @@ export type CustomInputProps = Partial<{
   disabled: boolean;
   required?: boolean;
   mode: "create" | "edit";
-}> & ComponentProps<"input">;
+}> &
+  ComponentProps<"input">;
 
 export type TranslationKeys =
   | "actions.delete.label"
