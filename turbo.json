@@ -11,9 +11,9 @@
   "tasks": {
     "start": {},
     "@premieroctet/next-admin#build": {
-      "dependsOn": ["example#generate"]
+      "dependsOn": ["example#generate:client-only"]
     },
-    "example#generate": {
+    "example#generate:client-only": {
       "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"]
     },
     "build": {
