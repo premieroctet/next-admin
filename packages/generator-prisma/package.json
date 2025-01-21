@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin-generator-prisma",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Prisma generator for Next-Admin",
   "bin": "dist/index.js",
   "main": "dist/index.js",

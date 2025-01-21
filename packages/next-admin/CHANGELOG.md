@@ -1,5 +1,15 @@
 # @premieroctet/next-admin
 
+## 7.2.0
+
+### Minor Changes
+
+- [7be5369](https://github.com/premieroctet/next-admin/commit/7be5369196355a8a24d6aaf74c7f49266fad6ac3): feat: support react node as title ([#512](https://github.com/premieroctet/next-admin/issues/512))
+
+### Patch Changes
+
+- [522c5b2](https://github.com/premieroctet/next-admin/commit/522c5b20a9920085dc6d532e557a79b990b71fdb): fix: Dialog title and description errors ([#520](https://github.com/premieroctet/next-admin/issues/520))
+
 ## 7.1.2
 
 ### Patch Changes
