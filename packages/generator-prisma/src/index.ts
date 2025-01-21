@@ -3,21 +3,18 @@ import { generatorHandler } from "@prisma/generator-helper";
 import { parseEnvValue } from "@prisma/internals";
 import path from "path";
 import fs from "fs/promises";
+import { execSync } from "node:child_process";
 // @ts-expect-error
 import { transformDMMF } from "prisma-json-schema-generator/dist/generator/transformDMMF";
 import { insertDmmfData } from "./dmmf";
 
 generatorHandler({
   onManifest: () => {
+    const nodeModulesRoot = execSync("npm root").toString("utf8");
+
     return {
       defaultOutput: path.resolve(
-        path.join(
-          require.resolve("@premieroctet/next-admin"),
-          "..",
-          "..",
-          "node_modules",
-          ".next-admin"
-        )
+        path.join(nodeModulesRoot.trim(), ".next-admin")
       ),
       prettyName: "Next Admin JSON Schema Generator",
     };
