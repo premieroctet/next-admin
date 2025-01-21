@@ -99,12 +99,13 @@ export function NextAdmin({
     }
   };
 
+  const titleElement = isAppDir ? title : options?.title;
+
   return (
     <>
       <PageLoader />
       {!isAppDir && (
         <Head>
-          <title>{title}</title>
           <meta name="viewport" content="width=device-width, initial-scale=1" />
           <link rel="icon" href="/favicon.ico" />
         </Head>
@@ -119,7 +120,7 @@ export function NextAdmin({
         isAppDir={isAppDir}
         translations={translations}
         locale={locale}
-        title={title}
+        title={titleElement}
         sidebar={sidebar}
         resourcesIcons={resourcesIcons}
         user={user}

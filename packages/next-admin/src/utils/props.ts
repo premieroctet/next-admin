@@ -293,7 +293,7 @@ export const getMainLayoutProps = ({
     customPages,
     resourcesTitles,
     isAppDir,
-    title: options?.title ?? "Admin",
+    title: isAppDir ? (options?.title ?? "Admin") : null,
     sidebar: options?.sidebar,
     resourcesIcons,
     externalLinks: options?.externalLinks,
