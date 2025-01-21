@@ -17,7 +17,9 @@ import {
   DialogOverlay,
   DialogPortal,
   DialogRoot,
+  DialogTitle,
 } from "./radix/Dialog";
+import { VisuallyHiddenRoot } from "./radix/VisuallyHidden";
 
 type Props<M extends ModelName> = {
   resource: M;
@@ -99,7 +101,11 @@ const ClientActionDialog = <M extends ModelName>({
                 )
               )}
               forceMount
+              aria-describedby={undefined}
             >
+              <VisuallyHiddenRoot asChild>
+                <DialogTitle>{action.title}</DialogTitle>
+              </VisuallyHiddenRoot>
               {isLoading && (
                 <div className="flex items-center justify-center">
                   <Loader className="stroke-nextadmin-content-default dark:stroke-dark-nextadmin-content-default h-6 w-6 animate-spin dark:stroke-gray-300" />
