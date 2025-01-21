@@ -8,20 +8,20 @@ import { transformDMMF } from "prisma-json-schema-generator/dist/generator/trans
 import { insertDmmfData } from "./dmmf";
 
 generatorHandler({
-  onManifest: () => ({
-    defaultOutput: path.resolve(
-      path.join(
-        require.resolve("@premieroctet/next-admin-generator-prisma"),
-        "..",
-        "..",
-        "..",
-        "..",
-        "node_modules",
-        ".next-admin"
-      )
-    ),
-    prettyName: "Next Admin JSON Schema Generator",
-  }),
+  onManifest: () => {
+    return {
+      defaultOutput: path.resolve(
+        path.join(
+          require.resolve("@premieroctet/next-admin"),
+          "..",
+          "..",
+          "node_modules",
+          ".next-admin"
+        )
+      ),
+      prettyName: "Next Admin JSON Schema Generator",
+    };
+  },
   onGenerate: async (options) => {
     const jsonSchema = transformDMMF(options.dmmf, {
       ...options.generator.config,
