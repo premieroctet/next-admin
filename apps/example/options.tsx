@@ -341,9 +341,19 @@ export const options: NextAdminOptions = {
       icon: "UserIcon",
       list: {
         display: ["id", "user"],
+        fields: {
+          user: {
+            formatter: (user) => user.email,
+          },
+        },
       },
       edit: {
         display: ["user", "bio"],
+        fields: {
+          user: {
+            optionFormatter: (user) => user.email,
+          },
+        },
       },
     },
   },

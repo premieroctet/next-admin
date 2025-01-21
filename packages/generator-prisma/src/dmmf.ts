@@ -128,6 +128,13 @@ export const insertDmmfData = (
             relation: getRelationData(dmmf, dmmfField, dmmfModel.name),
           }
         );
+
+        if (
+          dmmfField.kind === "object" &&
+          (model.properties![propertyName] as NextAdminJSONSchema)?.anyOf
+        ) {
+          delete (model.properties![propertyName] as NextAdminJSONSchema).anyOf;
+        }
       }
     });
   });
