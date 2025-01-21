@@ -1,5 +1,12 @@
 # @premieroctet/next-admin-generator-prisma
 
+## 0.0.2
+
+### Patch Changes
+
+- [7933009](https://github.com/premieroctet/next-admin/commit/793300945c44c54f922652e21815e2fd31614dc5): fix: remove anyOf for one-to-many relations ([#513](https://github.com/premieroctet/next-admin/issues/513))
+- [0eaafde](https://github.com/premieroctet/next-admin/commit/0eaafde0b9ccd6a3e7755f7576e9fc5d90483891): fix: move generated json schema path ([#504](https://github.com/premieroctet/next-admin/issues/504))
+
 ## 0.0.1
 
 ### Patch Changes
