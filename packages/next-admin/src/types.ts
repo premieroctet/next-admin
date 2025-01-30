@@ -344,6 +344,12 @@ export type Handler<
    * an optional string displayed in the input field as an error message in case of a failure during the upload handler.
    */
   uploadErrorMessage?: string;
+  /**
+   * an async function that takes the resource value as parameter and returns a boolean. If false is returned, the deletion will not happen.
+   * @param input
+   * @returns boolean
+   */
+  delete?: (input: T) => Promise<boolean> | boolean;
 };
 
 export type UploadParameters = Parameters<
@@ -613,6 +619,25 @@ export enum Permission {
 
 export type PermissionType = "create" | "edit" | "delete";
 
+export type ModelMiddleware<T extends ModelName> = {
+  /**
+   * a function that is called before the form data is sent to the database.
+   * @param data - the form data as a record
+   * @param currentData - the current data in the database
+   * @returns boolean - if false is returned, the update will not happen.
+   */
+  edit?: (
+    updatedData: Model<T>,
+    currentData: Model<T>
+  ) => Promise<boolean> | boolean;
+  /**
+   * a function that is called before resource is deleted from the database.
+   * @param data - the current data in the database
+   * @returns boolean - if false is returned, the deletion will not happen.
+   */
+  delete?: (data: Model<T>) => Promise<boolean> | boolean;
+};
+
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
     /**
@@ -644,6 +669,7 @@ export type ModelOptions<T extends ModelName> = {
      */
     icon?: ModelIcon;
     permissions?: PermissionType[];
+    middlewares?: ModelMiddleware<P>;
   };
 };
 
