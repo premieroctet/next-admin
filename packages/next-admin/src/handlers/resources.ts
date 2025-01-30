@@ -5,7 +5,9 @@ import {
 } from "@prisma/client/runtime/library";
 import {
   EditFieldsOptions,
+  Model,
   ModelName,
+  ModelOptions,
   NextAdminOptions,
   Permission,
   Schema,
@@ -15,6 +17,7 @@ import {
 import { hasPermission } from "../utils/permissions";
 import { getDataItem } from "../utils/prisma";
 import {
+  formatId,
   formattedFormData,
   getModelIdProperty,
   parseFormData,
@@ -26,20 +29,54 @@ type DeleteResourceParams = {
   prisma: PrismaClient;
   resource: ModelName;
   body: string[] | number[];
+  modelOptions?: ModelOptions<ModelName>[ModelName];
 };
 
-export const deleteResource = ({
+export const deleteResource = async ({
   prisma,
   resource,
   body,
+  modelOptions,
 }: DeleteResourceParams) => {
   const modelIdProperty = getModelIdProperty(resource);
+
+  console.log("modelOptions middlewares", modelOptions?.middlewares);
+
+  if (modelOptions?.middlewares?.delete) {
+    // @ts-expect-error
+    const resources = await prisma[uncapitalize(resource)].findMany({
+      where: {
+        [modelIdProperty]: {
+          in: body.map((id) => formatId(resource, id.toString())),
+        },
+      },
+    });
+
+    const middlewareExec: PromiseSettledResult<boolean>[] =
+      await Promise.allSettled(
+        // @ts-expect-error
+        resources.map(async (res) => {
+          const isSuccessDelete =
+            await modelOptions?.middlewares?.delete?.(res);
+
+          return isSuccessDelete;
+        })
+      );
+
+    if (
+      middlewareExec.some(
+        (exec) => exec.status === "rejected" || exec.value === false
+      )
+    ) {
+      return false;
+    }
+  }
 
   // @ts-expect-error
   return prisma[uncapitalize(resource)].deleteMany({
     where: {
       [modelIdProperty]: {
-        in: body,
+        in: body.map((id) => formatId(resource, id.toString())),
       },
     },
   });
@@ -98,12 +135,35 @@ export const submitResource = async ({
         };
       }
 
-      // @ts-expect-error
-      await prisma[resource].update({
-        where: {
-          [resourceIdField]: id,
-        },
-        data: formattedData,
+      await prisma.$transaction(async (client) => {
+        let canEdit = true;
+        if (options?.model?.[resource]?.middlewares?.edit) {
+          const currentData = await prisma[
+            uncapitalize(resource)
+            // @ts-expect-error
+          ].findUniqueOrThrow({
+            where: {
+              [resourceIdField]: formatId(resource, id.toString()),
+            },
+          });
+
+          canEdit = await options?.model?.[resource]?.middlewares?.edit(
+            formattedData,
+            currentData
+          );
+        }
+
+        if (!canEdit) {
+          throw new Error("Unable to edit this item");
+        }
+
+        // @ts-expect-error
+        await prisma[resource].update({
+          where: {
+            [resourceIdField]: id,
+          },
+          data: formattedData,
+        });
       });
 
       const data = await getDataItem({

@@ -12,7 +12,7 @@ import {
   FieldTemplateProps,
   getSubmitButtonOptions,
   ObjectFieldTemplateProps,
-  SubmitButtonProps
+  SubmitButtonProps,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
@@ -26,7 +26,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
 import ClientActionDialogProvider from "../context/ClientActionDialogContext";
@@ -111,7 +111,7 @@ const Form = ({
   const formRef = useRef<RjsfForm>(null);
   const [isPending, setIsPending] = useState(false);
   const allDisabled = edit && !canEdit;
-  const { runDeletion } = useDeleteAction(resource);
+  const { runSingleDeletion } = useDeleteAction(resource);
   const { showMessage } = useMessage();
   const { cleanAll } = useFormState();
   const { setFormData } = useFormData();
@@ -172,7 +172,7 @@ const Form = ({
                   } else {
                     try {
                       setIsPending(true);
-                      await runDeletion([id!] as string[] | number[]);
+                      await runSingleDeletion(id!);
                       router.replace({
                         pathname: `${basePath}/${slugify(resource)}`,
                         query: {
@@ -307,12 +307,14 @@ const Form = ({
 
   const fields: RjsfForm["props"]["fields"] = {
     ArrayField: (props: FieldProps) => {
-      const customInput = customInputs?.[props.name as Field<ModelName>]
-      const improvedCustomInput = customInput ? cloneElement(customInput, {
-        ...customInput.props,
-        mode: edit ? "edit" : "create",
-      }) : undefined;
-      return ArrayField({ ...props, customInput: improvedCustomInput })
+      const customInput = customInputs?.[props.name as Field<ModelName>];
+      const improvedCustomInput = customInput
+        ? cloneElement(customInput, {
+            ...customInput.props,
+            mode: edit ? "edit" : "create",
+          })
+        : undefined;
+      return ArrayField({ ...props, customInput: improvedCustomInput });
     },
     NullField,
   };
