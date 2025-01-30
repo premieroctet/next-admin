@@ -213,13 +213,28 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
-      await deleteResource({
-        body: [params[paramKey][1]],
-        prisma,
-        resource,
-      });
+      try {
+        const deleted = await deleteResource({
+          body: [params[paramKey][1]],
+          prisma,
+          resource,
+          modelOptions: options?.model?.[resource],
+        });
 
-      return NextResponse.json({ ok: true });
+        if (!deleted) {
+          return NextResponse.json(
+            { error: "Deletion failed" },
+            { status: 500 }
+          );
+        }
+
+        return NextResponse.json({ ok: true });
+      } catch (e) {
+        return NextResponse.json(
+          { error: (e as Error).message },
+          { status: 500 }
+        );
+      }
     })
     .delete(`${apiBasePath}/:model`, async (req, ctx) => {
       const params = await ctx.params;
@@ -241,7 +256,12 @@ export const createHandler = <P extends string = "nextadmin">({
       try {
         const body = await req.json();
 
-        await deleteResource({ body, prisma, resource });
+        await deleteResource({
+          body,
+          prisma,
+          resource,
+          modelOptions: options?.model?.[resource],
+        });
 
         return NextResponse.json({ ok: true });
       } catch (e) {
