@@ -112,7 +112,7 @@ const Form = ({
   const formRef = useRef<RjsfForm>(null);
   const [isPending, setIsPending] = useState(false);
   const allDisabled = edit && !canEdit;
-  const { runDeletion } = useDeleteAction(resource);
+  const { runSingleDeletion } = useDeleteAction(resource);
   const { showMessage } = useMessage();
   const { cleanAll } = useFormState();
   const { setFormData } = useFormData();
@@ -173,7 +173,7 @@ const Form = ({
                   } else {
                     try {
                       setIsPending(true);
-                      await runDeletion([id!] as string[] | number[]);
+                      await runSingleDeletion(id!);
                       router.replace({
                         pathname: `${basePath}/${slugify(resource)}`,
                         query: {

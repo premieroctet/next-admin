@@ -26,6 +26,17 @@ export const useDeleteAction = (resource: ModelName) => {
     }
   };
 
+  const runSingleDeletion = async (id: string | number) => {
+    const response = await fetch(`${apiBasePath}/${slugify(resource)}/${id}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result.error);
+    }
+  };
+
   const deleteItems = async (ids: string[] | number[]) => {
     if (
       window.confirm(t("list.row.actions.delete.alert", { count: ids.length }))
@@ -46,5 +57,5 @@ export const useDeleteAction = (resource: ModelName) => {
     }
   };
 
-  return { deleteItems, runDeletion };
+  return { deleteItems, runDeletion, runSingleDeletion };
 };

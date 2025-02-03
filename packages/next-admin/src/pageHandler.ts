@@ -237,11 +237,16 @@ export const createHandler = <P extends string = "nextadmin">({
       }
 
       try {
-        await deleteResource({
+        const deleted = await deleteResource({
           body: [req.query[paramKey]![1]],
           prisma,
           resource,
+          modelOptions: options?.model?.[resource],
         });
+
+        if (!deleted) {
+          throw new Error("Deletion failed")
+        }
 
         return res.json({ ok: true });
       } catch (e) {
@@ -273,7 +278,12 @@ export const createHandler = <P extends string = "nextadmin">({
       }
 
       try {
-        await deleteResource({ body, prisma, resource });
+        await deleteResource({
+          body,
+          prisma,
+          resource,
+          modelOptions: options?.model?.[resource],
+        });
 
         return res.json({ ok: true });
       } catch (e) {
