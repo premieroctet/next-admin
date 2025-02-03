@@ -40,7 +40,6 @@ export const deleteResource = async ({
 }: DeleteResourceParams) => {
   const modelIdProperty = getModelIdProperty(resource);
 
-  console.log("modelOptions middlewares", modelOptions?.middlewares);
 
   if (modelOptions?.middlewares?.delete) {
     // @ts-expect-error
