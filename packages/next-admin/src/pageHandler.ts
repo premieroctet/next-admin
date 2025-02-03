@@ -245,7 +245,7 @@ export const createHandler = <P extends string = "nextadmin">({
         });
 
         if (!deleted) {
-          return res.status(500).json({ error: "Deletion failed" });
+          throw new Error("Deletion failed")
         }
 
         return res.json({ ok: true });
