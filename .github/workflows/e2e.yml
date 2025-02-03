@@ -10,7 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Enable corepack
-        run: corepack enable
+        run: corepack enable && corepack prepare pnpm@9.12.3 --activate
       - uses: actions/setup-node@v3
         with:
           node-version: 20
@@ -43,7 +43,7 @@ jobs:
       - name: Run tests
         run: |
           pnpm test
-          pnpm turbo test:e2e 
+          pnpm turbo test:e2e
           cd apps/example && pnpm prisma db seed && cd -
           BASE_URL=http://localhost:3000/pagerouter/admin pnpm test:e2e
       - uses: actions/upload-artifact@v4

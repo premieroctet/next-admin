@@ -12,7 +12,7 @@ import {
   FieldTemplateProps,
   getSubmitButtonOptions,
   ObjectFieldTemplateProps,
-  SubmitButtonProps
+  SubmitButtonProps,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
@@ -26,7 +26,7 @@ import React, {
   useEffect,
   useMemo,
   useRef,
-  useState
+  useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
 import ClientActionDialogProvider from "../context/ClientActionDialogContext";
@@ -70,6 +70,7 @@ import {
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,
+  loading: () => <div className="h-48 animate-pulse rounded bg-gray-500" />,
 });
 
 const widgets: RjsfForm["props"]["widgets"] = {
@@ -307,12 +308,14 @@ const Form = ({
 
   const fields: RjsfForm["props"]["fields"] = {
     ArrayField: (props: FieldProps) => {
-      const customInput = customInputs?.[props.name as Field<ModelName>]
-      const improvedCustomInput = customInput ? cloneElement(customInput, {
-        ...customInput.props,
-        mode: edit ? "edit" : "create",
-      }) : undefined;
-      return ArrayField({ ...props, customInput: improvedCustomInput })
+      const customInput = customInputs?.[props.name as Field<ModelName>];
+      const improvedCustomInput = customInput
+        ? cloneElement(customInput, {
+            ...customInput.props,
+            mode: edit ? "edit" : "create",
+          })
+        : undefined;
+      return ArrayField({ ...props, customInput: improvedCustomInput });
     },
     NullField,
   };
