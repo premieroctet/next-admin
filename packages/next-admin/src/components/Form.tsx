@@ -53,7 +53,7 @@ import BaseInput from "./inputs/BaseInput";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
-import FileWidget from "./inputs/FileWidget";
+import FileWidget from "./inputs/FileWidget/FileWidget";
 import JsonField from "./inputs/JsonField";
 import NullField from "./inputs/NullField";
 import SelectWidget from "./inputs/SelectWidget";
@@ -229,20 +229,16 @@ const Form = ({
             body: formData,
           }
         );
-
         const result = await response.json();
-
         if (result?.validation) {
           setValidation(result.validation);
         } else {
           setValidation(undefined);
         }
-
         if (result?.data) {
           setFormData(result.data);
           cleanAll();
         }
-
         if (result?.deleted) {
           return router.replace({
             pathname: `${basePath}/${slugify(resource)}`,
@@ -254,7 +250,6 @@ const Form = ({
             },
           });
         }
-
         if (result?.created) {
           const pathname = result?.redirect
             ? `${basePath}/${slugify(resource)}`
@@ -269,12 +264,10 @@ const Form = ({
             },
           });
         }
-
         if (result?.updated) {
           const pathname = result?.redirect
             ? `${basePath}/${slugify(resource)}`
             : location.pathname;
-
           if (pathname === location.pathname) {
             showMessage({
               type: "success",
@@ -292,7 +285,6 @@ const Form = ({
             });
           }
         }
-
         if (result?.error) {
           showMessage({
             type: "error",
@@ -517,29 +509,60 @@ const Form = ({
     },
   };
 
-  const CustomForm = forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>(
-    (props, ref) => {
-      const { dirtyFields } = useFormState();
-      return (
-        <form
-          {...props}
-          ref={ref}
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formValues = new FormData(e.target as HTMLFormElement);
-            const data = new FormData();
-            dirtyFields.forEach((field) => {
-              data.append(field, formValues.get(field) as string);
-            });
+  const CustomForm = useMemo(
+    () =>
+      forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>((props, ref) => {
+        const { dirtyFields } = useFormState();
+        const { formData } = useFormData();
+        return (
+          <form
+            {...props}
+            ref={ref}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formValues = new FormData(e.target as HTMLFormElement);
+              const data = new FormData();
+              dirtyFields.forEach((field) => {
+                const schemaProperties =
+                  schema.properties[field as keyof typeof schema.properties];
+                const isFieldArrayOfFiles =
+                  schemaProperties?.type === "array" &&
+                  schemaProperties.format === "data-url";
 
-            // @ts-expect-error
-            const submitter = e.nativeEvent.submitter as HTMLButtonElement;
-            data.append(submitter.name, submitter.value);
-            onSubmit(data);
-          }}
-        />
-      );
-    }
+                if (isFieldArrayOfFiles) {
+                  const files = formValues
+                    .getAll(field)
+                    .filter(
+                      (file) =>
+                        typeof file === "string" ||
+                        (file instanceof File && !!file.name)
+                    );
+                  const values = formData[
+                    field as keyof typeof formData
+                  ] as string[];
+
+                  values.forEach((val) => {
+                    data.append(field, val);
+                  });
+
+                  files.forEach((file) => {
+                    data.append(field, file);
+                  });
+                  return;
+                }
+
+                data.append(field, formValues.get(field) as string);
+              });
+
+              // @ts-expect-error
+              const submitter = e.nativeEvent.submitter as HTMLButtonElement;
+              data.append(submitter.name, submitter.value);
+              onSubmit(data);
+            }}
+          />
+        );
+      }),
+    [onSubmit, schema]
   );
 
   const RjsfFormComponent = useMemo(

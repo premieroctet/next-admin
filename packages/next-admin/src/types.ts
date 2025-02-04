@@ -309,6 +309,14 @@ export type EditFieldsOptions<T extends ModelName> = {
       : {});
 };
 
+export type UploadedFile = {
+  buffer: Buffer;
+  infos: {
+    name: string;
+    type: string | null;
+  };
+};
+
 export type Handler<
   M extends ModelName,
   P extends Field<M>,
@@ -322,10 +330,9 @@ export type Handler<
   get?: (input: T) => any;
   /**
    * an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider.
-   * @param buffer
-   * @param infos
+   * @param file - This object contains the file buffer and information.
    * @param context - This object contains record information, such as the resource ID.
-   * @returns
+   * @returns result - Promise<string> - the file uri
    */
   upload?: (
     buffer: Buffer,
@@ -341,6 +348,14 @@ export type Handler<
     }
   ) => Promise<string>;
   /**
+   * an async function that is used to remove a file from a remote provider. Called only for multi file upload.
+   * For single file deletion, use `middlewares.delete` on the model.
+   *
+   * @param fileUri string - the remote file uri
+   * @returns success - Promise<boolean> - true if the deletion succeeded, false otherwise. If false is returned, the file will not be removed from the record.
+   */
+  deleteFile?: (fileUri: string) => Promise<boolean>;
+  /**
    * an optional string displayed in the input field as an error message in case of a failure during the upload handler.
    */
   uploadErrorMessage?: string;
@@ -351,16 +366,6 @@ export type Handler<
    */
   delete?: (input: T) => Promise<boolean> | boolean;
 };
-
-export type UploadParameters = Parameters<
-  (
-    buffer: Buffer,
-    infos: {
-      name: string;
-      type: string | null;
-    }
-  ) => Promise<string>
->;
 
 export type RichTextFormat = "html" | "json";
 
@@ -385,7 +390,9 @@ export type FormatOptions<T> = T extends string
     ? "date" | "date-time" | "time"
     : never | T extends number
       ? "updown" | "range"
-      : never;
+      : never | T extends string[]
+        ? "file"
+        : never;
 
 export type ListExport = {
   /**
@@ -494,10 +501,10 @@ export type EditModelHooks = {
    * @throws HookError - if the hook fails, the status and message will be sent in the handler's response
    */
   beforeDb?: (
-    data: Record<string, string | UploadParameters | null>,
+    data: Record<string, string | (UploadedFile | string)[] | null>,
     mode: "create" | "edit",
     request: NextRequest | NextApiRequest
-  ) => Promise<Record<string, string | UploadParameters | null>>;
+  ) => Promise<Record<string, string | (UploadedFile | string)[] | null>>;
   /**
    * a function that is called after the form submission. It takes the response of the db insertion as a parameter.
    * @param data

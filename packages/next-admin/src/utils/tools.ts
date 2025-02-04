@@ -1,5 +1,5 @@
 import React from "react";
-import { UploadParameters } from "../types";
+import { UploadedFile } from "../types";
 
 export const capitalize = <T extends string>(str: T): Capitalize<T> => {
   let capitalizedStr = str.charAt(0).toLocaleUpperCase() + str.slice(1);
@@ -72,15 +72,8 @@ export const formatLabel = (label: string) => {
   return capitalize(spacedLabel.toLowerCase());
 };
 
-//Create a function that check if object satifies UploadParameters
-export const isUploadParameters = (obj: any): obj is UploadParameters => {
-  return (
-    obj?.length === 2 &&
-    Buffer.isBuffer(obj[0]) &&
-    typeof obj[1] === "object" &&
-    "name" in obj[1] &&
-    "type" in obj[1]
-  );
+export const isUploadFile = (obj: any): obj is UploadedFile => {
+  return typeof obj === "object" && "buffer" in obj && "infos" in obj;
 };
 
 export const getDisplayedValue = (
@@ -99,3 +92,6 @@ export const getDisplayedValue = (
     return "";
   }
 };
+
+export const getDeletedFilesFieldName = (field: string) =>
+  `${field}__nextadmin_deleted`;

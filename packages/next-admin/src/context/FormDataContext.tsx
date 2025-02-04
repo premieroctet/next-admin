@@ -4,11 +4,15 @@ import {
   useContext,
   useEffect,
   useState,
+  Dispatch,
 } from "react";
 
-const FormDataContext = createContext({
+const FormDataContext = createContext<{
+  formData: any;
+  setFormData: Dispatch<any>;
+}>({
   formData: {},
-  setFormData: (_data: any) => {},
+  setFormData: () => {},
 });
 
 export const useFormData = () => useContext(FormDataContext);
