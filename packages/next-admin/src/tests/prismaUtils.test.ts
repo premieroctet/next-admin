@@ -16,6 +16,7 @@ describe("getMappedDataList", () => {
         rate: new Decimal(5),
         order: 0,
         tags: [],
+        images: [],
       },
       {
         id: 2,
@@ -27,6 +28,7 @@ describe("getMappedDataList", () => {
         rate: new Decimal(5),
         order: 1,
         tags: [],
+        images: [],
       },
     ];
 
@@ -64,6 +66,7 @@ describe("optionsFromResource", () => {
         rate: new Decimal(5),
         order: 0,
         tags: [],
+        images: [],
       },
       {
         id: 2,
@@ -75,6 +78,7 @@ describe("optionsFromResource", () => {
         rate: new Decimal(5),
         order: 1,
         tags: [],
+        images: [],
       },
     ];
 
