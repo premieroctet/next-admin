@@ -12,7 +12,7 @@ import {
   Permission,
   Schema,
   SubmitResourceResponse,
-  UploadParameters,
+  UploadedFile,
 } from "../types";
 import { hasPermission } from "../utils/permissions";
 import { getDataItem } from "../utils/prisma";
@@ -84,7 +84,7 @@ export const deleteResource = async ({
 type SubmitResourceParams = {
   prisma: PrismaClient;
   resource: ModelName;
-  body: Record<string, string | UploadParameters | null>;
+  body: Record<string, string | (UploadedFile | string)[] | null>;
   id?: string | number;
   options?: NextAdminOptions;
   schema: Schema;
@@ -101,7 +101,13 @@ export const submitResource = async ({
   const { __admin_redirect: redirect, ...formValues } = body;
 
   const schemaDefinition = schema.definitions[resource];
-  const parsedFormData = parseFormData(formValues, schemaDefinition);
+  const parsedFormData = parseFormData(
+    formValues,
+    schemaDefinition,
+    options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
+      typeof resource
+    >
+  );
   const resourceIdField = getModelIdProperty(resource);
 
   const fields = options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
@@ -112,7 +118,7 @@ export const submitResource = async ({
     validate(parsedFormData, fields);
 
     const { formattedData, complementaryFormattedData, errors } =
-      await formattedFormData(formValues, schema, resource, id, fields);
+      await formattedFormData(formValues, schema, resource, id, fields, prisma);
 
     if (errors.length) {
       return {

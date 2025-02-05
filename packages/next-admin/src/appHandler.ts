@@ -5,6 +5,7 @@ import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
 import {
   CreateAppHandlerParams,
+  EditFieldsOptions,
   ModelAction,
   Permission,
   RequestContext,
@@ -146,7 +147,12 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
-      const body = await getFormValuesFromFormData(await req.formData());
+      const body = await getFormValuesFromFormData(
+        await req.formData(),
+        options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
+          typeof resource
+        >
+      );
       const id =
         params[paramKey].length === 2
           ? formatId(resource, params[paramKey].at(-1)!)

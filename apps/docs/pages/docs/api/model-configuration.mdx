@@ -470,6 +470,15 @@ When you define a field, use the field's name as the key and the following objec
         "an optional string displayed in the input field as an error message in case of a failure during the upload handler",
     },
     {
+      name: "handler.deleteFile",
+      type: "Function",
+      description: (
+        <>
+          an async function that is used to remove a file from a remote provider. Takes the file URI as an argument.
+        </>
+      )
+    },
+    {
       name: "optionFormatter",
       type: "Function",
       description:
@@ -671,6 +680,25 @@ The `actions` property is an array of objects that allows you to define a set of
   ]}
 />
 
+## `middlewares` property
+
+The `middlewares` property is an object of functions executed either before a record's update or deletion, where you can control if the deletion and update should happen or not. It can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "edit",
+      type: "Function",
+      description: "a function that is called before the form data is sent to the database. It takes the submitted form data as its first argument, and the current value in the database as its second argument. If false is returned, the update will not happen."
+    },
+    {
+      name: "delete",
+      type: "Function",
+      description: "a function that is called before the record is deleted. It takes the record to delete as its only argument. If false is returned, the deletion will not happen."
+    }
+  ]}
+/>
+
 ## NextAdmin Context
 
 The `NextAdmin` context is an object containing the following properties:
@@ -740,7 +768,7 @@ export const options: NextAdminOptions = {
   model: {
     User: {
       /**
-        ...some configuration 
+        ...some configuration
       **/
       edit: {
         display: [

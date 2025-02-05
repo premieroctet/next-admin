@@ -20,10 +20,16 @@ import {
   Schema,
   SchemaDefinitions,
   SchemaProperty,
-  UploadParameters,
+  UploadedFile,
 } from "../types";
 import { getRawData } from "./prisma";
-import { isNativeFunction, isUploadParameters, pipe } from "./tools";
+import {
+  isFileUploadFormat,
+  isNativeFunction,
+  isUploadFile,
+  pipe,
+  uncapitalize,
+} from "./tools";
 
 export const getJsonSchema = (): Schema => {
   try {
@@ -425,7 +431,8 @@ export const transformData = <M extends ModelName>(
                   ]
                 : item[modelRelationIdField],
               data: {
-                modelName: deepRelationModel?.__nextadmin?.type as ModelName,
+                modelName:
+                  (deepRelationModel?.__nextadmin?.type as ModelName) ?? null,
               },
             };
           });
@@ -556,7 +563,8 @@ export const findRelationInData = (
 
 export const parseFormData = <M extends ModelName>(
   formData: AdminFormData<M>,
-  schemaResource: SchemaDefinitions[ModelName]
+  schemaResource: SchemaDefinitions[ModelName],
+  editFieldOptions?: EditFieldsOptions<M>
 ): Partial<ModelWithoutRelationships<M>> => {
   const parsedData: Partial<ModelWithoutRelationships<M>> = {};
   Object.entries(schemaResource.properties).forEach(([property, value]) => {
@@ -565,6 +573,7 @@ export const parseFormData = <M extends ModelName>(
       const propertyNextAdminData = value.__nextadmin;
       const propertyType = propertyNextAdminData?.type;
       const propertyKind = propertyNextAdminData?.kind;
+
       if (propertyKind === "object") {
         if (formData[formPropertyName]) {
           parsedData[formPropertyName] = formData[
@@ -576,7 +585,11 @@ export const parseFormData = <M extends ModelName>(
         }
       } else if (
         propertyNextAdminData?.isList &&
-        propertyNextAdminData.kind === "scalar"
+        propertyNextAdminData.kind === "scalar" &&
+        !isFileUploadFormat(
+          editFieldOptions?.[property as keyof typeof editFieldOptions]
+            ?.format ?? ""
+        )
       ) {
         parsedData[formPropertyName] = JSON.parse(
           formData[formPropertyName]!
@@ -641,6 +654,84 @@ const getExplicitManyToManyTablePrimaryKey = <M extends ModelName>(
   };
 };
 
+type HandleUploadPropertyParams<M extends ModelName> = {
+  files: UploadedFile[];
+  resourceId: string | number | undefined;
+  editOptions?: EditFieldsOptions<M>;
+  property: keyof ScalarField<M>;
+};
+
+const handleUploadProperty = async <M extends ModelName>({
+  files,
+  resourceId,
+  editOptions,
+  property,
+}: HandleUploadPropertyParams<M>) => {
+  const uploadHandler = editOptions?.[property]?.handler?.upload;
+
+  if (!uploadHandler) {
+    console.warn("You need to provide an upload handler for data-url format");
+  } else {
+    return Promise.all(
+      files.map(async (file) => {
+        if (typeof file === "string") {
+          return;
+        }
+
+        const uploadResult = await uploadHandler(file.buffer, file.infos, {
+          resourceId,
+        });
+        if (typeof uploadResult !== "string") {
+          console.warn(
+            "Upload handler must return a string, fallback to no-op for field " +
+              property.toString()
+          );
+          return;
+        }
+
+        return uploadResult;
+      })
+    );
+  }
+};
+
+type HandleFileDeletionParams<M extends ModelName> = {
+  fileUris: string[];
+  editOptions?: EditFieldsOptions<M>;
+  property: keyof ScalarField<M>;
+};
+
+const handleFileDeletion = async <M extends ModelName>({
+  fileUris,
+  editOptions,
+  property,
+}: HandleFileDeletionParams<M>) => {
+  const deleteHandler = editOptions?.[property]?.handler?.deleteFile;
+
+  if (!deleteHandler) {
+    console.warn(
+      "Delete handler not provided, files will not be deleted from your remote storage"
+    );
+    return fileUris;
+  } else {
+    const deletedFiles = await Promise.all(
+      fileUris.map(async (uri) => {
+        try {
+          const isDeleted = await deleteHandler(uri);
+
+          if (isDeleted) {
+            return uri;
+          }
+        } catch (e) {
+          console.error("An error occured while deleting file", e);
+        }
+      })
+    );
+
+    return deletedFiles.filter(Boolean) as string[];
+  }
+};
+
 /**
  * Convert the form data to the format expected by Prisma
  *
@@ -649,13 +740,15 @@ const getExplicitManyToManyTablePrimaryKey = <M extends ModelName>(
  * @param resource
  * @param resourceId
  * @param editOptions
+ * @param prisma
  */
 export const formattedFormData = async <M extends ModelName>(
   formData: AdminFormData<M>,
   schema: Schema,
   resource: M,
   resourceId: string | number | undefined,
-  editOptions?: EditFieldsOptions<M>
+  editOptions: EditFieldsOptions<M> | undefined,
+  prisma: PrismaClient
 ) => {
   const formattedData: any = {};
   const complementaryFormattedData: any = {};
@@ -665,6 +758,16 @@ export const formattedFormData = async <M extends ModelName>(
   const resourceSchema = schema.definitions[
     modelName
   ] as SchemaDefinitions[ModelName];
+  const resourceIdProperty = getModelIdProperty(resource);
+
+  const currentRecord = resourceId
+    ? // @ts-expect-error
+      await prisma[uncapitalize(resource)].findUnique({
+        where: {
+          [resourceIdProperty]: resourceId,
+        },
+      })
+    : undefined;
 
   const results = await Promise.allSettled(
     Object.entries(resourceSchema.properties).map(async ([property, value]) => {
@@ -871,9 +974,10 @@ export const formattedFormData = async <M extends ModelName>(
         } else if (propertyKind === "scalar" && isList) {
           const propertyName = property as keyof ScalarField<M>;
 
-          const formDataValue = JSON.parse(formData[propertyName]!) as
-            | string[]
-            | number[];
+          const formDataValue =
+            typeof formData[propertyName] === "string"
+              ? JSON.parse(formData[propertyName]!)
+              : formData[propertyName];
 
           if (
             propertyType === "Int" ||
@@ -881,12 +985,54 @@ export const formattedFormData = async <M extends ModelName>(
             propertyType === "Decimal"
           ) {
             formattedData[propertyName] = {
-              set: formDataValue
+              set: (formDataValue as string[] | number[])
                 .map((item) =>
                   !isNaN(Number(item)) ? Number(item) : undefined
                 )
                 .filter(Boolean),
             };
+          } else if (
+            propertyType === "String" &&
+            isFileUploadFormat(editOptions?.[propertyName]?.format ?? "")
+          ) {
+            const uploadErrorMessage =
+              editOptions?.[propertyName]?.handler?.uploadErrorMessage;
+            const deletedFiles: string[] = currentRecord[propertyName]?.filter(
+              (existing: string) => {
+                return !formData[propertyName]?.includes(existing);
+              }
+            );
+            try {
+              const unsetFiles = await handleFileDeletion({
+                fileUris: deletedFiles,
+                editOptions,
+                property: propertyName,
+              });
+              const filteredFiles = currentRecord[propertyName].filter(
+                (name: string) => !unsetFiles.includes(name)
+              );
+              const uploadedFiles = await handleUploadProperty({
+                files: (
+                  formData[propertyName] as unknown as (string | UploadedFile)[]
+                ).filter(isUploadFile),
+                resourceId,
+                editOptions,
+                property: propertyName,
+              });
+              formattedData[propertyName] = {
+                set: [
+                  ...filteredFiles,
+                  ...(uploadedFiles?.filter(Boolean) ?? []),
+                ],
+              };
+            } catch (e) {
+              errors.push({
+                field: propertyName.toString(),
+                message:
+                  uploadErrorMessage ??
+                  `Upload failed: ${(e as Error).message}`,
+              });
+            }
           } else {
             formattedData[propertyName] = {
               set: formDataValue,
@@ -931,43 +1077,34 @@ export const formattedFormData = async <M extends ModelName>(
               : null;
           } else if (
             propertyType === "String" &&
-            ["data-url", "file"].includes(
-              editOptions?.[propertyName]?.format ?? ""
-            ) &&
-            isUploadParameters(formData[propertyName])
+            isFileUploadFormat(editOptions?.[propertyName]?.format ?? "")
           ) {
-            const uploadHandler = editOptions?.[propertyName]?.handler?.upload;
             const uploadErrorMessage =
               editOptions?.[propertyName]?.handler?.uploadErrorMessage;
-
-            if (!uploadHandler) {
-              console.warn(
-                "You need to provide an upload handler for data-url format"
-              );
-            } else {
-              try {
-                const uploadResult = await uploadHandler(
-                  ...(formData[propertyName] as unknown as UploadParameters),
-                  {
-                    resourceId,
-                  }
-                );
-                if (typeof uploadResult !== "string") {
-                  console.warn(
-                    "Upload handler must return a string, fallback to no-op for field " +
-                      propertyName.toString()
-                  );
-                } else {
-                  formattedData[propertyName] = uploadResult;
-                }
-              } catch (e) {
-                errors.push({
-                  field: propertyName.toString(),
-                  message:
-                    uploadErrorMessage ??
-                    `Upload failed: ${(e as Error).message}`,
+            try {
+              if (currentRecord?.[propertyName]) {
+                await handleFileDeletion({
+                  fileUris: [currentRecord[propertyName]],
+                  property: propertyName,
+                  editOptions,
                 });
               }
+              const uploaded = await handleUploadProperty({
+                files: formData[propertyName] as unknown as UploadedFile[],
+                resourceId,
+                editOptions,
+                property: propertyName,
+              });
+              if (uploaded?.length) {
+                formattedData[propertyName] = uploaded[0];
+              }
+            } catch (e) {
+              errors.push({
+                field: propertyName.toString(),
+                message:
+                  uploadErrorMessage ??
+                  `Upload failed: ${(e as Error).message}`,
+              });
             }
           } else {
             formattedData[propertyName] = formData[propertyName];
@@ -1215,9 +1352,9 @@ export const getFormDataValues = async (req: IncomingMessage) => {
       });
     },
   });
-  return new Promise<Record<string, string | UploadParameters | null>>(
+  return new Promise<Record<string, string | Array<UploadedFile | string>>>(
     (resolve, reject) => {
-      const files = {} as Record<string, UploadParameters[] | [null]>;
+      const files = {} as Record<string, Array<UploadedFile | string>>;
 
       form.on("fileBegin", (name, file) => {
         // @ts-expect-error
@@ -1229,18 +1366,18 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               callback();
             },
             final(callback) {
-              if (!file.originalFilename) {
-                files[name] = [null];
-              } else {
-                files[name] = [
-                  [
-                    Buffer.concat(chunks),
-                    {
-                      name: file.originalFilename,
-                      type: file.mimetype,
-                    },
-                  ],
-                ];
+              if (file.originalFilename) {
+                if (!files[name]) {
+                  files[name] = [];
+                }
+
+                files[name].push({
+                  buffer: Buffer.concat(chunks),
+                  infos: {
+                    name: file.originalFilename,
+                    type: file.mimetype,
+                  },
+                });
               }
               callback();
             },
@@ -1252,48 +1389,84 @@ export const getFormDataValues = async (req: IncomingMessage) => {
         if (err) {
           reject(err);
         }
-        const joinedFormData = Object.entries({ ...fields, ...files }).reduce(
-          (acc, [key, value]) => {
-            if (Array.isArray(value)) {
-              acc[key] = value[0];
+
+        resolve({
+          ...Object.entries(fields).reduce(
+            (acc, [key, value]) => {
+              if (Array.isArray(value)) {
+                acc[key] = value[0];
+              }
+
+              return acc;
+            },
+            {} as Record<string, string>
+          ),
+          ...Object.entries(files).reduce((acc, [key, value]) => {
+            if (key in fields && Array.isArray(fields[key])) {
+              acc[key] = [...fields[key], ...value];
             }
+
             return acc;
-          },
-          {} as Record<string, string | UploadParameters | null>
-        );
-        resolve(joinedFormData);
+          }, files),
+        });
       });
     }
   );
 };
 
-export const getFormValuesFromFormData = async (formData: FormData) => {
-  const tmpFormValues = {} as Record<string, string | File | null>;
+export const getFormValuesFromFormData = async <M extends ModelName>(
+  formData: FormData,
+  editFieldOptions?: EditFieldsOptions<M>
+) => {
+  const tmpFormValues = {} as Record<string, string | (File | string)[] | null>;
   formData.forEach((val, key) => {
     if (key.startsWith("$ACTION")) {
       return;
     }
-    tmpFormValues[key] = val;
+
+    if (
+      isFileUploadFormat(
+        editFieldOptions?.[key as keyof typeof editFieldOptions]?.format ?? ""
+      )
+    ) {
+      tmpFormValues[key] = formData.getAll(key) as (File | string)[];
+    } else {
+      tmpFormValues[key] = val as string | null;
+    }
   });
 
-  const formValues = {} as Record<string, string | UploadParameters | null>;
+  const formValues = {} as Record<
+    string,
+    string | Array<UploadedFile | string> | null
+  >;
 
   await Promise.allSettled(
     Object.entries(tmpFormValues).map(async ([key, value]) => {
-      if (typeof value === "object") {
-        const file = value as unknown as File;
-        if (file.size === 0) {
-          formValues[key] = null;
-          return;
-        }
-        const buffer = await file.arrayBuffer();
-        formValues[key] = [
-          Buffer.from(buffer),
-          {
-            name: file.name,
-            type: file.type,
-          },
-        ];
+      if (
+        isFileUploadFormat(
+          editFieldOptions?.[key as keyof typeof editFieldOptions]?.format ?? ""
+        ) &&
+        Array.isArray(value)
+      ) {
+        const parameters = await Promise.all(
+          value.map(async (file) => {
+            // We are not uploading a new file
+            if (typeof file === "string") {
+              return file;
+            }
+
+            const buffer = await file.arrayBuffer();
+
+            return {
+              buffer: Buffer.from(buffer),
+              infos: {
+                name: file.name,
+                type: file.type,
+              },
+            } satisfies UploadedFile;
+          })
+        );
+        formValues[key] = parameters;
       } else {
         formValues[key] = value as string;
       }
