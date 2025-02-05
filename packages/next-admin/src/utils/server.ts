@@ -1082,7 +1082,7 @@ export const formattedFormData = async <M extends ModelName>(
             const uploadErrorMessage =
               editOptions?.[propertyName]?.handler?.uploadErrorMessage;
             try {
-              if (currentRecord[propertyName]) {
+              if (currentRecord?.[propertyName]) {
                 await handleFileDeletion({
                   fileUris: [currentRecord[propertyName]],
                   property: propertyName,
