@@ -283,6 +283,9 @@ importers:
         specifier: 5.1.5
         version: 5.1.5
     devDependencies:
+      '@premieroctet/next-admin':
+        specifier: workspace:*
+        version: link:../next-admin
       '@types/json-schema':
         specifier: ^7.0.15
         version: 7.0.15

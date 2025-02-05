@@ -47,6 +47,7 @@ model Post {
   rate       Decimal?            @db.Decimal(5, 2)
   order      Int                 @default(0)
   tags       String[]
+  images     String[]            @default([])
 }
 
 model Profile {

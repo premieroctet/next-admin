@@ -158,10 +158,19 @@ export const options: NextAdminOptions = {
           "author",
           "categories",
           "tags",
+          "images",
         ],
         fields: {
           content: {
             format: "richtext-html",
+          },
+          images: {
+            format: "file",
+            handler: {
+              upload: async (buffer, infos, context) => {
+                return faker.image.url({ width: 200, height: 200 });
+              },
+            },
           },
         },
       },

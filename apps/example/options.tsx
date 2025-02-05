@@ -294,6 +294,14 @@ export const options: NextAdminOptions = {
             orderField: "order",
             relationshipSearchField: "category",
           },
+          images: {
+            format: "file",
+            handler: {
+              upload: async (buffer, infos, context) => {
+                return faker.image.url({ width: 200, height: 200 });
+              },
+            },
+          },
         },
         display: [
           "id",
@@ -304,6 +312,7 @@ export const options: NextAdminOptions = {
           "author",
           "rate",
           "tags",
+          "images",
         ],
         hooks: {
           async beforeDb(data, mode, request) {
