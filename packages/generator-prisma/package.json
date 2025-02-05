@@ -39,11 +39,13 @@
     "prisma-json-schema-generator": "5.1.5"
   },
   "devDependencies": {
-    "@premieroctet/next-admin": "workspace:*",
     "@types/json-schema": "^7.0.15",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.6.2"
+  },
+  "peerDependencies": {
+    "@premieroctet/next-admin": "workspace:*"
   }
 }
