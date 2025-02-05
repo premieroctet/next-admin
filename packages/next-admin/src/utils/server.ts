@@ -1389,8 +1389,18 @@ export const getFormDataValues = async (req: IncomingMessage) => {
         if (err) {
           reject(err);
         }
+
         resolve({
-          ...(fields as Record<string, any>),
+          ...Object.entries(fields).reduce(
+            (acc, [key, value]) => {
+              if (Array.isArray(value)) {
+                acc[key] = value[0];
+              }
+
+              return acc;
+            },
+            {} as Record<string, string>
+          ),
           ...Object.entries(files).reduce((acc, [key, value]) => {
             if (key in fields && Array.isArray(fields[key])) {
               acc[key] = [...fields[key], ...value];
