@@ -979,8 +979,6 @@ export const formattedFormData = async <M extends ModelName>(
               ? JSON.parse(formData[propertyName]!)
               : formData[propertyName];
 
-          console.log("formDataValue", formDataValue);
-
           if (
             propertyType === "Int" ||
             propertyType === "Float" ||
@@ -1084,6 +1082,13 @@ export const formattedFormData = async <M extends ModelName>(
             const uploadErrorMessage =
               editOptions?.[propertyName]?.handler?.uploadErrorMessage;
             try {
+              if (currentRecord[propertyName]) {
+                await handleFileDeletion({
+                  fileUris: [currentRecord[propertyName]],
+                  property: propertyName,
+                  editOptions,
+                });
+              }
               const uploaded = await handleUploadProperty({
                 files: formData[propertyName] as unknown as UploadedFile[],
                 resourceId,

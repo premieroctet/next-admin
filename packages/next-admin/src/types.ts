@@ -348,8 +348,7 @@ export type Handler<
     }
   ) => Promise<string>;
   /**
-   * an async function that is used to remove a file from a remote provider. Called only for multi file upload.
-   * For single file deletion, use `middlewares.delete` on the model.
+   * an async function that is used to remove a file from a remote provider
    *
    * @param fileUri string - the remote file uri
    * @returns success - Promise<boolean> - true if the deletion succeeded, false otherwise. If false is returned, the file will not be removed from the record.

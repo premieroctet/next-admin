@@ -474,8 +474,7 @@ When you define a field, use the field's name as the key and the following objec
       type: "Function",
       description: (
         <>
-          an async function that is used to remove a file from a remote provider. Called only for multi file upload.
-          For single file deletion, use <a href="#middlewares">middlewares.delete</a> instead.
+          an async function that is used to remove a file from a remote provider. Takes the file URI as an argument.
         </>
       )
     },
@@ -678,6 +677,25 @@ The `actions` property is an array of objects that allows you to define a set of
       description:
         "a number that defines the depth of the relations to select in the resource. Use this with caution, a number too high can potentially cause slower queries. Defaults to 2.",
     },
+  ]}
+/>
+
+## `middlewares` property
+
+The `middlewares` property is an object of functions executed either before a record's update or deletion, where you can control if the deletion and update should happen or not. It can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "edit",
+      type: "Function",
+      description: "a function that is called before the form data is sent to the database. It takes the submitted form data as its first argument, and the current value in the database as its second argument. If false is returned, the update will not happen."
+    },
+    {
+      name: "delete",
+      type: "Function",
+      description: "a function that is called before the record is deleted. It takes the record to delete as its only argument. If false is returned, the deletion will not happen."
+    }
   ]}
 />
 
