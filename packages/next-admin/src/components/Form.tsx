@@ -46,7 +46,7 @@ import {
   Permission,
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
-import { formatLabel, slugify } from "../utils/tools";
+import { formatLabel, isFileUploadFormat, slugify } from "../utils/tools";
 import FormHeader from "./FormHeader";
 import ArrayField from "./inputs/ArrayField";
 import BaseInput from "./inputs/BaseInput";
@@ -527,7 +527,7 @@ const Form = ({
                   schema.properties[field as keyof typeof schema.properties];
                 const isFieldArrayOfFiles =
                   schemaProperties?.type === "array" &&
-                  schemaProperties.format === "data-url";
+                  isFileUploadFormat(schemaProperties.format ?? "");
 
                 if (isFieldArrayOfFiles) {
                   const files = formValues

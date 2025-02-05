@@ -24,7 +24,7 @@ import {
 } from "../types";
 import { getRawData } from "./prisma";
 import {
-  getDeletedFilesFieldName,
+  isFileUploadFormat,
   isNativeFunction,
   isUploadFile,
   pipe,
@@ -62,10 +62,6 @@ export const enumValueForEnumType = (
   }
 
   return false;
-};
-
-const isFileUploadFormat = (format: string) => {
-  return ["data-url", "file"].includes(format);
 };
 
 export const getEnableToExecuteActions = async <M extends ModelName>(
@@ -435,7 +431,8 @@ export const transformData = <M extends ModelName>(
                   ]
                 : item[modelRelationIdField],
               data: {
-                modelName: deepRelationModel?.__nextadmin?.type as ModelName,
+                modelName:
+                  (deepRelationModel?.__nextadmin?.type as ModelName) ?? null,
               },
             };
           });
@@ -1024,7 +1021,6 @@ export const formattedFormData = async <M extends ModelName>(
                 editOptions,
                 property: propertyName,
               });
-              console.dir({ uploadedFiles }, { depth: null });
               formattedData[propertyName] = {
                 set: [
                   ...filteredFiles,
@@ -1366,6 +1362,10 @@ export const getFormDataValues = async (req: IncomingMessage) => {
             },
             final(callback) {
               if (file.originalFilename) {
+                if (!files[name]) {
+                  files[name] = [];
+                }
+
                 files[name].push({
                   buffer: Buffer.concat(chunks),
                   infos: {
@@ -1384,7 +1384,16 @@ export const getFormDataValues = async (req: IncomingMessage) => {
         if (err) {
           reject(err);
         }
-        resolve(files);
+        resolve({
+          ...(fields as Record<string, any>),
+          ...Object.entries(files).reduce((acc, [key, value]) => {
+            if (key in fields && Array.isArray(fields[key])) {
+              acc[key] = [...fields[key], ...value];
+            }
+
+            return acc;
+          }, files),
+        });
       });
     }
   );
@@ -1442,15 +1451,12 @@ export const getFormValuesFromFormData = async <M extends ModelName>(
             } satisfies UploadedFile;
           })
         );
-        console.log("parameters", parameters);
         formValues[key] = parameters;
       } else {
         formValues[key] = value as string;
       }
     })
   );
-
-  console.dir({ formValues }, { depth: null });
 
   return formValues;
 };

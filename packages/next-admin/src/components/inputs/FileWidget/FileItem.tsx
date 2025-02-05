@@ -40,7 +40,6 @@ const FileItem = ({ file, hasError, onDelete, disabled }: Props) => {
         setIsPending(false);
       };
       image.onerror = (e) => {
-        console.error(e);
         setFileIsImage(false);
         setIsPending(false);
       };

@@ -95,3 +95,7 @@ export const getDisplayedValue = (
 
 export const getDeletedFilesFieldName = (field: string) =>
   `${field}__nextadmin_deleted`;
+
+export const isFileUploadFormat = (format: string) => {
+  return ["data-url", "file"].includes(format);
+};

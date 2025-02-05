@@ -20,14 +20,15 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.4.0",
     "@heroicons/react": "^2.0.18",
     "@picocss/pico": "^1.5.7",
     "@premieroctet/next-admin": "workspace:*",
     "@premieroctet/next-admin-generator-prisma": "workspace:*",
-    "next-intl": "^3.3.2",
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
     "next": "^15.1.0",
+    "next-intl": "^3.3.2",
     "next-superjson": "^1.0.7",
     "next-superjson-plugin": "^0.6.3",
     "react": "^19.0.0",

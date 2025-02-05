@@ -65,7 +65,7 @@ const FileWidget = (props: Props) => {
       const newFormData = { ...old };
       if (Array.isArray(props.value)) {
         newFormData[props.name] = stateFiles.filter(
-          (_: unknown, i: number) => i !== index
+          (val: unknown, i: number) => i !== index && typeof val === "string"
         );
       } else {
         newFormData[props.name] = [null];
@@ -174,7 +174,7 @@ const FileWidget = (props: Props) => {
         {files.map((file, index) => {
           return (
             <FileItem
-              key={`${typeof file === "string" ? file : file.name}-${index}`}
+              key={`${typeof file === "string" ? file : file.name}`}
               disabled={props.disabled ?? false}
               file={file}
               hasError={!!errors}

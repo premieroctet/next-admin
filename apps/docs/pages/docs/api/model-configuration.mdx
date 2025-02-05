@@ -470,6 +470,16 @@ When you define a field, use the field's name as the key and the following objec
         "an optional string displayed in the input field as an error message in case of a failure during the upload handler",
     },
     {
+      name: "handler.deleteFile",
+      type: "Function",
+      description: (
+        <>
+          an async function that is used to remove a file from a remote provider. Called only for multi file upload.
+          For single file deletion, use <a href="#middlewares">middlewares.delete</a> instead.
+        </>
+      )
+    },
+    {
       name: "optionFormatter",
       type: "Function",
       description:
@@ -740,7 +750,7 @@ export const options: NextAdminOptions = {
   model: {
     User: {
       /**
-        ...some configuration 
+        ...some configuration
       **/
       edit: {
         display: [

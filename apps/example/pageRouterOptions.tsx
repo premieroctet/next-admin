@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { NextAdminOptions } from "@premieroctet/next-admin";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
@@ -86,7 +87,7 @@ export const options: NextAdminOptions = {
                * Make sure to return a string.
                */
               upload: async (buffer, infos, context) => {
-                return "https://raw.githubusercontent.com/premieroctet/next-admin/33fcd755a34f1ec5ad53ca8e293029528af814ca/apps/example/public/assets/logo.svg";
+                return faker.image.url({ width: 200, height: 200 });
               },
             },
           },
