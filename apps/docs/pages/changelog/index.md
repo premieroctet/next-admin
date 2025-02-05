@@ -1,5 +1,16 @@
 # @premieroctet/next-admin
 
+## 7.3.0
+
+### Minor Changes
+
+- [e390d30](https://github.com/premieroctet/next-admin/commit/e390d309fe6cc6b7bbb6bbe2f2d3cafb5fcda5a4): feat: allow multifile upload ([#519](https://github.com/premieroctet/next-admin/issues/519))
+- [f4d1d95](https://github.com/premieroctet/next-admin/commit/f4d1d957812a353ea66e6bcdacf8c2d569b3711a): feat: add edit and delete middlewares ([#527](https://github.com/premieroctet/next-admin/issues/527) [#528](https://github.com/premieroctet/next-admin/issues/528))
+
+### Patch Changes
+
+- [5854cce](https://github.com/premieroctet/next-admin/commit/5854cce371999758c18f4ff0c9a2a522ed431cf9): feat: add loader skeleton for rich text ([#462](https://github.com/premieroctet/next-admin/issues/462))
+
 ## 7.2.0
 
 ### Minor Changes

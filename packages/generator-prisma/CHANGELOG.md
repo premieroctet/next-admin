@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-generator-prisma
 
+## 0.0.3
+
+### Patch Changes
+
+- [00ac507](https://github.com/premieroctet/next-admin/commit/00ac507d596bfb668fe33849535ba59f6fb8e2ce): add next-admin to peer deps
+
 ## 0.0.2
 
 ### Patch Changes
