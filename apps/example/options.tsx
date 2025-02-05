@@ -110,8 +110,7 @@ export const options: NextAdminOptions = {
             input: <DatePicker />,
           },
           posts: {
-            display: "list",
-            orderField: "order",
+            display: "table",
           },
           avatar: {
             format: "file",
@@ -301,6 +300,7 @@ export const options: NextAdminOptions = {
                 return faker.image.url({ width: 200, height: 200 });
               },
             },
+            maxLength: 5,
           },
         },
         display: [

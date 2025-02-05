@@ -86,13 +86,19 @@ const ScalarArrayField = ({
   };
 
   const onAddNewItem = () => {
-    setFormDataList((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        value: "",
-      },
-    ]);
+    setFormDataList((prev) => {
+      if (schema.maxItems && prev.length >= schema.maxItems) {
+        return prev;
+      }
+
+      return [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          value: "",
+        },
+      ];
+    });
     setFieldDirty(name);
   };
 
@@ -115,7 +121,10 @@ const ScalarArrayField = ({
       <Button
         type="button"
         className="w-fit"
-        disabled={disabled}
+        disabled={
+          disabled ||
+          (schema.maxItems ? formDataList.length >= schema.maxItems : false)
+        }
         onClick={onAddNewItem}
       >
         {t("form.widgets.scalar_array.add")}
