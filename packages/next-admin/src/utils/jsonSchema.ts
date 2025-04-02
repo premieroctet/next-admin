@@ -43,15 +43,35 @@ export function getSchemaForResource(schema: any, resource: string) {
   return resourceSchema;
 }
 
-export function getSchemas<M extends ModelName>(
+export function getInfos<M extends ModelName>(
   data: any,
-  schema: SchemaDefinitions[M],
-  editFieldsOptions?: EditFieldsOptions<M>
-): Schemas & { edit: boolean; id?: string | number } {
-  const uiSchema: UiSchema = {};
+  schema: SchemaDefinitions[M]
+) {
   let edit = false;
   let id;
 
+  const properties = schema.properties!;
+  const idProperty = Object.keys(properties).find((property) => {
+    const propertyData = properties[property as keyof typeof properties];
+
+    if (typeof propertyData === "boolean") {
+      return false;
+    }
+
+    return propertyData?.__nextadmin?.primaryKey;
+  });
+
+  edit = !!data?.[idProperty ?? "id"];
+  id = data?.[idProperty ?? "id"];
+
+  return { edit, id };
+}
+
+export function modifySchema<M extends ModelName>(
+  data: any,
+  schema: SchemaDefinitions[M],
+  editFieldsOptions?: EditFieldsOptions<M>
+) {
   const { disabledFields, requiredFields } = Object.entries(
     editFieldsOptions ?? {}
   ).reduce<{ disabledFields: string[]; requiredFields: string[] }>(
@@ -68,39 +88,32 @@ export function getSchemas<M extends ModelName>(
   );
 
   const properties = schema.properties!;
-  const idProperty = Object.keys(properties).find((property) => {
-    const propertyData = properties[property as keyof typeof properties];
 
-    if (typeof propertyData === "boolean") {
-      return false;
-    }
-
-    return propertyData?.__nextadmin?.primaryKey;
-  });
-
-  edit = !!data?.[idProperty ?? "id"];
-  id = data?.[idProperty ?? "id"];
   Object.keys(properties).forEach((property) => {
     if (
       requiredFields?.includes(property) &&
       !schema.required?.includes(property)
     ) {
       schema.required = [...(schema.required ?? []), property];
+      properties[property as keyof typeof properties]!.__nextadmin!.required = true;
     }
 
     if (
       properties[property as keyof typeof properties]?.__nextadmin?.disabled ||
       disabledFields?.includes(property)
     ) {
-      edit
-        ? (uiSchema[property] = {
-            ...uiSchema[property],
-            "ui:disabled": true,
-          })
-        : delete properties[property as keyof typeof properties];
+      const { edit } = getInfos(data, schema);
+      if (edit) {
+        if (properties[property as keyof typeof properties]?.__nextadmin) {
+          properties[
+            property as keyof typeof properties
+          ]!.__nextadmin!.disabled = true;
+        }
+      } else {
+        delete properties[property as keyof typeof properties];
+      }
     }
   });
-  return { uiSchema, schema, edit, id };
 }
 
 export const getDefinitionFromRef = (schema: Schema, ref: string) => {

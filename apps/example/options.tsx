@@ -100,6 +100,7 @@ export const options: NextAdminOptions = {
             required: true,
             validate: (name) =>
               (name && name.length > 2) || "form.user.name.error",
+            disabled: true,
           },
           email: {
             validate: (email) => email.includes("@") || "form.user.email.error",

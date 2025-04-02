@@ -4,7 +4,7 @@ import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
-import Form from "./Form";
+import Form from "./form/Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
 import PageLoader from "./PageLoader";

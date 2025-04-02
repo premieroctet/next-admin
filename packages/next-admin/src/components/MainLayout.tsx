@@ -4,6 +4,7 @@ import { PropsWithChildren } from "react";
 import { ColorSchemeProvider } from "../context/ColorSchemeContext";
 import { ConfigProvider } from "../context/ConfigContext";
 import { I18nProvider } from "../context/I18nContext";
+import { MessageProvider } from "../context/MessageContext";
 import { defaultTranslations } from "../i18n";
 import { MainLayoutProps } from "../types";
 import Menu from "./Menu";
@@ -64,7 +65,9 @@ export const MainLayout = ({
                 user={user}
                 externalLinks={externalLinks}
               />
-              <main className="lg:pl-72">{children}</main>
+              <MessageProvider>
+                <main className="lg:pl-72">{children}</main>
+              </MessageProvider>
             </div>
           </ColorSchemeProvider>
         </ThemeProvider>

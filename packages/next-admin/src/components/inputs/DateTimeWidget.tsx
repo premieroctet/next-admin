@@ -6,7 +6,7 @@ import {
   getTemplate,
   utcToLocal,
 } from "@rjsf/utils";
-import { useFormState } from "../../context/FormStateContext";
+
 
 /** The `DateTimeWidget` component uses the `BaseInputTemplate` changing the type to `datetime-local` and transforms
  * the value to/from utc using the appropriate utility functions.
@@ -24,7 +24,7 @@ export default function DateTimeWidget<
     registry,
     options
   );
-  const { setFieldDirty } = useFormState();
+
 
   return (
     <BaseInputTemplate
@@ -32,7 +32,7 @@ export default function DateTimeWidget<
       {...props}
       value={utcToLocal(value)}
       onChange={(value) => {
-        setFieldDirty(props.name);
+
         onChange(value);
       }}
     />

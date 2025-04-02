@@ -7,7 +7,6 @@ import {
 } from "@rjsf/utils";
 import clsx from "clsx";
 import { ChangeEvent, FocusEvent, useCallback } from "react";
-import { useFormState } from "../../context/FormStateContext";
 
 /** The `TextareaWidget` is a widget for rendering input fields as textarea.
  *
@@ -31,10 +30,8 @@ const TextareaWidget = <
   onFocus,
   rawErrors,
 }: WidgetProps<T, S, F>) => {
-  const { setFieldDirty } = useFormState();
   const handleChange = useCallback(
     ({ target: { value } }: ChangeEvent<HTMLTextAreaElement>) => {
-      setFieldDirty(id);
       onChange(value === "" ? options.emptyValue : value);
     },
     [onChange, options.emptyValue]

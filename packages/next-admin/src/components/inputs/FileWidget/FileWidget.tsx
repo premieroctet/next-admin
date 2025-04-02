@@ -2,10 +2,8 @@ import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
-import { useFormState } from "../../../context/FormStateContext";
 import { useI18n } from "../../../context/I18nContext";
 import FileItem from "./FileItem";
-import { useFormData } from "../../../context/FormDataContext";
 
 type Props = Pick<
   WidgetProps,
@@ -32,13 +30,11 @@ const FileWidget = (props: Props) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const { t } = useI18n();
   const [isDragging, setIsDragging] = useState(false);
-  const { setFieldDirty } = useFormState();
-  const { setFormData } = useFormData();
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = event.target.files;
     if (selectedFiles) {
-      setFieldDirty(props.name);
+
       setFiles((old) => {
         if (!acceptsMultipleFiles) {
           return [selectedFiles[0]];
@@ -59,27 +55,13 @@ const FileWidget = (props: Props) => {
       newFiles.splice(index, 1);
       return newFiles;
     });
-    setFieldDirty(props.name);
-
-    setFormData((old: any) => {
-      const newFormData = { ...old };
-      if (Array.isArray(props.value)) {
-        newFormData[props.name] = stateFiles.filter(
-          (val: unknown, i: number) => i !== index && typeof val === "string"
-        );
-      } else {
-        newFormData[props.name] = [null];
-      }
-
-      return newFormData;
-    });
   };
 
   const handleDrop = (event: React.DragEvent) => {
     if (!props.disabled) {
       event.preventDefault();
 
-      setFieldDirty(props.name);
+
       setFiles((old) => {
         if (acceptsMultipleFiles) {
           return [...old, ...Array.from(event.dataTransfer.files)];

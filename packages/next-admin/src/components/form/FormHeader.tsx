@@ -1,19 +1,19 @@
 "use client";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { useConfig } from "../context/ConfigContext";
-import { useI18n } from "../context/I18nContext";
+import { useConfig } from "../../context/ConfigContext";
+import { useI18n } from "../../context/I18nContext";
 import {
   EditFieldsOptions,
   FormProps,
   ModelOptions,
   Permission,
-} from "../types";
-import { getSchemas } from "../utils/jsonSchema";
-import { slugify } from "../utils/tools";
-import ActionsDropdown from "./ActionsDropdown";
-import Breadcrumb from "./Breadcrumb";
-import { buttonVariants } from "./radix/Button";
+} from "../../types";
+import { getInfos } from "../../utils/jsonSchema";
+import { slugify } from "../../utils/tools";
+import ActionsDropdown from "../ActionsDropdown";
+import Breadcrumb from "../Breadcrumb";
+import { buttonVariants } from "../radix/Button";
 
 export default function FormHeader({
   title,
@@ -23,7 +23,7 @@ export default function FormHeader({
   resource,
   data,
   schema,
-}: FormProps) {
+}: Pick<FormProps, "title" | "slug" | "icon" | "actions" | "resource" | "data" | "schema">) {
   const { t } = useI18n();
   const { basePath, options } = useConfig();
   const modelOptions: ModelOptions<typeof resource>[typeof resource] =
@@ -32,10 +32,9 @@ export default function FormHeader({
     !modelOptions?.permissions ||
     modelOptions?.permissions?.includes(Permission.CREATE);
 
-  const { edit, id } = getSchemas(
+  const { edit, id } = getInfos(
     data,
     schema,
-    modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
   );
 
   const breadcrumItems = [

@@ -1,4 +1,6 @@
+import { ClassValue, clsx } from "clsx";
 import React from "react";
+import { twMerge } from "tailwind-merge";
 import { UploadedFile } from "../types";
 
 export const capitalize = <T extends string>(str: T): Capitalize<T> => {
@@ -99,3 +101,7 @@ export const getDeletedFilesFieldName = (field: string) =>
 export const isFileUploadFormat = (format: string) => {
   return ["data-url", "file"].includes(format);
 };
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}

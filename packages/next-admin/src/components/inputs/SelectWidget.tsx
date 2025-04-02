@@ -8,7 +8,7 @@ import Link from "next/link";
 import { useMemo } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";
-import { useFormState } from "../../context/FormStateContext";
+
 import useClickOutside from "../../hooks/useCloseOnOutsideClick";
 import { useDisclosure } from "../../hooks/useDisclosure";
 import { Enumeration } from "../../types";
@@ -32,12 +32,12 @@ const SelectWidget = ({
   const enumOptions = options.enumOptions?.map(
     (option: any) => option.value as Enumeration
   );
-  const { setFieldDirty } = useFormState();
+
 
   const { basePath } = useConfig();
 
   const handleChange = (option: Enumeration | null) => {
-    setFieldDirty(props.name);
+
     onChange(option);
     onClose();
   };

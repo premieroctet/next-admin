@@ -5,6 +5,7 @@ import {
   NextAdminContext,
   NextAdminOptions,
   Schema,
+  ModelOptions,
 } from "../types";
 
 export type ConfigContextType = {
@@ -16,6 +17,7 @@ export type ConfigContextType = {
   resourcesIdProperty: Record<ModelName, string> | null;
   schema: Schema;
   nextAdminContext?: NextAdminContext;
+  modelOptions?: ModelOptions<ModelName>[ModelName];
 };
 
 const ConfigContext = React.createContext<ConfigContextType>(
@@ -35,7 +37,7 @@ type ProviderProps = {
 };
 
 export const ConfigProvider = ({ children, ...props }: ProviderProps) => {
-  const contextValue = useMemo(() => ({ ...props }), [props]);
+  const contextValue = useMemo(() => ({ ...(props.resource ? { modelOptions: props.options?.model?.[props.resource] } : {}), ...props }), [props]);
 
   return (
     <ConfigContext.Provider value={contextValue}>
