@@ -2,10 +2,10 @@ import { CloudArrowUpIcon } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
 import { ChangeEvent, useEffect, useRef, useState } from "react";
+import { useFormData } from "../../../context/FormDataContext";
 import { useFormState } from "../../../context/FormStateContext";
 import { useI18n } from "../../../context/I18nContext";
 import FileItem from "./FileItem";
-import { useFormData } from "../../../context/FormDataContext";
 
 type Props = Pick<
   WidgetProps,
@@ -100,7 +100,9 @@ const FileWidget = (props: Props) => {
         return;
       }
 
-      dataTransfer.items.add(file);
+      if (file !== null) {
+        dataTransfer.items.add(file);
+      }
     });
 
     if (inputRef.current) {
@@ -158,7 +160,7 @@ const FileWidget = (props: Props) => {
                 ref={inputRef}
                 id={props.id}
                 disabled={props.disabled}
-                required={!acceptsMultipleFiles ? props.required : false}
+                required={!acceptsMultipleFiles ? props.required && (props.value !== null) : false}
                 name={props.name}
                 onChange={handleFileChange}
                 multiple={acceptsMultipleFiles}
@@ -172,6 +174,9 @@ const FileWidget = (props: Props) => {
       </div>
       <div className="flex flex-wrap gap-2">
         {files.map((file, index) => {
+          if (file === null) {
+            return null;
+          }
           return (
             <FileItem
               key={`${typeof file === "string" ? file : file.name}`}
