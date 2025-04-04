@@ -1,5 +1,13 @@
 # @premieroctet/next-admin-generator-prisma
 
+## 0.0.4
+
+### Patch Changes
+
+- Updated dependencies [[811813e](https://github.com/premieroctet/next-admin/commit/811813e7532719fae0b88396123a60b2abe551c4)]
+- Updated dependencies [[811813e](https://github.com/premieroctet/next-admin/commit/811813e7532719fae0b88396123a60b2abe551c4)]
+  - @premieroctet/next-admin@7.3.1
+
 ## 0.0.3
 
 ### Patch Changes
