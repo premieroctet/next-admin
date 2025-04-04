@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 7.3.1
+
+### Patch Changes
+
+- [811813e](https://github.com/premieroctet/next-admin/commit/811813e7532719fae0b88396123a60b2abe551c4): Fix deleting files ([#535](https://github.com/premieroctet/next-admin/issues/535), [#536](https://github.com/premieroctet/next-admin/issues/536))
+- [811813e](https://github.com/premieroctet/next-admin/commit/811813e7532719fae0b88396123a60b2abe551c4): Add scroll in advanced filter modal ([#509](https://github.com/premieroctet/next-admin/issues/509))
+
 ## 7.3.0
 
 ### Minor Changes
