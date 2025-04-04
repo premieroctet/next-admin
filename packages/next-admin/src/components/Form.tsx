@@ -545,9 +545,13 @@ const Form = ({
                     data.append(field, val);
                   });
 
-                  files.forEach((file) => {
-                    data.append(field, file);
-                  });
+                  if (files.length > 0) {
+                    files.forEach((file) => {
+                      data.append(field, file);
+                    });
+                  } else {
+                    data.append(field, new File([], ""));
+                  }
                   return;
                 }
 

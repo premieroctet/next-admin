@@ -33,7 +33,7 @@ export const DialogContent = forwardRef<
     <Dialog.Content
       className={twMerge(
         clsx(
-          "text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis border-nextadmin-border-strong dark:border-dark-nextadmin-border-strong bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default fixed top-[50%] z-[52] w-full translate-y-[-50%] rounded-lg border bg-white p-6 shadow-lg md:left-[50%] md:w-[50vw] md:translate-x-[-50%]",
+          "text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis border-nextadmin-border-strong dark:border-dark-nextadmin-border-strong bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default fixed top-[50%] z-[52] w-full translate-y-[-50%] rounded-lg border bg-white p-6 shadow-lg md:left-[50%] md:w-[50vw] md:translate-x-[-50%] max-h-[90vh] overflow-y-auto",
           className
         )
       )}

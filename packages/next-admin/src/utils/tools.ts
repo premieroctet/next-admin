@@ -73,7 +73,7 @@ export const formatLabel = (label: string) => {
 };
 
 export const isUploadFile = (obj: any): obj is UploadedFile => {
-  return typeof obj === "object" && "buffer" in obj && "infos" in obj;
+  return typeof obj === "object" && "buffer" in obj && "infos" in obj && obj.buffer.length > 0;
 };
 
 export const getDisplayedValue = (

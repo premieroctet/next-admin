@@ -1090,13 +1090,15 @@ export const formattedFormData = async <M extends ModelName>(
                 });
               }
               const uploaded = await handleUploadProperty({
-                files: formData[propertyName] as unknown as UploadedFile[],
+                files: (formData[propertyName] as unknown as UploadedFile[]).filter(isUploadFile),
                 resourceId,
                 editOptions,
                 property: propertyName,
               });
               if (uploaded?.length) {
                 formattedData[propertyName] = uploaded[0];
+              } else {
+                formattedData[propertyName] = null;
               }
             } catch (e) {
               errors.push({
