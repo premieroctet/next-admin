@@ -1,11 +1,11 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
+import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { NextApiRequest } from "next";
 import { NextRequest, NextResponse } from "next/server";
+import type React from "react";
 import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
-import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
-import type React from "react";
 
 declare type JSONSchema7Definition = NextAdminJSONSchema & {
   relation?: ModelName;
@@ -414,6 +414,11 @@ export type ListOptions<T extends ModelName> = {
    * @default all scalar
    */
   display?: Field<T>[];
+  /**
+   * an optional field to enable order on the list. When enabled, this will disable manual sorting by clicking column headers.
+   * @restriction only scalar fields are allowed and no primary keys. it must be a number field.
+   */
+  orderField?: keyof ScalarField<T>;
   /**
    * an array of searchable fields.
    * @default all scalar

@@ -3,7 +3,8 @@ import { EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import clsx from "clsx";
 import debounce from "lodash.debounce";
-import { ChangeEvent, useEffect, useState, useTransition } from "react";
+import { ChangeEvent, useEffect, useOptimistic, useState, useTransition } from "react";
+import { twMerge } from "tailwind-merge";
 import { ITEMS_PER_PAGE } from "../config";
 import ClientActionDialogProvider from "../context/ClientActionDialogContext";
 import { useConfig } from "../context/ConfigContext";
@@ -21,6 +22,7 @@ import {
   ModelName,
   Schema,
 } from "../types";
+import { slugify } from "../utils/tools";
 import ActionDropdownItem from "./ActionDropdownItem";
 import { DataTable } from "./DataTable";
 import Filters from "./Filters";
@@ -42,9 +44,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "./radix/Select";
-import { twMerge } from "tailwind-merge";
 
 export type ListProps = {
   resource: ModelName;
@@ -67,14 +67,17 @@ function List({
   icon,
   schema,
 }: ListProps) {
+
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
-  const { options } = useConfig();
+  const [_orderPending, startOrderTransition] = useTransition();
+  const { options, apiBasePath } = useConfig();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
-  const sortColumn = query.sortColumn as string;
-  const sortDirection = query.sortDirection as "asc" | "desc";
+  const modelOptions = options?.["model"]?.[resource];
+  const sortColumn = !modelOptions?.list?.orderField ? query.sortColumn as string : undefined;
+  const sortDirection = !modelOptions?.list?.orderField ? query.sortDirection as "asc" | "desc" : undefined;
   const { deleteItems } = useDeleteAction(resource);
   const { t } = useI18n();
   const columns = useDataColumns({
@@ -87,7 +90,20 @@ function List({
   });
 
   let onSearchChange;
-  const modelOptions = options?.["model"]?.[resource];
+
+  const [optimisticData, optimisticOrderData] = useOptimistic(data, (prevData, orderData: { currentId: string | number, moveOverId: string | number }) => {
+    if (!modelOptions?.list?.orderField) return prevData;
+
+    let newData = [...prevData];
+    const { currentId, moveOverId } = orderData;
+    const currentIndex = newData.findIndex(item => item[resourcesIdProperty[resource]].value === currentId);
+    const moveOverIndex = newData.findIndex(item => item[resourcesIdProperty[resource]].value === moveOverId);
+
+    const [removed] = newData.splice(currentIndex, 1);
+    newData.splice(moveOverIndex, 0, removed);
+
+    return newData;
+  })
 
   const hasDeletePermission =
     !modelOptions?.permissions || modelOptions?.permissions?.includes("delete");
@@ -216,6 +232,24 @@ function List({
       | number[];
   };
 
+  const handleOrderChange = modelOptions?.list?.orderField ? (value: { currentId: string | number, moveOverId: string | number }) => {
+    startOrderTransition(async () => {
+      optimisticOrderData(value);
+      //await new Promise(resolve => setTimeout(resolve, 20000));
+
+      const response = await fetch(
+        `${apiBasePath}/${slugify(resource)}/order`,
+        {
+          method: "POST",
+          body: JSON.stringify(value),
+        }
+      );
+      console.log("RESPONSE", response);
+      const result = await response.json();
+      router.refresh();
+    });
+  } : undefined;
+
   return (
     <ClientActionDialogProvider>
       <div className="flow-root h-full">
@@ -241,14 +275,16 @@ function List({
           </div>
           <DataTable
             resource={resource}
-            data={data}
+            data={optimisticData}
             columns={[checkboxColumn, ...columns, actionsColumn]}
             resourcesIdProperty={resourcesIdProperty}
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
             icon={icon}
+            onOrderChange={handleOrderChange!}
+            orderField={modelOptions?.list?.orderField!}
           />
-          {data.length ? (
+          {optimisticData.length ? (
             <div className="flex flex-1 flex-wrap items-center justify-between gap-2 py-4">
               <div>
                 <TableRowsIndicator

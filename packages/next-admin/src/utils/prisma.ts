@@ -313,39 +313,44 @@ const preparePrismaListRequest = async <M extends ModelName>(
     ?.map((filter) => filter.value);
 
   let orderBy: Order<typeof resource> = {};
-  const sortParam =
-    (searchParams.get("sortColumn") as Field<typeof resource>) ??
-    fieldSort?.field;
-  const orderValue =
-    (searchParams.get("sortDirection") as Prisma.SortOrder) ??
-    fieldSort?.direction;
 
-  const modelFieldSortParam =
-    modelProperties[sortParam as keyof typeof modelProperties];
-  const modelFieldNextAdminData = modelFieldSortParam?.__nextadmin;
+  if (options?.model?.[resource]?.list?.orderField) {
+    orderBy[options?.model?.[resource]?.list?.orderField] = "asc";
+  } else {
+    const sortParam =
+      (searchParams.get("sortColumn") as Field<typeof resource>) ??
+      fieldSort?.field;
+    const orderValue =
+      (searchParams.get("sortDirection") as Prisma.SortOrder) ??
+      fieldSort?.direction;
 
-  if (orderValue in Prisma.SortOrder) {
-    if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
-      orderBy[sortParam] = orderValue;
-    } else if (modelFieldNextAdminData?.kind === "object") {
-      if (modelFieldNextAdminData.isList) {
-        orderBy[sortParam as Field<M>] = {
-          _count: orderValue,
-        };
-      } else {
-        const modelFieldSortProperty =
-          options?.model?.[resource]?.list?.fields?.[
-            sortParam as Field<M>
-            // @ts-expect-error
-          ]?.sortBy;
+    const modelFieldSortParam =
+      modelProperties[sortParam as keyof typeof modelProperties];
+    const modelFieldNextAdminData = modelFieldSortParam?.__nextadmin;
 
-        const resourceSortByField =
-          modelFieldSortProperty ??
-          getModelIdProperty(modelFieldNextAdminData.type as ModelName);
+    if (orderValue in Prisma.SortOrder) {
+      if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
+        orderBy[sortParam] = orderValue;
+      } else if (modelFieldNextAdminData?.kind === "object") {
+        if (modelFieldNextAdminData.isList) {
+          orderBy[sortParam as Field<M>] = {
+            _count: orderValue,
+          };
+        } else {
+          const modelFieldSortProperty =
+            options?.model?.[resource]?.list?.fields?.[
+              sortParam as Field<M>
+              // @ts-expect-error
+            ]?.sortBy;
 
-        orderBy[sortParam as Field<M>] = {
-          [resourceSortByField]: orderValue,
-        };
+          const resourceSortByField =
+            modelFieldSortProperty ??
+            getModelIdProperty(modelFieldNextAdminData.type as ModelName);
+
+          orderBy[sortParam as Field<M>] = {
+            [resourceSortByField]: orderValue,
+          };
+        }
       }
     }
   }
@@ -370,6 +375,13 @@ const preparePrismaListRequest = async <M extends ModelName>(
     take: itemsPerPage,
   };
 };
+
+export const changeOrder = (
+  resource: ModelName,
+  orderField: string,
+  currentId: string,
+  moveOverId: string
+) => {};
 
 type GetMappedDataListParams = {
   prisma: PrismaClient;
@@ -603,9 +615,14 @@ export const selectPayloadForModel = <M extends ModelName>(
   const idProperty = getModelIdProperty(resource);
 
   const displayKeys = options?.display;
+  const orderField = (options as ListOptions<M>)?.orderField;
   let selectedFields = Object.entries(properties).reduce(
     (acc, [name, field]) => {
       const fieldNextAdmin = field.__nextadmin;
+
+      if (orderField === name) {
+        acc[name] = true;
+      }
 
       if (
         (displayKeys && displayKeys.includes(name as Field<M>)) ||
@@ -620,10 +637,11 @@ export const selectPayloadForModel = <M extends ModelName>(
             ),
           };
 
-          const orderField = (options as EditOptions<M>)?.fields?.[
-            name as Field<M>
-            // @ts-expect-error
-          ]?.orderField;
+          const orderField =
+            (options as EditOptions<M>)?.fields?.[
+              name as Field<M>
+              // @ts-expect-error
+            ]?.orderField || (options as ListOptions<M>)?.orderField;
 
           if (orderField) {
             acc[name].orderBy = {

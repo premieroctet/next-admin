@@ -16,6 +16,7 @@ import { getRawData } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
+  getModelIdProperty,
   getResourceFromParams,
   getResources,
   globalSchema,
@@ -136,6 +137,111 @@ export const createHandler = <P extends string = "nextadmin">({
 
       return NextResponse.json(data);
     })
+    .post(`${apiBasePath}/:model/order`, async (req, ctx) => {
+      const body = await req.json();
+      const { currentId, moveOverId } = body;
+      const params = await ctx.params;
+      const resource = getResourceFromParams(params[paramKey], resources);
+
+      if (!resource) {
+        return NextResponse.json(
+          { error: "Resource not found" },
+          { status: 404 }
+        );
+      }
+
+      const resourceIdField = getModelIdProperty(resource);
+
+      const orderField = options?.model?.[resource]?.list?.orderField;
+
+      if (!orderField) {
+        return NextResponse.json(
+          { error: "Order field not found" },
+          { status: 404 }
+        );
+      }
+
+      // @ts-expect-error
+      const currentItem = await prisma[resource].findUnique({
+        select: {
+          [resourceIdField]: true,
+          [orderField]: true,
+        },
+        where: {
+          [resourceIdField]: formatId(resource, currentId),
+        },
+      });
+
+      if (!currentItem) {
+        return NextResponse.json(
+          { error: "Current item not found" },
+          { status: 404 }
+        );
+      }
+
+      // @ts-expect-error
+      const moveOverItem = await prisma[resource].findUnique({
+        select: {
+          [resourceIdField]: true,
+          [orderField]: true,
+        },
+        where: {
+          [resourceIdField]: formatId(resource, moveOverId),
+        },
+      });
+
+      if (!moveOverItem) {
+        return NextResponse.json(
+          { error: "Move over item not found" },
+          { status: 404 }
+        );
+      }
+
+      // Get all items between current and moveOver positions
+      // @ts-expect-error
+      const items = await prisma[resource].findMany({
+        select: {
+          [resourceIdField]: true,
+          [orderField]: true,
+        },
+        where: {
+          [orderField]: {
+            gte: Math.min(currentItem[orderField], moveOverItem[orderField]),
+            lte: Math.max(currentItem[orderField], moveOverItem[orderField]),
+          },
+        },
+        orderBy: {
+          [orderField]: "asc",
+        },
+      });
+
+      console.log("ITEMS", items);
+
+      const currentIndex = items.findIndex(
+        (item: any) => item[resourceIdField] === currentId
+      );
+      const moveOverIndex = items.findIndex(
+        (item: any) => item[resourceIdField] === moveOverId
+      );
+
+      const [removed] = items.splice(currentIndex, 1);
+      items.splice(moveOverIndex, 0, removed);
+      console.log("REORDERED ITEMS", items);
+
+      // Update order values
+      for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        // @ts-expect-error
+        await prisma[resource].update({
+          where: { [resourceIdField]: item.id },
+          data: {
+            [orderField]: items[i][orderField],
+          },
+        });
+      }
+
+      return NextResponse.json({ ok: true });
+    })
     .post(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
@@ -228,7 +334,7 @@ export const createHandler = <P extends string = "nextadmin">({
         });
 
         if (!deleted) {
-          throw new Error('Deletion failed')
+          throw new Error("Deletion failed");
         }
 
         return NextResponse.json({ ok: true });

@@ -759,6 +759,7 @@ export const formattedFormData = async <M extends ModelName>(
     modelName
   ] as SchemaDefinitions[ModelName];
   const resourceIdProperty = getModelIdProperty(resource);
+  const resourceIdField = getModelIdProperty(resource);
 
   const currentRecord = resourceId
     ? // @ts-expect-error
@@ -816,7 +817,7 @@ export const formattedFormData = async <M extends ModelName>(
                     const data: Record<string, any> = {
                       [externalResourceField[0]]: {
                         connect: {
-                          id: formatId(
+                          [resourceIdField]: formatId(
                             externalResourceField[1].__nextadmin
                               ?.type as ModelName,
                             item
