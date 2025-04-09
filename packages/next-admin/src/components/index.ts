@@ -6,3 +6,4 @@ export { default as Checkbox } from "./radix/Checkbox";
 export * from "./radix/Dropdown";
 export * from "./radix/Table";
 export * from "./radix/Tooltip";
+export * from "./Message";

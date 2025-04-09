@@ -4,11 +4,11 @@ import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import clsx from "clsx";
 import debounce from "lodash.debounce";
 import { ChangeEvent, useEffect, useState, useTransition } from "react";
+import { twMerge } from "tailwind-merge";
 import { ITEMS_PER_PAGE } from "../config";
 import ClientActionDialogProvider from "../context/ClientActionDialogContext";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { MessageProvider } from "../context/MessageContext";
 import useDataColumns from "../hooks/useDataColumns";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
@@ -25,7 +25,7 @@ import ActionDropdownItem from "./ActionDropdownItem";
 import { DataTable } from "./DataTable";
 import Filters from "./Filters";
 import ListHeader from "./ListHeader";
-import Message from "./Message";
+import { Message } from "./Message";
 import { Pagination } from "./Pagination";
 import TableRowsIndicator from "./TableRowsIndicator";
 import Button from "./radix/Button";
@@ -41,10 +41,8 @@ import {
   Select,
   SelectContent,
   SelectItem,
-  SelectTrigger,
-  SelectValue,
+  SelectTrigger
 } from "./radix/Select";
-import { twMerge } from "tailwind-merge";
 
 export type ListProps = {
   resource: ModelName;
@@ -307,12 +305,4 @@ function List({
   );
 }
 
-const ListWrapper = (props: ListProps) => {
-  return (
-    <MessageProvider>
-      <List {...props} />
-    </MessageProvider>
-  );
-};
-
-export default ListWrapper;
+export default List;
