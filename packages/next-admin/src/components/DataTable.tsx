@@ -1,14 +1,9 @@
 import {
   DndContext,
-  DragEndEvent,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors
+  DragEndEvent
 } from '@dnd-kit/core';
 import {
-  SortableContext,
-  sortableKeyboardCoordinates
+  SortableContext
 } from '@dnd-kit/sortable';
 import { Bars2Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
@@ -91,15 +86,10 @@ export function DataTable({
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
-      const activeRow = data.find(row => row[modelIdProperty].value === active.id);
-      const overRow = data.find(row => row[modelIdProperty].value === over.id);
-
-      if (activeRow && overRow && orderField) {
-        onOrderChange?.({
-          currentId: active.id,
-          moveOverId: over.id
-        });
-      }
+      onOrderChange?.({
+        currentId: active.id,
+        moveOverId: over.id
+      });
     }
   };
 
@@ -177,10 +167,10 @@ export function DataTable({
                         window.location.href = `${basePath}/${slugify(resource)}/${row.original[modelIdProperty].value
                           }`;
                       }}
-                    >
-                      <TableCell className='pr-0'>
+                      grabElement={<TableCell className='pr-0'>
                         <Bars2Icon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-grab active:cursor-grabbing" />
-                      </TableCell>
+                      </TableCell>}
+                    >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
                           className={`group py-3 ${cell.column.id === "__nextadmin-actions" && "text-right"

@@ -1,5 +1,6 @@
+import sortBy from "lodash.sortby";
 import React from "react";
-import { UploadedFile } from "../types";
+import { ListDataItem, ModelName, UploadedFile } from "../types";
 
 export const capitalize = <T extends string>(str: T): Capitalize<T> => {
   let capitalizedStr = str.charAt(0).toLocaleUpperCase() + str.slice(1);
@@ -73,7 +74,12 @@ export const formatLabel = (label: string) => {
 };
 
 export const isUploadFile = (obj: any): obj is UploadedFile => {
-  return typeof obj === "object" && "buffer" in obj && "infos" in obj && obj.buffer.length > 0;
+  return (
+    typeof obj === "object" &&
+    "buffer" in obj &&
+    "infos" in obj &&
+    obj.buffer.length > 0
+  );
 };
 
 export const getDisplayedValue = (
@@ -96,6 +102,43 @@ export const getDisplayedValue = (
 export const getDeletedFilesFieldName = (field: string) =>
   `${field}__nextadmin_deleted`;
 
-export const isFileUploadFormat = (format: string) => {
+export const isFileUploadFormat = (
+  format: string
+): format is "data-url" | "file" => {
   return ["data-url", "file"].includes(format);
+};
+
+export const reorderData = <T extends ListDataItem<ModelName>>(
+  data: T[],
+  fromId: number | string,
+  toId: number | string,
+  orderField: string,
+  idField: string
+) => {
+  const result = Array.from(data);
+  const from = result.find((item) => item[idField].value === fromId);
+  const to = result.find((item) => item[idField].value === toId);
+  if (!from || !to) {
+    return result;
+  }
+
+  const fromIndex = result.indexOf(from);
+  const toIndex = result.indexOf(to);
+
+  result[fromIndex][orderField].value = to[orderField].value;
+  if (fromIndex < toIndex) {
+    for (let i = fromIndex + 1; i <= toIndex; i++) {
+      const current = result[i][orderField].value as number;
+      result[i][orderField].value = current - 1;
+    }
+  } else {
+    for (let i = toIndex; i < fromIndex; i++) {
+      const current = result[i][orderField].value as number;
+      result[i][orderField].value = current + 1;
+    }
+  }
+  
+  return sortBy(result, function (item) {
+    return item[orderField].value;
+  });
 };

@@ -22,7 +22,7 @@ import {
   ModelName,
   Schema,
 } from "../types";
-import { slugify } from "../utils/tools";
+import { reorderData, slugify } from "../utils/tools";
 import ActionDropdownItem from "./ActionDropdownItem";
 import { DataTable } from "./DataTable";
 import Filters from "./Filters";
@@ -91,17 +91,8 @@ function List({
 
   let onSearchChange;
 
-  const [optimisticData, optimisticOrderData] = useOptimistic(data, (prevData, orderData: { currentId: string | number, moveOverId: string | number }) => {
+  const [optimisticData, optimisticOrderData] = useOptimistic(data, (prevData, newData: ListData<ModelName>) => {
     if (!modelOptions?.list?.orderField) return prevData;
-
-    let newData = [...prevData];
-    const { currentId, moveOverId } = orderData;
-    const currentIndex = newData.findIndex(item => item[resourcesIdProperty[resource]].value === currentId);
-    const moveOverIndex = newData.findIndex(item => item[resourcesIdProperty[resource]].value === moveOverId);
-
-    const [removed] = newData.splice(currentIndex, 1);
-    newData.splice(moveOverIndex, 0, removed);
-
     return newData;
   })
 
@@ -234,18 +225,19 @@ function List({
 
   const handleOrderChange = modelOptions?.list?.orderField ? (value: { currentId: string | number, moveOverId: string | number }) => {
     startOrderTransition(async () => {
-      optimisticOrderData(value);
-      //await new Promise(resolve => setTimeout(resolve, 20000));
 
-      const response = await fetch(
+      console.log("VALUE", value);
+      const idField = resourcesIdProperty[resource];
+      const newData = reorderData(optimisticData, value.currentId, value.moveOverId, modelOptions?.list?.orderField!, idField);
+      optimisticOrderData(newData);
+
+      await fetch(
         `${apiBasePath}/${slugify(resource)}/order`,
         {
           method: "POST",
-          body: JSON.stringify(value),
+          body: JSON.stringify(optimisticData),
         }
       );
-      console.log("RESPONSE", response);
-      const result = await response.json();
       router.refresh();
     });
   } : undefined;

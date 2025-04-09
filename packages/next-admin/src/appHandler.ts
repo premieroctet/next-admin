@@ -6,6 +6,8 @@ import { deleteResource, submitResource } from "./handlers/resources";
 import {
   CreateAppHandlerParams,
   EditFieldsOptions,
+  ListData,
+  ListDataFieldValue,
   ModelAction,
   Permission,
   RequestContext,
@@ -139,9 +141,16 @@ export const createHandler = <P extends string = "nextadmin">({
     })
     .post(`${apiBasePath}/:model/order`, async (req, ctx) => {
       const body = await req.json();
-      const { currentId, moveOverId } = body;
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
+      const optimisticData = body as ListData<NonNullable<typeof resource>>;  
+
+      if (!resource) {
+        return NextResponse.json(
+          { error: "Resource not found" },
+          { status: 404 }
+        );
+      }
 
       if (!resource) {
         return NextResponse.json(
@@ -151,7 +160,6 @@ export const createHandler = <P extends string = "nextadmin">({
       }
 
       const resourceIdField = getModelIdProperty(resource);
-
       const orderField = options?.model?.[resource]?.list?.orderField;
 
       if (!orderField) {
@@ -161,84 +169,15 @@ export const createHandler = <P extends string = "nextadmin">({
         );
       }
 
-      // @ts-expect-error
-      const currentItem = await prisma[resource].findUnique({
-        select: {
-          [resourceIdField]: true,
-          [orderField]: true,
-        },
-        where: {
-          [resourceIdField]: formatId(resource, currentId),
-        },
+      await prisma.$transaction(async (tx) => {
+        for (const item of optimisticData) {
+          //@ts-expect-error
+          await tx[resource].update({
+            where: { [resourceIdField]: item[resourceIdField].value },
+            data: { [orderField]: (item[orderField] as ListDataFieldValue).value },
+          });
+        }
       });
-
-      if (!currentItem) {
-        return NextResponse.json(
-          { error: "Current item not found" },
-          { status: 404 }
-        );
-      }
-
-      // @ts-expect-error
-      const moveOverItem = await prisma[resource].findUnique({
-        select: {
-          [resourceIdField]: true,
-          [orderField]: true,
-        },
-        where: {
-          [resourceIdField]: formatId(resource, moveOverId),
-        },
-      });
-
-      if (!moveOverItem) {
-        return NextResponse.json(
-          { error: "Move over item not found" },
-          { status: 404 }
-        );
-      }
-
-      // Get all items between current and moveOver positions
-      // @ts-expect-error
-      const items = await prisma[resource].findMany({
-        select: {
-          [resourceIdField]: true,
-          [orderField]: true,
-        },
-        where: {
-          [orderField]: {
-            gte: Math.min(currentItem[orderField], moveOverItem[orderField]),
-            lte: Math.max(currentItem[orderField], moveOverItem[orderField]),
-          },
-        },
-        orderBy: {
-          [orderField]: "asc",
-        },
-      });
-
-      console.log("ITEMS", items);
-
-      const currentIndex = items.findIndex(
-        (item: any) => item[resourceIdField] === currentId
-      );
-      const moveOverIndex = items.findIndex(
-        (item: any) => item[resourceIdField] === moveOverId
-      );
-
-      const [removed] = items.splice(currentIndex, 1);
-      items.splice(moveOverIndex, 0, removed);
-      console.log("REORDERED ITEMS", items);
-
-      // Update order values
-      for (let i = 0; i < items.length; i++) {
-        const item = items[i];
-        // @ts-expect-error
-        await prisma[resource].update({
-          where: { [resourceIdField]: item.id },
-          data: {
-            [orderField]: items[i][orderField],
-          },
-        });
-      }
 
       return NextResponse.json({ ok: true });
     })

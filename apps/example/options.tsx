@@ -333,8 +333,12 @@ export const options: NextAdminOptions = {
       icon: "InboxStackIcon",
       toString: (category) => `${category.name}`,
       list: {
+        defaultSort: {
+          field: "name",
+          direction: "desc",
+        },
         orderField: "order",
-        display: ["name", "posts"]
+        display: ["name", "posts"],
       },
       edit: {
         display: ["name", "posts"],

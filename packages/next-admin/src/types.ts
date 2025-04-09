@@ -415,11 +415,6 @@ export type ListOptions<T extends ModelName> = {
    */
   display?: Field<T>[];
   /**
-   * an optional field to enable order on the list. When enabled, this will disable manual sorting by clicking column headers.
-   * @restriction only scalar fields are allowed and no primary keys. it must be a number field.
-   */
-  orderField?: keyof ScalarField<T>;
-  /**
    * an array of searchable fields.
    * @default all scalar
    */
@@ -446,6 +441,12 @@ export type ListOptions<T extends ModelName> = {
      */
     direction?: Prisma.SortOrder;
   };
+  /**
+   * An optional field to enable ordering on the list. 
+   * ⚠️ When enabled, it will disable all other types of sorting.
+   * @restriction Only scalar fields are allowed, and primary keys are not permitted. The field must be a numeric type.
+   */
+  orderField?: keyof ScalarField<T>;
   /**
    * define a set of Prisma filters that user can choose in list
    */
