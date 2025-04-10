@@ -1,4 +1,5 @@
 "use client";
+
 import {
   CheckCircleIcon,
   InformationCircleIcon,
@@ -8,7 +9,7 @@ import clsx from "clsx";
 import { useEffect } from "react";
 import { useMessage } from "../context/MessageContext";
 
-const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
+export const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
   const { message, hideMessage } = useMessage();
   useEffect(() => {
     if (message) {
@@ -53,4 +54,3 @@ const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
     )
   );
 };
-export default Message;
