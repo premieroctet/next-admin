@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 7.3.2
+
+### Patch Changes
+
+- [5a8031b](https://github.com/premieroctet/next-admin/commit/5a8031ba53f00ef205920f0566d0a3696edab552): Add order mode on table view [#362](https://github.com/premieroctet/next-admin/issues/362)
+- [323a929](https://github.com/premieroctet/next-admin/commit/323a9294bd0cf3116c8a6dc047bf45c335363d2b): Export <Message /> component to usage in custom pages
+
 ## 7.3.1
 
 ### Patch Changes
