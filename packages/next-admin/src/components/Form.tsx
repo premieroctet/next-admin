@@ -34,7 +34,7 @@ import { useConfig } from "../context/ConfigContext";
 import FormDataProvider, { useFormData } from "../context/FormDataContext";
 import FormStateProvider, { useFormState } from "../context/FormStateContext";
 import { useI18n } from "../context/I18nContext";
-import { MessageProvider, useMessage } from "../context/MessageContext";
+import { useMessage } from "../context/MessageContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
@@ -58,7 +58,7 @@ import JsonField from "./inputs/JsonField";
 import NullField from "./inputs/NullField";
 import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
-import Message from "./Message";
+import { Message } from "./Message";
 import Button from "./radix/Button";
 import {
   TooltipContent,
@@ -274,7 +274,7 @@ const Form = ({
               message: t("form.update.succeed"),
             });
           } else {
-            return router.push({
+            router.push({
               pathname,
               query: {
                 message: JSON.stringify({
@@ -303,9 +303,9 @@ const Form = ({
       const customInput = customInputs?.[props.name as Field<ModelName>];
       const improvedCustomInput = customInput
         ? cloneElement(customInput, {
-            ...customInput.props,
-            mode: edit ? "edit" : "create",
-          })
+          ...customInput.props,
+          mode: edit ? "edit" : "create",
+        })
         : undefined;
       return ArrayField({ ...props, customInput: improvedCustomInput });
     },
@@ -613,16 +613,14 @@ const Form = ({
 
 const FormWrapper = (props: FormProps) => {
   return (
-    <MessageProvider>
-      <ClientActionDialogProvider>
-        <FormHeader {...props} />
-        <FormDataProvider data={props.data}>
-          <FormStateProvider>
-            <Form {...props} />
-          </FormStateProvider>
-        </FormDataProvider>
-      </ClientActionDialogProvider>
-    </MessageProvider>
+    <ClientActionDialogProvider>
+      <FormHeader {...props} />
+      <FormDataProvider data={props.data}>
+        <FormStateProvider>
+          <Form {...props} />
+        </FormStateProvider>
+      </FormDataProvider>
+    </ClientActionDialogProvider>
   );
 };
 
