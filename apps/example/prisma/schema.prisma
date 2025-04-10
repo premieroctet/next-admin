@@ -65,6 +65,7 @@ model Category {
   posts     CategoriesOnPosts[]
   createdAt DateTime            @default(now())
   updatedAt DateTime            @default(now()) @updatedAt
+  order     Int                 @default(autoincrement())
 }
 
 model CategoriesOnPosts {

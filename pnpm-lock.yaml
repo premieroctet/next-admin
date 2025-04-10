@@ -18,7 +18,7 @@ importers:
         version: 2.27.9
       prettier-plugin-tailwindcss:
         specifier: ^0.6.6
-        version: 0.6.8(prettier@3.4.2)
+        version: 0.6.8(prettier@3.5.3)
     devDependencies:
       changeset:
         specifier: ^0.2.6
@@ -34,10 +34,10 @@ importers:
         version: 1.48.2
       prettier:
         specifier: latest
-        version: 3.4.2
+        version: 3.5.3
       turbo:
         specifier: latest
-        version: 2.4.0
+        version: 2.5.0
 
   apps/docs:
     dependencies:
@@ -256,7 +256,7 @@ importers:
         version: 8.10.0(eslint@7.32.0)
       eslint-config-turbo:
         specifier: latest
-        version: 2.4.0(eslint@7.32.0)(turbo@2.4.0)
+        version: 2.5.0(eslint@7.32.0)(turbo@2.5.0)
       eslint-plugin-react:
         specifier: 7.31.8
         version: 7.31.8(eslint@7.32.0)
@@ -421,6 +421,9 @@ importers:
       lodash.set:
         specifier: ^4.3.2
         version: 4.3.2
+      lodash.sortby:
+        specifier: ^4.7.0
+        version: 4.7.0
       lodash.unset:
         specifier: ^4.5.2
         version: 4.5.2
@@ -507,6 +510,9 @@ importers:
       '@types/lodash.set':
         specifier: ^4.3.9
         version: 4.3.9
+      '@types/lodash.sortby':
+        specifier: ^4.7.9
+        version: 4.7.9
       '@types/lodash.unset':
         specifier: ^4.5.9
         version: 4.5.9
@@ -1149,6 +1155,7 @@ packages:
   '@faker-js/faker@9.4.0':
     resolution: {integrity: sha512-85+k0AxaZSTowL0gXp8zYWDIrWclTbRPg/pm/V0dSFZ6W6D4lhcG3uuZl4zLsEKfEvs69xDbLN2cHQudwp95JA==}
     engines: {node: '>=18.0.0', npm: '>=9.0.0'}
+    deprecated: Please update to a newer version
 
   '@floating-ui/core@1.6.8':
     resolution: {integrity: sha512-7XJ9cPU+yI2QeLS+FCSlqNFZJq8arvswefkZrYI1yQBbftw6FyrZOxYSh+9S7z7TpeWlRt9zJ5IhM1WIL334jA==}
@@ -2599,6 +2606,9 @@ packages:
   '@types/lodash.set@4.3.9':
     resolution: {integrity: sha512-KOxyNkZpbaggVmqbpr82N2tDVTx05/3/j0f50Es1prxrWB0XYf9p3QNxqcbWb7P1Q9wlvsUSlCFnwlPCIJ46PQ==}
 
+  '@types/lodash.sortby@4.7.9':
+    resolution: {integrity: sha512-PDmjHnOlndLS59GofH0pnxIs+n9i4CWeXGErSB5JyNFHu2cmvW6mQOaUKjG8EDPkni14IgF8NsRW8bKvFzTm9A==}
+
   '@types/lodash.unset@4.5.9':
     resolution: {integrity: sha512-uyYP6JMM30vKXJtDrPtJyK/t3TdyjhZQ7woJAk1biI/o/sXZvBVqQtiMWsIlYLcn6jSPrG4sjYWTZM34qNM7dA==}
 
@@ -3738,8 +3748,8 @@ packages:
     peerDependencies:
       eslint: '>=7.0.0'
 
-  eslint-config-turbo@2.4.0:
-    resolution: {integrity: sha512-AiRdy83iwyG4+iMSxXQGUbEClxkGxSlXYH8E2a+0972ao75OWnlDBiiuLMOzDpJubR+QVGC4zonn29AIFCSbFw==}
+  eslint-config-turbo@2.5.0:
+    resolution: {integrity: sha512-QJvZBEWDWQx1JyQCr0uwf4aQYhDSAGoHBdx+cPtpPzNEjZw16Ig8BglXxHZBh3I8/fI1U53cLgXwvb28BUZhPA==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
@@ -3803,8 +3813,8 @@ packages:
     peerDependencies:
       eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
 
-  eslint-plugin-turbo@2.4.0:
-    resolution: {integrity: sha512-qCgoRi/OTc1VMxab7+sdKiV1xlkY4qjK9sM+kS7+WogrB1DxLguJSQXvk4HA13SD5VmJsq+8FYOw5q4EUk6Ixg==}
+  eslint-plugin-turbo@2.5.0:
+    resolution: {integrity: sha512-qQk54MrUZv0gnpxV23sccTc+FL3UJ8q7vG7HmXuS2RP8gdjWDwI1CCJTJD8EdRIDjsMxF0xi0AKcMY0CwIlXVg==}
     peerDependencies:
       eslint: '>6.6.0'
       turbo: '>2.0.0'
@@ -4901,6 +4911,9 @@ packages:
   lodash.set@4.3.2:
     resolution: {integrity: sha512-4hNPN5jlm/N/HLMCO43v8BXKq9Z7QdAGc/VGrRD61w8gN9g/6jF9A4L1pbUgBLCffi0w9VsXfTOij5x8iTyFvg==}
 
+  lodash.sortby@4.7.0:
+    resolution: {integrity: sha512-HDWXG8isMntAyRF5vZ7xKuEvOhT4AhlRt/3czTSjvGUxjYCBVRQY48ViDHyfYz9VIoBkW4TMGQNapx+l3RUwdA==}
+
   lodash.startcase@4.4.0:
     resolution: {integrity: sha512-+WKqsK294HMSc2jEbNgpHpd0JfIBhp7rEV4aqXWqFr6AlXov+SlcgB1Fv01y2kGe3Gc8nMW7VA0SrGuSkRfIEg==}
 
@@ -5702,8 +5715,8 @@ packages:
     engines: {node: '>=10.13.0'}
     hasBin: true
 
-  prettier@3.4.2:
-    resolution: {integrity: sha512-e9MewbtFo+Fevyuxn/4rrcDAaq0IYxPGLvObpQjiZBMAzB9IGmzlnG9RZy3FFas+eBMu2vA0CszMeduow5dIuQ==}
+  prettier@3.5.3:
+    resolution: {integrity: sha512-QQtaxnoDJeAkDvDKWCLiwIXkTgRhwYDEQCghU9Z6q03iyek/rxRh/2lC3HB7P8sWT2xC/y5JDctPLBIGzHKbhw==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -6508,38 +6521,38 @@ packages:
     engines: {node: '>=18.0.0'}
     hasBin: true
 
-  turbo-darwin-64@2.4.0:
-    resolution: {integrity: sha512-kVMScnPUa3R4n7woNmkR15kOY0aUwCLJcUyH5UC59ggKqr5HIHwweKYK8N1pwBQso0LQF4I9i93hIzfJguCcwQ==}
+  turbo-darwin-64@2.5.0:
+    resolution: {integrity: sha512-fP1hhI9zY8hv0idym3hAaXdPi80TLovmGmgZFocVAykFtOxF+GlfIgM/l4iLAV9ObIO4SUXPVWHeBZQQ+Hpjag==}
     cpu: [x64]
     os: [darwin]
 
-  turbo-darwin-arm64@2.4.0:
-    resolution: {integrity: sha512-8JObIpfun1guA7UlFR5jC/SOVm49lRscxMxfg5jZ5ABft79rhFC+ygN9AwAhGKv6W2DUhIh2xENkSgu4EDmUyg==}
+  turbo-darwin-arm64@2.5.0:
+    resolution: {integrity: sha512-p9sYq7kXH7qeJwIQE86cOWv/xNqvow846l6c/qWc26Ib1ci5W7V0sI5thsrP3eH+VA0d+SHalTKg5SQXgNQBWA==}
     cpu: [arm64]
     os: [darwin]
 
-  turbo-linux-64@2.4.0:
-    resolution: {integrity: sha512-xWDGGcRlBuGV7HXWAVuTY6vsQi4aZxGMAnuiuNDg8Ij1aHGohOM0RUsWMXjxz4vuJmjk9+/D6NQqHH3AJEXezg==}
+  turbo-linux-64@2.5.0:
+    resolution: {integrity: sha512-1iEln2GWiF3iPPPS1HQJT6ZCFXynJPd89gs9SkggH2EJsj3eRUSVMmMC8y6d7bBbhBFsiGGazwFIYrI12zs6uQ==}
     cpu: [x64]
     os: [linux]
 
-  turbo-linux-arm64@2.4.0:
-    resolution: {integrity: sha512-c3En99xMguc/Pdtk/rZP53LnDdw0W6lgUc04he8r8F+UHYSNvgzHh0WGXXmCC6lGbBH72kPhhGx4bAwyvi7dug==}
+  turbo-linux-arm64@2.5.0:
+    resolution: {integrity: sha512-bKBcbvuQHmsX116KcxHJuAcppiiBOfivOObh2O5aXNER6mce7YDDQJy00xQQNp1DhEfcSV2uOsvb3O3nN2cbcA==}
     cpu: [arm64]
     os: [linux]
 
-  turbo-windows-64@2.4.0:
-    resolution: {integrity: sha512-/gOORuOlyA8JDPzyA16CD3wvyRcuBFePa1URAnFUof9hXQmKxK0VvSDO79cYZFsJSchCKNJpckUS0gYxGsWwoA==}
+  turbo-windows-64@2.5.0:
+    resolution: {integrity: sha512-9BCo8oQ7BO7J0K913Czbc3tw8QwLqn2nTe4E47k6aVYkM12ASTScweXPTuaPFP5iYXAT6z5Dsniw704Ixa5eGg==}
     cpu: [x64]
     os: [win32]
 
-  turbo-windows-arm64@2.4.0:
-    resolution: {integrity: sha512-/DJIdTFijEMM5LSiEpSfarDOMOlYqJV+EzmppqWtHqDsOLF4hbbIBH9sJR6OOp5dURAu5eURBYdmvBRz9Lo6TA==}
+  turbo-windows-arm64@2.5.0:
+    resolution: {integrity: sha512-OUHCV+ueXa3UzfZ4co/ueIHgeq9B2K48pZwIxKSm5VaLVuv8M13MhM7unukW09g++dpdrrE1w4IOVgxKZ0/exg==}
     cpu: [arm64]
     os: [win32]
 
-  turbo@2.4.0:
-    resolution: {integrity: sha512-ah/yQp2oMif1X0u7fBJ4MLMygnkbKnW5O8SG6pJvloPCpHfFoZctkSVQiJ3VnvNTq71V2JJIdwmOeu1i34OQyg==}
+  turbo@2.5.0:
+    resolution: {integrity: sha512-PvSRruOsitjy6qdqwIIyolv99+fEn57gP6gn4zhsHTEcCYgXPhv6BAxzAjleS8XKpo+Y582vTTA9nuqYDmbRuA==}
     hasBin: true
 
   twoslash-protocol@0.2.12:
@@ -9165,6 +9178,10 @@ snapshots:
     dependencies:
       '@types/lodash': 4.17.13
 
+  '@types/lodash.sortby@4.7.9':
+    dependencies:
+      '@types/lodash': 4.17.13
+
   '@types/lodash.unset@4.5.9':
     dependencies:
       '@types/lodash': 4.17.13
@@ -10478,11 +10495,11 @@ snapshots:
     dependencies:
       eslint: 7.32.0
 
-  eslint-config-turbo@2.4.0(eslint@7.32.0)(turbo@2.4.0):
+  eslint-config-turbo@2.5.0(eslint@7.32.0)(turbo@2.5.0):
     dependencies:
       eslint: 7.32.0
-      eslint-plugin-turbo: 2.4.0(eslint@7.32.0)(turbo@2.4.0)
-      turbo: 2.4.0
+      eslint-plugin-turbo: 2.5.0(eslint@7.32.0)(turbo@2.5.0)
+      turbo: 2.5.0
 
   eslint-import-resolver-node@0.3.9:
     dependencies:
@@ -10584,11 +10601,11 @@ snapshots:
       semver: 6.3.1
       string.prototype.matchall: 4.0.11
 
-  eslint-plugin-turbo@2.4.0(eslint@7.32.0)(turbo@2.4.0):
+  eslint-plugin-turbo@2.5.0(eslint@7.32.0)(turbo@2.5.0):
     dependencies:
       dotenv: 16.0.3
       eslint: 7.32.0
-      turbo: 2.4.0
+      turbo: 2.5.0
 
   eslint-scope@5.1.1:
     dependencies:
@@ -12025,6 +12042,8 @@ snapshots:
 
   lodash.set@4.3.2: {}
 
+  lodash.sortby@4.7.0: {}
+
   lodash.startcase@4.4.0: {}
 
   lodash.truncate@4.4.2: {}
@@ -13120,13 +13139,13 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-tailwindcss@0.6.8(prettier@3.4.2):
+  prettier-plugin-tailwindcss@0.6.8(prettier@3.5.3):
     dependencies:
-      prettier: 3.4.2
+      prettier: 3.5.3
 
   prettier@2.8.8: {}
 
-  prettier@3.4.2: {}
+  prettier@3.5.3: {}
 
   pretty-format@27.5.1:
     dependencies:
@@ -14138,32 +14157,32 @@ snapshots:
     optionalDependencies:
       fsevents: 2.3.3
 
-  turbo-darwin-64@2.4.0:
+  turbo-darwin-64@2.5.0:
     optional: true
 
-  turbo-darwin-arm64@2.4.0:
+  turbo-darwin-arm64@2.5.0:
     optional: true
 
-  turbo-linux-64@2.4.0:
+  turbo-linux-64@2.5.0:
     optional: true
 
-  turbo-linux-arm64@2.4.0:
+  turbo-linux-arm64@2.5.0:
     optional: true
 
-  turbo-windows-64@2.4.0:
+  turbo-windows-64@2.5.0:
     optional: true
 
-  turbo-windows-arm64@2.4.0:
+  turbo-windows-arm64@2.5.0:
     optional: true
 
-  turbo@2.4.0:
+  turbo@2.5.0:
     optionalDependencies:
-      turbo-darwin-64: 2.4.0
-      turbo-darwin-arm64: 2.4.0
-      turbo-linux-64: 2.4.0
-      turbo-linux-arm64: 2.4.0
-      turbo-windows-64: 2.4.0
-      turbo-windows-arm64: 2.4.0
+      turbo-darwin-64: 2.5.0
+      turbo-darwin-arm64: 2.5.0
+      turbo-linux-64: 2.5.0
+      turbo-linux-arm64: 2.5.0
+      turbo-windows-64: 2.5.0
+      turbo-windows-arm64: 2.5.0
 
   twoslash-protocol@0.2.12: {}
 

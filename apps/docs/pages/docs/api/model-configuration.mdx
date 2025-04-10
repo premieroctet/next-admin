@@ -161,6 +161,12 @@ This property determines how your data is displayed in the [list View](/docs/glo
       defaultValue: "All scalar fields are displayed by default",
     },
     {
+      name: "orderField",
+      type: "String",
+      description:
+        "the field to use for ordering the list, it must be a numeric field. ⚠️ When enabled, it will disable all other types of sorting.",
+    },
+    {
       name: "fields",
       type: "Object",
       description: (

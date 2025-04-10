@@ -6,6 +6,8 @@ import { deleteResource, submitResource } from "./handlers/resources";
 import {
   CreateAppHandlerParams,
   EditFieldsOptions,
+  ListData,
+  ListDataFieldValue,
   ModelAction,
   Permission,
   RequestContext,
@@ -16,6 +18,7 @@ import { getRawData } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
+  getModelIdProperty,
   getResourceFromParams,
   getResources,
   globalSchema,
@@ -136,6 +139,48 @@ export const createHandler = <P extends string = "nextadmin">({
 
       return NextResponse.json(data);
     })
+    .post(`${apiBasePath}/:model/order`, async (req, ctx) => {
+      const body = await req.json();
+      const params = await ctx.params;
+      const resource = getResourceFromParams(params[paramKey], resources);
+      const optimisticData = body as ListData<NonNullable<typeof resource>>;  
+
+      if (!resource) {
+        return NextResponse.json(
+          { error: "Resource not found" },
+          { status: 404 }
+        );
+      }
+
+      if (!resource) {
+        return NextResponse.json(
+          { error: "Resource not found" },
+          { status: 404 }
+        );
+      }
+
+      const resourceIdField = getModelIdProperty(resource);
+      const orderField = options?.model?.[resource]?.list?.orderField;
+
+      if (!orderField) {
+        return NextResponse.json(
+          { error: "Order field not found" },
+          { status: 404 }
+        );
+      }
+
+      await prisma.$transaction(async (tx) => {
+        for (const item of optimisticData) {
+          //@ts-expect-error
+          await tx[resource].update({
+            where: { [resourceIdField]: item[resourceIdField].value },
+            data: { [orderField]: (item[orderField] as ListDataFieldValue).value },
+          });
+        }
+      });
+
+      return NextResponse.json({ ok: true });
+    })
     .post(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
@@ -228,7 +273,7 @@ export const createHandler = <P extends string = "nextadmin">({
         });
 
         if (!deleted) {
-          throw new Error('Deletion failed')
+          throw new Error("Deletion failed");
         }
 
         return NextResponse.json({ ok: true });
