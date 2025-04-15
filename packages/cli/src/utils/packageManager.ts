@@ -1,5 +1,5 @@
 import path from "path";
-import { existsSync } from "fs";
+import { existsSync, readFileSync } from "fs";
 
 export enum PackageManager {
   NPM = "npm",
@@ -59,4 +59,12 @@ export const getDataForPackageManager = (
     installCmd: packageManagerInstallCmd[packageManager],
     installDevCmd: packageManagerInstallDevCmd[packageManager],
   };
+};
+
+export const getPackageDependencies = (
+  basePath: string
+): Record<string, string> => {
+  const packageJsonPath = path.join(basePath, "package.json");
+  const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8"));
+  return packageJson.dependencies || {};
 };

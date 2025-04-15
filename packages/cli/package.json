@@ -40,10 +40,12 @@
     "fs-extra": "^11.2.0",
     "glob": "^11.0.0",
     "mustache": "^4.2.0",
-    "ora": "^8.1.0"
+    "ora": "^8.1.0",
+    "semver": "^7.7.1"
   },
   "devDependencies": {
     "@types/mustache": "^4.2.5",
+    "@types/semver": "^7.7.0",
     "esbuild": "^0.24.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",

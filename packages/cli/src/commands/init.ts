@@ -5,6 +5,7 @@ import { execa, parseCommandString } from "execa";
 import { existsSync, mkdirSync, writeFileSync, readFileSync } from "fs";
 import ora from "ora";
 import path from "path";
+import semver from "semver";
 import {
   NEXTADMIN_CSS_FILENAME,
   NEXTADMIN_OPTIONS_FILENAME,
@@ -12,6 +13,7 @@ import {
 import { getAppFilePath, getBabelUsage, getRouterRoot } from "../utils/next";
 import {
   getDataForPackageManager,
+  getPackageDependencies,
   getPackageManager,
   PackageManager,
 } from "../utils/packageManager";
@@ -114,6 +116,14 @@ export const initAction = async ({
 
   addTailwindCondig(basePath);
 
+  spinner.text = "Get Next.js version";
+
+  const packageDependencies = getPackageDependencies(basePath);
+
+  const nextDep = packageDependencies.next;
+
+  const isNext15 = semver.satisfies(nextDep, ">=15");
+
   spinner.text = "Creating Next-Admin page";
 
   let routerRootPath = getRouterRoot(basePath);
@@ -206,6 +216,7 @@ export const initAction = async ({
         path.join(basePath, NEXTADMIN_OPTIONS_FILENAME)
       ),
       isTypescript: usesTypescript,
+      isNext15,
     }
   );
 
