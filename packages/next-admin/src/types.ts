@@ -244,6 +244,10 @@ type OptionFormatterFromRelationshipSearch<
       };
 }[RelationshipSearch<ModelFromProperty<T, P>>["field"]];
 
+export type RelationshipPagination = {
+  perPage?: number;
+};
+
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     /**
@@ -296,9 +300,17 @@ export type EditFieldsOptions<T extends ModelName> = {
                *
                * @default "select"
                */
-              display?: "table" | "select";
+              display?: "select";
             }
-          | { display?: "list"; orderField?: keyof ModelFromProperty<T, P> }
+          | {
+              display?: "table";
+              pagination?: RelationshipPagination;
+            }
+          | {
+              display?: "list";
+              orderField?: keyof ModelFromProperty<T, P>;
+              pagination?: RelationshipPagination;
+            }
         )
     : P extends keyof ScalarField<T>
       ? ScalarField<T>[P] extends (infer Q)[]
@@ -442,7 +454,7 @@ export type ListOptions<T extends ModelName> = {
     direction?: Prisma.SortOrder;
   };
   /**
-   * An optional field to enable ordering on the list. 
+   * An optional field to enable ordering on the list.
    * ⚠️ When enabled, it will disable all other types of sorting.
    * @restriction Only scalar fields are allowed, and primary keys are not permitted. The field must be a numeric type.
    */

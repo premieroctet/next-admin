@@ -7,8 +7,8 @@ const MAX_SHOWN_PAGES = 5;
   @param {number} currentPageIndex - current index of the page
   @param {string} separator - separator between pages
   @param {number} maxShownPages - maximum number of pages to display
-  @returns {[number | string]} - array of pages to display 
-  @example [1, 2, 3, '...', 10] 
+  @returns {[number | string]} - array of pages to display
+  @example [1, 2, 3, '...', 10]
   @example [1, 2, 3, 4]
 */
 function getShownPagesPagination(
@@ -79,6 +79,7 @@ export function Pagination({
         aria-label="Pagination"
       >
         <button
+          type="button"
           disabled={!getCanPreviousPage()}
           onClick={() => {
             onPageChange(currentPageIndex - 1);
@@ -96,6 +97,7 @@ export function Pagination({
         ).map((pageNumber, index) => (
           <button
             key={index}
+            type="button"
             aria-current="page"
             onClick={() => {
               if (isNaN(Number(pageNumber))) return;
@@ -104,7 +106,7 @@ export function Pagination({
             className={
               pageNumber === currentPageIndex + 1
                 ? "bg-nextadmin-brand-default dark:bg-dark-nextadmin-background-muted ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong/50 text-nextadmin-brand-inverted dark:text-dark-nextadmin-brand-inverted relative z-10 inline-flex items-center px-4 py-2 text-sm font-semibold focus:z-20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 dark:ring-1 dark:ring-inset"
-                : "ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong/5 relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 dark:text-white dark:hover:bg-slate-500 md:inline-flex"
+                : "ring-nextadmin-border-strong dark:ring-dark-nextadmin-border-strong/5 relative hidden items-center px-4 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 md:inline-flex dark:text-white dark:hover:bg-slate-500"
             }
           >
             {pageNumber}
@@ -112,6 +114,7 @@ export function Pagination({
         ))}
         <button
           disabled={!getCanNextPage()}
+          type="button"
           onClick={() => {
             onPageChange(currentPageIndex + 1);
           }}
