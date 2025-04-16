@@ -404,6 +404,17 @@ export type ListExport = {
   url: string;
 };
 
+export type FieldSort<T extends ModelName> = {
+  /**
+   * the model's field name on which the sort is applied. It is mandatory.
+   */
+  field: Field<T>;
+  /**
+   * the sort direction to apply. It is optional
+   */
+  direction?: Prisma.SortOrder;
+};
+
 export type ListOptions<T extends ModelName> = {
   /**
    * an url to export the list data as CSV.
@@ -431,18 +442,9 @@ export type ListOptions<T extends ModelName> = {
   /**
    * an optional object to determine the default sort to apply on the list.
    */
-  defaultSort?: {
-    /**
-     * the model's field name on which the sort is applied. It is mandatory.
-     */
-    field: Field<T>;
-    /**
-     * the sort direction to apply. It is optional
-     */
-    direction?: Prisma.SortOrder;
-  };
+  defaultSort?: FieldSort<T> | FieldSort<T>[];
   /**
-   * An optional field to enable ordering on the list. 
+   * An optional field to enable ordering on the list.
    * ⚠️ When enabled, it will disable all other types of sorting.
    * @restriction Only scalar fields are allowed, and primary keys are not permitted. The field must be a numeric type.
    */
