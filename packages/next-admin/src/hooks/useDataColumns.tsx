@@ -52,6 +52,7 @@ const useDataColumns = ({
             header: () => {
               return (
                 <TableHead
+                  className={sortable ? "cursor-pointer" : "cursor-default"}
                   sortDirection={sortDirection}
                   sortColumn={sortColumn}
                   property={property}

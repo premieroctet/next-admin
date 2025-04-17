@@ -11,6 +11,7 @@ interface Props {
   sortDirection?: "asc" | "desc";
   property: string;
   propertyName: string;
+  className?: string;
 }
 export default function TableHead({
   onClick,
@@ -18,6 +19,7 @@ export default function TableHead({
   sortDirection,
   property,
   propertyName,
+  className,
 }: Props) {
   const [isPending, startTransition] = useTransition();
   const isSorted = sortColumn === property;
@@ -29,7 +31,7 @@ export default function TableHead({
           onClick();
         });
       }}
-      className="inline-flex items-center justify-center text-sm"
+      className={clsx("inline-flex items-center justify-center text-sm", className)}
     >
       <span
         className={clsx(
