@@ -248,6 +248,8 @@ export type RelationshipPagination = {
   perPage?: number;
 };
 
+export type ScalarArray = string[] | number[] | boolean[];
+
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     /**
@@ -288,6 +290,7 @@ export type EditFieldsOptions<T extends ModelName> = {
      * a function that takes the field value as parameter and returns a boolean to determine if the field is displayed in the form.
      */
     visible?: (value: ModelWithoutRelationships<T>) => boolean;
+    maxLength?: Model<T>[P] extends ScalarArray ? number : never;
   } & (P extends keyof ObjectField<T>
     ? OptionFormatterFromRelationshipSearch<T, P> &
         (
