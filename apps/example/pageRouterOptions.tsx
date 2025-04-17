@@ -171,6 +171,9 @@ export const options: NextAdminOptions = {
               },
             },
           },
+          author: {
+            required: true,
+          },
         },
       },
     },
