@@ -312,44 +312,76 @@ const preparePrismaListRequest = async <M extends ModelName>(
     })
     ?.map((filter) => filter.value);
 
-  let orderBy: Order<typeof resource> = {};
+  let orderBy: Order<typeof resource> | Order<typeof resource>[] = {};
 
   if (options?.model?.[resource]?.list?.orderField) {
     orderBy[options?.model?.[resource]?.list?.orderField] = "asc";
   } else {
-    const sortParam =
-      (searchParams.get("sortColumn") as Field<typeof resource>) ??
-      fieldSort?.field;
-    const orderValue =
-      (searchParams.get("sortDirection") as Prisma.SortOrder) ??
-      fieldSort?.direction;
+    // Creates a sort object for a field
+    const createSortObject = (
+      field: Field<typeof resource>,
+      direction: Prisma.SortOrder
+    ): Record<string, any> | null => {
+      const modelFieldSortParam =
+        modelProperties[field as keyof typeof modelProperties];
+      const modelFieldNextAdminData = modelFieldSortParam?.__nextadmin;
 
-    const modelFieldSortParam =
-      modelProperties[sortParam as keyof typeof modelProperties];
-    const modelFieldNextAdminData = modelFieldSortParam?.__nextadmin;
+      if (direction in Prisma.SortOrder) {
+        if (field in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
+          return { [field]: direction };
+        } else if (modelFieldNextAdminData?.kind === "object") {
+          if (modelFieldNextAdminData.isList) {
+            return {
+              [field as Field<M>]: {
+                _count: direction,
+              },
+            };
+          } else {
+            const modelFieldSortProperty = (
+              options?.model?.[resource]?.list?.fields as any
+            )?.[field as Field<M>]?.sortBy;
 
-    if (orderValue in Prisma.SortOrder) {
-      if (sortParam in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
-        orderBy[sortParam] = orderValue;
-      } else if (modelFieldNextAdminData?.kind === "object") {
-        if (modelFieldNextAdminData.isList) {
-          orderBy[sortParam as Field<M>] = {
-            _count: orderValue,
-          };
-        } else {
-          const modelFieldSortProperty =
-            options?.model?.[resource]?.list?.fields?.[
-              sortParam as Field<M>
-              // @ts-expect-error
-            ]?.sortBy;
+            const resourceSortByField =
+              modelFieldSortProperty ??
+              getModelIdProperty(modelFieldNextAdminData.type as ModelName);
 
-          const resourceSortByField =
-            modelFieldSortProperty ??
-            getModelIdProperty(modelFieldNextAdminData.type as ModelName);
+            return {
+              [field as Field<M>]: {
+                [resourceSortByField]: direction,
+              },
+            };
+          }
+        }
+      }
+      return null;
+    };
 
-          orderBy[sortParam as Field<M>] = {
-            [resourceSortByField]: orderValue,
-          };
+    const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
+    const sortDirection = searchParams.get("sortDirection") as Prisma.SortOrder;
+
+    if (sortParam && sortDirection) {
+      const sortObject = createSortObject(sortParam, sortDirection);
+      if (sortObject) {
+        orderBy = sortObject;
+      }
+    } else if (fieldSort) {
+      if (Array.isArray(fieldSort)) {
+        const sortObjects = fieldSort
+          .map((sort: any) => {
+            return createSortObject(sort.field, sort.direction || "asc");
+          })
+          .filter(Boolean) as any[];
+
+        if (sortObjects.length > 0) {
+          orderBy = sortObjects;
+        }
+      } else {
+        const sortObject = createSortObject(
+          fieldSort.field,
+          fieldSort.direction || "asc"
+        );
+        if (sortObject) {
+          orderBy = sortObject;
         }
       }
     }
@@ -370,18 +402,11 @@ const preparePrismaListRequest = async <M extends ModelName>(
   return {
     select,
     where,
-    orderBy,
+    orderBy: orderBy as Order<M>,
     skip: (page - 1) * itemsPerPage,
     take: itemsPerPage,
   };
 };
-
-export const changeOrder = (
-  resource: ModelName,
-  orderField: string,
-  currentId: string,
-  moveOverId: string
-) => {};
 
 type GetMappedDataListParams = {
   prisma: PrismaClient;
@@ -402,11 +427,9 @@ export const optionsFromResource = async ({
   property,
   ...args
 }: OptionsFromResourceParams) => {
-  const relationshipField =
-    args.options?.model?.[originResource]?.edit?.fields?.[
-      property as Field<typeof originResource>
-      // @ts-expect-error
-    ]?.relationshipSearchField;
+  const relationshipField = (
+    args.options?.model?.[originResource]?.edit?.fields as any
+  )?.[property as Field<typeof originResource>]?.relationshipSearchField;
 
   if (relationshipField) {
     const targetModel = globalSchema.definitions[args.resource];
@@ -691,8 +714,10 @@ export const getDataItem = async <M extends ModelName>({
         options?.model?.[fieldType as ModelName]?.list;
 
       if (
-        // @ts-expect-error
-        edit?.fields?.[key as Field<ModelName>]?.display === "table"
+        edit?.fields?.[
+          key as Field<ModelName>
+          // @ts-expect-error
+        ]?.display === "table"
       ) {
         if (!relatedResourceOptions?.display) {
           throw new Error(
@@ -725,8 +750,10 @@ export const getDataItem = async <M extends ModelName>({
 
       if (fieldType) {
         if (
-          // @ts-expect-error
-          edit?.fields?.[key as Field<ModelName>]?.display === "table"
+          edit?.fields?.[
+            key as Field<ModelName>
+            // @ts-expect-error
+          ]?.display === "table"
         ) {
           data[key] = mapDataList({
             context: { locale },
