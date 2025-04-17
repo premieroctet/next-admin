@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-cli
 
+## 0.0.7
+
+### Patch Changes
+
+- [97d9a35](https://github.com/premieroctet/next-admin/commit/97d9a35bb60b1bd03c5bae767f297fad956885fb): feat: support Next 15
+
 ## 0.0.6
 
 ### Patch Changes

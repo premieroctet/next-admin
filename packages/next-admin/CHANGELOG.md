@@ -1,5 +1,18 @@
 # @premieroctet/next-admin
 
+## 7.4.0
+
+### Minor Changes
+
+- [eee26d8](https://github.com/premieroctet/next-admin/commit/eee26d84c3b7c515897c961e4d09fe3a52b24857): feat: add multiple fields for default sort
+
+### Patch Changes
+
+- [5a8031b](https://github.com/premieroctet/next-admin/commit/5a8031ba53f00ef205920f0566d0a3696edab552): Add order mode on table view [#362](https://github.com/premieroctet/next-admin/issues/362)
+- [c5f0720](https://github.com/premieroctet/next-admin/commit/c5f0720435c2e07d15faf4088b0fab967d144607): feat: add max items for scalar arrays
+- [4950153](https://github.com/premieroctet/next-admin/commit/49501530db21d746bb3b70bd87d364f7532b743e): feat: allow pagination for relationship display
+- [323a929](https://github.com/premieroctet/next-admin/commit/323a9294bd0cf3116c8a6dc047bf45c335363d2b): Export <Message /> component to usage in custom pages
+
 ## 7.3.1
 
 ### Patch Changes
