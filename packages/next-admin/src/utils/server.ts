@@ -1168,7 +1168,8 @@ export const transformSchema = <M extends ModelName>(
     fillRelationInSchema(resource, options),
     fillDescriptionInSchema(resource, edit),
     addCustomProperties(resource, edit),
-    orderSchema(resource, options)
+    orderSchema(resource, options),
+    applyArrayMaxLength(resource, edit)
   );
 
 export const applyVisiblePropertiesInSchema = <M extends ModelName>(
@@ -1294,6 +1295,24 @@ export const addCustomProperties =
       }
     });
 
+    return schema;
+  };
+
+export const applyArrayMaxLength =
+  <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
+  (schema: Schema) => {
+    const modelName = resource;
+    const modelSchema = schema.definitions[
+      modelName
+    ] as SchemaDefinitions[ModelName];
+    if (!modelSchema) return schema;
+    Object.entries(modelSchema.properties).forEach(([name]) => {
+      const propertyName = name as Field<typeof modelName>;
+      const fieldValue = schema.definitions[modelName].properties[propertyName];
+      if (fieldValue && editOptions?.fields?.[propertyName]?.maxLength) {
+        fieldValue.maxItems = editOptions?.fields?.[propertyName]?.maxLength;
+      }
+    });
     return schema;
   };
 

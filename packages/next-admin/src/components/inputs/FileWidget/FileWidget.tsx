@@ -44,7 +44,13 @@ const FileWidget = (props: Props) => {
           return [selectedFiles[0]];
         }
 
-        return [...old, ...Array.from(selectedFiles)];
+        const newArray = [...old, ...Array.from(selectedFiles)];
+
+        if (props.schema?.maxItems) {
+          return newArray.slice(0, props.schema.maxItems);
+        }
+
+        return newArray;
       });
     }
   };
@@ -82,7 +88,13 @@ const FileWidget = (props: Props) => {
       setFieldDirty(props.name);
       setFiles((old) => {
         if (acceptsMultipleFiles) {
-          return [...old, ...Array.from(event.dataTransfer.files)];
+          const newArray = [...old, ...Array.from(event.dataTransfer.files)];
+
+          if (props.schema?.maxItems) {
+            return newArray.slice(0, props.schema.maxItems);
+          }
+
+          return newArray;
         }
 
         return [event.dataTransfer.files[0]];
