@@ -82,7 +82,7 @@ function List({
   const columns = useDataColumns({
     data,
     resource,
-    sortable: true,
+    sortable: modelOptions?.list?.orderField ? false : true,
     resourcesIdProperty,
     sortColumn,
     sortDirection,
