@@ -302,6 +302,9 @@ export const options: NextAdminOptions = {
             },
             maxLength: 5,
           },
+          author: {
+            required: true,
+          },
         },
         display: [
           "id",
