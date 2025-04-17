@@ -1,8 +1,12 @@
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
 import { RJSFSchema } from "@rjsf/utils";
-import { Enumeration } from "../../../types";
+import { Enumeration, RelationshipPagination } from "../../../types";
 import MultiSelectDisplayListItem from "./MultiSelectDisplayListItem";
+import { useMemo, useState } from "react";
+import useLocalPagination from "../../../hooks/useLocalPagination";
+import { Pagination } from "../../Pagination";
+import { end } from "slate";
 
 type Props = {
   formData: any;
@@ -11,6 +15,7 @@ type Props = {
   deletable: boolean;
   sortable?: boolean;
   onUpdateFormData?: (value: Enumeration[]) => void;
+  pagination?: RelationshipPagination;
 };
 
 const MultiSelectDisplayList = ({
@@ -20,7 +25,14 @@ const MultiSelectDisplayList = ({
   deletable = true,
   sortable = false,
   onUpdateFormData,
+  pagination,
 }: Props) => {
+  const { dataToRender, handlePageChange, totalPages, pageIndex } =
+    useLocalPagination<Enumeration>(
+      formData,
+      pagination ? (pagination.perPage ?? 20) : undefined
+    );
+
   const onDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
@@ -39,20 +51,31 @@ const MultiSelectDisplayList = ({
 
   const renderList = () => {
     return (
-      <ul className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted space-y-2">
-        {formData?.map((value: Enumeration) => {
-          return (
-            <MultiSelectDisplayListItem
-              item={value}
-              key={value.value}
-              onRemoveClick={onRemoveClick}
-              deletable={deletable}
-              sortable={sortable}
-              schema={schema}
+      <div className="flex flex-col gap-2">
+        <ul className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted space-y-2">
+          {dataToRender?.map((value: Enumeration) => {
+            return (
+              <MultiSelectDisplayListItem
+                item={value}
+                key={value.value}
+                onRemoveClick={onRemoveClick}
+                deletable={deletable}
+                sortable={sortable}
+                schema={schema}
+              />
+            );
+          })}
+        </ul>
+        {!!pagination && (
+          <div className="self-end">
+            <Pagination
+              currentPageIndex={pageIndex}
+              totalPageCount={totalPages}
+              onPageChange={handlePageChange}
             />
-          );
-        })}
-      </ul>
+          </div>
+        )}
+      </div>
     );
   };
 

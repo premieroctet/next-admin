@@ -571,6 +571,16 @@ When you define a field, use the field's name as the key and the following objec
       description:
         "a function that takes the resource value as a parameter, and returns a boolean that shows or hides the field in the edit form",
     },
+    {
+      name: "pagination",
+      type: "object",
+      description: (
+        <>
+          An object (can be empty) that adds pagination for multi select fields (with <code>display</code> set to either <code>table</code> or <code>list</code>).
+          It accepts a property <code>perPage</code> defining the amount of items per page (defaults to 20)
+        </>
+      )
+    }
   ]}
 />
 
@@ -695,13 +705,15 @@ The `middlewares` property is an object of functions executed either before a re
     {
       name: "edit",
       type: "Function",
-      description: "a function that is called before the form data is sent to the database. It takes the submitted form data as its first argument, and the current value in the database as its second argument. If false is returned, the update will not happen."
+      description:
+        "a function that is called before the form data is sent to the database. It takes the submitted form data as its first argument, and the current value in the database as its second argument. If false is returned, the update will not happen.",
     },
     {
       name: "delete",
       type: "Function",
-      description: "a function that is called before the record is deleted. It takes the record to delete as its only argument. If false is returned, the deletion will not happen."
-    }
+      description:
+        "a function that is called before the record is deleted. It takes the record to delete as its only argument. If false is returned, the deletion will not happen.",
+    },
   ]}
 />
 

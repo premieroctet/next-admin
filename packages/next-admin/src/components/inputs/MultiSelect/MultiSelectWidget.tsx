@@ -6,7 +6,12 @@ import { useFormState } from "../../../context/FormStateContext";
 import { useI18n } from "../../../context/I18nContext";
 import useClickOutside from "../../../hooks/useCloseOnOutsideClick";
 import { useDisclosure } from "../../../hooks/useDisclosure";
-import { Enumeration, Field, ModelName } from "../../../types";
+import {
+  Enumeration,
+  Field,
+  ModelName,
+  RelationshipPagination,
+} from "../../../types";
 import Button from "../../radix/Button";
 import { Selector } from "../Selector";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
@@ -44,6 +49,11 @@ const MultiSelectWidget = (props: Props) => {
     !!fieldOptions && "display" in fieldOptions
       ? (fieldOptions.display ?? "select")
       : "select";
+
+  const fieldPagination =
+    !!fieldOptions && "pagination" in fieldOptions
+      ? (fieldOptions.pagination as RelationshipPagination)
+      : undefined;
 
   const fieldSortable =
     // @ts-expect-error
@@ -117,6 +127,7 @@ const MultiSelectWidget = (props: Props) => {
               setFieldDirty(name);
               onChange(value);
             }}
+            pagination={fieldPagination}
           />
 
           <Button
@@ -137,6 +148,7 @@ const MultiSelectWidget = (props: Props) => {
             schema={schema}
             onRemoveClick={onRemoveClick}
             deletable={!props.disabled}
+            pagination={fieldPagination}
           />
 
           <Button
