@@ -46,6 +46,7 @@ export const useAction = <M extends ModelName>(
           showMessage({
             type: actionMessage.type,
             message: t(actionMessage.message),
+            component: modelAction.component,
           });
           return;
         }
@@ -59,6 +60,7 @@ export const useAction = <M extends ModelName>(
         showMessage({
           type: "success",
           message: t(modelAction.successMessage),
+          component: modelAction.component,
         });
       }
     } catch {
@@ -66,6 +68,7 @@ export const useAction = <M extends ModelName>(
         showMessage({
           type: "error",
           message: t(modelAction.errorMessage),
+          component: modelAction.component,
         });
       }
     }

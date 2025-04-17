@@ -644,7 +644,11 @@ The `actions` property is an array of objects that allows you to define a set of
           <a href="#clientactiondialogcontentprops">
             ClientActionDialogContentProps
           </a>{" "}
-          for the props passed to the component.
+          for the props passed to the component.<br /><br />
+          For a server side action, it is used inside the message shown at the top of the page
+          after the action execution. It receives a prop <code>message</code> containing the
+          message to be displayed. Useful in case you want to display custom content,
+          for example as Markdown.
         </>
       ),
     },
