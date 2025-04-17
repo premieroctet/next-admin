@@ -359,16 +359,12 @@ const preparePrismaListRequest = async <M extends ModelName>(
     const sortParam = searchParams.get("sortColumn") as Field<typeof resource>;
     const sortDirection = searchParams.get("sortDirection") as Prisma.SortOrder;
 
-    // If sort parameters are specified in URL, use those
     if (sortParam && sortDirection) {
       const sortObject = createSortObject(sortParam, sortDirection);
       if (sortObject) {
         orderBy = sortObject;
       }
-    }
-    // Otherwise, use defaultSort from options
-    else if (fieldSort) {
-      // If fieldSort is an array, create an array of sort objects
+    } else if (fieldSort) {
       if (Array.isArray(fieldSort)) {
         const sortObjects = fieldSort
           .map((sort: any) => {
@@ -379,9 +375,7 @@ const preparePrismaListRequest = async <M extends ModelName>(
         if (sortObjects.length > 0) {
           orderBy = sortObjects;
         }
-      }
-      // If fieldSort is a single field, create a single sort object
-      else {
+      } else {
         const sortObject = createSortObject(
           fieldSort.field,
           fieldSort.direction || "asc"
@@ -475,9 +469,11 @@ export const optionsFromResource = async ({
     args.options
   );
 
-  const displayMode = (
-    args.options?.model?.[originResource]?.edit?.fields as any
-  )?.[property as Field<typeof originResource>]?.display;
+  const displayMode =
+    args.options?.model?.[originResource]?.edit?.fields?.[
+      property as Field<typeof originResource>
+      // @ts-expect-error
+    ]?.display;
 
   return {
     data: dataItems.map((item): Enumeration => {
@@ -665,8 +661,10 @@ export const selectPayloadForModel = <M extends ModelName>(
           };
 
           const orderField =
-            ((options as EditOptions<M>)?.fields as any)?.[name as Field<M>]
-              ?.orderField || (options as ListOptions<M>)?.orderField;
+            (options as EditOptions<M>)?.fields?.[
+              name as Field<M>
+              // @ts-expect-error
+            ]?.orderField || (options as ListOptions<M>)?.orderField;
 
           if (orderField) {
             acc[name].orderBy = {
@@ -716,7 +714,10 @@ export const getDataItem = async <M extends ModelName>({
         options?.model?.[fieldType as ModelName]?.list;
 
       if (
-        (edit?.fields as any)?.[key as Field<ModelName>]?.display === "table"
+        edit?.fields?.[
+          key as Field<ModelName>
+          // @ts-expect-error
+        ]?.display === "table"
       ) {
         if (!relatedResourceOptions?.display) {
           throw new Error(
@@ -749,7 +750,10 @@ export const getDataItem = async <M extends ModelName>({
 
       if (fieldType) {
         if (
-          (edit?.fields as any)?.[key as Field<ModelName>]?.display === "table"
+          edit?.fields?.[
+            key as Field<ModelName>
+            // @ts-expect-error
+          ]?.display === "table"
         ) {
           data[key] = mapDataList({
             context: { locale },
