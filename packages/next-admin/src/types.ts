@@ -646,7 +646,7 @@ export type UnionModelAction = {
 
 export type OutputModelAction = (Omit<
   UnionModelAction,
-  "action" | "canExecute"
+  "action" | "canExecute" | "component"
 > & {
   allowedIds?: string[] | number[];
 })[];
