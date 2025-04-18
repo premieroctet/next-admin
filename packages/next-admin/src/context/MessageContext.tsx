@@ -1,7 +1,11 @@
 "use client";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import { MessageContextType, MessageData } from "../types";
+import {
+  MessageContextType,
+  MessageData,
+  MessageDataWithCustomComponent,
+} from "../types";
 
 const MessageContext = createContext<MessageContextType>({
   showMessage: () => {},
@@ -11,23 +15,25 @@ const MessageContext = createContext<MessageContextType>({
 
 export const MessageProvider = ({ children }: PropsWithChildren) => {
   const { query } = useRouterInternal();
-  const [message, setMessage] = useState<MessageData | null>(() => {
-    if (query.message) {
-      try {
-        const data = JSON.parse(query.message);
+  const [message, setMessage] = useState<MessageDataWithCustomComponent | null>(
+    () => {
+      if (query.message) {
+        try {
+          const data = JSON.parse(query.message);
 
-        if (data.type && data.message) {
-          return data;
+          if (data.type && data.message) {
+            return data;
+          }
+
+          return null;
+        } catch {
+          return null;
         }
-
-        return null;
-      } catch {
-        return null;
       }
-    }
 
-    return null;
-  });
+      return null;
+    }
+  );
 
   const showMessage = (messageData: MessageData) => {
     setMessage(messageData);

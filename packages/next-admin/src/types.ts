@@ -613,9 +613,17 @@ export type MessageData = {
   message: string;
 };
 
+export type ServerActionCustomComponent = React.ReactElement<{
+  message?: string;
+}>;
+
+export type MessageDataWithCustomComponent = MessageData & {
+  component?: ServerActionCustomComponent;
+};
+
 export type MessageContextType = {
-  showMessage: (message: MessageData) => void;
-  message: MessageData | null;
+  showMessage: (message: MessageDataWithCustomComponent) => void;
+  message: MessageDataWithCustomComponent | null;
   hideMessage: () => void;
 };
 
@@ -638,6 +646,11 @@ export type ServerAction = {
   action: (ids: string[] | number[]) => Promise<void | MessageData>;
   successMessage?: string;
   errorMessage?: string;
+  /**
+   * Component shown inside the Message component. If not passed, the message
+   * string is displayed in a `p` HTML element.
+   */
+  component?: ServerActionCustomComponent;
 } & BareModelAction<ModelName>;
 
 export type ClientAction<T extends ModelName> = {
@@ -657,7 +670,7 @@ export type UnionModelAction = {
 
 export type OutputModelAction = (Omit<
   UnionModelAction,
-  "action" | "canExecute"
+  "action" | "canExecute" | "component"
 > & {
   allowedIds?: string[] | number[];
 })[];

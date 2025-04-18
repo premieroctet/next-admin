@@ -6,7 +6,7 @@ import {
   XCircleIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import { useEffect } from "react";
+import { cloneElement, useEffect } from "react";
 import { useMessage } from "../context/MessageContext";
 
 export const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
@@ -46,8 +46,12 @@ export const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
               <InformationCircleIcon className="h-5 w-5" aria-hidden="true" />
             )}
           </div>
-          <div className="ml-3">
-            <p className="text-sm font-medium">{message.message}</p>
+          <div className="ml-3 text-sm font-medium">
+            {!message.component ? (
+              <p>{message.message}</p>
+            ) : (
+              cloneElement(message.component, { message: message.message })
+            )}
           </div>
         </div>
       </div>
