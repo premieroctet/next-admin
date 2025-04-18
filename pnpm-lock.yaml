@@ -276,9 +276,6 @@ importers:
 
   packages/generator-prisma:
     dependencies:
-      '@premieroctet/next-admin':
-        specifier: workspace:*
-        version: link:../next-admin
       '@premieroctet/next-admin-json-schema':
         specifier: workspace:^
         version: link:../json-schema
