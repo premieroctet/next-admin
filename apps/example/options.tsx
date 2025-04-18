@@ -234,11 +234,7 @@ export const options: NextAdminOptions = {
             key: "full_title",
             label: "Full title",
             formatter: ({ row: post }) => {
-              return (
-                <p className="text-red-500">
-                  {post?.title}, by {post?.author.name}
-                </p>
-              );
+              return `${post?.title}, by ${post?.author.name}`;
             },
             dependsOn: ["author", "title"],
           },

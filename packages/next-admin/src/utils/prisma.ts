@@ -625,7 +625,10 @@ export const mapDataList = ({
         const formatted = formatter?.(virtualFieldCtx);
 
         item[key] = {
-          type: displayOpt.type,
+          type:
+            typeof formatted === "string"
+              ? (displayOpt.type ?? "scalar")
+              : displayOpt.type,
           value:
             displayOpt.type === "link"
               ? { url: displayOpt.url(virtualFieldCtx) }
