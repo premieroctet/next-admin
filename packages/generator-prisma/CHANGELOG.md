@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-generator-prisma
 
+## 0.0.7
+
+### Patch Changes
+
+- [e232f92](https://github.com/premieroctet/next-admin/commit/e232f92882ff395e2e9e3d60afc28eda18264881): fix: remove next-admin from peer deps
+
 ## 0.0.6
 
 ### Patch Changes
