@@ -44,8 +44,5 @@
     "eslint-config-custom": "workspace:*",
     "tsconfig": "workspace:*",
     "typescript": "^5.6.2"
-  },
-  "peerDependencies": {
-    "@premieroctet/next-admin": "workspace:*"
   }
 }
