@@ -36,35 +36,69 @@ const useDataColumns = ({
 
   const options = configOptions?.model?.[resource];
 
+  const allDisplayedFields = useMemo(() => {
+    if (options?.list?.display) {
+      return options.list.display.map((disp) => {
+        if (typeof disp === "string") {
+          return {
+            name: disp,
+            virtual: false,
+            label: undefined,
+          };
+        }
+        return {
+          name: disp.key,
+          virtual: true,
+          label: t(disp.label),
+        };
+      });
+    }
+
+    return Object.keys(data[0]).map((key) => ({
+      name: key,
+      virtual: false,
+      label: undefined,
+    }));
+  }, []);
+
   return useMemo<ColumnDef<ListDataItem<ModelName>>[]>(() => {
     return data && data?.length > 0
-      ? (options?.list?.display || Object.keys(data[0])).map((property) => {
+      ? allDisplayedFields.map((property) => {
+          const propertyName = property.name;
+          const isVirtualField = property.virtual;
+
           const propertyAlias = t(
-            `model.${resource}.fields.${property}`,
+            `model.${resource}.fields.${propertyName}`,
             {},
             options?.aliases?.[
-              property as keyof ListFieldsOptions<typeof resource>
-            ] || property
+              propertyName as keyof ListFieldsOptions<typeof resource>
+            ] ||
+              property.label ||
+              propertyName
           );
 
+          const isColumnSortable = sortable && !isVirtualField;
+
           return {
-            accessorKey: property,
+            accessorKey: propertyName,
             header: () => {
               return (
                 <TableHead
-                  className={sortable ? "cursor-pointer" : "cursor-default"}
+                  className={
+                    isColumnSortable ? "cursor-pointer" : "cursor-default"
+                  }
                   sortDirection={sortDirection}
                   sortColumn={sortColumn}
-                  property={property}
+                  property={propertyName}
                   propertyName={propertyAlias}
-                  key={property}
+                  key={propertyName}
                   onClick={() => {
-                    if (sortable) {
+                    if (isColumnSortable) {
                       router?.push({
                         pathname: location.pathname,
                         query: {
                           ...query,
-                          sortColumn: property,
+                          sortColumn: propertyName,
                           sortDirection:
                             query.sortDirection === "asc" ? "desc" : "asc",
                         },
@@ -77,16 +111,16 @@ const useDataColumns = ({
             cell: ({ row }) => {
               const modelData = row.original;
               const cellData = modelData[
-                property as keyof ListFieldsOptions<ModelName>
+                propertyName as keyof ListFieldsOptions<ModelName>
               ] as unknown as ListDataFieldValue;
 
               const dataFormatter =
                 options?.list?.fields?.[
-                  property as keyof ListFieldsOptions<ModelName>
+                  propertyName as keyof ListFieldsOptions<ModelName>
                 ]?.formatter ||
                 ((cell: any) => {
                   if (typeof cell === "object") {
-                    return cell[resourcesIdProperty[property as ModelName]];
+                    return cell[resourcesIdProperty[propertyName as ModelName]];
                   } else {
                     return cell;
                   }
@@ -97,7 +131,7 @@ const useDataColumns = ({
                   cell={cellData}
                   formatter={!isAppDir ? dataFormatter : undefined}
                   copyable={options?.list?.copy?.includes(
-                    property as Field<ModelName>
+                    propertyName as Field<ModelName>
                   )}
                 />
               );
