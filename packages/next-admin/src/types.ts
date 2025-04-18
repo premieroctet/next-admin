@@ -430,6 +430,30 @@ export type FieldSort<T extends ModelName> = {
   direction?: Prisma.SortOrder;
 };
 
+type VirtualFieldWithType<T extends ModelName> = {
+  formatter: (context: NextAdminContext<Model<T>>) => string;
+} & (
+  | {
+      type?: "link";
+      url: (context: NextAdminContext<Model<T>>) => string;
+    }
+  | {
+      type?: Exclude<ListDataFieldValue["type"], "link">;
+    }
+);
+
+export type VirtualField<T extends ModelName> = {
+  key: string;
+  label: string;
+  dependsOn?: Field<T>[];
+} & (
+  | VirtualFieldWithType<T>
+  | {
+      formatter: (context: NextAdminContext<Model<T>>) => React.ReactElement;
+      type?: never;
+    }
+);
+
 export type ListOptions<T extends ModelName> = {
   /**
    * an url to export the list data as CSV.
@@ -439,7 +463,7 @@ export type ListOptions<T extends ModelName> = {
    * an array of fields that are displayed in the list.
    * @default all scalar
    */
-  display?: Field<T>[];
+  display?: Array<Field<T> | VirtualField<T>>;
   /**
    * an array of searchable fields.
    * @default all scalar
@@ -978,9 +1002,9 @@ export type SubmitFormResult = {
   validation?: any;
 };
 
-export type NextAdminContext = {
+export type NextAdminContext<ModelData = any> = {
   locale?: string | null;
-  row?: any;
+  row?: ModelData;
 };
 
 export type CustomInputProps = Partial<{

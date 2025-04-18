@@ -230,9 +230,15 @@ export const options: NextAdminOptions = {
         ],
         display: [
           "id",
-          "title",
+          {
+            key: "full_title",
+            label: "Full title",
+            formatter: ({ row: post }) => {
+              return `${post?.title}, by ${post?.author.name}`;
+            },
+            dependsOn: ["author", "title"],
+          },
           "published",
-          "author",
           "categories",
           "rate",
           "tags",

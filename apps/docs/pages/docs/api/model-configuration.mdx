@@ -157,7 +157,11 @@ This property determines how your data is displayed in the [list View](/docs/glo
     {
       name: "display",
       type: "Array",
-      description: "an array of fields that are displayed in the list",
+      description: (
+        <>
+          an array of fields that are displayed in the list. You can also pass an object, check <a href="#virtual-list-fields">virtual list fields</a>
+        </>
+      ),
       defaultValue: "All scalar fields are displayed by default",
     },
     {
@@ -1014,5 +1018,65 @@ It will always have the following :
       type: "Date",
       description: "the value coming from the database",
     },
+  ]}
+/>
+
+## Virtual list fields
+
+It is possible to add custom columns in the list panel that are computed from the value of other columns. This is done by setting an object in the `list.display` array of a model. This object takes the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "key",
+      type: "String",
+      description: "A unique key used to index the value in the data",
+    },
+    {
+      name: "label",
+      type: "String",
+      description: (
+        <>
+          An optional explicit label for the table header. If a translation under the <code>model.your_resource.fields.your_key</code>" is provided, this translation will be used, else this label, otherwise the key.
+        </>
+      ),
+    },
+    {
+      name: "dependsOn",
+      type: "String[]",
+      description: (
+        <>
+          An array of fields on the current resource that the virtual field depends on. You should typically include fields that are not already in the <code>display</code> array.
+        </>
+      ),
+    },
+    {
+      name: "formatter",
+      type: "Function",
+      description: (
+        <>
+          A function that takes a <a href="#nextadmin-context">NextAdmin context</a> as a parameter, containing the raw data value. This function can either return a string or a react element (currently only for App Router). If a string is returned, a <code>type</code> property can be provided to alter the render of the cell in the table.
+        </>
+      ),
+    },
+    {
+      name: "type",
+      type: "String",
+      description: (
+        <>
+          An optional type used to alter the render of the cell. Available values are <code>scalar</code>, <code>count</code>, <code>date</code> and <code>link</code>. If <code>link</code> is used, the <code>url</code> function must be provided.
+        </>
+      ),
+      defaultValue: "scalar"
+    },
+    {
+      name: "url",
+      type: "Function",
+      description: (
+        <>
+          A function that takes a <a href="#nextadmin-context">NextAdmin context</a> as a parameter, containing the raw data value. This function should return a string representing the URL to which the cell should link.
+        </>
+      ),
+    }
   ]}
 />

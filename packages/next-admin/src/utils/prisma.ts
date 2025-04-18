@@ -13,11 +13,13 @@ import {
   ModelName,
   NextAdminContext,
   NextAdminOptions,
+  NoticeField,
   Order,
   PrismaListRequest,
   SchemaDefinitions,
   SchemaProperty,
   Select,
+  VirtualField,
 } from "../types";
 import { validateQuery } from "./advancedSearch";
 import { getDefinitionFromRef } from "./jsonSchema";
@@ -549,11 +551,13 @@ export const mapDataList = ({
   "resource" | "options" | "context" | "appDir"
 > & { fetchData: any[] }) => {
   const { resource, options } = args;
+  const originalFetchData = cloneDeep(fetchData);
   const data = findRelationInData(
     fetchData,
     globalSchema.definitions[resource]
   );
   const listFields = options?.model?.[resource]?.list?.fields ?? {};
+  const listDisplayOptions = options?.model?.[resource]?.list?.display ?? [];
   const originalData = cloneDeep(data);
   data.forEach((item, index) => {
     context.row = originalData[index];
@@ -608,6 +612,34 @@ export const mapDataList = ({
         item[key].value.label = item[key].value.label[idProperty];
       }
     });
+
+    listDisplayOptions.forEach((displayOpt) => {
+      if (typeof displayOpt === "object") {
+        const { key, formatter } = displayOpt;
+
+        const virtualFieldCtx = {
+          ...context,
+          row: originalFetchData[index],
+        };
+
+        const formatted = formatter?.(virtualFieldCtx);
+
+        item[key] = {
+          type:
+            typeof formatted === "string"
+              ? (displayOpt.type ?? "scalar")
+              : displayOpt.type,
+          value:
+            displayOpt.type === "link"
+              ? { url: displayOpt.url(virtualFieldCtx) }
+              : typeof formatted === "string"
+                ? formatted
+                : undefined,
+          __nextadmin_formatted:
+            !appDir && typeof formatted === "string" ? undefined : formatted,
+        };
+      }
+    });
   });
   return data;
 };
@@ -626,6 +658,12 @@ export const getMappedDataList = async ({
   };
 };
 
+const isVirtualField = <M extends ModelName>(
+  displayOpts: (string & {}) | Field<M> | NoticeField | VirtualField<M>
+): displayOpts is VirtualField<M> => {
+  return typeof displayOpts === "object" && "dependsOn" in displayOpts;
+};
+
 export const selectPayloadForModel = <M extends ModelName>(
   resource: M,
   options?: EditOptions<M> | ListOptions<M>,
@@ -639,6 +677,21 @@ export const selectPayloadForModel = <M extends ModelName>(
 
   const displayKeys = options?.display;
   const orderField = (options as ListOptions<M>)?.orderField;
+
+  const defaultSelectedKeysForVirtualFields =
+    options?.display
+      ?.filter(isVirtualField)
+      .flatMap((disp) => disp?.dependsOn)
+      ?.reduce(
+        (acc, val) => {
+          if (val) {
+            acc[val] = true;
+          }
+          return acc;
+        },
+        {} as Record<Field<M>, true>
+      ) ?? {};
+
   let selectedFields = Object.entries(properties).reduce(
     (acc, [name, field]) => {
       const fieldNextAdmin = field.__nextadmin;
@@ -677,7 +730,9 @@ export const selectPayloadForModel = <M extends ModelName>(
       }
       return acc;
     },
-    modelHasIdField(resource) ? ({ [idProperty]: true } as any) : {}
+    modelHasIdField(resource)
+      ? ({ [idProperty]: true, ...defaultSelectedKeysForVirtualFields } as any)
+      : {}
   );
 
   return selectedFields;
