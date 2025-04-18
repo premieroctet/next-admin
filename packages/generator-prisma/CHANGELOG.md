@@ -1,6 +1,6 @@
 # @premieroctet/next-admin-generator-prisma
 
-## 1.0.0
+## 0.0.6
 
 ### Patch Changes
 
