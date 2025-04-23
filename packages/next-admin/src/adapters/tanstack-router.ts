@@ -1,23 +1,27 @@
-import { useLocation, useNavigate } from "@tanstack/react-router";
+import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
 import { PushParams, Query, RouterInterface } from "./types";
 import { createRouterAdapter } from "./context";
+import { useMemo } from "react";
+import { useConfig } from "../context/ConfigContext";
 
 export const useTanstackRouterAdapter = (): RouterInterface => {
   const location = useLocation();
   const navigate = useNavigate();
+  const router = useRouter();
+  const { basePath } = useConfig();
 
   const pathname = location.pathname;
-  const query = new URLSearchParams(location.searchStr);
+  const query = useMemo(() => {
+    return new URLSearchParams(location.searchStr);
+  }, [location.searchStr]);
 
   const push = (params: PushParams) => {
     navigate({
       to: ".",
       params: {
-        _splat: params.pathname,
+        _splat: params.pathname.replace(basePath, ""),
       },
-      search: query
-        ? new URLSearchParams(params.query as Record<string, string>).toString()
-        : undefined,
+      search: query ? params.query : undefined,
     });
   };
 
@@ -25,19 +29,14 @@ export const useTanstackRouterAdapter = (): RouterInterface => {
     navigate({
       to: ".",
       params: {
-        _splat: params.pathname,
+        _splat: params.pathname.replace(basePath, ""),
       },
-      search: query
-        ? new URLSearchParams(params.query as Record<string, string>).toString()
-        : undefined,
+      search: query ? params.query : undefined,
       replace: true,
     });
   };
   const refresh = () => {
-    navigate({
-      to: ".",
-      replace: true,
-    });
+    router.invalidate();
   };
 
   const setQuery = (queryArg: Query, merge = false) => {
@@ -51,11 +50,7 @@ export const useTanstackRouterAdapter = (): RouterInterface => {
       }
     }
 
-    navigate({
-      to: ".",
-      replace: true,
-      search: searchParams,
-    });
+    window.location.search = searchParams.toString();
   };
 
   return {
