@@ -904,6 +904,7 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
           label: string;
           url: string;
         };
+        isOverridden?: boolean;
       }
     | {
         type: "date";
