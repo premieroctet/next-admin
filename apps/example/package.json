@@ -7,12 +7,6 @@
     "build": "prisma generate && next build",
     "start": "next start",
     "lint": "next lint",
-    "database": "prisma migrate dev && prisma db seed",
-    "generate": "prisma generate",
-    "generate:client-only": "prisma generate --generator client",
-    "reset-database": "prisma migrate reset --force --skip-generate --skip-seed && prisma migrate dev --skip-generate && pnpm run generate:client-only && prisma db seed",
-    "prisma:migrate:dev": "prisma migrate dev",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build",
     "test:e2e": "playwright test",
     "clean": "rm -rf .next"
   },
@@ -24,7 +18,6 @@
     "@heroicons/react": "^2.0.18",
     "@picocss/pico": "^1.5.7",
     "@premieroctet/next-admin": "workspace:*",
-    "@premieroctet/next-admin-generator-prisma": "workspace:*",
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
     "next": "^15.1.0",
@@ -46,9 +39,7 @@
     "eslint": "7.32.0",
     "eslint-config-custom": "workspace:*",
     "postcss": "^8.4.24",
-    "prisma": "5.14.0",
     "tailwindcss": "^3.3.2",
-    "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",
     "typescript": "^5.1.6"
   }

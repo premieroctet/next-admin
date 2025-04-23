@@ -1,5 +1,5 @@
 import { HomeIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import Link from "./common/Link";
 import { useConfig } from "../context/ConfigContext";
 import { ModelIcon } from "../types";
 import ResourceIcon from "./common/ResourceIcon";
