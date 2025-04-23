@@ -637,6 +637,7 @@ export const mapDataList = ({
                 : undefined,
           __nextadmin_formatted:
             !appDir && typeof formatted === "string" ? undefined : formatted,
+          isOverridden: displayOpt.type === "link" ? true : undefined,
         };
       }
     });

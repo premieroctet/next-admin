@@ -113,7 +113,6 @@ const useDataColumns = ({
               const cellData = modelData[
                 propertyName as keyof ListFieldsOptions<ModelName>
               ] as unknown as ListDataFieldValue;
-
               const dataFormatter =
                 options?.list?.fields?.[
                   propertyName as keyof ListFieldsOptions<ModelName>

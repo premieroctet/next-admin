@@ -38,14 +38,18 @@ export default function Cell({ cell, formatter, copyable }: Props) {
       }
 
       if (cell.type === "link") {
+        const url = cell.isOverridden
+          ? cell.value.url
+          : `${basePath}/${cell.value.url}`;
+
         return (
           <Link
             onClick={(e) => e.stopPropagation()}
-            href={`${basePath}/${cell.value.url}`}
+            href={url}
             className="text-nextadmin-brand-emphasis dark:text-dark-nextadmin-brand-subtle hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis flex cursor-pointer items-center gap-1 font-semibold hover:underline"
           >
             {cellValue}
-            {copyable && <Clipboard value={cell.value.url} />}
+            {copyable && <Clipboard value={url} />}
           </Link>
         );
       } else if (cell.type === "count") {
