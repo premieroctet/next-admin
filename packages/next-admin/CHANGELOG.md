@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.5.1
+
+### Patch Changes
+
+- [9f4ba10](https://github.com/premieroctet/next-admin/commit/9f4ba10298f5bbd2c2ba9695baa88f7fbc5a61be): fix: absolute url for virtual fields
+
 ## 7.5.0
 
 ### Minor Changes
