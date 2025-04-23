@@ -18,7 +18,7 @@ export const getNextAdminPropsFn = createServerFn()
       prisma: prisma,
       options: options,
       req: {
-        url: new URL(data.url).pathname,
+        url: data.url,
       },
     });
   });

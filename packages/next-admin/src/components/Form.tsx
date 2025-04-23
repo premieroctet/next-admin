@@ -13,7 +13,6 @@ import {
   ObjectFieldTemplateProps,
   SubmitButtonProps,
 } from "@rjsf/utils";
-import * as rjsfUtils from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
