@@ -13,7 +13,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
 import dynamic from "next/dynamic";
-import Link from "next/link";
+import Link from "./common/Link";
 import { Fragment, useState, ReactNode } from "react";
 
 import { useTheme } from "next-themes";

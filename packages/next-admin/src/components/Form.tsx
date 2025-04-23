@@ -10,10 +10,10 @@ import {
   ErrorSchema,
   FieldProps,
   FieldTemplateProps,
-  getSubmitButtonOptions,
   ObjectFieldTemplateProps,
   SubmitButtonProps,
 } from "@rjsf/utils";
+import * as rjsfUtils from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
 import dynamic from "next/dynamic";
@@ -67,6 +67,7 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
+import { getSubmitButtonOptions } from "../utils/rjsf";
 
 const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
   ssr: false,

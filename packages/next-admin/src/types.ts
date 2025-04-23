@@ -549,7 +549,7 @@ export type EditModelHooks = {
   beforeDb?: (
     data: Record<string, string | (UploadedFile | string)[] | null>,
     mode: "create" | "edit",
-    request: NextRequest | NextApiRequest
+    request: Request | NextApiRequest
   ) => Promise<Record<string, string | (UploadedFile | string)[] | null>>;
   /**
    * a function that is called after the form submission. It takes the response of the db insertion as a parameter.
@@ -558,7 +558,7 @@ export type EditModelHooks = {
   afterDb?: (
     data: SubmitResourceResponse,
     mode: "create" | "edit",
-    request: NextRequest | NextApiRequest
+    request: Request | NextApiRequest
   ) => Promise<SubmitResourceResponse>;
 };
 
@@ -1178,11 +1178,11 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    * A function that acts as a middleware. Useful to add authentication logic for example.
    */
   onRequest?: (
-    req: NextRequest,
+    req: Request,
     ctx: RequestContext<P>
   ) =>
-    | ReturnType<NextResponse["json"]>
-    | ReturnType<NextResponse["text"]>
+    | ReturnType<Response["json"]>
+    | ReturnType<Response["text"]>
     | Promise<void>;
   /**
    * A string indicating the name of the dynamic segment.

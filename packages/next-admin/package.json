@@ -76,6 +76,16 @@
       "import": "./dist/utils.js",
       "types": "./dist/utils.d.ts",
       "require": "./dist/utils.js"
+    },
+    "./adapters/next": {
+      "import": "./dist/adapters/next.js",
+      "types": "./dist/adapters/next.d.ts",
+      "require": "./dist/adapters/next.js"
+    },
+    "./adapters/tanstack-router": {
+      "import": "./dist/adapters/tanstack-router.js",
+      "types": "./dist/adapters/tanstack-router.d.ts",
+      "require": "./dist/adapters/tanstack-router.js"
     }
   },
   "peerDependencies": {
@@ -133,6 +143,7 @@
   },
   "devDependencies": {
     "@premieroctet/next-admin-json-schema": "workspace:*",
+    "@tanstack/react-router": "^1.116.0",
     "@testing-library/react": "^14.1.2",
     "@types/body-parser": "^1.19.2",
     "@types/jest": "^29.5.1",
@@ -143,9 +154,9 @@
     "@types/lodash.merge": "^4.6.9",
     "@types/lodash.range": "^3.2.7",
     "@types/lodash.set": "^4.3.9",
+    "@types/lodash.sortby": "^4.7.9",
     "@types/lodash.unset": "^4.5.9",
     "@types/lodash.update": "^4.10.9",
-    "@types/lodash.sortby": "^4.7.9",
     "@types/nprogress": "^0.2.3",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",

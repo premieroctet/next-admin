@@ -3,11 +3,11 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
   WidgetProps,
-  ariaDescribedByIds,
 } from "@rjsf/utils";
 import clsx from "clsx";
 import { ChangeEvent, FocusEvent, useCallback } from "react";
 import { useFormState } from "../../context/FormStateContext";
+import { ariaDescribedByIds } from "../../utils/rjsf";
 
 /** The `TextareaWidget` is a widget for rendering input fields as textarea.
  *

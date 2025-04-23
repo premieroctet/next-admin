@@ -3,10 +3,9 @@ import {
   RJSFSchema,
   StrictRJSFSchema,
   WidgetProps,
-  getTemplate,
-  utcToLocal,
 } from "@rjsf/utils";
 import { useFormState } from "../../context/FormStateContext";
+import { getTemplate, utcToLocal } from "../../utils/rjsf";
 
 /** The `DateTimeWidget` component uses the `BaseInputTemplate` changing the type to `datetime-local` and transforms
  * the value to/from utc using the appropriate utility functions.

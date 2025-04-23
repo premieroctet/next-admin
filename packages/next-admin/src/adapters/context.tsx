@@ -1,0 +1,28 @@
+import { createContext, PropsWithChildren, useContext } from "react";
+import { RouterInterface } from "./types";
+
+type RouterContextType = {
+  router: () => RouterInterface;
+};
+
+const RouterContext = createContext<RouterContextType>({
+  router: () => {
+    throw new Error("RouterAdapterProvider is not initialized");
+  },
+});
+
+export const createRouterAdapter = (routerHook: () => RouterInterface) => {
+  return function RouterAdapterProvider({ children }: PropsWithChildren) {
+    return (
+      <RouterContext.Provider value={{ router: routerHook }}>
+        {children}
+      </RouterContext.Provider>
+    );
+  };
+};
+
+export const useRouterAdapter = () => {
+  const { router } = useContext(RouterContext);
+
+  return router();
+};

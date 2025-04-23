@@ -4,7 +4,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
-import Link from "next/link";
+import Link from "../common/Link";
 import { useMemo } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";

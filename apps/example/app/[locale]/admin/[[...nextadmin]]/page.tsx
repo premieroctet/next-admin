@@ -2,6 +2,7 @@ import Dashboard from "@/components/Dashboard";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import { NextAdmin, PromisePageProps } from "@premieroctet/next-admin";
+import { NextAdminRouterAdapter } from "@premieroctet/next-admin/adapters/next";
 import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
 import { Metadata, Viewport } from "next";
 import { getMessages } from "next-intl/server";
@@ -41,15 +42,17 @@ export default async function AdminPage(props: PromisePageProps) {
   ];
 
   return (
-    <NextAdmin
-      {...nextAdminProps}
-      dashboard={<Dashboard />}
-      user={{
-        data: {
-          name: "John Doe",
-        },
-        logout: logoutRequest,
-      }}
-    />
+    <NextAdminRouterAdapter>
+      <NextAdmin
+        {...nextAdminProps}
+        dashboard={<Dashboard />}
+        user={{
+          data: {
+            name: "John Doe",
+          },
+          logout: logoutRequest,
+        }}
+      />
+    </NextAdminRouterAdapter>
   );
 }
