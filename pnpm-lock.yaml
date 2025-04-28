@@ -312,6 +312,9 @@ importers:
 
   packages/database:
     dependencies:
+      '@premieroctet/next-admin':
+        specifier: workspace:*
+        version: link:../next-admin
       '@premieroctet/next-admin-generator-prisma':
         specifier: workspace:*
         version: link:../generator-prisma
