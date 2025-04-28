@@ -78,9 +78,9 @@
       "require": "./dist/utils.js"
     },
     "./pageLoader": {
-      "import": "./dist/components/pageLoader.js",
-      "types": "./dist/components/pageLoader.d.ts",
-      "require": "./dist/components/pageLoader.js"
+      "import": "./dist/components/PageLoader.js",
+      "types": "./dist/components/PageLoader.d.ts",
+      "require": "./dist/components/PageLoader.js"
     },
     "./adapters/next": {
       "import": "./dist/adapters/next.js",

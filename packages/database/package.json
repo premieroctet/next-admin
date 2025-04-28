@@ -2,6 +2,7 @@
   "name": "database",
   "version": "0.0.1",
   "scripts": {
+    "build": "prisma generate",
     "database": "prisma migrate dev && prisma db seed",
     "generate": "prisma generate",
     "generate:client-only": "prisma generate --generator client",
@@ -12,6 +13,7 @@
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
   },
   "dependencies": {
+    "@premieroctet/next-admin": "workspace:*",
     "@premieroctet/next-admin-generator-prisma": "workspace:*",
     "@prisma/client": "5.14.0"
   },

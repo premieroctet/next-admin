@@ -1,5 +1,4 @@
 import merge from "lodash.merge";
-import dynamic from "next/dynamic";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getClientActionsComponents, getCustomInputs } from "../utils/options";
