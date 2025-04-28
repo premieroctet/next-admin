@@ -11,8 +11,11 @@
     "@tanstack/react-router": "^1.116.0",
     "@tanstack/react-router-devtools": "^1.117.0",
     "@tanstack/react-start": "^1.116.2",
+    "@tremor/react": "^3.2.2",
     "database": "workspace:*",
+    "examples-common": "workspace:*",
     "react": "^19.0.0",
+    "react-datepicker": "^4.24.0",
     "react-dom": "^19.0.0",
     "vinxi": "^0.5.4"
   },

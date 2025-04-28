@@ -77,6 +77,11 @@
       "types": "./dist/utils.d.ts",
       "require": "./dist/utils.js"
     },
+    "./pageLoader": {
+      "import": "./dist/components/pageLoader.js",
+      "types": "./dist/components/pageLoader.d.ts",
+      "require": "./dist/components/pageLoader.js"
+    },
     "./adapters/next": {
       "import": "./dist/adapters/next.js",
       "types": "./dist/adapters/next.d.ts",
@@ -90,7 +95,6 @@
   },
   "peerDependencies": {
     "@prisma/client": ">=5",
-    "next": ">=12",
     "prisma": ">=5",
     "react": ">=17",
     "react-dom": ">=17",

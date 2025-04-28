@@ -1,8 +1,7 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { NextApiRequest } from "next";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextApiRequest } from "next";
 import type React from "react";
 import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
@@ -998,6 +997,7 @@ export type MainLayoutProps = Pick<
 
 export type CustomUIProps = {
   dashboard?: React.JSX.Element | (() => React.JSX.Element);
+  pageLoader?: React.JSX.Element;
 };
 
 export type ActionFullParams = ActionParams & {

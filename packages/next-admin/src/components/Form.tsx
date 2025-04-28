@@ -15,12 +15,13 @@ import {
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import dynamic from "next/dynamic";
 import React, {
   ChangeEvent,
   cloneElement,
   forwardRef,
   HTMLProps,
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -68,10 +69,7 @@ import {
 } from "./radix/Tooltip";
 import { getSubmitButtonOptions } from "../utils/rjsf";
 
-const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
-  ssr: false,
-  loading: () => <div className="h-48 animate-pulse rounded bg-gray-500" />,
-});
+const RichTextField = lazy(() => import("./inputs/RichText/RichTextField"));
 
 const widgets: RjsfForm["props"]["widgets"] = {
   DateWidget: DateWidget,
@@ -298,19 +296,22 @@ const Form = ({
     [apiBasePath, id]
   );
 
-  const fields: RjsfForm["props"]["fields"] = {
-    ArrayField: (props: FieldProps) => {
-      const customInput = customInputs?.[props.name as Field<ModelName>];
-      const improvedCustomInput = customInput
-        ? cloneElement(customInput, {
-            ...customInput.props,
-            mode: edit ? "edit" : "create",
-          })
-        : undefined;
-      return ArrayField({ ...props, customInput: improvedCustomInput });
-    },
-    NullField,
-  };
+  const fields: RjsfForm["props"]["fields"] = useMemo(
+    () => ({
+      ArrayField: (props: FieldProps) => {
+        const customInput = customInputs?.[props.name as Field<ModelName>];
+        const improvedCustomInput = customInput
+          ? cloneElement(customInput, {
+              ...customInput.props,
+              mode: edit ? "edit" : "create",
+            })
+          : undefined;
+        return <ArrayField {...props} customInput={improvedCustomInput} />;
+      },
+      NullField,
+    }),
+    [customInputs, edit]
+  );
 
   const templates: RjsfForm["props"]["templates"] = {
     FieldTemplate: (props: FieldTemplateProps) => {
@@ -441,16 +442,22 @@ const Form = ({
       }
       if (schema?.format?.startsWith("richtext-")) {
         return (
-          <RichTextField
-            onChange={onChangeOverride || onTextChange}
-            readonly={readonly}
-            rawErrors={rawErrors}
-            name={props.name}
-            value={props.value}
-            schema={schema}
-            disabled={props.disabled}
-            required={props.required}
-          />
+          <Suspense
+            fallback={
+              <div className="h-48 animate-pulse rounded bg-gray-500" />
+            }
+          >
+            <RichTextField
+              onChange={onChangeOverride || onTextChange}
+              readonly={readonly}
+              rawErrors={rawErrors}
+              name={props.name}
+              value={props.value}
+              schema={schema}
+              disabled={props.disabled}
+              required={props.required}
+            />
+          </Suspense>
         );
       }
 

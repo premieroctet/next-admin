@@ -7,9 +7,6 @@ import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
-import PageLoader from "./PageLoader";
-
-const Head = dynamic(() => import("next/head"));
 
 // Components
 export function NextAdmin({
@@ -38,6 +35,7 @@ export function NextAdmin({
   resourcesIcons,
   user,
   externalLinks,
+  pageLoader,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -111,13 +109,7 @@ export function NextAdmin({
 
   return (
     <>
-      {/* <PageLoader /> */}
-      {!isAppDir && (
-        <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-      )}
+      {pageLoader}
       <MainLayout
         resource={resource}
         resources={resources}

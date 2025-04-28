@@ -7,6 +7,7 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/react-router-devtools";
+import datePickerCss from "react-datepicker/dist/react-datepicker.css?url";
 import appCss from "../../styles.css?url";
 
 export const Route = createRootRoute({
@@ -27,6 +28,10 @@ export const Route = createRootRoute({
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "stylesheet",
+        href: datePickerCss,
       },
     ],
   }),
