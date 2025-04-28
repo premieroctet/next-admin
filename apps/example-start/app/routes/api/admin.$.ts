@@ -1,5 +1,4 @@
 import { createHandler } from "@premieroctet/next-admin/appHandler";
-import { json } from "@tanstack/react-start";
 import { createAPIFileRoute } from "@tanstack/react-start/api";
 import prisma from "database";
 import { options } from "../../options";

@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { NextApiRequest } from "next";
+import type { NextApiRequest } from "next";
 import { Writable } from "node:stream";
 import { createRequire } from "node:module";
 import {

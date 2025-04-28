@@ -7,3 +7,7 @@
     cursor: pointer;
   }
 }
+
+#nprogress .bar {
+  background-color: #6366f1;
+}
