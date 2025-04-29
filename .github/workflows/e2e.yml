@@ -43,7 +43,7 @@ jobs:
       - name: Run tests
         run: |
           pnpm test
-          pnpm test:e2e
+          BASE_URL=http://localhost:3000/en/admin pnpm test:e2e
           cd packages/database && pnpm prisma db seed && cd -
           BASE_URL=http://localhost:3000/pagerouter/admin pnpm test:e2e
           cd packages/database && pnpm prisma db seed && cd -
