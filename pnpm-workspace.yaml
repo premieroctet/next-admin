@@ -1,3 +1,13 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - "apps/*"
+  - "packages/*"
+
+catalogs:
+  react19:
+    react: ^19.0.0
+    react-dom: ^19.0.0
+    "@types/react": ^19.0.1
+    "@types/react-dom": ^19.0.2
+
+catalog:
+  react-datepicker: ^8.3.0

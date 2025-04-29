@@ -11,5 +11,8 @@ export default defineConfig({
       }),
       tailwindcss(),
     ],
+    ssr: {
+      noExternal: ["react-datepicker"],
+    },
   },
 });

@@ -18,14 +18,14 @@
     "@premieroctet/next-admin": "workspace:*",
     "@tremor/react": "^3.2.2",
     "database": "workspace:*",
-    "react": "^19.0.0",
-    "react-datepicker": "^4.24.0",
-    "react-dom": "^19.0.0"
+    "react": "catalog:react19",
+    "react-datepicker": "catalog:",
+    "react-dom": "catalog:react19"
   },
   "devDependencies": {
     "@types/node": "^22.15.3",
-    "@types/react": "^19.0.1",
-    "@types/react-dom": "^19.0.2",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3"
   }

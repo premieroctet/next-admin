@@ -82,15 +82,10 @@
       "types": "./dist/components/PageLoader.d.ts",
       "require": "./dist/components/PageLoader.js"
     },
-    "./adapters/next": {
-      "import": "./dist/adapters/next.js",
-      "types": "./dist/adapters/next.d.ts",
-      "require": "./dist/adapters/next.js"
-    },
-    "./adapters/tanstack-router": {
-      "import": "./dist/adapters/tanstack-router.js",
-      "types": "./dist/adapters/tanstack-router.d.ts",
-      "require": "./dist/adapters/tanstack-router.js"
+    "./adapters/*": {
+      "import": "./dist/adapters/*.js",
+      "types": "./dist/adapters/*.d.ts",
+      "require": "./dist/adapters/*.js"
     }
   },
   "peerDependencies": {
@@ -147,6 +142,7 @@
   },
   "devDependencies": {
     "@premieroctet/next-admin-json-schema": "workspace:*",
+    "@remix-run/react": "^2.16.5",
     "@tanstack/react-router": "^1.116.0",
     "@testing-library/react": "^14.1.2",
     "@types/body-parser": "^1.19.2",

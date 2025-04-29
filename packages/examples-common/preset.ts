@@ -5,6 +5,8 @@ const defaultColors = require("tailwindcss/colors");
 module.exports = {
   content: [
     "./node_modules/examples-common/dist/components/**/*.{js,jsx,ts,tsx}",
+    "./node_modules/@tremor/**/*.{js,ts,jsx,tsx}",
+    "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: "class",
   theme: {
