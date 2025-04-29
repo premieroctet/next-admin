@@ -5,6 +5,7 @@ import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import prisma from "database";
 import { Dashboard } from "examples-common/components";
+import en from "examples-common/messages/en";
 import { options } from "../options";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -14,6 +15,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     basePath: "/admin",
     prisma,
     options,
+    getMessages: async () => en.admin as unknown as Record<string, string>,
   });
 };
 
