@@ -12,16 +12,16 @@ const nextAdminApi = createHandler({
 export const APIRoute = createAPIFileRoute("/api/admin/$")({
   GET: ({ request, params }) => {
     return nextAdminApi.run(request, {
-      params: {
+      params: Promise.resolve({
         nextadmin: params._splat?.split("/") ?? [],
-      },
+      }),
     });
   },
   POST: ({ request, params }) => {
     return nextAdminApi.run(request, {
-      params: {
+      params: Promise.resolve({
         nextadmin: params._splat?.split("/") ?? [],
-      },
+      }),
     });
   },
 });

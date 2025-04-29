@@ -1157,10 +1157,8 @@ export type GetMainLayoutPropsParams = Omit<
   "schema" | "searchParams" | "prisma"
 >;
 
-type MaybePromise<T> = T | Promise<T>;
-
 export type RequestContext<P extends string> = {
-  params: MaybePromise<{
+  params: Promise<{
     [key in P]: string[];
   }>;
 };

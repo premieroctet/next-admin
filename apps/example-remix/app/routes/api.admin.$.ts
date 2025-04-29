@@ -11,16 +11,16 @@ const nextAdminApi = createHandler({
 
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return nextAdminApi.run(request, {
-    params: {
+    params: Promise.resolve({
       nextadmin: params["*"]!.split("/"),
-    },
+    }),
   });
 };
 
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
   return nextAdminApi.run(request, {
-    params: {
+    params: Promise.resolve({
       nextadmin: params["*"]!.split("/"),
-    },
+    }),
   });
 };
