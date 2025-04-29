@@ -13,6 +13,7 @@ export const getNextAdminProps = async ({
   options,
   url,
   locale,
+  getMessages,
 }: Omit<GetNextAdminPropsParams, "params" | "searchParams" | "isAppDir"> & {
   url: string;
 }) => {
@@ -35,6 +36,7 @@ export const getNextAdminProps = async ({
     params,
     isAppDir: false,
     locale,
+    getMessages,
   });
 
   return { props };

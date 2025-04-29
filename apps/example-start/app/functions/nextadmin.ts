@@ -1,7 +1,8 @@
+import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import { createServerFn } from "@tanstack/react-start";
 import prisma from "database";
+import en from "examples-common/messages/en";
 import { options } from "../options";
-import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 
 export const getNextAdminPropsFn = createServerFn()
   .validator((data) => {
@@ -18,5 +19,6 @@ export const getNextAdminPropsFn = createServerFn()
       prisma: prisma,
       options: options,
       url: data.url,
+      getMessages: async () => en.admin as unknown as Record<string, string>,
     });
   });
