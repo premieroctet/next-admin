@@ -13,16 +13,14 @@ export const APIRoute = createAPIFileRoute("/api/admin/$")({
   GET: ({ request, params }) => {
     return nextAdminApi.run(request, {
       params: {
-        // @ts-expect-error
-        nextadmin: params._splat?.split("/"),
+        nextadmin: params._splat?.split("/") ?? [],
       },
     });
   },
   POST: ({ request, params }) => {
     return nextAdminApi.run(request, {
       params: {
-        // @ts-expect-error
-        nextadmin: params._splat?.split("/"),
+        nextadmin: params._splat?.split("/") ?? [],
       },
     });
   },
