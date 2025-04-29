@@ -33,5 +33,5 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) =>
     apiBasePath: "/api/pagerouter/admin",
     prisma,
     options: pageOptions,
-    req,
+    url: req.url!,
   });

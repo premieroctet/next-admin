@@ -1,42 +1,46 @@
-import { useLocation, useNavigate, useRouter } from "@tanstack/react-router";
-import { PushParams, Query, RouterInterface } from "./types";
-import { createRouterAdapter } from "./context";
+import { useLocation, useNavigate, useRevalidator } from "@remix-run/react";
 import { useMemo } from "react";
 import { useConfig } from "../context/ConfigContext";
+import { createRouterAdapter } from "./context";
+import { PushParams, Query, RouterInterface } from "./types";
 
-export const useTanstackRouterAdapter = (): RouterInterface => {
+export const useRemixRouterAdapter = (): RouterInterface => {
   const location = useLocation();
   const navigate = useNavigate();
-  const router = useRouter();
-  const { basePath } = useConfig();
+  const revalidator = useRevalidator();
 
   const pathname = location.pathname;
   const query = useMemo(() => {
-    return new URLSearchParams(location.searchStr);
-  }, [location.searchStr]);
+    return new URLSearchParams(location.search);
+  }, [location.search]);
 
   const push = (params: PushParams) => {
     navigate({
-      to: ".",
-      params: {
-        _splat: params.pathname.replace(basePath, ""),
-      },
-      search: params.query,
+      pathname: params.pathname,
+      search: params.query
+        ? new URLSearchParams(params.query as Record<string, string>).toString()
+        : undefined,
     });
   };
 
   const replace = (params: PushParams) => {
-    navigate({
-      to: ".",
-      params: {
-        _splat: params.pathname.replace(basePath, ""),
+    navigate(
+      {
+        pathname: params.pathname,
+        search: params.query
+          ? new URLSearchParams(
+              params.query as Record<string, string>
+            ).toString()
+          : undefined,
       },
-      search: params.query,
-      replace: true,
-    });
+      {
+        replace: true,
+      }
+    );
   };
+
   const refresh = () => {
-    router.invalidate();
+    revalidator.revalidate();
   };
 
   const setQuery = (queryArg: Query, merge = false) => {
@@ -61,5 +65,5 @@ export const useTanstackRouterAdapter = (): RouterInterface => {
 };
 
 export const NextAdminRouterAdapter = createRouterAdapter(
-  useTanstackRouterAdapter
+  useRemixRouterAdapter
 );
