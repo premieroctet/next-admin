@@ -1,4 +1,5 @@
 import { JSONSchema4 } from "json-schema";
+import { describe, expect, it, vi } from "vitest";
 import {
   buildQueryBlocks,
   buildUIBlocks,
@@ -7,7 +8,7 @@ import {
 } from "./advancedSearch";
 
 // @ts-expect-error
-jest.spyOn(global, "crypto", "get").mockImplementation(() => {
+vi.spyOn(global, "crypto", "get").mockImplementation(() => {
   return {
     randomUUID: () => "1",
   };

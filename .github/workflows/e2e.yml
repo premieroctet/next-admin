@@ -43,9 +43,13 @@ jobs:
       - name: Run tests
         run: |
           pnpm test
-          pnpm turbo test:e2e
-          cd apps/example && pnpm prisma db seed && cd -
+          pnpm test:e2e
+          cd packages/database && pnpm prisma db seed && cd -
           BASE_URL=http://localhost:3000/pagerouter/admin pnpm test:e2e
+          cd packages/database && pnpm prisma db seed && cd -
+          BASE_URL=http://localhost:3002/admin pnpm test:e2e
+          cd packages/database && pnpm prisma db seed && cd -
+          BASE_URL=http://localhost:3003/admin pnpm test:e2e
       - uses: actions/upload-artifact@v4
         if: always()
         with:
