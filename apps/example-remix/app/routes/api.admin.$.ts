@@ -12,8 +12,7 @@ const nextAdminApi = createHandler({
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return nextAdminApi.run(request, {
     params: {
-      // @ts-expect-error
-      nextadmin: params["*"].split("/"),
+      nextadmin: params["*"]!.split("/"),
     },
   });
 };
@@ -21,8 +20,7 @@ export const loader = async ({ request, params }: LoaderFunctionArgs) => {
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
   return nextAdminApi.run(request, {
     params: {
-      // @ts-expect-error
-      nextadmin: params["*"].split("/"),
+      nextadmin: params["*"]!.split("/"),
     },
   });
 };

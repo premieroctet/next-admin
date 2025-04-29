@@ -1,0 +1,52 @@
+# Frameworks support
+
+Historically, Next-Admin was made to provide exclusive support for Next.js. The v8 release decoupled the library for any direct Next.js dependency and allowed support for any full-stack framework, as long as it can support API routes.
+
+Next-Admin provides adapters for [Next.js](https://nextjs.org), [Remix](https://remix.run/) and [TanStack Start](https://tanstack.com/start), which simply consists on providing a routing hook that matches a given interface. So it is in fact easy to override the behavior of how routing works if the provided ones does not fit your needs.
+
+The built-in adapters are accessible through the following import :
+
+```ts
+import { NextAdminRouterAdapter } from '@premieroctet/next-admin/adapters/<your-framework>'
+```
+
+## Building your own adapter
+
+An adapter consists of a context that will need to wrap the `NextAdmin` component. This context provides a hook that matches `RouterInterface`.
+
+```ts
+type Query = Record<string, string | string[] | number | null>;
+
+type PushParams = {
+  pathname: string;
+  query?: Query;
+};
+
+type Router = {
+  push: (params: PushParams) => void;
+  replace: (params: PushParams) => void;
+  refresh: () => void;
+  setQuery: (query: Query, merge?: boolean) => void;
+};
+
+type RouterInterface = {
+  router: Router;
+  query: Record<string, string>;
+  pathname: string;
+};
+```
+
+Once you created your hook, you can use the `createRouterAdapter` function to create the context.
+
+```ts
+import { createRouterAdapter } from "@premieroctet/next-admin/adapters/context";
+import type { RouterInterface } from '@premieroctet/next-admin/adapters/types'
+
+const useMyRouterHook = (): RouterInterface => {
+  // My router
+}
+
+export const MyCustomNextAdminRouterAdapter = createRouterAdapter(useMyRouterHook)
+```
+
+You can now use `MyCustomNextAdminRouterAdapter` to wrap the `NextAdmin` component.

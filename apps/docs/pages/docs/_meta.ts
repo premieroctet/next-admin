@@ -17,4 +17,5 @@ export default {
   route: "Route name",
   "edge-cases": "Edge cases",
   "code-snippets": "Code snippets",
+  "frameworks-support": "Frameworks support",
 };

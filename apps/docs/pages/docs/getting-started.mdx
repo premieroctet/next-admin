@@ -91,6 +91,9 @@ Then run the following command :
 yarn run prisma generate
 ```
 
+<Tabs items={['Next.js', 'Other frameworks']}>
+
+<Tabs.Tab>
 ### Page `[[...nextadmin]]`
 
 Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin routes.
@@ -103,6 +106,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
     ```tsx copy filename="app/admin/[[...nextadmin]]/page.tsx"
     import { NextAdmin, PageProps } from "@premieroctet/next-admin";
     import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
+    import { NextAdminRouterAdapter } from "@premieroctet/next-admin/adapters/next";
     import { prisma } from "@/prisma";
     import "@/styles.css" // .css file containing tailiwnd rules
 
@@ -119,7 +123,11 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
         /*options*/
       });
 
-      return <NextAdmin {...props}/>;
+      return (
+        <NextAdminRouterAdapter>
+          <NextAdmin {...props} />
+        </NextAdminRouterAdapter>
+      );
     }
     ```
 
@@ -150,15 +158,15 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
     import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
 
     import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
+    import { NextAdminRouterAdapter } from "@premieroctet/next-admin/adapters/next";
     import { GetServerSideProps } from "next";
     import { prisma } from " @/prisma";
 
     export default function Admin(props: AdminComponentProps) {
       return (
-        <NextAdmin
-          {...props}
-          /*options*/
-        />
+        <NextAdminRouterAdapter>
+          <NextAdmin {...props} />
+        </NextAdminRouterAdapter>
       );
     }
 
@@ -168,7 +176,7 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the admin route
         apiBasePath: "/api/pagerouter/admin",
         prisma,
         /*options*/
-        req,
+        url: req.url!,
       });
     ```
 
@@ -307,6 +315,87 @@ Next-Admin uses a dynamic route `[[...nextadmin]]` to handle all the API routes.
   </Tabs.Tab>
 
 More information about the `createHandler` function [here](/docs/api/create-handler-function).
+
+</Tabs>
+
+</Tabs.Tab>
+
+<Tabs.Tab>
+
+### Page splat route
+
+Next-Admin uses [splat routes](https://remix.run/docs/en/main/file-conventions/routes#splat-routes) to handle all the admin routes. Its implementation depends on your framework. Examples are available on the repository.
+
+The page should load data using the `getNextAdminProps` function. Here is an example for Remix :
+
+```tsx
+import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
+import { NextAdminRouterAdapter } from "@premieroctet/next-admin/adapters/remix";
+import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import prisma from "database";
+import { options } from "../options";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  return getNextAdminProps({
+    url: request.url,
+    apiBasePath: "/api/admin",
+    basePath: "/admin",
+    prisma,
+    options,
+  });
+};
+
+export default function Admin() {
+  const data = useLoaderData<typeof loader>();
+
+  return (
+    <NextAdminRouterAdapter>
+      <NextAdmin {...(data.props as AdminComponentProps)} />
+    </NextAdminRouterAdapter>
+  );
+}
+```
+
+### API splat route
+
+Next-Admin uses [splat routes](https://remix.run/docs/en/main/file-conventions/routes#splat-routes) to handle all the API routes. Its implementation depends on your framework.
+
+You should use the `createHandler` function provided for Next.js App Handler which provides support for web Request and Response. Here is an example implementation for Remix :
+
+```tsx
+import { createHandler } from "@premieroctet/next-admin/appHandler";
+import { LoaderFunctionArgs } from "@remix-run/node";
+import prisma from "database";
+import { options } from "../options";
+
+const nextAdminApi = createHandler({
+  prisma,
+  apiBasePath: "/api/admin",
+  options,
+});
+
+// For GET requests
+export const loader = async ({ request, params }: LoaderFunctionArgs) => {
+  return nextAdminApi.run(request, {
+    params: {
+      nextadmin: params["*"]!.split("/"),
+    },
+  });
+};
+
+// For POST, PUT & DELETE requests
+export const action = async ({ request, params }: LoaderFunctionArgs) => {
+  return nextAdminApi.run(request, {
+    params: {
+      nextadmin: params["*"]!.split("/"),
+    },
+  });
+};
+```
+
+</Tabs.Tab>
 
 </Tabs>
 

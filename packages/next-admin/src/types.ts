@@ -1157,8 +1157,12 @@ export type GetMainLayoutPropsParams = Omit<
   "schema" | "searchParams" | "prisma"
 >;
 
+type MaybePromise<T> = T | Promise<T>;
+
 export type RequestContext<P extends string> = {
-  params: Promise<Record<P, string[]>>;
+  params: MaybePromise<{
+    [key in P]: string[];
+  }>;
 };
 
 export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
