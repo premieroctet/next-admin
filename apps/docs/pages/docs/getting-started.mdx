@@ -379,18 +379,18 @@ const nextAdminApi = createHandler({
 // For GET requests
 export const loader = async ({ request, params }: LoaderFunctionArgs) => {
   return nextAdminApi.run(request, {
-    params: {
+    params: Promise.resolve({
       nextadmin: params["*"]!.split("/"),
-    },
+    }),
   });
 };
 
 // For POST, PUT & DELETE requests
 export const action = async ({ request, params }: LoaderFunctionArgs) => {
   return nextAdminApi.run(request, {
-    params: {
+    params: Promise.resolve({
       nextadmin: params["*"]!.split("/"),
-    },
+    }),
   });
 };
 ```
