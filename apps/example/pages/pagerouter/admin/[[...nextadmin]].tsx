@@ -1,5 +1,5 @@
-import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
-import { NextAdminRouterAdapter } from "@premieroctet/next-admin/adapters/next";
+import { AdminComponentProps } from "@premieroctet/next-admin";
+import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
 import PageLoader from "@premieroctet/next-admin/pageLoader";
 import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import { GetServerSideProps } from "next";
@@ -11,19 +11,17 @@ const pageOptions = options;
 
 export default function Admin(props: AdminComponentProps) {
   return (
-    <NextAdminRouterAdapter>
-      <NextAdmin
-        {...props}
-        options={pageOptions}
-        user={{
-          data: {
-            name: "John Doe",
-          },
-          logout: ["/"],
-        }}
-        pageLoader={<PageLoader />}
-      />
-    </NextAdminRouterAdapter>
+    <NextAdmin
+      {...props}
+      options={pageOptions}
+      user={{
+        data: {
+          name: "John Doe",
+        },
+        logout: ["/"],
+      }}
+      pageLoader={<PageLoader />}
+    />
   );
 }
 

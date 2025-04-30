@@ -1,5 +1,5 @@
-import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
-import { NextAdminRouterAdapter } from "@premieroctet/next-admin/adapters/tanstack-router";
+import { AdminComponentProps } from "@premieroctet/next-admin";
+import { NextAdmin } from "@premieroctet/next-admin/adapters/tanstack-router";
 import { createFileRoute } from "@tanstack/react-router";
 import { Dashboard } from "examples-common/components";
 import { getNextAdminPropsFn } from "../functions/nextadmin";
@@ -27,19 +27,17 @@ function RouteComponent() {
   ];
 
   return (
-    <NextAdminRouterAdapter>
-      <NextAdmin
-        // @ts-expect-error
-        {...(data.props as AdminComponentProps)}
-        dashboard={<Dashboard />}
-        options={options}
-        user={{
-          data: {
-            name: "John Doe",
-          },
-          logout: logoutRequest,
-        }}
-      />
-    </NextAdminRouterAdapter>
+    <NextAdmin
+      // @ts-expect-error
+      {...(data.props as AdminComponentProps)}
+      dashboard={<Dashboard />}
+      options={options}
+      user={{
+        data: {
+          name: "John Doe",
+        },
+        logout: logoutRequest,
+      }}
+    />
   );
 }

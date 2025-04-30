@@ -7,7 +7,7 @@ Next-Admin provides adapters for [Next.js](https://nextjs.org), [Remix](https://
 The built-in adapters are accessible through the following import :
 
 ```ts
-import { NextAdminRouterAdapter } from '@premieroctet/next-admin/adapters/<your-framework>'
+import { NextAdminRouterAdapter, NextAdmin, MainLayout } from '@premieroctet/next-admin/adapters/<your-framework>'
 ```
 
 ## Building your own adapter
@@ -40,6 +40,7 @@ Once you created your hook, you can use the `createRouterAdapter` function to cr
 
 ```ts
 import { createRouterAdapter } from "@premieroctet/next-admin/adapters/context";
+import { createNextAdminComponents } from "@premieroctet/next-admin/adapters/components";
 import type { RouterInterface } from '@premieroctet/next-admin/adapters/types'
 
 const useMyRouterHook = (): RouterInterface => {
@@ -47,6 +48,12 @@ const useMyRouterHook = (): RouterInterface => {
 }
 
 export const MyCustomNextAdminRouterAdapter = createRouterAdapter(useMyRouterHook)
+
+const { NextAdmin, MainLayout } = createNextAdminComponents(
+  NextAdminRouterAdapter
+);
+
+export { NextAdmin, MainLayout };
 ```
 
-You can now use `MyCustomNextAdminRouterAdapter` to wrap the `NextAdmin` component.
+You can now use `NextAdmin` in your admin page. `MainLayout` can be used in [custom pages](/docs/api/options#pages).

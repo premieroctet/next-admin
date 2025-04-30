@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useConfig } from "../context/ConfigContext";
 import { createRouterAdapter } from "./context";
 import { PushParams, Query, RouterInterface } from "./types";
+import { createNextAdminComponents } from "./components";
 
 export const useRemixRouterAdapter = (): RouterInterface => {
   const location = useLocation();
@@ -67,3 +68,9 @@ export const useRemixRouterAdapter = (): RouterInterface => {
 export const NextAdminRouterAdapter = createRouterAdapter(
   useRemixRouterAdapter
 );
+
+const { NextAdmin, MainLayout } = createNextAdminComponents(
+  NextAdminRouterAdapter
+);
+
+export { NextAdmin, MainLayout };

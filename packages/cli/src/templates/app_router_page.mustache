@@ -1,6 +1,5 @@
-import { NextAdmin{{#isTypescript}}, {{#isNext15}}Promise{{/isNext15}}PageProps{{/isTypescript}} } from "@premieroctet/next-admin";
-import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
-import { NextAdminRouterAdapter } from "@premieroctet/next-admin/adapters/next";
+{{#isTypescript}} import { {{#isNext15}}Promise{{/isNext15}}PageProps } from "@premieroctet/next-admin";{{/isTypescript}}import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
+import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
 import PageLoader from "@premieroctet/next-admin/pageLoader";
 import prisma from "{{prismaClientPath}}";
 import "{{stylesPath}}";
@@ -20,8 +19,6 @@ export default async function AdminPage(props{{#isTypescript}}: {{#isNext15}}Pro
   });
 
   return (
-    <NextAdminRouterAdapter>
-      <NextAdmin pageLoader={<PageLoader />} {...nextAdminProps} />
-    </NextAdminRouterAdapter>
+    <NextAdmin pageLoader={<PageLoader />} {...nextAdminProps} />
   );
 }
