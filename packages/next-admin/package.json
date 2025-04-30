@@ -10,6 +10,7 @@
     "react",
     "typescript"
   ],
+  "type": "module",
   "author": "Premier Octet",
   "repository": {
     "type": "git",
@@ -28,8 +29,8 @@
   "homepage": "https://next-admin.js.org/",
   "license": "MIT",
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "rollup -c --configPlugin typescript",
+    "dev": "rollup -c --configPlugin typescript --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "vitest",
     "typecheck": "tsc --noEmit",
@@ -37,39 +38,74 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.js",
-      "types": "./dist/index.d.ts",
-      "require": "./dist/index.js"
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.mjs"
+      },
+      "require": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
     },
     "./appRouter": {
-      "import": "./dist/appRouter.js",
-      "types": "./dist/appRouter.d.ts",
-      "require": "./dist/appRouter.js"
+      "import": {
+        "types": "./dist/appRouter.d.ts",
+        "default": "./dist/appRouter.mjs"
+      },
+      "require": {
+        "types": "./dist/appRouter.d.ts",
+        "default": "./dist/appRouter.js"
+      }
     },
     "./appHandler": {
-      "import": "./dist/appHandler.js",
-      "types": "./dist/appHandler.d.ts",
-      "require": "./dist/appHandler.js"
+      "import": {
+        "types": "./dist/appHandler.d.ts",
+        "default": "./dist/appHandler.mjs"
+      },
+      "require": {
+        "types": "./dist/appHandler.d.ts",
+        "default": "./dist/appHandler.js"
+      }
     },
     "./pageRouter": {
-      "import": "./dist/pageRouter.js",
-      "types": "./dist/pageRouter.d.ts",
-      "require": "./dist/pageRouter.js"
+      "import": {
+        "types": "./dist/pageRouter.d.ts",
+        "default": "./dist/pageRouter.mjs"
+      },
+      "require": {
+        "types": "./dist/pageRouter.d.ts",
+        "default": "./dist/pageRouter.js"
+      }
     },
     "./pageHandler": {
-      "import": "./dist/pageHandler.js",
-      "types": "./dist/pageHandler.d.ts",
-      "require": "./dist/pageHandler.js"
+      "import": {
+        "types": "./dist/pageHandler.d.ts",
+        "default": "./dist/pageHandler.mjs"
+      },
+      "require": {
+        "types": "./dist/pageHandler.d.ts",
+        "default": "./dist/pageHandler.js"
+      }
     },
     "./preset": {
-      "import": "./dist/preset.js",
-      "types": "./dist/preset.d.ts",
-      "require": "./dist/preset.js"
+      "import": {
+        "types": "./dist/preset.d.ts",
+        "default": "./dist/preset.mjs"
+      },
+      "require": {
+        "types": "./dist/preset.d.ts",
+        "default": "./dist/preset.js"
+      }
     },
     "./components": {
-      "import": "./dist/components/index.js",
-      "types": "./dist/components/index.d.ts",
-      "require": "./dist/components/index.js"
+      "import": {
+        "types": "./dist/components/index.d.ts",
+        "default": "./dist/components/index.mjs"
+      },
+      "require": {
+        "types": "./dist/components/index.d.ts",
+        "default": "./dist/components/index.js"
+      }
     },
     "./utils": {
       "import": "./dist/utils.js",
@@ -77,14 +113,24 @@
       "require": "./dist/utils.js"
     },
     "./pageLoader": {
-      "import": "./dist/components/PageLoader.js",
-      "types": "./dist/components/PageLoader.d.ts",
-      "require": "./dist/components/PageLoader.js"
+      "import": {
+        "types": "./dist/components/PageLoader.d.ts",
+        "default": "./dist/components/PageLoader.mjs"
+      },
+      "require": {
+        "types": "./dist/components/PageLoader.d.ts",
+        "default": "./dist/components/PageLoader.js"
+      }
     },
     "./adapters/*": {
-      "import": "./dist/adapters/*.js",
-      "types": "./dist/adapters/*.d.ts",
-      "require": "./dist/adapters/*.js"
+      "import": {
+        "types": "./dist/adapters/*.d.ts",
+        "default": "./dist/adapters/*.mjs"
+      },
+      "require": {
+        "types": "./dist/adapters/*.d.ts",
+        "default": "./dist/adapters/*.js"
+      }
     }
   },
   "peerDependencies": {
@@ -115,7 +161,6 @@
     "@rjsf/validator-ajv8": "^5.19.3",
     "@tanstack/react-table": "^8.9.2",
     "@types/formidable": "^3.4.5",
-    "@types/node": "^18.15.3",
     "body-parser": "^1.20.2",
     "class-variance-authority": "^0.6.0",
     "clsx": "^1.2.1",
@@ -131,7 +176,7 @@
     "lodash.sortby": "^4.7.0",
     "lodash.unset": "^4.5.2",
     "lodash.update": "^4.10.2",
-    "next-connect": "^1.0.0-next.3",
+    "next-connect": "^1.0.0",
     "next-themes": "^0.3.0",
     "nextjs-toploader": "^1.6.6",
     "nprogress": "^0.2.0",
@@ -142,6 +187,7 @@
   "devDependencies": {
     "@premieroctet/next-admin-json-schema": "workspace:*",
     "@remix-run/react": "^2.16.5",
+    "@rollup/plugin-typescript": "^12.1.2",
     "@tanstack/react-router": "^1.116.0",
     "@testing-library/react": "^14.1.2",
     "@types/body-parser": "^1.19.2",
@@ -155,19 +201,25 @@
     "@types/lodash.sortby": "^4.7.9",
     "@types/lodash.unset": "^4.5.9",
     "@types/lodash.update": "^4.10.9",
+    "@types/node": "^18.19.61",
     "@types/nprogress": "^0.2.3",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.14",
     "concurrently": "^8.0.1",
+    "esbuild": "^0.24.0",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",
+    "glob": "^11.0.0",
     "lodash.debounce": "^4.0.8",
     "next": "^15.3.1",
     "postcss": "^8.4.21",
+    "rollup": "^4.40.1",
+    "rollup-preserve-directives": "^1.1.3",
     "tailwindcss": "^3.2.7",
     "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",
+    "tsx": "^4.19.2",
     "typescript": "^5.1.6",
     "vitest": "^3.1.2",
     "vitest-mock-extended": "^3.1.0"

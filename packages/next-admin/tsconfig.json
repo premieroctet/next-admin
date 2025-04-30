@@ -10,9 +10,12 @@
     "src/**/*.test.tsx"
   ],
   "compilerOptions": {
-    "lib": ["dom"],
+    "lib": ["dom", "ESNext"],
     "outDir": "dist",
-    "target": "ES2017",
-    "rootDir": "./src"
+    "target": "ESNext",
+    "module": "ESNext",
+    "esModuleInterop": true,
+    "rootDir": "./src",
+    "moduleResolution": "bundler"
   }
 }

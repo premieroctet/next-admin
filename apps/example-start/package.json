@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vinxi dev --port 3002"
+    "dev": "vinxi dev --port 3002",
+    "build": "vinxi build",
+    "start": "vinxi start --port 3002"
   },
   "dependencies": {
     "@premieroctet/next-admin": "workspace:*",
