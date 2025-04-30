@@ -5,6 +5,8 @@ type RouterContextType = {
   router: () => RouterInterface;
 };
 
+export type RouterAdapterComponent = ReturnType<typeof createRouterAdapter>;
+
 const RouterContext = createContext<RouterContextType>({
   router: () => {
     throw new Error("RouterAdapterProvider is not initialized");

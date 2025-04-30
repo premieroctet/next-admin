@@ -9,6 +9,7 @@ import { NextRouter, useRouter as usePageRouter } from "next/router";
 import { useConfig } from "../context/ConfigContext";
 import { PushParams, Query, RouterInterface } from "./types";
 import { createRouterAdapter } from "./context";
+import { createNextAdminComponents } from "./components";
 
 type AppRouter = ReturnType<typeof useAppRouter>;
 
@@ -85,3 +86,9 @@ export const useNextRouter = (): RouterInterface => {
 };
 
 export const NextAdminRouterAdapter = createRouterAdapter(useNextRouter);
+
+const { NextAdmin, MainLayout } = createNextAdminComponents(
+  NextAdminRouterAdapter
+);
+
+export { NextAdmin, MainLayout };

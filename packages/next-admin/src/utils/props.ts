@@ -10,6 +10,7 @@ import {
   ModelIcon,
   ModelName,
   NextAdminOptions,
+  PageRouterComponentProps,
 } from "../types";
 import { getClientActionsComponents, getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList, mapModelFilters } from "./prisma";
@@ -41,21 +42,7 @@ export async function getPropsFromParams({
   getMessages,
   basePath,
   apiBasePath,
-}: GetNextAdminPropsParams): Promise<
-  | AdminComponentProps
-  | Omit<AdminComponentProps, "resource" | "action">
-  | Pick<
-      AdminComponentProps,
-      | "pageComponent"
-      | "basePath"
-      | "apiBasePath"
-      | "isAppDir"
-      | "message"
-      | "resources"
-      | "error"
-      | "schema"
-    >
-> {
+}: GetNextAdminPropsParams): Promise<PageRouterComponentProps> {
   const {
     resource,
     resources,

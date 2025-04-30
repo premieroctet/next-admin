@@ -1,5 +1,5 @@
-import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
-import { NextAdminRouterAdapter } from "@premieroctet/next-admin/adapters/remix";
+import { AdminComponentProps } from "@premieroctet/next-admin";
+import { NextAdmin } from "@premieroctet/next-admin/adapters/remix";
 import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
@@ -30,18 +30,16 @@ export default function Admin() {
   ];
 
   return (
-    <NextAdminRouterAdapter>
-      <NextAdmin
-        {...(data.props as AdminComponentProps)}
-        dashboard={<Dashboard />}
-        options={options}
-        user={{
-          data: {
-            name: "John Doe",
-          },
-          logout: logoutRequest,
-        }}
-      />
-    </NextAdminRouterAdapter>
+    <NextAdmin
+      {...(data.props as AdminComponentProps)}
+      dashboard={<Dashboard />}
+      options={options}
+      user={{
+        data: {
+          name: "John Doe",
+        },
+        logout: logoutRequest,
+      }}
+    />
   );
 }

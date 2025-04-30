@@ -3,6 +3,7 @@ import { PushParams, Query, RouterInterface } from "./types";
 import { createRouterAdapter } from "./context";
 import { useMemo } from "react";
 import { useConfig } from "../context/ConfigContext";
+import { createNextAdminComponents } from "./components";
 
 export const useTanstackRouterAdapter = (): RouterInterface => {
   const location = useLocation();
@@ -63,3 +64,9 @@ export const useTanstackRouterAdapter = (): RouterInterface => {
 export const NextAdminRouterAdapter = createRouterAdapter(
   useTanstackRouterAdapter
 );
+
+const { NextAdmin, MainLayout } = createNextAdminComponents(
+  NextAdminRouterAdapter
+);
+
+export { NextAdmin, MainLayout };

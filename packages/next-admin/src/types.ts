@@ -974,6 +974,23 @@ export type AdminComponentProps = {
   > | null;
 };
 
+export type AppRouterComponentProps = AdminComponentProps;
+
+export type PageRouterComponentProps =
+  | AppRouterComponentProps
+  | Omit<AdminComponentProps, "resource" | "action">
+  | Pick<
+      AdminComponentProps,
+      | "pageComponent"
+      | "basePath"
+      | "apiBasePath"
+      | "isAppDir"
+      | "message"
+      | "resources"
+      | "error"
+      | "schema"
+    >;
+
 export type MainLayoutProps = Pick<
   AdminComponentProps,
   | "resource"
