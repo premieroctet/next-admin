@@ -13,6 +13,15 @@ export default defineConfig({
     ],
     ssr: {
       noExternal: ["react-datepicker"],
+      external: ["@premieroctet/next-admin"],
     },
+    build: {
+      rollupOptions: {
+        external: ["@premieroctet/next-admin"],
+      },
+    },
+  },
+  server: {
+    preset: "node-server",
   },
 });

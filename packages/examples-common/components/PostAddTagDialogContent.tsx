@@ -50,7 +50,7 @@ const AddTagDialog = ({ data, onClose }: Props) => {
       </form>
 
       <div className="flex justify-between">
-        <Button variant="primary" onClick={() => onClose?.()}>
+        <Button variant="secondary" onClick={() => onClose?.()}>
           Close
         </Button>
         <Button variant="default" loading={isPending} onClick={handleSubmit}>
