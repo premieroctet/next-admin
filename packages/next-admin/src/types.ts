@@ -969,6 +969,10 @@ export type AdminComponentProps = {
   sidebar?: SidebarConfiguration;
   user?: AdminUser;
   externalLinks?: ExternalLink[];
+  dialogComponents?: Record<
+    string,
+    React.ReactElement<ClientActionDialogContentProps<ModelName>>
+  > | null;
 };
 
 export type MainLayoutProps = Pick<
@@ -1205,6 +1209,7 @@ export type FormProps = {
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;
+  clientActionsComponents?: AdminComponentProps["dialogComponents"];
 };
 
 export type ClientActionDialogContentProps<T extends ModelName> = Partial<{

@@ -8,7 +8,12 @@ import {
 } from "react";
 import ClientActionDialog from "../components/ClientActionDialog";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-import { ClientAction, MessageData, ModelName } from "../types";
+import {
+  ClientAction,
+  ClientActionDialogContentProps,
+  MessageData,
+  ModelName,
+} from "../types";
 import { useMessage } from "./MessageContext";
 
 type ClientActionDialogParams<M extends ModelName> = {
@@ -25,7 +30,17 @@ const ClientActionDialogContext = createContext<ClientDialogContextType>(
   {} as ClientDialogContextType
 );
 
-const ClientActionDialogProvider = ({ children }: PropsWithChildren) => {
+type Props = {
+  componentsMap?: Record<
+    string,
+    React.ReactElement<ClientActionDialogContentProps<ModelName>>
+  > | null;
+};
+
+const ClientActionDialogProvider = ({
+  children,
+  componentsMap,
+}: PropsWithChildren<Props>) => {
   const [isOpen, setIsOpen] = useState(false);
   const [dialogData, setDialogData] =
     useState<ClientActionDialogParams<any> | null>(null);
@@ -48,7 +63,14 @@ const ClientActionDialogProvider = ({ children }: PropsWithChildren) => {
   const open = useCallback(
     <M extends ModelName>(dialogParams: ClientActionDialogParams<M>) => {
       setIsOpen(true);
-      setDialogData(dialogParams);
+      const component = componentsMap?.[dialogParams.action.id];
+      setDialogData({
+        ...dialogParams,
+        action: {
+          ...dialogParams.action,
+          component,
+        },
+      } as ClientActionDialogParams<any>);
     },
     []
   );

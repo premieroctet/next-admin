@@ -3,7 +3,13 @@ import { EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
 import clsx from "clsx";
 import debounce from "lodash.debounce";
-import { ChangeEvent, useEffect, useOptimistic, useState, useTransition } from "react";
+import {
+  ChangeEvent,
+  useEffect,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
 import { twMerge } from "tailwind-merge";
 import { ITEMS_PER_PAGE } from "../config";
 import ClientActionDialogProvider from "../context/ClientActionDialogContext";
@@ -54,6 +60,7 @@ export type ListProps = {
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   schema: Schema;
+  clientActionsComponents?: AdminComponentProps["dialogComponents"];
 };
 
 function List({
@@ -65,8 +72,8 @@ function List({
   title,
   icon,
   schema,
+  clientActionsComponents,
 }: ListProps) {
-
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
   const [_orderPending, startOrderTransition] = useTransition();
@@ -75,8 +82,12 @@ function List({
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
   const modelOptions = options?.["model"]?.[resource];
-  const sortColumn = !modelOptions?.list?.orderField ? query.sortColumn as string : undefined;
-  const sortDirection = !modelOptions?.list?.orderField ? query.sortDirection as "asc" | "desc" : undefined;
+  const sortColumn = !modelOptions?.list?.orderField
+    ? (query.sortColumn as string)
+    : undefined;
+  const sortDirection = !modelOptions?.list?.orderField
+    ? (query.sortDirection as "asc" | "desc")
+    : undefined;
   const { deleteItems } = useDeleteAction(resource);
   const { t } = useI18n();
   const columns = useDataColumns({
@@ -90,10 +101,13 @@ function List({
 
   let onSearchChange;
 
-  const [optimisticData, optimisticOrderData] = useOptimistic(data, (prevData, newData: ListData<ModelName>) => {
-    if (!modelOptions?.list?.orderField) return prevData;
-    return newData;
-  })
+  const [optimisticData, optimisticOrderData] = useOptimistic(
+    data,
+    (prevData, newData: ListData<ModelName>) => {
+      if (!modelOptions?.list?.orderField) return prevData;
+      return newData;
+    }
+  );
 
   const hasDeletePermission =
     !modelOptions?.permissions || modelOptions?.permissions?.includes("delete");
@@ -222,27 +236,30 @@ function List({
       | number[];
   };
 
-  const handleOrderChange = modelOptions?.list?.orderField ? (value: { currentId: string | number, moveOverId: string | number }) => {
-    startOrderTransition(async () => {
+  const handleOrderChange = modelOptions?.list?.orderField
+    ? (value: { currentId: string | number; moveOverId: string | number }) => {
+        startOrderTransition(async () => {
+          const idField = resourcesIdProperty[resource];
+          const newData = reorderData(
+            optimisticData,
+            value.currentId,
+            value.moveOverId,
+            modelOptions?.list?.orderField!,
+            idField
+          );
+          optimisticOrderData(newData);
 
-      console.log("VALUE", value);
-      const idField = resourcesIdProperty[resource];
-      const newData = reorderData(optimisticData, value.currentId, value.moveOverId, modelOptions?.list?.orderField!, idField);
-      optimisticOrderData(newData);
-
-      await fetch(
-        `${apiBasePath}/${slugify(resource)}/order`,
-        {
-          method: "POST",
-          body: JSON.stringify(optimisticData),
-        }
-      );
-      router.refresh();
-    });
-  } : undefined;
+          await fetch(`${apiBasePath}/${slugify(resource)}/order`, {
+            method: "POST",
+            body: JSON.stringify(optimisticData),
+          });
+          router.refresh();
+        });
+      }
+    : undefined;
 
   return (
-    <ClientActionDialogProvider>
+    <ClientActionDialogProvider componentsMap={clientActionsComponents}>
       <div className="flow-root h-full">
         <ListHeader
           title={title}

@@ -2,7 +2,7 @@ import merge from "lodash.merge";
 import dynamic from "next/dynamic";
 import { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
-import { getCustomInputs } from "../utils/options";
+import { getClientActionsComponents, getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
@@ -28,6 +28,7 @@ export function NextAdmin({
   resourcesTitles,
   resourcesIdProperty,
   customInputs: customInputsProp,
+  dialogComponents: dialogComponentsProp,
   customPages,
   actions,
   translations,
@@ -54,6 +55,11 @@ export function NextAdmin({
 
   const resourceTitle = resourcesTitles?.[resource!] ?? resource;
   const resourceIcon = resourcesIcons?.[resource!];
+  const dialogComponents = resource
+    ? isAppDir
+      ? dialogComponentsProp
+      : getClientActionsComponents(resource, options)
+    : undefined;
 
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
@@ -68,6 +74,7 @@ export function NextAdmin({
           actions={mergedActions}
           icon={resourceIcon}
           schema={schema!}
+          clientActionsComponents={dialogComponents}
         />
       );
     }
@@ -75,7 +82,7 @@ export function NextAdmin({
     if ((data && !Array.isArray(data)) || (modelSchema && !data)) {
       const customInputs = isAppDir
         ? customInputsProp
-        : getCustomInputs(resource!, options!);
+        : getCustomInputs(resource!, options);
 
       return (
         <Form
@@ -89,6 +96,7 @@ export function NextAdmin({
           actions={mergedActions}
           icon={resourceIcon}
           resourcesIdProperty={resourcesIdProperty!}
+          clientActionsComponents={dialogComponents}
         />
       );
     }
