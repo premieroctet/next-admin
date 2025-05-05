@@ -32,11 +32,11 @@ import {
   uncapitalize,
 } from "./tools";
 
-const require = createRequire(import.meta.url);
+const _require = createRequire(import.meta.url);
 
 export const getJsonSchema = (): Schema => {
   try {
-    const schema = require(".next-admin/schema.json");
+    const schema = _require("@premieroctet/next-admin/schema");
 
     return schema as Schema;
   } catch (e) {

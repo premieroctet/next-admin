@@ -2,6 +2,13 @@
 import { defineConfig } from "@tanstack/react-start/config";
 import tsConfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
+import { createRequire } from "node:module";
+import path from "node:path";
+
+const require = createRequire(import.meta.url);
+const prismaClientPath = require
+  .resolve("@prisma/client")
+  .replace(/@prisma(\/|\\)client(\/|\\).*/, ".prisma/client");
 
 export default defineConfig({
   vite: {
@@ -13,11 +20,14 @@ export default defineConfig({
     ],
     ssr: {
       noExternal: ["react-datepicker"],
-      external: ["@premieroctet/next-admin"],
+      external: ["@premieroctet/next-admin", "database"],
     },
-    build: {
-      rollupOptions: {
-        external: ["@premieroctet/next-admin"],
+    resolve: {
+      alias: {
+        ".prisma/client/index-browser": path.join(
+          prismaClientPath,
+          "index-browser.js"
+        ),
       },
     },
   },

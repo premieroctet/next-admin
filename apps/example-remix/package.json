@@ -6,7 +6,8 @@
   "scripts": {
     "build": "remix vite:build",
     "dev": "remix vite:dev --port 3003",
-    "start": "PORT=3003 remix-serve ./build/server/index.js"
+    "start": "PORT=3003 remix-serve ./build/server/index.js",
+    "clean": "rm -rf ./build"
   },
   "dependencies": {
     "@premieroctet/next-admin": "workspace:*",

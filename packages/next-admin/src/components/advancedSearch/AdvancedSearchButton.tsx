@@ -16,7 +16,7 @@ const AdvancedSearchButton = ({ resource, schema }: Props) => {
 
   return (
     <div className="relative">
-      {uiBlocks?.length && (
+      {!!uiBlocks?.length && (
         <span className="bg-nextadmin-brand-default absolute right-0 top-0 h-2 w-2 rounded-full" />
       )}
       <Button
