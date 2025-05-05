@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.5.2
+
+### Patch Changes
+
+- [d99f749](https://github.com/premieroctet/next-admin/commit/d99f7491ab7fe1d318b3db29db4671156defff34): fix: client dialog action error in prod build
+
 ## 7.5.1
 
 ### Patch Changes
