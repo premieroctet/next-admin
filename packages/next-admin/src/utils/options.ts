@@ -1,4 +1,5 @@
 import type {
+  ClientActionDialogContentProps,
   CustomInputProps,
   Field,
   ModelName,
@@ -34,4 +35,27 @@ export const getCustomInputs = (
     }
     return acc;
   }, {});
+};
+
+export const getClientActionsComponents = (
+  model: ModelName,
+  options?: NextAdminOptions
+) => {
+  const modelClientActions = options?.model?.[model]?.actions?.filter(
+    (action) => action.type === "dialog"
+  );
+
+  return modelClientActions?.reduce(
+    (acc, val) => {
+      const component = val.component;
+      if (component) {
+        acc[val.id] = component;
+      }
+      return acc;
+    },
+    {} as Record<
+      string,
+      React.ReactElement<ClientActionDialogContentProps<ModelName>>
+    >
+  );
 };

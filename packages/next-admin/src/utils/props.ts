@@ -11,7 +11,7 @@ import {
   ModelName,
   NextAdminOptions,
 } from "../types";
-import { getCustomInputs } from "./options";
+import { getClientActionsComponents, getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList, mapModelFilters } from "./prisma";
 import {
   applyVisiblePropertiesInSchema,
@@ -117,6 +117,10 @@ export async function getPropsFromParams({
     };
   }
 
+  const dialogActionsComponents = isAppDir
+    ? getClientActionsComponents(resource, options)
+    : null;
+
   switch (params.length) {
     case Page.LIST: {
       const { data, total, error } = await getMappedDataList({
@@ -148,7 +152,10 @@ export async function getPropsFromParams({
         actions as ModelAction<typeof resource>[]
       );
 
-      let serializedActions = extractSerializable(fullfilledAction, isAppDir);
+      let serializedActions = extractSerializable(
+        cloneDeep(fullfilledAction),
+        isAppDir
+      );
 
       // const verifiedAction = actions?.map((action) => {
       //   action.canExecute = action.canExecute ?? (() => true);
@@ -161,6 +168,7 @@ export async function getPropsFromParams({
         total,
         error: error ?? (searchParams?.error as string) ?? null,
         actions: serializedActions,
+        dialogComponents: dialogActionsComponents,
       };
     }
     case Page.EDIT: {
@@ -207,7 +215,10 @@ export async function getPropsFromParams({
           actions as ModelAction<typeof resource>[]
         );
 
-        let serializedActions = extractSerializable(fullfilledAction, isAppDir);
+        let serializedActions = extractSerializable(
+          cloneDeep(fullfilledAction),
+          isAppDir
+        );
 
         return {
           ...defaultProps,
@@ -217,6 +228,7 @@ export async function getPropsFromParams({
           schema: deepCopySchema,
           customInputs,
           actions: serializedActions,
+          dialogComponents: dialogActionsComponents,
         };
       }
 

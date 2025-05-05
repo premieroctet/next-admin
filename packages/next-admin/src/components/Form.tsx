@@ -303,9 +303,9 @@ const Form = ({
       const customInput = customInputs?.[props.name as Field<ModelName>];
       const improvedCustomInput = customInput
         ? cloneElement(customInput, {
-          ...customInput.props,
-          mode: edit ? "edit" : "create",
-        })
+            ...customInput.props,
+            mode: edit ? "edit" : "create",
+          })
         : undefined;
       return ArrayField({ ...props, customInput: improvedCustomInput });
     },
@@ -611,9 +611,9 @@ const Form = ({
   );
 };
 
-const FormWrapper = (props: FormProps) => {
+const FormWrapper = ({ clientActionsComponents, ...props }: FormProps) => {
   return (
-    <ClientActionDialogProvider>
+    <ClientActionDialogProvider componentsMap={clientActionsComponents}>
       <FormHeader {...props} />
       <FormDataProvider data={props.data}>
         <FormStateProvider>
