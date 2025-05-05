@@ -131,6 +131,10 @@
         "types": "./dist/adapters/*.d.ts",
         "default": "./dist/adapters/*.js"
       }
+    },
+    "./schema": {
+      "import": "./dist/schema.json",
+      "require": "./dist/schema.json"
     }
   },
   "peerDependencies": {

@@ -37,17 +37,21 @@ jobs:
       - name: Fill database
         run: pnpm database
       - name: Build packages
-        run: pnpm build:example
+        run: pnpm build:examples
       - name: Start server
-        run: pnpm start:example &
+        run: pnpm start:examples &
       - name: Run tests
         run: |
           pnpm test
+          echo "Run tests for Next.js App Router"
           BASE_URL=http://localhost:3000/en/admin pnpm test:e2e
+          echo "Run tests for Next.js Page Router"
           cd packages/database && pnpm prisma db seed && cd -
           BASE_URL=http://localhost:3000/pagerouter/admin pnpm test:e2e
+          echo "Run tests for Remix"
           cd packages/database && pnpm prisma db seed && cd -
           BASE_URL=http://localhost:3002/admin pnpm test:e2e
+          echo "Run tests for TanStack Start"
           cd packages/database && pnpm prisma db seed && cd -
           BASE_URL=http://localhost:3003/admin pnpm test:e2e
       - uses: actions/upload-artifact@v4

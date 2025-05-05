@@ -10,15 +10,7 @@ import { insertDmmfData } from "./dmmf";
 generatorHandler({
   onManifest: () => {
     return {
-      defaultOutput: path.resolve(
-        path.join(
-          require.resolve("@premieroctet/next-admin"),
-          "..",
-          "..",
-          "node_modules",
-          ".next-admin"
-        )
-      ),
+      defaultOutput: path.dirname(require.resolve("@premieroctet/next-admin")),
       prettyName: "Next Admin JSON Schema Generator",
     };
   },
