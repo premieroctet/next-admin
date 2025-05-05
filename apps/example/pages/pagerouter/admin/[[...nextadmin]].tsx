@@ -2,6 +2,7 @@ import { AdminComponentProps } from "@premieroctet/next-admin";
 import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
 import PageLoader from "@premieroctet/next-admin/pageLoader";
 import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
+import en from "examples-common/messages/en";
 import { GetServerSideProps } from "next";
 import { options } from "../../../pageRouterOptions";
 import { prisma } from "../../../prisma";
@@ -32,4 +33,5 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) =>
     prisma,
     options: pageOptions,
     url: req.url!,
+    getMessages: async () => en.admin as unknown as Record<string, string>,
   });
