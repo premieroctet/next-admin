@@ -22,6 +22,11 @@ overrides:
   react: 19.0.0
   react-dom: 19.0.0
 
+patchedDependencies:
+  next-connect:
+    hash: 6fire4cs5cqqlzmfljqqxabt44
+    path: patches/next-connect.patch
+
 importers:
 
   .:
@@ -665,7 +670,7 @@ importers:
         version: 4.10.2
       next-connect:
         specifier: ^1.0.0
-        version: 1.0.0
+        version: 1.0.0(patch_hash=6fire4cs5cqqlzmfljqqxabt44)
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -20978,7 +20983,7 @@ snapshots:
       p-wait-for: 5.0.2
       qs: 6.13.0
 
-  next-connect@1.0.0:
+  next-connect@1.0.0(patch_hash=6fire4cs5cqqlzmfljqqxabt44):
     dependencies:
       '@tsconfig/node16': 1.0.4
       regexparam: 2.0.2

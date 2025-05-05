@@ -48,5 +48,10 @@
     "next": "15.1.0",
     "react": "19.0.0",
     "react-dom": "19.0.0"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "next-connect": "patches/next-connect.patch"
+    }
   }
 }
