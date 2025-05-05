@@ -54,7 +54,7 @@ export const createHandler = <P extends string = "nextadmin">({
       if (!resource) {
         return Response.json({ error: "Resource not found" }, { status: 404 });
       }
-      const searchParams = new URLSearchParams(req.url);
+      const searchParams = new URL(req.url).searchParams;
 
       const ids = searchParams
         .get("ids")
