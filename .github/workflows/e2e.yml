@@ -50,10 +50,10 @@ jobs:
           BASE_URL=http://localhost:3000/pagerouter/admin pnpm test:e2e
           echo "Run tests for Remix"
           cd packages/database && pnpm prisma migrate reset --force && cd -
-          BASE_URL=http://localhost:3002/admin pnpm test:e2e
+          BASE_URL=http://localhost:3003/admin pnpm test:e2e
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ !cancelled() }}
         with:
           name: playwright-report
-          path: playwright-report/
+          path: apps/example/playwright-report/
           retention-days: 30

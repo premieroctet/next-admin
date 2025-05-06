@@ -5,5 +5,8 @@ export default defineConfig({
   workers: 1,
   use: {
     viewport: { width: 1920, height: 1080 },
+    trace: "retain-on-failure",
+    video: "retain-on-failure",
   },
+  reporter: [["html", {}]],
 });
