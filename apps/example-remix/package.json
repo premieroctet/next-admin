@@ -12,9 +12,9 @@
   "dependencies": {
     "@premieroctet/next-admin": "workspace:*",
     "@prisma/client": "5.14.0",
-    "@remix-run/node": "^2.16.5",
-    "@remix-run/react": "^2.16.5",
-    "@remix-run/serve": "^2.16.5",
+    "@remix-run/node": "catalog:remix",
+    "@remix-run/react": "catalog:remix",
+    "@remix-run/serve": "catalog:remix",
     "@tremor/react": "^3.2.2",
     "database": "workspace:*",
     "examples-common": "workspace:*",
@@ -24,7 +24,7 @@
     "react-dom": "catalog:react19"
   },
   "devDependencies": {
-    "@remix-run/dev": "^2.16.5",
+    "@remix-run/dev": "catalog:remix",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
     "@typescript-eslint/eslint-plugin": "^6.7.4",

@@ -11,9 +11,16 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as AdminCustomImport } from './routes/admin.custom'
 import { Route as AdminSplatImport } from './routes/admin.$'
 
 // Create/Update Routes
+
+const AdminCustomRoute = AdminCustomImport.update({
+  id: '/admin/custom',
+  path: '/admin/custom',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const AdminSplatRoute = AdminSplatImport.update({
   id: '/admin/$',
@@ -32,6 +39,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSplatImport
       parentRoute: typeof rootRoute
     }
+    '/admin/custom': {
+      id: '/admin/custom'
+      path: '/admin/custom'
+      fullPath: '/admin/custom'
+      preLoaderRoute: typeof AdminCustomImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
@@ -39,32 +53,37 @@ declare module '@tanstack/react-router' {
 
 export interface FileRoutesByFullPath {
   '/admin/$': typeof AdminSplatRoute
+  '/admin/custom': typeof AdminCustomRoute
 }
 
 export interface FileRoutesByTo {
   '/admin/$': typeof AdminSplatRoute
+  '/admin/custom': typeof AdminCustomRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/admin/$': typeof AdminSplatRoute
+  '/admin/custom': typeof AdminCustomRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/admin/$'
+  fullPaths: '/admin/$' | '/admin/custom'
   fileRoutesByTo: FileRoutesByTo
-  to: '/admin/$'
-  id: '__root__' | '/admin/$'
+  to: '/admin/$' | '/admin/custom'
+  id: '__root__' | '/admin/$' | '/admin/custom'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   AdminSplatRoute: typeof AdminSplatRoute
+  AdminCustomRoute: typeof AdminCustomRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   AdminSplatRoute: AdminSplatRoute,
+  AdminCustomRoute: AdminCustomRoute,
 }
 
 export const routeTree = rootRoute
@@ -77,11 +96,15 @@ export const routeTree = rootRoute
     "__root__": {
       "filePath": "__root.tsx",
       "children": [
-        "/admin/$"
+        "/admin/$",
+        "/admin/custom"
       ]
     },
     "/admin/$": {
       "filePath": "admin.$.tsx"
+    },
+    "/admin/custom": {
+      "filePath": "admin.custom.tsx"
     }
   }
 }

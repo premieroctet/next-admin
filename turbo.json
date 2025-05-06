@@ -38,5 +38,6 @@
     "clean": {},
     "generate": {}
   },
-  "ui": "stream"
+  "ui": "stream",
+  "concurrency": "11"
 }

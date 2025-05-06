@@ -1,16 +1,22 @@
 {
   "name": "database",
   "version": "0.0.1",
+  "type": "module",
   "scripts": {
-    "build": "prisma generate",
+    "dev": "tsc --watch",
+    "build": "tsc && prisma generate",
+    "clean": "rm -rf dist",
     "database": "prisma migrate dev && prisma db seed",
     "generate": "prisma generate",
     "generate:client-only": "prisma generate --generator client",
     "reset-database": "prisma migrate reset --force --skip-generate --skip-seed && prisma migrate dev --skip-generate && pnpm run generate:client-only && prisma db seed",
     "prisma:migrate:dev": "prisma migrate dev"
   },
+  "exports": {
+    ".": "./dist/index.js"
+  },
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@premieroctet/next-admin": "workspace:*",
@@ -20,8 +26,8 @@
   "devDependencies": {
     "@types/node": "^22.14.1",
     "prisma": "5.14.0",
-    "ts-node": "^10.9.1",
     "tsconfig": "workspace:*",
+    "tsx": "^4.19.4",
     "typescript": "^5.1.6"
   }
 }

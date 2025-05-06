@@ -190,9 +190,9 @@
   },
   "devDependencies": {
     "@premieroctet/next-admin-json-schema": "workspace:*",
-    "@remix-run/react": "^2.16.5",
+    "@remix-run/react": "catalog:remix",
     "@rollup/plugin-typescript": "^12.1.2",
-    "@tanstack/react-router": "^1.116.0",
+    "@tanstack/react-router": "catalog:tanstack-start",
     "@testing-library/react": "^14.1.2",
     "@types/body-parser": "^1.19.2",
     "@types/json-schema": "^7.0.11",

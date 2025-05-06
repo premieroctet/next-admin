@@ -14,6 +14,11 @@ const Link = ({ children, onClick, ...props }: Props) => {
         e.persist();
         onClick?.(e);
 
+        if ((e.target as HTMLAnchorElement).target === "_blank") {
+          e.preventDefault();
+          window.open(props.href, "_blank");
+        }
+
         if (e.defaultPrevented) return;
 
         router.push({
