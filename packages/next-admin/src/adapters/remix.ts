@@ -1,9 +1,8 @@
 import { useLocation, useNavigate, useRevalidator } from "@remix-run/react";
 import { useMemo } from "react";
-import { useConfig } from "../context/ConfigContext";
+import { createNextAdminComponents } from "./components";
 import { createRouterAdapter } from "./context";
 import { PushParams, Query, RouterInterface } from "./types";
-import { createNextAdminComponents } from "./components";
 
 export const useRemixRouterAdapter = (): RouterInterface => {
   const location = useLocation();
@@ -73,4 +72,4 @@ const { NextAdmin, MainLayout } = createNextAdminComponents(
   NextAdminRouterAdapter
 );
 
-export { NextAdmin, MainLayout };
+export { MainLayout, NextAdmin };

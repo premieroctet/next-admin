@@ -1,4 +1,7 @@
-import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
+import {
+  getMainLayoutProps,
+  getNextAdminProps,
+} from "@premieroctet/next-admin/pageRouter";
 import { createServerFn } from "@tanstack/react-start";
 import prisma from "database";
 import en from "examples-common/messages/en";
@@ -21,4 +24,25 @@ export const getNextAdminPropsFn = createServerFn()
       url: data.url,
       getMessages: async () => en.admin as unknown as Record<string, string>,
     });
+  });
+
+export const getNextAdminCustomPageFn = createServerFn()
+  // @ts-expect-error
+  .handler(async () => {
+    const mainLayoutProps = getMainLayoutProps({
+      basePath: "/admin",
+      apiBasePath: "/api/admin",
+      options,
+    });
+
+    const totalUsers = await prisma.user.count();
+    const totalPosts = await prisma.post.count();
+    const totalCategories = await prisma.category.count();
+
+    return {
+      mainLayoutProps,
+      totalUsers,
+      totalPosts,
+      totalCategories,
+    };
   });

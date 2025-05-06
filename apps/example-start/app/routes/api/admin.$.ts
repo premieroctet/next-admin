@@ -24,4 +24,18 @@ export const APIRoute = createAPIFileRoute("/api/admin/$")({
       }),
     });
   },
+  DELETE: ({ request, params }) => {
+    return nextAdminApi.run(request, {
+      params: Promise.resolve({
+        nextadmin: params._splat?.split("/") ?? [],
+      }),
+    });
+  },
+  PUT: ({ request, params }) => {
+    return nextAdminApi.run(request, {
+      params: Promise.resolve({
+        nextadmin: params._splat?.split("/") ?? [],
+      }),
+    });
+  },
 });

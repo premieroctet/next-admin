@@ -252,6 +252,7 @@ const Form = ({
           const pathname = result?.redirect
             ? `${basePath}/${slugify(resource)}`
             : `${basePath}/${slugify(resource)}/${result.createdId}`;
+
           return router.push({
             pathname,
             query: {
@@ -267,6 +268,7 @@ const Form = ({
             ? `${basePath}/${slugify(resource)}`
             : location.pathname;
           if (pathname === location.pathname) {
+            router.refresh();
             showMessage({
               type: "success",
               message: t("form.update.succeed"),

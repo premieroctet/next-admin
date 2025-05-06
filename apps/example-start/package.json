@@ -11,9 +11,9 @@
   "dependencies": {
     "@premieroctet/next-admin": "workspace:*",
     "@prisma/client": "5.14.0",
-    "@tanstack/react-router": "^1.119.0",
-    "@tanstack/react-router-devtools": "^1.119.1",
-    "@tanstack/react-start": "^1.119.2",
+    "@tanstack/react-router": "catalog:tanstack-start",
+    "@tanstack/react-router-devtools": "catalog:tanstack-start",
+    "@tanstack/react-start": "catalog:tanstack-start",
     "@tremor/react": "^3.2.2",
     "database": "workspace:*",
     "examples-common": "workspace:*",
