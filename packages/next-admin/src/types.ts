@@ -1025,7 +1025,7 @@ export type NextAdminContext<ModelData = any> = {
   row?: ModelData;
 };
 
-export type CustomInputProps = Partial<{
+export type CustomInputProps<TItem extends any = any> = Partial<{
   name: string;
   value: string;
   onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -1034,6 +1034,7 @@ export type CustomInputProps = Partial<{
   disabled: boolean;
   required?: boolean;
   mode: "create" | "edit";
+  item: TItem;
 }> &
   ComponentProps<"input">;
 
