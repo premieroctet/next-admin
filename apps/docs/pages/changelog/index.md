@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.6.1
+
+### Patch Changes
+
+- [6c4fff3](https://github.com/premieroctet/next-admin/commit/6c4fff3ab49758dfa89094a726669710739f0fc5): fix: error with empty list when no display option is specified for a model
+
 ## 7.6.0
 
 ### Minor Changes
