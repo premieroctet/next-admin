@@ -706,6 +706,19 @@ The `actions` property is an array of objects that allows you to define a set of
       description:
         "a number that defines the depth of the relations to select in the resource. Use this with caution, a number too high can potentially cause slower queries. Defaults to 2.",
     },
+    {
+      name: "icon",
+      type: "String",
+      description: (
+        <>
+          the outline{" "}
+          <a href="https://heroicons.com/" target="_blank">
+            HeroIcon
+          </a>{" "}
+          name displayed in the actions dropdown for this action
+        </>
+      ),
+    }
   ]}
 />
 
