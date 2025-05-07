@@ -425,6 +425,7 @@ const Form = ({
           required: props.required,
           disabled: props.disabled,
           mode: edit ? "edit" : "create",
+          item: data,
         });
       }
 

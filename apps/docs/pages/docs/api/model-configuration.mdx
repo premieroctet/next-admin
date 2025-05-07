@@ -885,8 +885,21 @@ Represents the props that are passed to the custom input component.
       type: "Boolean",
       description: "boolean indicating if the field is disabled",
     },
+    {
+      name: "item",
+      type: "any",
+      description: <>the <b>initial</b> value of the resource being edited</>,
+    },
   ]}
 />
+
+You can access the current form data state using the `useFormData` hook imported from `@premieroctet/next-admin/utils`.
+
+```tsx
+import { useFormData } from '@premieroctet/next-admin/utils'
+
+const { formData } = useFormData()
+```
 
 ## HookError
 
