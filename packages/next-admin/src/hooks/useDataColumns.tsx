@@ -54,11 +54,15 @@ const useDataColumns = ({
       });
     }
 
-    return Object.keys(data[0]).map((key) => ({
-      name: key,
-      virtual: false,
-      label: undefined,
-    }));
+    if (data?.[0]) {
+      return Object.keys(data[0]).map((key) => ({
+        name: key,
+        virtual: false,
+        label: undefined,
+      }));
+    }
+
+    return [];
   }, []);
 
   return useMemo<ColumnDef<ListDataItem<ModelName>>[]>(() => {
