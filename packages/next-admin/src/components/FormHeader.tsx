@@ -1,6 +1,6 @@
 "use client";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import Link from "./common/Link";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import {

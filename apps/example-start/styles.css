@@ -1,0 +1,13 @@
+@import "tailwindcss";
+@config "./tailwind.config.js";
+
+@layer base {
+  button,
+  [role="button"] {
+    cursor: pointer;
+  }
+}
+
+#nprogress .bar {
+  background-color: #6366f1;
+}

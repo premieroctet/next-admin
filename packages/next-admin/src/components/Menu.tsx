@@ -12,9 +12,8 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { Fragment, useState, ReactNode } from "react";
+import Link from "./common/Link";
+import { Fragment, useState, ReactNode, lazy, Suspense } from "react";
 
 import { useTheme } from "next-themes";
 import { useConfig } from "../context/ConfigContext";
@@ -31,9 +30,7 @@ import Divider from "./Divider";
 import ResourceIcon from "./common/ResourceIcon";
 import Button from "./radix/Button";
 
-const ColorSchemeSwitch = dynamic(() => import("./ColorSchemeSwitch"), {
-  ssr: false,
-});
+const ColorSchemeSwitch = lazy(() => import("./ColorSchemeSwitch"));
 
 export type MenuProps = {
   resource?: ModelName | null;
@@ -283,7 +280,11 @@ export default function Menu({
             </ul>
             <div className="flex flex-col">
               {renderExternalLinks()}
-              {!forcedTheme && <ColorSchemeSwitch />}
+              {!forcedTheme && (
+                <Suspense>
+                  <ColorSchemeSwitch />
+                </Suspense>
+              )}
               {renderUser()}
             </div>
           </nav>

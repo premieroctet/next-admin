@@ -1,4 +1,3 @@
-import { IncomingMessage } from "node:http";
 import { GetMainLayoutPropsParams, GetNextAdminPropsParams } from "./types";
 import {
   getMainLayoutProps as _getMainLayoutProps,
@@ -12,13 +11,21 @@ export const getNextAdminProps = async ({
   basePath,
   apiBasePath,
   options,
-  req,
+  url,
   locale,
+  getMessages,
 }: Omit<GetNextAdminPropsParams, "params" | "searchParams" | "isAppDir"> & {
-  req: IncomingMessage;
+  url: string;
 }) => {
-  const params = getParamsFromUrl(req.url!, basePath);
-  const requestOptions = formatSearchFields(req.url!);
+  const urlObj =
+    url.startsWith("http://") || url.startsWith("https://")
+      ? new URL(url)
+      : null;
+  const urlWithoutOrigin = urlObj
+    ? urlObj.href.replace(urlObj.origin, "")
+    : url;
+  const params = getParamsFromUrl(urlWithoutOrigin, basePath);
+  const requestOptions = formatSearchFields(urlWithoutOrigin);
 
   const props = await getPropsFromParams({
     options,
@@ -29,6 +36,7 @@ export const getNextAdminProps = async ({
     params,
     isAppDir: false,
     locale,
+    getMessages,
   });
 
   return { props };

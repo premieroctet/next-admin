@@ -1,3 +1,4 @@
+import { describe, it, expect } from "vitest";
 import React from "react";
 import { renderHook } from "@testing-library/react";
 import { I18nProvider, useI18n } from "./I18nContext";

@@ -1,6 +1,6 @@
 import { XMarkIcon } from "@heroicons/react/24/outline";
 import { RJSFSchema } from "@rjsf/utils";
-import Link from "next/link";
+import Link from "../../common/Link";
 import { useConfig } from "../../../context/ConfigContext";
 import { Enumeration } from "../../../types";
 import { slugify } from "../../../utils/tools";

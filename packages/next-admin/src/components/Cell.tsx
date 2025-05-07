@@ -1,7 +1,7 @@
 import React, { ReactNode } from "react";
 
 import clsx from "clsx";
-import Link from "next/link";
+import Link from "./common/Link";
 import { useConfig } from "../context/ConfigContext";
 import { ListDataFieldValue, NextAdminContext } from "../types";
 import { getDisplayedValue } from "../utils/tools";

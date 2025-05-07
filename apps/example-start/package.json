@@ -1,0 +1,36 @@
+{
+  "name": "example-start",
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vinxi dev --port 3002",
+    "build": "vinxi build",
+    "start": "PORT=3002 node --env-file node_modules/database/prisma/.env .output/server/index.mjs",
+    "clean": "rm -rf .output .vinxi"
+  },
+  "dependencies": {
+    "@premieroctet/next-admin": "workspace:*",
+    "@prisma/client": "5.14.0",
+    "@tanstack/react-router": "catalog:tanstack-start",
+    "@tanstack/react-router-devtools": "catalog:tanstack-start",
+    "@tanstack/react-start": "catalog:tanstack-start",
+    "@tremor/react": "^3.2.2",
+    "database": "workspace:*",
+    "examples-common": "workspace:*",
+    "react": "catalog:react19",
+    "react-datepicker": "catalog:",
+    "react-dom": "catalog:react19",
+    "vinxi": "^0.5.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.4",
+    "@tailwindcss/vite": "^4.1.4",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@vitejs/plugin-react": "^4.4.1",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.4",
+    "typescript": "^5.8.3",
+    "vite-tsconfig-paths": "^5.1.4"
+  }
+}
