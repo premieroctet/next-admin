@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 7.6.0
+
+### Minor Changes
+
+- [fcd835e](https://github.com/premieroctet/next-admin/commit/fcd835e8a6daf3784eec53c4837a1eec13df032c): feat: add custom input item data
+  feat: add a new `utils` export, currently containing `useFormData`
+
 ## 7.5.2
 
 ### Patch Changes
