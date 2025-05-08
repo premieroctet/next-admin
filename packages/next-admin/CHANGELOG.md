@@ -1,5 +1,13 @@
 # @premieroctet/next-admin
 
+## 7.6.2
+
+### Patch Changes
+
+- [e792449](https://github.com/premieroctet/next-admin/pull/583/commits/e792449311d70cfc68fc01cf0c691d387ebc86a7): feat: export breadcrumb
+
+# @premieroctet/next-admin
+
 ## 7.6.1
 
 ### Patch Changes
