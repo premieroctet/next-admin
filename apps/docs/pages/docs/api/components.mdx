@@ -78,3 +78,25 @@ The [Radix Table](https://www.radix-ui.com/primitives/docs/components/table) com
 ## `Tooltip`
 
 The [Radix Tooltip](https://www.radix-ui.com/primitives/docs/components/tooltip) component.
+
+## `Breadcrumbs`
+
+The `Breadcrumb` accepts the following options:
+
+````
+<Breadcrumb 
+  breadcrumbItems={[
+    {
+      href: "/admin/post",
+      label: "Posts",
+      icon: "BlogIcon",
+      current: false,
+    },
+    {
+      href: "/admin/post/batch-upload",
+      label: "Batch Upload",
+      current: true,
+    },
+  ]}
+/>
+```

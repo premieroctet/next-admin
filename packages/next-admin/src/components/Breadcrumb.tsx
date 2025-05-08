@@ -4,7 +4,7 @@ import { useConfig } from "../context/ConfigContext";
 import { ModelIcon } from "../types";
 import ResourceIcon from "./common/ResourceIcon";
 
-export default function Breadcrumb({
+export function Breadcrumb({
   breadcrumbItems,
 }: {
   breadcrumbItems: {
