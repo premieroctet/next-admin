@@ -73,9 +73,9 @@
       "require": "./dist/components/index.js"
     },
     "./utils": {
-      "import": "./dist/utils/index.js",
-      "types": "./dist/utils/index.d.ts",
-      "require": "./dist/utils/index.js"
+      "import": "./dist/utils.js",
+      "types": "./dist/utils.d.ts",
+      "require": "./dist/utils.js"
     }
   },
   "peerDependencies": {
