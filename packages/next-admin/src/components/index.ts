@@ -7,4 +7,4 @@ export * from "./radix/Dropdown";
 export * from "./radix/Table";
 export * from "./radix/Tooltip";
 export * from "./Message";
-export * from "./Breadcrumb"
+export { default as Breadcrum } from "./Breadcrumb";

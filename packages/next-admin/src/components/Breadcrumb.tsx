@@ -4,7 +4,7 @@ import { useConfig } from "../context/ConfigContext";
 import { ModelIcon } from "../types";
 import ResourceIcon from "./common/ResourceIcon";
 
-export function Breadcrumb({
+function Breadcrumb({
   breadcrumbItems,
 }: {
   breadcrumbItems: {
@@ -64,3 +64,5 @@ export function Breadcrumb({
     </nav>
   );
 }
+
+export default Breadcrumb;
