@@ -172,7 +172,13 @@ const FileWidget = (props: Props) => {
                 ref={inputRef}
                 id={props.id}
                 disabled={props.disabled}
-                required={!acceptsMultipleFiles ? props.required && (props.value !== null) : false}
+                required={
+                  acceptsMultipleFiles
+                    ? false
+                    : // if the value is null the field is already populated
+                      // but the <input file /> will be empty.
+                      props.required && props.value === null
+                }
                 name={props.name}
                 onChange={handleFileChange}
                 multiple={acceptsMultipleFiles}
