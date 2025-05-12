@@ -1,5 +1,13 @@
 # @premieroctet/next-admin
 
+## 7.6.3
+
+### Patch Changes
+
+- [0612716](https://github.com/premieroctet/next-admin/commit/061271623c8afee333488c0b0c300ceffd482e1d): fix: error when marking a FileWidget as required
+- [e1879b1](https://github.com/premieroctet/next-admin/commit/e1879b1706435e723ab4213dd561107833efa861): feat: expose breadcrumbs to external client
+- [e1879b1](https://github.com/premieroctet/next-admin/commit/e1879b1706435e723ab4213dd561107833efa861): feat: export more base components (Breadcrumb, Spinner) as well as inputs
+
 ## 7.6.2
 
 ### Patch Changes
