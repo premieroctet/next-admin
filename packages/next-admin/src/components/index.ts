@@ -8,3 +8,4 @@ export * from "./radix/Table";
 export * from "./radix/Tooltip";
 export * from "./Message";
 export { default as Breadcrum } from "./Breadcrumb";
+export { default as Spinner } from "./common/Spinner";
