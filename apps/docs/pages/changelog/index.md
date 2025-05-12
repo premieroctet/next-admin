@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.6.2
+
+### Patch Changes
+
+- [6b6d4f5](https://github.com/premieroctet/next-admin/commit/6b6d4f551334aa09c39256b2be757e6c17937cdb): fix: wrong utils export
+
 ## 7.6.1
 
 ### Patch Changes
