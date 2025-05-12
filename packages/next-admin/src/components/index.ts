@@ -7,3 +7,5 @@ export * from "./radix/Dropdown";
 export * from "./radix/Table";
 export * from "./radix/Tooltip";
 export * from "./Message";
+export { default as Breadcrumb } from "./Breadcrumb";
+export { default as Spinner } from "./common/Spinner";

@@ -78,3 +78,87 @@ The [Radix Table](https://www.radix-ui.com/primitives/docs/components/table) com
 ## `Tooltip`
 
 The [Radix Tooltip](https://www.radix-ui.com/primitives/docs/components/tooltip) component.
+
+## `Breadcrumbs`
+
+The `Breadcrumb` accepts the following options:
+
+````
+<Breadcrumb
+  breadcrumbItems={[
+    {
+      href: "/admin/post",
+      label: "Posts",
+      icon: "BlogIcon",
+      current: false,
+    },
+    {
+      href: "/admin/post/batch-upload",
+      label: "Batch Upload",
+      current: true,
+    },
+  ]}
+/>
+```
+
+## Spinner
+
+The `Spinner` component is used to display a loading spinner.
+
+# Inputs
+
+The inputs used across next-admin are available to be used in custom pages. These components are available through the `@premieroctet/next-admin/inputs` import.
+Most expect to be wrapped within a `FormDataProvider`:
+
+```tsx
+// pages/admin/coupons/batch-upload.tsx
+import { FormDataProvider, FileWidget } from "@premieroctet/next-admin/inputs";
+
+export default function BatchUpload() {
+  return (
+    <FormDataProvider>
+      <FileWidget name="file" />
+    </FormDataProvider>
+  );
+}
+```
+
+## `FileWidget`
+
+The `FileWidget` component is used to upload files.
+
+## `RichTextField`
+
+The `RichTextField` component is used to edit rich text content.
+
+## `SelectWidget`
+
+The `SelectWidget` component is used to select a value from a list of options.
+
+## `TextareaWidget`
+
+The `TextareaWidget` component is used to edit a text area.
+
+## `CheckboxWidget`
+
+The `CheckboxWidget` component is used to select a boolean value.
+
+## `DateTimeWidget`
+
+The `DateTimeWidget` component is used to select a date and time.
+
+## `DateWidget`
+
+The `DateWidget` component is used to select a date.
+
+## `JsonField`
+
+The `JsonField` component is used to edit a JSON object.
+
+## `NullField`
+
+The `NullField` component is used to select a null value.
+
+## `ArrayField`
+
+The `ArrayField` component is used to edit an array of values.
