@@ -12,7 +12,7 @@ import {
 import { getSchemas } from "../utils/jsonSchema";
 import { slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
-import { Breadcrumb } from "./Breadcrumb";
+import Breadcrumb from "./Breadcrumb";
 import { buttonVariants } from "./radix/Button";
 
 export default function FormHeader({

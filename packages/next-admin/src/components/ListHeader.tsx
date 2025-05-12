@@ -22,7 +22,7 @@ import {
 } from "../types";
 import { slugify } from "../utils/tools";
 import ActionsDropdown from "./ActionsDropdown";
-import { Breadcrumb } from "./Breadcrumb";
+import Breadcrumb from "./Breadcrumb";
 import ExportDropdown from "./ExportDropdown";
 import { buttonVariants } from "./radix/Button";
 import AdvancedSearchButton from "./advancedSearch/AdvancedSearchButton";
