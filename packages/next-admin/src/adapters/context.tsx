@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, useContext } from "react";
-import { RouterInterface } from "./types";
+import type { RouterInterface } from "./types";
 
 type RouterContextType = {
   router: () => RouterInterface;

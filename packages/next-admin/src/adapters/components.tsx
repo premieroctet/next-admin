@@ -1,7 +1,11 @@
-import { PropsWithChildren } from "react";
+import type { PropsWithChildren } from "react";
 import { MainLayout as MainLayoutComponent } from "../components/MainLayout";
 import { NextAdmin as NextAdminComponent } from "../components/NextAdmin";
-import { AdminComponentProps, CustomUIProps, MainLayoutProps } from "../types";
+import type {
+  AdminComponentProps,
+  CustomUIProps,
+  MainLayoutProps,
+} from "../types";
 import { RouterAdapterComponent } from "./context";
 
 export const createNextAdminComponents = (Adapter: RouterAdapterComponent) => {

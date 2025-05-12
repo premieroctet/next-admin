@@ -8,6 +8,7 @@ export default defineConfig({
   input: glob.sync("src/**/*.{ts,tsx}", {
     ignore: ["**/tests/*", "**/*.test.{ts,tsx}"],
   }),
+  external: ["@remix-run/react", "@tanstack/react-router"],
   output: [
     {
       dir: "dist",

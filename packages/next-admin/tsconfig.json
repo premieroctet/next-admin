@@ -14,7 +14,6 @@
     "outDir": "dist",
     "target": "ESNext",
     "module": "ESNext",
-    "esModuleInterop": true,
     "rootDir": "./src",
     "moduleResolution": "bundler"
   }

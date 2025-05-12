@@ -1,5 +1,5 @@
 import merge from "lodash.merge";
-import { AdminComponentProps, CustomUIProps } from "../types";
+import type { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getClientActionsComponents, getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";

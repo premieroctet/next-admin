@@ -1,10 +1,10 @@
 import { faker } from "@faker-js/faker";
-import AddTagDialog from "./components/PostAddTagDialogContent";
-import UserDetailsDialog from "./components/UserDetailsDialogContent";
 import { NextAdminOptions } from "@premieroctet/next-admin";
+import prisma from "database";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
-import prisma from "database";
+import AddTagDialog from "./components/PostAddTagDialogContent";
+import UserDetailsDialog from "./components/UserDetailsDialogContent";
 
 export const options: NextAdminOptions = {
   title: "⚡️ My Admin",

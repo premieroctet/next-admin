@@ -5,9 +5,11 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import RjsfForm from "@rjsf/core";
+import type { FormProps as RjsfFormProps } from "@rjsf/core";
 import {
   BaseInputTemplateProps,
   ErrorSchema,
+  FieldErrorProps,
   FieldProps,
   FieldTemplateProps,
   ObjectFieldTemplateProps,
@@ -71,7 +73,7 @@ import { getSubmitButtonOptions } from "../utils/rjsf";
 
 const RichTextField = lazy(() => import("./inputs/RichText/RichTextField"));
 
-const widgets: RjsfForm["props"]["widgets"] = {
+const widgets: RjsfFormProps["widgets"] = {
   DateWidget: DateWidget,
   DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
@@ -298,7 +300,7 @@ const Form = ({
     [apiBasePath, id]
   );
 
-  const fields: RjsfForm["props"]["fields"] = useMemo(
+  const fields: RjsfFormProps["fields"] = useMemo(
     () => ({
       ArrayField: (props: FieldProps) => {
         const customInput = customInputs?.[props.name as Field<ModelName>];
@@ -315,7 +317,7 @@ const Form = ({
     [customInputs, edit]
   );
 
-  const templates: RjsfForm["props"]["templates"] = {
+  const templates: RjsfFormProps["templates"] = {
     FieldTemplate: (props: FieldTemplateProps) => {
       const {
         id,
@@ -497,13 +499,18 @@ const Form = ({
     FieldErrorTemplate: ({ errors }) => {
       return errors ? (
         <div className="mt-1 text-sm text-red-600 dark:text-red-400">
-          {errors.map((error, idx) => {
-            if (typeof error === "string") {
-              return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
-            }
+          {errors.map(
+            (
+              error: NonNullable<FieldErrorProps["errors"]>[number],
+              idx: number
+            ) => {
+              if (typeof error === "string") {
+                return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
+              }
 
-            return <React.Fragment key={idx}>{error}</React.Fragment>;
-          })}
+              return <React.Fragment key={idx}>{error}</React.Fragment>;
+            }
+          )}
         </div>
       ) : null;
     },

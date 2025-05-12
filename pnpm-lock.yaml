@@ -632,14 +632,14 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.0.2(@types/react@19.0.1))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@rjsf/core':
-        specifier: ^5.19.3
-        version: 5.24.8(@rjsf/utils@5.24.8(react@19.0.0))(react@19.0.0)
+        specifier: 6.0.0-beta.7
+        version: 6.0.0-beta.7(@rjsf/utils@6.0.0-beta.7(react@19.0.0))(react@19.0.0)
       '@rjsf/utils':
-        specifier: ^5.19.3
-        version: 5.24.8(react@19.0.0)
+        specifier: 6.0.0-beta.7
+        version: 6.0.0-beta.7(react@19.0.0)
       '@rjsf/validator-ajv8':
-        specifier: ^5.19.3
-        version: 5.24.8(@rjsf/utils@5.24.8(react@19.0.0))
+        specifier: 6.0.0-beta.7
+        version: 6.0.0-beta.7(@rjsf/utils@6.0.0-beta.7(react@19.0.0))
       '@tanstack/react-table':
         specifier: ^8.9.2
         version: 8.20.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -801,9 +801,6 @@ importers:
       concurrently:
         specifier: ^8.0.1
         version: 8.2.2
-      esbuild:
-        specifier: ^0.24.0
-        version: 0.24.2
       eslint:
         specifier: ^7.32.0
         version: 7.32.0
@@ -3653,24 +3650,24 @@ packages:
   '@remix-run/web-stream@1.1.0':
     resolution: {integrity: sha512-KRJtwrjRV5Bb+pM7zxcTJkhIqWWSy+MYsIxHK+0m5atcznsf15YwUBWHWulZerV2+vvHH1Lp1DD7pw6qKW8SgA==}
 
-  '@rjsf/core@5.24.8':
-    resolution: {integrity: sha512-7YdOMl0UylldYR75rnKoQF5etibSwPQHA3rY8LEo28xyYek81ESGuqPTs37P14doBpGRL+SobggR76tYhDYO7A==}
-    engines: {node: '>=14'}
+  '@rjsf/core@6.0.0-beta.7':
+    resolution: {integrity: sha512-pFAx1N8kI3Lw0oBMNH3Rm8mGDv2R1mD5hZuC22JTuwZ+d/R5XQFK54A3yxtyuPfJE3CveX4/QH5iry8v3t/M0Q==}
+    engines: {node: '>=20'}
     peerDependencies:
-      '@rjsf/utils': ^5.24.x
+      '@rjsf/utils': ^6.0.0-beta
       react: 19.0.0
 
-  '@rjsf/utils@5.24.8':
-    resolution: {integrity: sha512-Y/D1orNsTnIswp23QtWKq7QEme07/nSdnSJoK4gSsm2cDBkSCW+9KUsWSvmE7poqHwCn3zpbIaa3ZWEAQUJEEg==}
-    engines: {node: '>=14'}
+  '@rjsf/utils@6.0.0-beta.7':
+    resolution: {integrity: sha512-3NczDXaTEe8woNy4VyeFvUYzd+SJRwaHVGLoQCUH/19g33uxFVg7CI8HFeK8dSAIV8Oc7GU4Kj0ROeU3AKUIcQ==}
+    engines: {node: '>=20'}
     peerDependencies:
       react: 19.0.0
 
-  '@rjsf/validator-ajv8@5.24.8':
-    resolution: {integrity: sha512-0l5/9CL2BhW5tUtP+vKg6o5Wpp5kuee5SPea3STtdBN/xbGf3dUX08jbKcvokTJt5552rFDcNjMZmu+C0H7ezQ==}
-    engines: {node: '>=14'}
+  '@rjsf/validator-ajv8@6.0.0-beta.7':
+    resolution: {integrity: sha512-lp57Pypqkb1dtGzlkIll6xyyr2jUbgwE+lXcATDT3P1VYtF0MbjP7ZygSaJHDUJOrPxnMu3yfS8ZqwLACqUv+Q==}
+    engines: {node: '>=20'}
     peerDependencies:
-      '@rjsf/utils': ^5.24.x
+      '@rjsf/utils': ^6.0.0-beta
 
   '@rollup/plugin-alias@5.1.1':
     resolution: {integrity: sha512-PR9zDb+rOzkRb2VD+EuKB7UC41vU5DIwZ5qqCpk0KJudcWAyi8rvYOhS7+L5aZCspw1stTViLgN5v6FF1p5cgQ==}
@@ -6742,6 +6739,9 @@ packages:
   fast-uri@3.0.3:
     resolution: {integrity: sha512-aLrHthzCjH5He4Z2H9YZ+v6Ujb9ocRuW6ZzkJQOrTxleEijANq4v1TsaPaVG1PZcuurEzrLcWRyYBYXD5cEiaw==}
 
+  fast-uri@3.0.6:
+    resolution: {integrity: sha512-Atfo14OibSv5wAp4VWNsFYE1AchQRTv9cBGWET4pZWHzYshFSS9NQI6I57rdKn9croWVMbYFbLhJ+yJvmZIIHw==}
+
   fastq@1.17.1:
     resolution: {integrity: sha512-sRVD3lWVIXWg6By68ZN7vho9a1pQcN/WBFaAAsDDFzlJjvoGx0P8z7V1t72grFJfJhu3YPZBuu25f7Kaw2jN1w==}
 
@@ -8117,8 +8117,8 @@ packages:
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
 
-  markdown-to-jsx@7.5.0:
-    resolution: {integrity: sha512-RrBNcMHiFPcz/iqIj0n3wclzHXjwS7mzjBNWecKKVhNTIxQepIix6Il/wZCn2Cg5Y1ow2Qi84+eJrryFRWBEWw==}
+  markdown-to-jsx@7.7.6:
+    resolution: {integrity: sha512-/PWFFoKKMidk4Ut06F5hs5sluq1aJ0CGvUJWsnCK6hx/LPM8vlhvKAxtGHJ+U+V2Il2wmnfO6r81ICD3xZRVaw==}
     engines: {node: '>= 10'}
     peerDependencies:
       react: 19.0.0
@@ -8632,6 +8632,11 @@ packages:
   nanoid@3.3.7:
     resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
+    hasBin: true
+
+  nanoid@5.1.5:
+    resolution: {integrity: sha512-Ir/+ZpE9fDsNH0hQ3C68uyThDXzYcim2EqcZ8zn8Chtt1iylPT9xXJB0kPCnqzgcEGikO9RxSrh63MsmVCU7Fw==}
+    engines: {node: ^18 || >=20}
     hasBin: true
 
   napi-postinstall@0.2.3:
@@ -14244,28 +14249,30 @@ snapshots:
     dependencies:
       web-streams-polyfill: 3.3.3
 
-  '@rjsf/core@5.24.8(@rjsf/utils@5.24.8(react@19.0.0))(react@19.0.0)':
+  '@rjsf/core@6.0.0-beta.7(@rjsf/utils@6.0.0-beta.7(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@rjsf/utils': 5.24.8(react@19.0.0)
+      '@rjsf/utils': 6.0.0-beta.7(react@19.0.0)
       lodash: 4.17.21
       lodash-es: 4.17.21
-      markdown-to-jsx: 7.5.0(react@19.0.0)
-      nanoid: 3.3.11
+      markdown-to-jsx: 7.7.6(react@19.0.0)
+      nanoid: 5.1.5
       prop-types: 15.8.1
       react: 19.0.0
 
-  '@rjsf/utils@5.24.8(react@19.0.0)':
+  '@rjsf/utils@6.0.0-beta.7(react@19.0.0)':
     dependencies:
+      fast-uri: 3.0.6
       json-schema-merge-allof: 0.8.1
       jsonpointer: 5.0.1
       lodash: 4.17.21
       lodash-es: 4.17.21
+      nanoid: 5.1.5
       react: 19.0.0
       react-is: 18.3.1
 
-  '@rjsf/validator-ajv8@5.24.8(@rjsf/utils@5.24.8(react@19.0.0))':
+  '@rjsf/validator-ajv8@6.0.0-beta.7(@rjsf/utils@6.0.0-beta.7(react@19.0.0))':
     dependencies:
-      '@rjsf/utils': 5.24.8(react@19.0.0)
+      '@rjsf/utils': 6.0.0-beta.7(react@19.0.0)
       ajv: 8.17.1
       ajv-formats: 2.1.1(ajv@8.17.1)
       lodash: 4.17.21
@@ -15016,7 +15023,7 @@ snapshots:
     dependencies:
       '@tanstack/virtual-file-routes': 1.115.0
       prettier: 3.5.3
-      tsx: 4.19.2
+      tsx: 4.19.4
       zod: 3.24.3
     optionalDependencies:
       '@tanstack/react-router': 1.119.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -18484,6 +18491,8 @@ snapshots:
 
   fast-uri@3.0.3: {}
 
+  fast-uri@3.0.6: {}
+
   fastq@1.17.1:
     dependencies:
       reusify: 1.0.4
@@ -19968,7 +19977,7 @@ snapshots:
 
   markdown-table@3.0.4: {}
 
-  markdown-to-jsx@7.5.0(react@19.0.0):
+  markdown-to-jsx@7.7.6(react@19.0.0):
     dependencies:
       react: 19.0.0
 
@@ -20961,6 +20970,8 @@ snapshots:
   nanoid@3.3.11: {}
 
   nanoid@3.3.7: {}
+
+  nanoid@5.1.5: {}
 
   napi-postinstall@0.2.3: {}
 
