@@ -1,11 +1,3 @@
-# @premieroctet/next-admin
-
-## 7.6.2
-
-### Patch Changes
-
-- [211f4e2](https://github.com/premieroctet/next-admin/pull/584/commits/211f4e2208f86dd703fdecc6fb6814a90e1168f6): fix: error when marking a FileWidget as required
-
 ## 7.6.1
 
 ### Patch Changes
