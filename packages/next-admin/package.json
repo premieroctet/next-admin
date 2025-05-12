@@ -72,6 +72,11 @@
       "types": "./dist/components/index.d.ts",
       "require": "./dist/components/index.js"
     },
+    "./inputs": {
+      "import": "./dist/inputs/index.js",
+      "types": "./dist/inputs/index.d.ts",
+      "require": "./dist/inputs/index.js"
+    },
     "./utils": {
       "import": "./dist/utils/index.js",
       "types": "./dist/utils/index.d.ts",
