@@ -11,6 +11,7 @@
     "build:packages": "turbo run build --filter=@premieroctet/next-admin --filter=@premieroctet/next-admin-cli --filter=@premieroctet/next-admin-generator-prisma --filter=@premieroctet/next-admin-json-schema",
     "setup:packages": "turbo run build --filter=@premieroctet/next-admin-cli --filter=@premieroctet/next-admin-generator-prisma --filter=@premieroctet/next-admin-json-schema && pnpm build:next-admin",
     "dev": "turbo run dev",
+    "dev:next": "turbo run dev --filter=@premieroctet/next-admin --filter=./apps/example",
     "dev:docs": "turbo run dev --filter=docs",
     "lint": "turbo run lint",
     "test": "turbo run test",
