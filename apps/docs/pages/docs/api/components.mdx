@@ -83,7 +83,7 @@ The [Radix Tooltip](https://www.radix-ui.com/primitives/docs/components/tooltip)
 
 The `Breadcrumb` accepts the following options:
 
-````
+```tsx
 <Breadcrumb
   breadcrumbItems={[
     {
@@ -112,53 +112,41 @@ Most expect to be wrapped within a `FormDataProvider`:
 
 ```tsx
 // pages/admin/coupons/batch-upload.tsx
-import { FormDataProvider, FileWidget } from "@premieroctet/next-admin/inputs";
+import { FormDataProvider, FileWidget, useFormData } from "@premieroctet/next-admin/inputs";
 
-export default function BatchUpload() {
+const BatchUploadWidget = () => {
+  const { setFormData } = useFormData();
+  return <Widget
+    name="address"
+    onChange={(e) => {
+      setFormData((old) => ({ ...old, address: e.target.value }));
+    }}
+  />
+}
+
+export default function BatchUploadPage() {
   return (
+    // Wrap your page in a provider to enable
+    // the fields to to plug into it
     <FormDataProvider>
-      <FileWidget name="file" />
+      <BatchUploadWidget />
     </FormDataProvider>
   );
 }
 ```
 
-## `FileWidget`
+## Components
 
-The `FileWidget` component is used to upload files.
 
-## `RichTextField`
-
-The `RichTextField` component is used to edit rich text content.
-
-## `SelectWidget`
-
-The `SelectWidget` component is used to select a value from a list of options.
-
-## `TextareaWidget`
-
-The `TextareaWidget` component is used to edit a text area.
-
-## `CheckboxWidget`
-
-The `CheckboxWidget` component is used to select a boolean value.
-
-## `DateTimeWidget`
-
-The `DateTimeWidget` component is used to select a date and time.
-
-## `DateWidget`
-
-The `DateWidget` component is used to select a date.
-
-## `JsonField`
-
-The `JsonField` component is used to edit a JSON object.
-
-## `NullField`
-
-The `NullField` component is used to select a null value.
-
-## `ArrayField`
-
-The `ArrayField` component is used to edit an array of values.
+| Component | Description |
+| --- | --- |
+| `FileWidget` | Used to upload files. |
+| `RichTextField` | Used to edit rich text content. |
+| `SelectWidget` | Used to select a value from a list of options. |
+| `TextareaWidget` | Used to edit a text area. |
+| `CheckboxWidget` | Used to select a boolean value. |
+| `DateTimeWidget` | Used to select a date and time. |
+| `DateWidget` | Used to select a date. |
+| `JsonField` | Used to edit a JSON object. |
+| `NullField` | Used to select a null value. |
+| `ArrayField` | Used to edit an array of values. |
