@@ -110,21 +110,29 @@ The `Spinner` component is used to display a loading spinner.
 The inputs used across next-admin are available to be used in custom pages. These components are available through the `@premieroctet/next-admin/inputs` import.
 Most expect to be wrapped within a `FormDataProvider`:
 
+my bad, haven't used consumers in years!
+Maybe this is more akin to a real implementation:
+
 ```tsx
 // pages/admin/coupons/batch-upload.tsx
-import { FormDataProvider, FileWidget } from "@premieroctet/next-admin/inputs";
+import { FormDataProvider, FileWidget, useFormData } from "@premieroctet/next-admin/inputs";
 
-export default function BatchUpload() {
+const BatchUploadWidget = () => {
+  const { setFormData } = useFormData();
+  return <Widget
+    name="address"
+    onChange={(e) => {
+      setFormData((old) => ({ ...old, address: e.target.value }));
+    }}
+  />
+}
+
+export default function BatchUploadPage() {
   return (
+    // Wrap your page in a provider to enable
+    // the fields to to plug into it
     <FormDataProvider>
-      {({ setFormData }) => (
-        <FileWidget
-          name="address"
-          onChange={(e) => {
-            setFormData((old) => ({ ...old, address: e.target.value }));
-          }}
-        />
-      )}
+      <BatchUploadWidget />
     </FormDataProvider>
   );
 }

@@ -6,6 +6,8 @@ import fs from "fs/promises";
 // @ts-expect-error
 import { transformDMMF } from "prisma-json-schema-generator/dist/generator/transformDMMF";
 import { insertDmmfData } from "./dmmf";
+import { convertJsonSchemaToOpenApi } from "./openapi";
+import { dump as yamlDump } from "js-yaml";
 
 generatorHandler({
   onManifest: () => {
@@ -37,9 +39,26 @@ generatorHandler({
           : parseEnvValue(options.generator.output);
 
       await fs.mkdir(outputDir, { recursive: true });
+      
+      // Write JSON Schema
       await fs.writeFile(
         path.join(outputDir, "schema.json"),
         JSON.stringify(jsonSchema, null, 2)
+      );
+      
+      // Generate OpenAPI document from JSON Schema
+      const openApiDocument = convertJsonSchemaToOpenApi(jsonSchema);
+      
+      // Write OpenAPI document as JSON
+      await fs.writeFile(
+        path.join(outputDir, "openapi.json"),
+        JSON.stringify(openApiDocument, null, 2)
+      );
+      
+      // Write OpenAPI document as YAML
+      await fs.writeFile(
+        path.join(outputDir, "openapi.yaml"),
+        yamlDump(openApiDocument, { noRefs: true })
       );
     }
   },
