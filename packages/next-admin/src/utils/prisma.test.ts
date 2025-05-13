@@ -1,4 +1,6 @@
+import { describe, expect, test } from "vitest";
 import { NextAdminOptions } from "../types";
+import "../tests/singleton";
 import { createWherePredicate } from "./prisma";
 
 const options: NextAdminOptions = {

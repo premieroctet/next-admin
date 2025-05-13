@@ -1,8 +1,9 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { NextApiRequest } from "next";
+import type { NextApiRequest } from "next";
 import { Writable } from "node:stream";
+import { createRequire } from "node:module";
 import {
   AdminFormData,
   EditFieldsOptions,
@@ -31,12 +32,15 @@ import {
   uncapitalize,
 } from "./tools";
 
+const _require = createRequire(import.meta.url);
+
 export const getJsonSchema = (): Schema => {
   try {
-    const schema = require(".next-admin/schema.json");
+    const schema = _require("@premieroctet/next-admin/schema");
 
     return schema as Schema;
-  } catch {
+  } catch (e) {
+    console.error(e);
     throw new Error(
       "Schema not found, make sure you added the generator to your schema.prisma file"
     );
@@ -1091,7 +1095,9 @@ export const formattedFormData = async <M extends ModelName>(
                 });
               }
               const uploaded = await handleUploadProperty({
-                files: (formData[propertyName] as unknown as UploadedFile[]).filter(isUploadFile),
+                files: (
+                  formData[propertyName] as unknown as UploadedFile[]
+                ).filter(isUploadFile),
                 resourceId,
                 editOptions,
                 property: propertyName,

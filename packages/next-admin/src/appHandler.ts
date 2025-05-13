@@ -1,5 +1,4 @@
 import { createEdgeRouter } from "next-connect";
-import { NextRequest, NextResponse } from "next/server";
 import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
 import { deleteResource, submitResource } from "./handlers/resources";
@@ -31,7 +30,7 @@ export const createHandler = <P extends string = "nextadmin">({
   paramKey = "nextadmin" as P,
   onRequest,
 }: CreateAppHandlerParams<P>) => {
-  const router = createEdgeRouter<NextRequest, RequestContext<P>>();
+  const router = createEdgeRouter<Request, RequestContext<P>>();
   const resources = getResources(options);
 
   if (onRequest) {
@@ -53,25 +52,23 @@ export const createHandler = <P extends string = "nextadmin">({
       const resource = getResourceFromParams(params[paramKey], resources);
 
       if (!resource) {
-        return NextResponse.json(
-          { error: "Resource not found" },
-          { status: 404 }
-        );
+        return Response.json({ error: "Resource not found" }, { status: 404 });
       }
+      const searchParams = new URL(req.url).searchParams;
 
-      const ids = req.nextUrl.searchParams
+      const ids = searchParams
         .get("ids")
         ?.split(",")
         .map((id) => formatId(resource, id));
 
-      const depth = req.nextUrl.searchParams.get("depth");
+      const depth = searchParams.get("depth");
 
       if (!ids) {
-        return NextResponse.json({ error: "No ids provided" }, { status: 400 });
+        return Response.json({ error: "No ids provided" }, { status: 400 });
       }
 
       if (depth && isNaN(Number(depth))) {
-        return NextResponse.json(
+        return Response.json(
           { error: "Depth should be a number" },
           { status: 400 }
         );
@@ -84,7 +81,7 @@ export const createHandler = <P extends string = "nextadmin">({
         maxDepth: depth ? Number(depth) : undefined,
       });
 
-      return NextResponse.json(data);
+      return Response.json(data);
     })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, ctx) => {
       const params = await ctx.params;
@@ -94,7 +91,7 @@ export const createHandler = <P extends string = "nextadmin">({
       const resource = getResourceFromParams([params[paramKey][0]], resources);
 
       if (!resource) {
-        return NextResponse.json(
+        return Response.json(
           { type: "error", message: "Resource not found" },
           { status: 404 }
         );
@@ -105,14 +102,14 @@ export const createHandler = <P extends string = "nextadmin">({
       )?.find((action) => action.id === id);
 
       if (!modelAction) {
-        return NextResponse.json(
+        return Response.json(
           { type: "error", message: "Action not found" },
           { status: 404 }
         );
       }
 
       if ("type" in modelAction && modelAction.type === "dialog") {
-        return NextResponse.json(
+        return Response.json(
           { type: "error", message: "Action not found" },
           { status: 404 }
         );
@@ -125,9 +122,9 @@ export const createHandler = <P extends string = "nextadmin">({
           body as string[] | number[]
         );
 
-        return NextResponse.json(result ?? null);
+        return Response.json(result ?? null);
       } catch (e) {
-        return NextResponse.json(
+        return Response.json(
           { type: "error", message: (e as Error).message },
           { status: 500 }
         );
@@ -137,33 +134,27 @@ export const createHandler = <P extends string = "nextadmin">({
       const body = await req.json();
       const data = await handleOptionsSearch(body, prisma, options);
 
-      return NextResponse.json(data);
+      return Response.json(data);
     })
     .post(`${apiBasePath}/:model/order`, async (req, ctx) => {
       const body = await req.json();
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
-      const optimisticData = body as ListData<NonNullable<typeof resource>>;  
+      const optimisticData = body as ListData<NonNullable<typeof resource>>;
 
       if (!resource) {
-        return NextResponse.json(
-          { error: "Resource not found" },
-          { status: 404 }
-        );
+        return Response.json({ error: "Resource not found" }, { status: 404 });
       }
 
       if (!resource) {
-        return NextResponse.json(
-          { error: "Resource not found" },
-          { status: 404 }
-        );
+        return Response.json({ error: "Resource not found" }, { status: 404 });
       }
 
       const resourceIdField = getModelIdProperty(resource);
       const orderField = options?.model?.[resource]?.list?.orderField;
 
       if (!orderField) {
-        return NextResponse.json(
+        return Response.json(
           { error: "Order field not found" },
           { status: 404 }
         );
@@ -174,22 +165,21 @@ export const createHandler = <P extends string = "nextadmin">({
           //@ts-expect-error
           await tx[resource].update({
             where: { [resourceIdField]: item[resourceIdField].value },
-            data: { [orderField]: (item[orderField] as ListDataFieldValue).value },
+            data: {
+              [orderField]: (item[orderField] as ListDataFieldValue).value,
+            },
           });
         }
       });
 
-      return NextResponse.json({ ok: true });
+      return Response.json({ ok: true });
     })
     .post(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
 
       if (!resource) {
-        return NextResponse.json(
-          { error: "Resource not found" },
-          { status: 404 }
-        );
+        return Response.json({ error: "Resource not found" }, { status: 404 });
       }
 
       const body = await getFormValuesFromFormData(
@@ -224,7 +214,7 @@ export const createHandler = <P extends string = "nextadmin">({
         });
 
         if (response.error) {
-          return NextResponse.json(
+          return Response.json(
             { error: response.error, validation: response.validation },
             { status: 400 }
           );
@@ -234,16 +224,15 @@ export const createHandler = <P extends string = "nextadmin">({
           (await editOptions?.hooks?.afterDb?.(response, mode, req)) ??
           response;
 
-        return NextResponse.json(response, { status: id ? 200 : 201 });
+        console.log("after db hook executed", response);
+
+        return Response.json(response, { status: id ? 200 : 201 });
       } catch (e) {
         if (e instanceof HookError) {
-          return NextResponse.json(e.data, { status: e.status });
+          return Response.json(e.data, { status: e.status });
         }
 
-        return NextResponse.json(
-          { error: (e as Error).message },
-          { status: 500 }
-        );
+        return Response.json({ error: (e as Error).message }, { status: 500 });
       }
     })
     .delete(`${apiBasePath}/:model/:id`, async (req, ctx) => {
@@ -251,14 +240,11 @@ export const createHandler = <P extends string = "nextadmin">({
       const resource = getResourceFromParams(params[paramKey], resources);
 
       if (!resource) {
-        return NextResponse.json(
-          { error: "Resource not found" },
-          { status: 404 }
-        );
+        return Response.json({ error: "Resource not found" }, { status: 404 });
       }
 
       if (!hasPermission(options?.model?.[resource], Permission.DELETE)) {
-        return NextResponse.json(
+        return Response.json(
           { error: "You don't have permission to delete this resource" },
           { status: 403 }
         );
@@ -276,12 +262,9 @@ export const createHandler = <P extends string = "nextadmin">({
           throw new Error("Deletion failed");
         }
 
-        return NextResponse.json({ ok: true });
+        return Response.json({ ok: true });
       } catch (e) {
-        return NextResponse.json(
-          { error: (e as Error).message },
-          { status: 500 }
-        );
+        return Response.json({ error: (e as Error).message }, { status: 500 });
       }
     })
     .delete(`${apiBasePath}/:model`, async (req, ctx) => {
@@ -289,14 +272,11 @@ export const createHandler = <P extends string = "nextadmin">({
       const resource = getResourceFromParams(params[paramKey], resources);
 
       if (!resource) {
-        return NextResponse.json(
-          { error: "Resource not found" },
-          { status: 404 }
-        );
+        return Response.json({ error: "Resource not found" }, { status: 404 });
       }
 
       if (!hasPermission(options?.model?.[resource], Permission.DELETE)) {
-        return NextResponse.json(
+        return Response.json(
           { error: "You don't have permission to delete this resource" },
           { status: 403 }
         );
@@ -311,19 +291,13 @@ export const createHandler = <P extends string = "nextadmin">({
           modelOptions: options?.model?.[resource],
         });
 
-        return NextResponse.json({ ok: true });
+        return Response.json({ ok: true });
       } catch (e) {
-        return NextResponse.json(
-          { error: (e as Error).message },
-          { status: 500 }
-        );
+        return Response.json({ error: (e as Error).message }, { status: 500 });
       }
     });
 
-  const executeRouteHandler = (
-    req: NextRequest,
-    context: RequestContext<P>
-  ) => {
+  const executeRouteHandler = (req: Request, context: RequestContext<P>) => {
     return router.run(req, context) as Promise<Response>;
   };
 

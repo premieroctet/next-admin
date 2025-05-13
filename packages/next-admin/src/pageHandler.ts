@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler, createRouter } from "next-connect";
 import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";

@@ -65,13 +65,10 @@ const Filters = <T extends ModelName>({
       .filter((filter) => filter.active)
       .map((filter) => filter.name);
 
-    router?.push({
-      pathname: location.pathname,
-      query: {
-        ...query,
-        page: 1,
-        filters: JSON.stringify(newFiltersNames),
-      },
+    router?.setQuery({
+      ...query,
+      page: 1,
+      filters: JSON.stringify(newFiltersNames),
     });
   };
 

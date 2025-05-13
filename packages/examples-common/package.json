@@ -1,0 +1,33 @@
+{
+  "name": "examples-common",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "tsc -w",
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "exports": {
+    "./components": "./dist/components/index.js",
+    "./components/*": "./dist/components/*.js",
+    "./options": "./dist/options.js",
+    "./pageRouterOptions": "./dist/pageRouterOptions.js",
+    "./preset": "./dist/preset.js",
+    "./messages/*": "./dist/messages/*.js"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^9.4.0",
+    "@premieroctet/next-admin": "workspace:*",
+    "@tremor/react": "^3.2.2",
+    "database": "workspace:*",
+    "react": "catalog:react19",
+    "react-datepicker": "catalog:",
+    "react-dom": "catalog:react19"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.3",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "tailwindcss": "^4.1.4",
+    "typescript": "^5.8.3"
+  }
+}
