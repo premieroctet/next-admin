@@ -11,14 +11,21 @@
   "tasks": {
     "start": {},
     "@premieroctet/next-admin#build": {
-      "dependsOn": ["example#generate:client-only"]
+      "dependsOn": ["database#generate:client-only"]
     },
-    "example#generate:client-only": {
+    "database#generate:client-only": {
       "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"]
     },
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**",
+        ".output/**",
+        ".vinxi/**",
+        "build/**"
+      ]
     },
     "lint": {
       "outputs": []
@@ -38,5 +45,6 @@
     "clean": {},
     "generate": {}
   },
-  "ui": "stream"
+  "ui": "stream",
+  "concurrency": "11"
 }

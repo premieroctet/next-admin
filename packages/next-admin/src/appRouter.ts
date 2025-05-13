@@ -7,7 +7,6 @@ import {
 export const getNextAdminProps = async (
   params: Omit<GetNextAdminPropsParams, "schema" | "isAppDir">
 ) => {
-  "use server";
   return _getPropsFromParams({ ...params, isAppDir: true });
 };
 

@@ -4,7 +4,7 @@ import {
   EllipsisVerticalIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import Link from "next/link";
+import Link from "./common/Link";
 import { useState } from "react";
 import { useI18n } from "../context/I18nContext";
 import { ListExport } from "../types";
@@ -65,7 +65,7 @@ const ExportDropdown = ({ exports }: Props) => {
                   key={format}
                   className={clsx("cursor-pointer rounded-md px-2 py-1")}
                 >
-                  <Link prefetch={false} href={url} target="_blank">
+                  <Link href={url} target="_blank">
                     {t("list.row.actions.export", { format: format })}
                   </Link>
                 </DropdownItem>

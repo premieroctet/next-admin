@@ -6,7 +6,7 @@ import {
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import clsx from "clsx";
-import Link from "next/link";
+import Link from "../common/Link";
 import { ReactElement } from "react";
 
 type Props = {

@@ -1,5 +1,12 @@
 "use client";
-import { PropsWithChildren, createContext, useContext, useState } from "react";
+import {
+  PropsWithChildren,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   MessageContextType,
@@ -15,25 +22,37 @@ const MessageContext = createContext<MessageContextType>({
 
 export const MessageProvider = ({ children }: PropsWithChildren) => {
   const { query } = useRouterInternal();
-  const [message, setMessage] = useState<MessageDataWithCustomComponent | null>(
-    () => {
-      if (query.message) {
-        try {
-          const data = JSON.parse(query.message);
 
-          if (data.type && data.message) {
-            return data;
-          }
+  const parseMessage = useCallback(() => {
+    if (query.message) {
+      try {
+        /**
+         * Hack to fix TanStack Start
+         */
+        const data = JSON.parse(
+          query.message.replaceAll("\\", "").replaceAll(/(^")|("$)/g, "")
+        );
 
-          return null;
-        } catch {
-          return null;
+        if (data.type && data.message) {
+          return data;
         }
-      }
 
-      return null;
+        return null;
+      } catch {
+        return null;
+      }
     }
+
+    return null;
+  }, [query.message]);
+
+  const [message, setMessage] = useState<MessageDataWithCustomComponent | null>(
+    parseMessage
   );
+
+  useEffect(() => {
+    setMessage(parseMessage);
+  }, [query.message]);
 
   const showMessage = (messageData: MessageData) => {
     setMessage(messageData);

@@ -1,5 +1,5 @@
 import { Decimal } from "@prisma/client/runtime/library";
-import { any, mockReset } from "jest-mock-extended";
+import { describe, expect, it } from "vitest";
 import { getMappedDataList, optionsFromResource } from "../utils/prisma";
 import { options, prismaMock } from "./singleton";
 
@@ -102,11 +102,12 @@ describe("optionsFromResource", () => {
     });
 
     expect(result).toEqual({
-      data: postData.map((post) => ({
-        label: post.title,
-        value: post.id,
-        data: any(Object),
-      })),
+      data: postData.map((post) =>
+        expect.objectContaining({
+          label: post.title,
+          value: post.id,
+        })
+      ),
       total: postData.length,
       error: null,
     });

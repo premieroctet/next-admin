@@ -1,3 +1,24 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - "apps/*"
+  - "packages/*"
+
+catalogs:
+  react19:
+    react: ^19.0.0
+    react-dom: ^19.0.0
+    "@types/react": ^19.0.1
+    "@types/react-dom": ^19.0.2
+
+  tanstack-start:
+    "@tanstack/react-router": ^1.119.0
+    "@tanstack/react-router-devtools": ^1.119.1
+    "@tanstack/react-start": ^1.119.2
+
+  remix:
+    "@remix-run/dev": ^2.16.5
+    "@remix-run/node": ^2.16.5
+    "@remix-run/react": ^2.16.5
+    "@remix-run/serve": ^2.16.5
+
+catalog:
+  react-datepicker: ^8.3.0
