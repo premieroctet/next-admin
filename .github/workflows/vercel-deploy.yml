@@ -30,7 +30,10 @@ jobs:
         run: pnpm install
 
       - name: Setup packages (Build)
-        run: pnpm build
+        run: pnpm setup:packages
+
+      - name: Build examples
+        run: pnpm build:examples
 
       - name: Install Vercel CLI
         run: npm install --global vercel@37.6.1
