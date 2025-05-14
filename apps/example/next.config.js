@@ -5,6 +5,7 @@ const { withSuperjson } = require("next-superjson");
 module.exports = withNextIntl(
   withSuperjson({
     reactStrictMode: true,
+    serverExternalPackages: ["@premieroctet/next-admin"],
     experimental: {
       swcPlugins: [
         [
