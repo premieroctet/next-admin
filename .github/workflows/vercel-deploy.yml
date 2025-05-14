@@ -32,9 +32,6 @@ jobs:
       - name: Setup packages (Build)
         run: pnpm setup:packages
 
-      - name: Build examples
-        run: pnpm build:examples
-
       - name: Install Vercel CLI
         run: npm install --global vercel@37.6.1
 
@@ -63,9 +60,3 @@ jobs:
         run: vercel deploy ${{ inputs.extra_args }} --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
         env:
           VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_EXAMPLE }}
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: next-admin-build
-          path: .
-          retention-days: 1
