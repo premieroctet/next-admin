@@ -35,6 +35,8 @@ export function NextAdmin({
   user,
   externalLinks,
   pageLoader,
+  rawData,
+  relationshipsRawData,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -72,6 +74,7 @@ export function NextAdmin({
           icon={resourceIcon}
           schema={schema!}
           clientActionsComponents={dialogComponents}
+          rawData={rawData!}
         />
       );
     }
@@ -94,6 +97,7 @@ export function NextAdmin({
           icon={resourceIcon}
           resourcesIdProperty={resourcesIdProperty!}
           clientActionsComponents={dialogComponents}
+          relationshipsRawData={relationshipsRawData}
         />
       );
     }

@@ -110,7 +110,7 @@ export async function getPropsFromParams({
 
   switch (params.length) {
     case Page.LIST: {
-      const { data, total, error } = await getMappedDataList({
+      const { data, total, error, rawData } = await getMappedDataList({
         prisma,
         resource,
         options,
@@ -156,6 +156,7 @@ export async function getPropsFromParams({
         error: error ?? (searchParams?.error as string) ?? null,
         actions: serializedActions,
         dialogComponents: dialogActionsComponents,
+        rawData: extractSerializable(rawData),
       };
     }
     case Page.EDIT: {
@@ -173,7 +174,7 @@ export async function getPropsFromParams({
       const customInputs = isAppDir ? getCustomInputs(resource, options) : null;
 
       if (resourceId !== undefined) {
-        const data = await getDataItem({
+        const { data, relationshipsRawData } = await getDataItem({
           prisma,
           resource,
           resourceId,
@@ -216,6 +217,10 @@ export async function getPropsFromParams({
           customInputs,
           actions: serializedActions,
           dialogComponents: dialogActionsComponents,
+          relationshipsRawData: extractSerializable(
+            relationshipsRawData,
+            isAppDir
+          ),
         };
       }
 

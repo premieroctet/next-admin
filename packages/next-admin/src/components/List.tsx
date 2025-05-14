@@ -61,6 +61,7 @@ export type ListProps = {
   icon?: ModelIcon;
   schema: Schema;
   clientActionsComponents?: AdminComponentProps["dialogComponents"];
+  rawData: any[];
 };
 
 function List({
@@ -73,6 +74,7 @@ function List({
   icon,
   schema,
   clientActionsComponents,
+  rawData,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
@@ -97,6 +99,7 @@ function List({
     resourcesIdProperty,
     sortColumn,
     sortDirection,
+    rawData,
   });
 
   let onSearchChange;

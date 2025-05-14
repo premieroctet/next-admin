@@ -506,9 +506,7 @@ export const findRelationInData = (
               type: "link",
               value: {
                 label: item[property],
-                url: `${propertyType as ModelName}/${
-                  item[property][idProperty]
-                }`,
+                url: `${uncapitalize(propertyType as ModelName)}/${item[property][idProperty]}`,
               },
             };
           }

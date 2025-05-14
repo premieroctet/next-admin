@@ -32,7 +32,12 @@ import {
   modelHasIdField,
   transformData,
 } from "./server";
-import { capitalize, isScalar, uncapitalize } from "./tools";
+import {
+  capitalize,
+  extractSerializable,
+  isScalar,
+  uncapitalize,
+} from "./tools";
 
 type CreateNestedWherePredicateParams<M extends ModelName> = {
   field: NextAdminJsonSchemaData & { name: string };
@@ -636,8 +641,8 @@ export const mapDataList = ({
                 ? formatted
                 : undefined,
           __nextadmin_formatted:
-            !appDir && typeof formatted === "string" ? undefined : formatted,
-          isOverridden: displayOpt.type === "link" ? true : undefined,
+            !appDir && typeof formatted === "string" ? null : formatted,
+          isOverridden: displayOpt.type === "link" ? true : null,
         };
       }
     });
@@ -652,10 +657,13 @@ export const getMappedDataList = async ({
 }: GetMappedDataListParams) => {
   const { data: fetchData, total, error } = await fetchDataList(args);
 
+  const rawData = cloneDeep(fetchData);
+
   return {
     data: mapDataList({ context, appDir, fetchData, ...args }),
     total,
     error,
+    rawData: extractSerializable(rawData),
   };
 };
 
@@ -798,11 +806,15 @@ export const getDataItem = async <M extends ModelName>({
     where: { [idProperty]: resourceId },
   });
 
+  const relationshipsRawData: Record<string, any[]> = {};
+
   Object.entries(data).forEach(([key, value]) => {
     if (Array.isArray(value)) {
       const fieldType =
         schemaResourceProperties[key as keyof typeof schemaResourceProperties]
           ?.__nextadmin?.type;
+
+      relationshipsRawData[key] = cloneDeep(value);
 
       if (fieldType) {
         if (
@@ -823,9 +835,9 @@ export const getDataItem = async <M extends ModelName>({
     }
   });
 
-  data = transformData(data, resource, edit ?? {}, options);
+  data = await transformData(data, resource, edit ?? {}, options);
 
-  return data;
+  return { data, relationshipsRawData };
 };
 
 type DeepIncludeRecord = Record<string, true | any>;
