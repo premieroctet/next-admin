@@ -1,6 +1,9 @@
 import { Decimal } from "@prisma/client/runtime/library";
-import { describe, expect, it } from "vitest";
+import cloneDeep from "lodash.clonedeep";
+import { afterEach, describe, expect, it } from "vitest";
+import { mockReset } from "vitest-mock-extended";
 import { getMappedDataList, optionsFromResource } from "../utils/prisma";
+import { extractSerializable } from "../utils/tools";
 import { options, prismaMock } from "./singleton";
 
 describe("getMappedDataList", () => {
@@ -31,6 +34,7 @@ describe("getMappedDataList", () => {
         images: [],
       },
     ];
+    const originalPostData = cloneDeep(postData);
 
     prismaMock.post.findMany.mockResolvedValue(postData);
 
@@ -49,6 +53,7 @@ describe("getMappedDataList", () => {
       data: postData,
       total: postData.length,
       error: null,
+      rawData: extractSerializable(originalPostData),
     });
   });
 

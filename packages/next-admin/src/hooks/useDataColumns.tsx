@@ -10,6 +10,8 @@ import {
   ListDataItem,
   ListFieldsOptions,
   ModelName,
+  NextAdminContext,
+  VirtualField,
 } from "../types";
 import { useRouterInternal } from "./useRouterInternal";
 
@@ -20,6 +22,7 @@ type UseDataColumnsParams = {
   sortDirection?: "asc" | "desc";
   sortColumn?: string;
   resourcesIdProperty: Record<ModelName, string>;
+  rawData?: any[];
 };
 
 const useDataColumns = ({
@@ -29,6 +32,7 @@ const useDataColumns = ({
   sortDirection,
   sortColumn,
   resourcesIdProperty,
+  rawData,
 }: UseDataColumnsParams) => {
   const { router, query } = useRouterInternal();
   const { isAppDir, options: configOptions } = useConfig();
@@ -117,25 +121,43 @@ const useDataColumns = ({
               const cellData = modelData[
                 propertyName as keyof ListFieldsOptions<ModelName>
               ] as unknown as ListDataFieldValue;
-              const dataFormatter =
-                options?.list?.fields?.[
-                  propertyName as keyof ListFieldsOptions<ModelName>
-                ]?.formatter ||
-                ((cell: any) => {
-                  if (typeof cell === "object") {
-                    return cell[resourcesIdProperty[propertyName as ModelName]];
-                  } else {
-                    return cell;
-                  }
-                });
+              const dataFormatter = isVirtualField
+                ? (
+                    options?.list?.display?.find(
+                      (disp) =>
+                        typeof disp === "object" && disp.key === propertyName
+                    ) as VirtualField<ModelName>
+                  )?.formatter
+                : options?.list?.fields?.[
+                    propertyName as keyof ListFieldsOptions<ModelName>
+                  ]?.formatter;
 
               return (
                 <Cell
                   cell={cellData}
-                  formatter={!isAppDir ? dataFormatter : undefined}
+                  formatter={
+                    !isAppDir
+                      ? dataFormatter
+                        ? (row: any, ctx?: NextAdminContext) => {
+                            if (isVirtualField) {
+                              // @ts-expect-error
+                              return dataFormatter?.({
+                                row,
+                                locale: ctx?.locale,
+                              });
+                            } else {
+                              return dataFormatter?.(row[propertyName], ctx);
+                            }
+                          }
+                        : undefined
+                      : undefined
+                  }
                   copyable={options?.list?.copy?.includes(
                     propertyName as Field<ModelName>
                   )}
+                  getRawData={() => {
+                    return rawData?.[row.index];
+                  }}
                 />
               );
             },
@@ -155,6 +177,7 @@ const useDataColumns = ({
     query,
     isAppDir,
     resourcesIdProperty,
+    rawData,
   ]);
 };
 

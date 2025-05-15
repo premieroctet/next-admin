@@ -15,5 +15,6 @@ module.exports = withNextIntl(
         ],
       ],
     },
+    transpilePackages: ["@premieroctet/next-admin"],
   })
 );

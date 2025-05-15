@@ -499,6 +499,8 @@ export type ListOptions<T extends ModelName> = {
   where?: Filter<T>[];
 };
 
+export type RelationshipsRawData = Record<string, any>;
+
 export type SubmitResourceResponse =
   | {
       error: string;
@@ -526,6 +528,7 @@ export type SubmitResourceResponse =
       created?: undefined;
       createdId?: undefined;
       validation?: undefined;
+      relationshipsRawData?: RelationshipsRawData;
     }
   | {
       error?: undefined;
@@ -535,6 +538,7 @@ export type SubmitResourceResponse =
       created: true;
       createdId: any;
       validation?: undefined;
+      relationshipsRawData?: RelationshipsRawData;
     };
 
 export type EditModelHooks = {
@@ -905,7 +909,7 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
           label: string;
           url: string;
         };
-        isOverridden?: boolean;
+        isOverridden?: boolean | null;
       }
     | {
         type: "date";
@@ -928,6 +932,8 @@ export type AdminComponentProps = {
   apiBasePath: string;
   schema: Schema;
   data?: ListData<ModelName>;
+  rawData?: any[];
+  relationshipsRawData?: RelationshipsRawData;
   resource?: ModelName | null;
   slug?: string;
   /**
@@ -1232,6 +1238,7 @@ export type FormProps = {
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;
   clientActionsComponents?: AdminComponentProps["dialogComponents"];
+  relationshipsRawData?: RelationshipsRawData;
 };
 
 export type ClientActionDialogContentProps<T extends ModelName> = Partial<{

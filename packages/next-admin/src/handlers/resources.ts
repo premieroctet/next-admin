@@ -40,7 +40,6 @@ export const deleteResource = async ({
 }: DeleteResourceParams) => {
   const modelIdProperty = getModelIdProperty(resource);
 
-
   if (modelOptions?.middlewares?.delete) {
     // @ts-expect-error
     const resources = await prisma[uncapitalize(resource)].findMany({
@@ -171,14 +170,19 @@ export const submitResource = async ({
         });
       });
 
-      const data = await getDataItem({
+      const { data, relationshipsRawData } = await getDataItem({
         prisma,
         resource,
         resourceId: id,
         options,
       });
 
-      return { updated: true, data, redirect: redirect === "list" };
+      return {
+        updated: true,
+        data,
+        redirect: redirect === "list",
+        relationshipsRawData,
+      };
     }
 
     if (!hasPermission(options?.model?.[resource], Permission.CREATE)) {
@@ -200,7 +204,7 @@ export const submitResource = async ({
       data: complementaryFormattedData,
     });
 
-    const responseData = await getDataItem({
+    const { data: responseData, relationshipsRawData } = await getDataItem({
       prisma,
       resource,
       resourceId: data[resourceIdField],
@@ -212,6 +216,7 @@ export const submitResource = async ({
       createdId: data[resourceIdField],
       data: responseData,
       redirect: redirect === "list",
+      relationshipsRawData,
     };
   } catch (error: any) {
     if (
