@@ -21,7 +21,8 @@
 - 🎨 Dashboard widgets and customizable panels
 - ⚛️ Integration with Prisma ORM
 - 👔 Customizable list and form
-- ⚙️ Supports App Router and Page Router
+- ⚙️ Support for Next.js (App Router and Pages Router), Remix, TanStack Start
+- 🚀 Support for any full stack framework
 
 ## Installation
 
