@@ -62,6 +62,7 @@ export type ListProps = {
   schema: Schema;
   clientActionsComponents?: AdminComponentProps["dialogComponents"];
   rawData: any[];
+  listFilterOptions?: Array<FilterWrapper<ModelName>>;
 };
 
 function List({
@@ -75,6 +76,7 @@ function List({
   schema,
   clientActionsComponents,
   rawData,
+  listFilterOptions,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
@@ -114,9 +116,6 @@ function List({
 
   const hasDeletePermission =
     !modelOptions?.permissions || modelOptions?.permissions?.includes("delete");
-
-  const filterOptions = modelOptions?.list
-    ?.filters as FilterWrapper<ModelName>[];
   if (
     !(modelOptions?.list?.search && modelOptions?.list?.search?.length === 0)
   ) {
@@ -282,7 +281,7 @@ function List({
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
           <div className="-mt-2 mb-2 space-y-4 sm:-mt-4 sm:mb-4">
             <Message />
-            <Filters filters={filterOptions!} />
+            <Filters filters={listFilterOptions!} />
           </div>
           <DataTable
             resource={resource}
