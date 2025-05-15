@@ -143,8 +143,8 @@
       }
     },
     "./schema": {
-      "import": "./dist/schema.json",
-      "require": "./dist/schema.json"
+      "import": "./dist/schema.mjs",
+      "require": "./dist/schema.cjs"
     }
   },
   "peerDependencies": {

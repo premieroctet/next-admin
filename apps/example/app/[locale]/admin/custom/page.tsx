@@ -5,7 +5,7 @@ import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";
 
 const CustomPage = async () => {
-  const mainLayoutProps = getMainLayoutProps({
+  const mainLayoutProps = await getMainLayoutProps({
     basePath: "/admin",
     apiBasePath: "/api/admin",
     options,

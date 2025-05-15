@@ -29,7 +29,7 @@ export const getNextAdminPropsFn = createServerFn()
 export const getNextAdminCustomPageFn = createServerFn()
   // @ts-expect-error
   .handler(async () => {
-    const mainLayoutProps = getMainLayoutProps({
+    const mainLayoutProps = await getMainLayoutProps({
       basePath: "/admin",
       apiBasePath: "/api/admin",
       options,

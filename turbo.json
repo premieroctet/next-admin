@@ -16,6 +16,9 @@
     "database#generate:client-only": {
       "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"]
     },
+    "example#build": {
+      "dependsOn": ["database#generate"]
+    },
     "build": {
       "dependsOn": ["^build"],
       "outputs": [

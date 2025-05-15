@@ -270,7 +270,9 @@ export function DataTable({
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
                       className={`group py-3 ${
-                        cell.column.id === "__nextadmin-actions" && "text-right"
+                        cell.column.id === "__nextadmin-actions"
+                          ? "text-right"
+                          : ""
                       }`}
                       key={cell.id}
                     >

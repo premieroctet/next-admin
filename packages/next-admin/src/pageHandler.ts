@@ -18,8 +18,8 @@ import {
   getJsonBody,
   getResourceFromParams,
   getResources,
-  globalSchema,
 } from "./utils/server";
+import { getSchema, initGlobals } from "./utils/globals";
 
 type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**
@@ -62,7 +62,11 @@ export const createHandler = <P extends string = "nextadmin">({
   onRequest,
 }: CreateAppHandlerParams<P>) => {
   const router = createRouter<NextApiRequest, NextApiResponse>();
-  const resources = getResources(options);
+
+  router.use(async (req, res, next) => {
+    await initGlobals();
+    return next();
+  });
 
   if (onRequest) {
     router.use(onRequest);
@@ -70,6 +74,8 @@ export const createHandler = <P extends string = "nextadmin">({
 
   router
     .get(`${apiBasePath}/:model/raw`, async (req, res) => {
+      const resources = getResources(options);
+
       const resource = getResourceFromParams(
         [req.query[paramKey]![0]],
         resources
@@ -102,6 +108,8 @@ export const createHandler = <P extends string = "nextadmin">({
       return res.json(data);
     })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, res) => {
+      const resources = getResources(options);
+
       const id = req.query[paramKey]!.at(-1)!;
 
       // Make sure we don't have a false positive with a model that could be named actions
@@ -165,6 +173,8 @@ export const createHandler = <P extends string = "nextadmin">({
       return res.json(data);
     })
     .post(`${apiBasePath}/:model/:id?`, async (req, res) => {
+      const resources = getResources(options);
+
       const resource = getResourceFromParams(
         [req.query[paramKey]![0]],
         resources
@@ -197,7 +207,7 @@ export const createHandler = <P extends string = "nextadmin">({
           body: transformedBody ?? body,
           id,
           options,
-          schema: globalSchema,
+          schema: getSchema(),
         });
 
         if (response.error) {
@@ -221,6 +231,8 @@ export const createHandler = <P extends string = "nextadmin">({
       }
     })
     .delete(`${apiBasePath}/:model/:id`, async (req, res) => {
+      const resources = getResources(options);
+
       const resource = getResourceFromParams(
         [req.query[paramKey]![0]],
         resources
@@ -254,6 +266,8 @@ export const createHandler = <P extends string = "nextadmin">({
       }
     })
     .delete(`${apiBasePath}/:model`, async (req, res) => {
+      const resources = getResources(options);
+
       const resource = getResourceFromParams(
         [req.query[paramKey]![0]],
         resources

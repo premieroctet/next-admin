@@ -628,11 +628,18 @@ const Form = ({
   );
 };
 
-const FormWrapper = ({ clientActionsComponents, ...props }: FormProps) => {
+const FormWrapper = ({
+  clientActionsComponents,
+  relationshipsRawData,
+  ...props
+}: FormProps) => {
   return (
     <ClientActionDialogProvider componentsMap={clientActionsComponents}>
       <FormHeader {...props} />
-      <FormDataProvider data={props.data}>
+      <FormDataProvider
+        data={props.data}
+        relationshipsRawData={relationshipsRawData}
+      >
         <FormStateProvider>
           <Form {...props} />
         </FormStateProvider>

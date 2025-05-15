@@ -29,10 +29,14 @@ generatorHandler({
           : parseEnvValue(options.generator.output);
 
       await fs.mkdir(outputDir, { recursive: true });
-      await fs.writeFile(
-        path.join(outputDir, "schema.json"),
-        JSON.stringify(jsonSchema, null, 2)
-      );
+
+      const cjsContent = `module.exports = ${JSON.stringify(jsonSchema, null, 2)}`;
+
+      await fs.writeFile(path.join(outputDir, "schema.cjs"), cjsContent);
+
+      const mjsContent = `export default ${JSON.stringify(jsonSchema, null, 2)}`;
+
+      await fs.writeFile(path.join(outputDir, "schema.mjs"), mjsContent);
     }
   },
 });

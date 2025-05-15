@@ -242,6 +242,7 @@ export const options: NextAdminOptions = {
           "categories",
           "rate",
           "tags",
+          "author",
         ],
         filters: [
           {

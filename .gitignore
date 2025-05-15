@@ -40,3 +40,4 @@ yarn-error.log*
 # E2E
 test-results
 playwright-report
+.vercel

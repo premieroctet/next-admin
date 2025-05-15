@@ -22,10 +22,10 @@ import {
   getResourceIdFromParam,
   getResources,
   getToStringForModel,
-  globalSchema,
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
+import { getSchema, initGlobals } from "./globals";
 
 enum Page {
   LIST = 1,
@@ -53,7 +53,13 @@ export async function getPropsFromParams({
     sidebar,
     resourcesIcons,
     externalLinks,
-  } = getMainLayoutProps({ basePath, apiBasePath, options, params, isAppDir });
+  } = await getMainLayoutProps({
+    basePath,
+    apiBasePath,
+    options,
+    params,
+    isAppDir,
+  });
 
   const clientOptions: NextAdminOptions | undefined =
     extractSerializable(options);
@@ -71,7 +77,7 @@ export async function getPropsFromParams({
     resourcesIcons,
     externalLinks,
     locale: locale ?? null,
-    schema: globalSchema,
+    schema: getSchema(),
   };
 
   if (!params) return defaultProps;
@@ -110,7 +116,7 @@ export async function getPropsFromParams({
 
   switch (params.length) {
     case Page.LIST: {
-      const { data, total, error } = await getMappedDataList({
+      const { data, total, error, rawData } = await getMappedDataList({
         prisma,
         resource,
         options,
@@ -156,6 +162,7 @@ export async function getPropsFromParams({
         error: error ?? (searchParams?.error as string) ?? null,
         actions: serializedActions,
         dialogComponents: dialogActionsComponents,
+        rawData: extractSerializable(rawData),
       };
     }
     case Page.EDIT: {
@@ -169,11 +176,11 @@ export async function getPropsFromParams({
         resource,
         edit,
         options
-      )(cloneDeep(globalSchema));
+      )(cloneDeep(getSchema()));
       const customInputs = isAppDir ? getCustomInputs(resource, options) : null;
 
       if (resourceId !== undefined) {
-        const data = await getDataItem({
+        const { data, relationshipsRawData } = await getDataItem({
           prisma,
           resource,
           resourceId,
@@ -216,6 +223,10 @@ export async function getPropsFromParams({
           customInputs,
           actions: serializedActions,
           dialogComponents: dialogActionsComponents,
+          relationshipsRawData: extractSerializable(
+            relationshipsRawData,
+            isAppDir
+          ),
         };
       }
 
@@ -234,18 +245,20 @@ export async function getPropsFromParams({
   }
 }
 
-export const getMainLayoutProps = ({
+export const getMainLayoutProps = async ({
   basePath,
   apiBasePath,
   options,
   params,
   isAppDir = true,
-}: GetMainLayoutPropsParams): MainLayoutProps => {
+}: GetMainLayoutPropsParams): Promise<MainLayoutProps> => {
   if (params !== undefined && !Array.isArray(params)) {
     throw new Error(
       "`params` parameter in `getMainLayoutProps` should be an array of strings."
     );
   }
+
+  await initGlobals();
 
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
@@ -298,6 +311,6 @@ export const getMainLayoutProps = ({
     externalLinks: options?.externalLinks,
     options: extractSerializable(options, isAppDir),
     resourcesIdProperty: resourcesIdProperty,
-    schema: globalSchema,
+    schema: getSchema(),
   };
 };
