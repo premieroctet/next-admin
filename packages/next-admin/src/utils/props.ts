@@ -3,6 +3,7 @@ import cloneDeep from "lodash.clonedeep";
 import {
   AdminComponentProps,
   EditOptions,
+  FilterWrapper,
   GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
   MainLayoutProps,
@@ -163,6 +164,9 @@ export async function getPropsFromParams({
         actions: serializedActions,
         dialogComponents: dialogActionsComponents,
         rawData: extractSerializable(rawData),
+        listFilterOptions:
+          (clientOptions?.model?.[resource]?.list
+            ?.filters as FilterWrapper<ModelName>[]) ?? null,
       };
     }
     case Page.EDIT: {

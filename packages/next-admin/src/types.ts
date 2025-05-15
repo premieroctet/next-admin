@@ -934,6 +934,7 @@ export type AdminComponentProps = {
   data?: ListData<ModelName>;
   rawData?: any[];
   relationshipsRawData?: RelationshipsRawData;
+  listFilterOptions?: Array<FilterWrapper<ModelName>>;
   resource?: ModelName | null;
   slug?: string;
   /**
