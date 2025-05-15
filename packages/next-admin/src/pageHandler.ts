@@ -63,11 +63,13 @@ export const createHandler = <P extends string = "nextadmin">({
 }: CreateAppHandlerParams<P>) => {
   const router = createRouter<NextApiRequest, NextApiResponse>();
 
+  router.use(async (req, res, next) => {
+    await initGlobals();
+    return next();
+  });
+
   if (onRequest) {
-    router.use(async (req, res, next) => {
-      await initGlobals();
-      return onRequest(req, res, next);
-    });
+    router.use(onRequest);
   }
 
   router
