@@ -20,8 +20,8 @@ import {
   getModelIdProperty,
   getResourceFromParams,
   getResources,
-  globalSchema,
 } from "./utils/server";
+import { getSchema, initGlobals } from "./utils/globals";
 
 export const createHandler = <P extends string = "nextadmin">({
   apiBasePath,
@@ -31,10 +31,10 @@ export const createHandler = <P extends string = "nextadmin">({
   onRequest,
 }: CreateAppHandlerParams<P>) => {
   const router = createEdgeRouter<Request, RequestContext<P>>();
-  const resources = getResources(options);
 
   if (onRequest) {
     router.use(async (req, ctxPromise, next) => {
+      await initGlobals();
       const ctx = await ctxPromise;
       const response = await onRequest(req, ctx);
 
@@ -48,6 +48,7 @@ export const createHandler = <P extends string = "nextadmin">({
 
   router
     .get(`${apiBasePath}/:model/raw`, async (req, ctx) => {
+      const resources = getResources(options);
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
 
@@ -84,6 +85,7 @@ export const createHandler = <P extends string = "nextadmin">({
       return Response.json(data);
     })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, ctx) => {
+      const resources = getResources(options);
       const params = await ctx.params;
       const id = params[paramKey].at(-1)!;
 
@@ -137,6 +139,7 @@ export const createHandler = <P extends string = "nextadmin">({
       return Response.json(data);
     })
     .post(`${apiBasePath}/:model/order`, async (req, ctx) => {
+      const resources = getResources(options);
       const body = await req.json();
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
@@ -175,6 +178,7 @@ export const createHandler = <P extends string = "nextadmin">({
       return Response.json({ ok: true });
     })
     .post(`${apiBasePath}/:model/:id?`, async (req, ctx) => {
+      const resources = getResources(options);
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
 
@@ -210,7 +214,7 @@ export const createHandler = <P extends string = "nextadmin">({
           body: transformedBody ?? body,
           id,
           options,
-          schema: globalSchema,
+          schema: getSchema(),
         });
 
         if (response.error) {
@@ -236,6 +240,7 @@ export const createHandler = <P extends string = "nextadmin">({
       }
     })
     .delete(`${apiBasePath}/:model/:id`, async (req, ctx) => {
+      const resources = getResources(options);
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
 
@@ -268,6 +273,7 @@ export const createHandler = <P extends string = "nextadmin">({
       }
     })
     .delete(`${apiBasePath}/:model`, async (req, ctx) => {
+      const resources = getResources(options);
       const params = await ctx.params;
       const resource = getResourceFromParams(params[paramKey], resources);
 

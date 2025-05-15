@@ -17,7 +17,7 @@
       "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"]
     },
     "build": {
-      "dependsOn": ["^build"],
+      "dependsOn": ["database#generate", "^build"],
       "outputs": [
         "dist/**",
         ".next/**",

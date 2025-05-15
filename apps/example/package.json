@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build && cd ../../packages/database && pnpm database",
+    "build": "cd ../../packages/database && pnpm generate && cd - && next build",
     "start": "next start",
     "lint": "next lint",
     "test:e2e": "playwright test",

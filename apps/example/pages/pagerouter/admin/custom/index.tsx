@@ -72,7 +72,7 @@ export default CustomPage;
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   req,
 }) => {
-  const mainLayoutProps = getMainLayoutProps({
+  const mainLayoutProps = await getMainLayoutProps({
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
     options: pageOptions,

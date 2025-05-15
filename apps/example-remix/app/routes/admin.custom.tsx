@@ -7,7 +7,7 @@ import { CustomPage } from "examples-common/components";
 import { options } from "../options";
 
 export const loader = async () => {
-  const mainLayoutProps = getMainLayoutProps({
+  const mainLayoutProps = await getMainLayoutProps({
     apiBasePath: "/api/admin",
     basePath: "/admin",
     options,
