@@ -1,5 +1,48 @@
 # @premieroctet/next-admin
 
+## 8.0.0
+
+### Major Changes
+
+- [373f93c](https://github.com/premieroctet/next-admin/commit/373f93cf51d1677786adbe77712aeaa1ba4e3981): fix: page router display for functional filters
+- [4f80165](https://github.com/premieroctet/next-admin/commit/4f80165c8ba32552651fa9ab376fa36a3c71622c): fix: page router formatters
+- [8ec28c0](https://github.com/premieroctet/next-admin/commit/8ec28c03adb92f9e51547f51e1c714714a11154c): feat: support all frameworks, with provided adapters for Next.js, Remix and TanStack Start
+
+  This introduces a few breaking changes :
+
+  - The `NextAdmin` component now requires to be imported from the correct adapter
+
+  ```tsx
+  import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
+
+  // in the page render
+  <NextAdmin {...adminProps} />;
+  ```
+
+  - For Next.js Page Router, the `req` property of the `getNextAdminProps` function has been removed in favor of `url`, since we only need the URL from the request. Example :
+
+  ```ts
+  await getNextAdminProps({
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
+    prisma,
+    options,
+    url: req.url!,
+  });
+  ```
+
+  - Page loading indicator has now been removed and can be provided directly as a prop. A loader is exposed by the library to be used in Next.js projects.
+
+  ```tsx
+  import PageLoader from "@premieroctet/next-admin/pageLoader";
+
+  <NextAdmin {...adminProps} pageLoader={<PageLoader />} />;
+  ```
+
+- [4f80165](https://github.com/premieroctet/next-admin/commit/4f80165c8ba32552651fa9ab376fa36a3c71622c): feat: change the way to initialize globals
+
+  This is a **Breaking Change**. This changes the `getMainLayoutProps` function to be asynchronous. This will mainly affect custom pages.
+
 ## 7.6.3
 
 ### Patch Changes

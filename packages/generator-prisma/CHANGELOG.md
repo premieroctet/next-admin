@@ -1,5 +1,11 @@
 # @premieroctet/next-admin-generator-prisma
 
+## 1.0.0
+
+### Major Changes
+
+- [8ec28c0](https://github.com/premieroctet/next-admin/commit/8ec28c03adb92f9e51547f51e1c714714a11154c): feat: update schema.json output
+
 ## 0.0.7
 
 ### Patch Changes
