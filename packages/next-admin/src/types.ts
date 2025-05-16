@@ -168,7 +168,7 @@ export type ListFieldsOptions<T extends ModelName> = {
      */
     formatter?: (
       item: P extends keyof ObjectField<T>
-        ? ObjectField<T>[P] extends []
+        ? ObjectField<T>[P] extends Array<any>
           ? number
           : ModelFromProperty<T, P>
         : Model<T>[P],
