@@ -537,6 +537,7 @@ const fetchDataList = async (
           in: resourceIds.map((item: any) => item[idProperty]),
         },
       },
+      orderBy,
     });
     // @ts-expect-error
     total = await prisma[uncapitalize(resource)].count({
