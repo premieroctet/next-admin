@@ -459,7 +459,7 @@ export const optionsFromResource = async ({
   const { data: dataItems, total, error } = data;
   const { resource } = args;
   const idProperty = getModelIdProperty(resource);
-  const dataTableItems = mapDataList({
+  const dataTableItems = await mapDataList({
     ...args,
     fetchData: cloneDeep(dataItems),
   });
@@ -514,12 +514,33 @@ const fetchDataList = async (
   let total: number;
   let error: string | null = null;
 
+  const { where, orderBy, skip, take, select } = prismaListRequest;
+  const idProperty = getModelIdProperty(resource);
+
   try {
     // @ts-expect-error
-    data = await prisma[uncapitalize(resource)].findMany(prismaListRequest);
+    const resourceIds = await prisma[uncapitalize(resource)].findMany({
+      select: {
+        [idProperty]: true,
+      },
+      where,
+      orderBy,
+      skip,
+      take,
+    });
+
+    // @ts-expect-error
+    data = await prisma[uncapitalize(resource)].findMany({
+      select,
+      where: {
+        [idProperty]: {
+          in: resourceIds.map((item: any) => item[idProperty]),
+        },
+      },
+    });
     // @ts-expect-error
     total = await prisma[uncapitalize(resource)].count({
-      where: prismaListRequest.where,
+      where,
     });
   } catch (e: any) {
     const { skip, take, orderBy } = prismaListRequest;
@@ -541,7 +562,7 @@ const fetchDataList = async (
   };
 };
 
-export const mapDataList = ({
+export const mapDataList = async ({
   context,
   appDir,
   fetchData,
@@ -561,6 +582,16 @@ export const mapDataList = ({
   const originalData = cloneDeep(data);
   data.forEach((item, index) => {
     context.row = originalData[index];
+    if ("_count" in item && typeof item._count === "object") {
+      Object.keys(item._count).forEach((key) => {
+        item[key] = {
+          type: "count",
+          value: item._count[key],
+          __nextadmin_formatted: item._count[key].toString(),
+        };
+      });
+    }
+    delete item._count;
     Object.keys(item).forEach((key) => {
       let itemValue = null;
       const model = capitalize(key) as ModelName;
@@ -653,7 +684,7 @@ export const getMappedDataList = async ({
   const { data: fetchData, total, error } = await fetchDataList(args);
 
   return {
-    data: mapDataList({ context, appDir, fetchData, ...args }),
+    data: await mapDataList({ context, appDir, fetchData, ...args }),
     total,
     error,
   };
@@ -706,24 +737,34 @@ export const selectPayloadForModel = <M extends ModelName>(
         !displayKeys
       ) {
         if (fieldNextAdmin?.kind === "object" && level === "object") {
-          acc[name] = {
-            select: selectPayloadForModel(
-              fieldNextAdmin.type as ModelName,
-              {},
-              "scalar"
-            ),
-          };
-
-          const orderField =
-            (options as EditOptions<M>)?.fields?.[
-              name as Field<M>
-              // @ts-expect-error
-            ]?.orderField || (options as ListOptions<M>)?.orderField;
-
-          if (orderField) {
-            acc[name].orderBy = {
-              [orderField]: "asc",
+          if (fieldNextAdmin?.isList) {
+            const countFields = acc["_count"]?.select ?? {};
+            acc["_count"] = {
+              select: {
+                ...countFields,
+                [name]: true,
+              },
             };
+          } else {
+            acc[name] = {
+              select: selectPayloadForModel(
+                fieldNextAdmin.type as ModelName,
+                {},
+                "scalar"
+              ),
+            };
+
+            const orderField =
+              (options as EditOptions<M>)?.fields?.[
+                name as Field<M>
+                // @ts-expect-error
+              ]?.orderField || (options as ListOptions<M>)?.orderField;
+
+            if (orderField) {
+              acc[name].orderBy = {
+                [orderField]: "asc",
+              };
+            }
           }
         } else {
           acc[name] = true;

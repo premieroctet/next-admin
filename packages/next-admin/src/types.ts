@@ -168,7 +168,9 @@ export type ListFieldsOptions<T extends ModelName> = {
      */
     formatter?: (
       item: P extends keyof ObjectField<T>
-        ? ModelFromProperty<T, P>
+        ? ObjectField<T>[P] extends []
+          ? number
+          : ModelFromProperty<T, P>
         : Model<T>[P],
       context?: NextAdminContext
     ) => ReactNode;
