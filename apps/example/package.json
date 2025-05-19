@@ -21,7 +21,7 @@
     "@prisma/client": "5.14.0",
     "@tremor/react": "^3.2.2",
     "examples-common": "workspace:*",
-    "next": "^15.1.0",
+    "next": "catalog:next",
     "next-intl": "^3.3.2",
     "next-superjson": "^1.0.7",
     "next-superjson-plugin": "^0.6.3",

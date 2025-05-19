@@ -20,5 +20,8 @@ catalogs:
     "@remix-run/react": ^2.16.5
     "@remix-run/serve": ^2.16.5
 
+  next:
+    next: ^15.1.0
+
 catalog:
   react-datepicker: ^8.3.0
