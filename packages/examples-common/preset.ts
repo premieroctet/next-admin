@@ -1,4 +1,5 @@
-const defaultColors = require("tailwindcss/colors");
+import defaultColors from "tailwindcss/colors";
+import nextAdminPreset from "@premieroctet/next-admin/preset";
 
 /** @type {import('tailwindcss').Config} */
 /* eslint-disable max-len */
@@ -141,6 +142,5 @@ module.exports = {
         /^(fill-(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(?:50|100|200|300|400|500|600|700|800|900|950))$/,
     },
   ],
-  plugins: [require("@headlessui/tailwindcss")],
-  presets: [require("@premieroctet/next-admin/preset")],
+  presets: [nextAdminPreset],
 };
