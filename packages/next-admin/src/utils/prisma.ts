@@ -459,7 +459,7 @@ export const optionsFromResource = async ({
   const { data: dataItems, total, error } = data;
   const { resource } = args;
   const idProperty = getModelIdProperty(resource);
-  const dataTableItems = await mapDataList({
+  const dataTableItems = mapDataList({
     ...args,
     fetchData: cloneDeep(dataItems),
   });
@@ -563,7 +563,7 @@ const fetchDataList = async (
   };
 };
 
-export const mapDataList = async ({
+export const mapDataList = ({
   context,
   appDir,
   fetchData,
@@ -685,7 +685,7 @@ export const getMappedDataList = async ({
   const { data: fetchData, total, error } = await fetchDataList(args);
 
   return {
-    data: await mapDataList({ context, appDir, fetchData, ...args }),
+    data: mapDataList({ context, appDir, fetchData, ...args }),
     total,
     error,
   };
