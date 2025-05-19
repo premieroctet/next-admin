@@ -5,23 +5,25 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import RjsfForm from "@rjsf/core";
+import type { FormProps as RjsfFormProps } from "@rjsf/core";
 import {
   BaseInputTemplateProps,
   ErrorSchema,
+  FieldErrorProps,
   FieldProps,
   FieldTemplateProps,
-  getSubmitButtonOptions,
   ObjectFieldTemplateProps,
   SubmitButtonProps,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import dynamic from "next/dynamic";
 import React, {
   ChangeEvent,
   cloneElement,
   forwardRef,
   HTMLProps,
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -67,13 +69,11 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
+import { getSubmitButtonOptions } from "../utils/rjsf";
 
-const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
-  ssr: false,
-  loading: () => <div className="h-48 animate-pulse rounded bg-gray-500" />,
-});
+const RichTextField = lazy(() => import("./inputs/RichText/RichTextField"));
 
-const widgets: RjsfForm["props"]["widgets"] = {
+const widgets: RjsfFormProps["widgets"] = {
   DateWidget: DateWidget,
   DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
@@ -254,6 +254,7 @@ const Form = ({
           const pathname = result?.redirect
             ? `${basePath}/${slugify(resource)}`
             : `${basePath}/${slugify(resource)}/${result.createdId}`;
+
           return router.push({
             pathname,
             query: {
@@ -269,6 +270,7 @@ const Form = ({
             ? `${basePath}/${slugify(resource)}`
             : location.pathname;
           if (pathname === location.pathname) {
+            router.refresh();
             showMessage({
               type: "success",
               message: t("form.update.succeed"),
@@ -298,21 +300,24 @@ const Form = ({
     [apiBasePath, id]
   );
 
-  const fields: RjsfForm["props"]["fields"] = {
-    ArrayField: (props: FieldProps) => {
-      const customInput = customInputs?.[props.name as Field<ModelName>];
-      const improvedCustomInput = customInput
-        ? cloneElement(customInput, {
-            ...customInput.props,
-            mode: edit ? "edit" : "create",
-          })
-        : undefined;
-      return ArrayField({ ...props, customInput: improvedCustomInput });
-    },
-    NullField,
-  };
+  const fields: RjsfFormProps["fields"] = useMemo(
+    () => ({
+      ArrayField: (props: FieldProps) => {
+        const customInput = customInputs?.[props.name as Field<ModelName>];
+        const improvedCustomInput = customInput
+          ? cloneElement(customInput, {
+              ...customInput.props,
+              mode: edit ? "edit" : "create",
+            })
+          : undefined;
+        return <ArrayField {...props} customInput={improvedCustomInput} />;
+      },
+      NullField,
+    }),
+    [customInputs, edit]
+  );
 
-  const templates: RjsfForm["props"]["templates"] = {
+  const templates: RjsfFormProps["templates"] = {
     FieldTemplate: (props: FieldTemplateProps) => {
       const {
         id,
@@ -441,16 +446,22 @@ const Form = ({
       }
       if (schema?.format?.startsWith("richtext-")) {
         return (
-          <RichTextField
-            onChange={onChangeOverride || onTextChange}
-            readonly={readonly}
-            rawErrors={rawErrors}
-            name={props.name}
-            value={props.value}
-            schema={schema}
-            disabled={props.disabled}
-            required={props.required}
-          />
+          <Suspense
+            fallback={
+              <div className="h-48 animate-pulse rounded bg-gray-500" />
+            }
+          >
+            <RichTextField
+              onChange={onChangeOverride || onTextChange}
+              readonly={readonly}
+              rawErrors={rawErrors}
+              name={props.name}
+              value={props.value}
+              schema={schema}
+              disabled={props.disabled}
+              required={props.required}
+            />
+          </Suspense>
         );
       }
 
@@ -488,13 +499,18 @@ const Form = ({
     FieldErrorTemplate: ({ errors }) => {
       return errors ? (
         <div className="mt-1 text-sm text-red-600 dark:text-red-400">
-          {errors.map((error, idx) => {
-            if (typeof error === "string") {
-              return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
-            }
+          {errors.map(
+            (
+              error: NonNullable<FieldErrorProps["errors"]>[number],
+              idx: number
+            ) => {
+              if (typeof error === "string") {
+                return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
+              }
 
-            return <React.Fragment key={idx}>{error}</React.Fragment>;
-          })}
+              return <React.Fragment key={idx}>{error}</React.Fragment>;
+            }
+          )}
         </div>
       ) : null;
     },
@@ -612,11 +628,18 @@ const Form = ({
   );
 };
 
-const FormWrapper = ({ clientActionsComponents, ...props }: FormProps) => {
+const FormWrapper = ({
+  clientActionsComponents,
+  relationshipsRawData,
+  ...props
+}: FormProps) => {
   return (
     <ClientActionDialogProvider componentsMap={clientActionsComponents}>
       <FormHeader {...props} />
-      <FormDataProvider data={props.data}>
+      <FormDataProvider
+        data={props.data}
+        relationshipsRawData={relationshipsRawData}
+      >
         <FormStateProvider>
           <Form {...props} />
         </FormStateProvider>

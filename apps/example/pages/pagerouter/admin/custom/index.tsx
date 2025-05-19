@@ -1,4 +1,5 @@
-import { MainLayout, MainLayoutProps } from "@premieroctet/next-admin";
+import { MainLayoutProps } from "@premieroctet/next-admin";
+import { MainLayout } from "@premieroctet/next-admin/adapters/next";
 import { getMainLayoutProps } from "@premieroctet/next-admin/pageRouter";
 import { GetServerSideProps } from "next";
 import { options } from "../../../../options";
@@ -71,7 +72,7 @@ export default CustomPage;
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   req,
 }) => {
-  const mainLayoutProps = getMainLayoutProps({
+  const mainLayoutProps = await getMainLayoutProps({
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
     options: pageOptions,

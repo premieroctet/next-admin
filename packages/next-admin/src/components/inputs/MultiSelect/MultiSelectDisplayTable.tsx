@@ -12,6 +12,7 @@ type Props = {
   onRemoveClick: (value: any) => void;
   deletable: boolean;
   pagination?: RelationshipPagination;
+  rawData?: any[];
 };
 
 const MultiSelectDisplayTable = ({
@@ -20,6 +21,7 @@ const MultiSelectDisplayTable = ({
   deletable,
   onRemoveClick,
   pagination,
+  rawData,
 }: Props) => {
   const { resourcesIdProperty } = useConfig();
   const { dataToRender, handlePageChange, totalPages, pageIndex } =
@@ -34,6 +36,7 @@ const MultiSelectDisplayTable = ({
     resourcesIdProperty: resourcesIdProperty!,
     // @ts-expect-error
     resource: schema.items?.relation,
+    rawData,
   });
 
   return (

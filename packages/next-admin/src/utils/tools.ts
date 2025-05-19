@@ -37,6 +37,8 @@ export const extractSerializable = <T>(obj: T, isAppDir?: boolean): T => {
     return obj.map((item) =>
       extractSerializable(item, isAppDir)
     ) as unknown as T;
+  } else if (obj instanceof Date) {
+    return obj.toISOString() as unknown as T;
   } else if (obj === null) {
     return obj;
   } else if (typeof obj === "object") {
@@ -137,7 +139,7 @@ export const reorderData = <T extends ListDataItem<ModelName>>(
       result[i][orderField].value = current + 1;
     }
   }
-  
+
   return sortBy(result, function (item) {
     return item[orderField].value;
   });

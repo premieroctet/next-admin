@@ -1,8 +1,7 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
 import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 import { Prisma, PrismaClient } from "@prisma/client";
-import { NextApiRequest } from "next";
-import { NextRequest, NextResponse } from "next/server";
+import type { NextApiRequest } from "next";
 import type React from "react";
 import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
@@ -500,6 +499,8 @@ export type ListOptions<T extends ModelName> = {
   where?: Filter<T>[];
 };
 
+export type RelationshipsRawData = Record<string, any>;
+
 export type SubmitResourceResponse =
   | {
       error: string;
@@ -527,6 +528,7 @@ export type SubmitResourceResponse =
       created?: undefined;
       createdId?: undefined;
       validation?: undefined;
+      relationshipsRawData?: RelationshipsRawData;
     }
   | {
       error?: undefined;
@@ -536,6 +538,7 @@ export type SubmitResourceResponse =
       created: true;
       createdId: any;
       validation?: undefined;
+      relationshipsRawData?: RelationshipsRawData;
     };
 
 export type EditModelHooks = {
@@ -551,7 +554,7 @@ export type EditModelHooks = {
   beforeDb?: (
     data: Record<string, string | (UploadedFile | string)[] | null>,
     mode: "create" | "edit",
-    request: NextRequest | NextApiRequest
+    request: Request | NextApiRequest
   ) => Promise<Record<string, string | (UploadedFile | string)[] | null>>;
   /**
    * a function that is called after the form submission. It takes the response of the db insertion as a parameter.
@@ -560,7 +563,7 @@ export type EditModelHooks = {
   afterDb?: (
     data: SubmitResourceResponse,
     mode: "create" | "edit",
-    request: NextRequest | NextApiRequest
+    request: Request | NextApiRequest
   ) => Promise<SubmitResourceResponse>;
 };
 
@@ -906,7 +909,7 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
           label: string;
           url: string;
         };
-        isOverridden?: boolean;
+        isOverridden?: boolean | null;
       }
     | {
         type: "date";
@@ -929,6 +932,9 @@ export type AdminComponentProps = {
   apiBasePath: string;
   schema: Schema;
   data?: ListData<ModelName>;
+  rawData?: any[];
+  relationshipsRawData?: RelationshipsRawData;
+  listFilterOptions?: Array<FilterWrapper<ModelName>>;
   resource?: ModelName | null;
   slug?: string;
   /**
@@ -977,6 +983,23 @@ export type AdminComponentProps = {
   > | null;
 };
 
+export type AppRouterComponentProps = AdminComponentProps;
+
+export type PageRouterComponentProps =
+  | AppRouterComponentProps
+  | Omit<AdminComponentProps, "resource" | "action">
+  | Pick<
+      AdminComponentProps,
+      | "pageComponent"
+      | "basePath"
+      | "apiBasePath"
+      | "isAppDir"
+      | "message"
+      | "resources"
+      | "error"
+      | "schema"
+    >;
+
 export type MainLayoutProps = Pick<
   AdminComponentProps,
   | "resource"
@@ -1000,6 +1023,7 @@ export type MainLayoutProps = Pick<
 
 export type CustomUIProps = {
   dashboard?: React.JSX.Element | (() => React.JSX.Element);
+  pageLoader?: React.JSX.Element;
 };
 
 export type ActionFullParams = ActionParams & {
@@ -1160,7 +1184,9 @@ export type GetMainLayoutPropsParams = Omit<
 >;
 
 export type RequestContext<P extends string> = {
-  params: Promise<Record<P, string[]>>;
+  params: Promise<{
+    [key in P]: string[];
+  }>;
 };
 
 export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
@@ -1180,11 +1206,11 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    * A function that acts as a middleware. Useful to add authentication logic for example.
    */
   onRequest?: (
-    req: NextRequest,
+    req: Request,
     ctx: RequestContext<P>
   ) =>
-    | ReturnType<NextResponse["json"]>
-    | ReturnType<NextResponse["text"]>
+    | ReturnType<Response["json"]>
+    | ReturnType<Response["text"]>
     | Promise<void>;
   /**
    * A string indicating the name of the dynamic segment.
@@ -1213,6 +1239,7 @@ export type FormProps = {
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;
   clientActionsComponents?: AdminComponentProps["dialogComponents"];
+  relationshipsRawData?: RelationshipsRawData;
 };
 
 export type ClientActionDialogContentProps<T extends ModelName> = Partial<{

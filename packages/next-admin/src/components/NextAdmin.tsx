@@ -1,15 +1,11 @@
 import merge from "lodash.merge";
-import dynamic from "next/dynamic";
-import { AdminComponentProps, CustomUIProps } from "../types";
+import type { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
 import { getClientActionsComponents, getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
-import PageLoader from "./PageLoader";
-
-const Head = dynamic(() => import("next/head"));
 
 // Components
 export function NextAdmin({
@@ -38,6 +34,10 @@ export function NextAdmin({
   resourcesIcons,
   user,
   externalLinks,
+  pageLoader,
+  rawData,
+  relationshipsRawData,
+  listFilterOptions,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -75,6 +75,8 @@ export function NextAdmin({
           icon={resourceIcon}
           schema={schema!}
           clientActionsComponents={dialogComponents}
+          rawData={rawData!}
+          listFilterOptions={listFilterOptions}
         />
       );
     }
@@ -97,6 +99,7 @@ export function NextAdmin({
           icon={resourceIcon}
           resourcesIdProperty={resourcesIdProperty!}
           clientActionsComponents={dialogComponents}
+          relationshipsRawData={relationshipsRawData}
         />
       );
     }
@@ -111,13 +114,7 @@ export function NextAdmin({
 
   return (
     <>
-      <PageLoader />
-      {!isAppDir && (
-        <Head>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-      )}
+      {pageLoader}
       <MainLayout
         resource={resource}
         resources={resources}

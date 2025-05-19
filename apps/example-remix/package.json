@@ -1,0 +1,48 @@
+{
+  "name": "example-remix",
+  "private": true,
+  "sideEffects": false,
+  "type": "module",
+  "scripts": {
+    "build": "remix vite:build",
+    "dev": "remix vite:dev --port 3003",
+    "start": "PORT=3003 remix-serve ./build/server/index.js",
+    "clean": "rm -rf ./build"
+  },
+  "dependencies": {
+    "@premieroctet/next-admin": "workspace:*",
+    "@prisma/client": "5.14.0",
+    "@remix-run/node": "catalog:remix",
+    "@remix-run/react": "catalog:remix",
+    "@remix-run/serve": "catalog:remix",
+    "@tremor/react": "^3.2.2",
+    "database": "workspace:*",
+    "examples-common": "workspace:*",
+    "isbot": "^4.1.0",
+    "react": "catalog:react19",
+    "react-datepicker": "catalog:",
+    "react-dom": "catalog:react19"
+  },
+  "devDependencies": {
+    "@remix-run/dev": "catalog:remix",
+    "@types/react": "catalog:react19",
+    "@types/react-dom": "catalog:react19",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "@typescript-eslint/parser": "^6.7.4",
+    "autoprefixer": "^10.4.19",
+    "eslint": "^8.38.0",
+    "eslint-import-resolver-typescript": "^3.6.1",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-jsx-a11y": "^6.7.1",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.1.6",
+    "vite": "^6.0.0",
+    "vite-tsconfig-paths": "^4.2.1"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,5 +1,4 @@
 import { Divider, Text, Title } from "@tremor/react";
-import Image from "next/image";
 
 const Dashboard = () => {
   return (
@@ -26,7 +25,7 @@ const Dashboard = () => {
       <Divider />
       <div className="flex items-center justify-start pt-10">
         <div className="mr-10 flex w-1/2 flex-col gap-2">
-          <Image
+          <img
             src="/assets/model.png"
             width={700}
             height={700}
@@ -63,7 +62,7 @@ const Dashboard = () => {
           </Text>
         </div>
         <div className="mr-10 flex w-1/2 flex-col gap-2">
-          <Image
+          <img
             src="/assets/code.png"
             width={500}
             height={500}

@@ -1,7 +1,6 @@
 "use client";
 import { CustomInputProps } from "@premieroctet/next-admin";
 import DateTimePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
 
 type Props = CustomInputProps;
 

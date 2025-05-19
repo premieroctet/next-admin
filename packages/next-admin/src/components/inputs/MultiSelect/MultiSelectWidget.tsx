@@ -17,6 +17,7 @@ import { Selector } from "../Selector";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectDisplayTable from "./MultiSelectDisplayTable";
 import MultiSelectItem from "./MultiSelectItem";
+import { useFormData } from "../../../utils";
 
 type Props = {
   options?: Enumeration[];
@@ -37,6 +38,7 @@ const MultiSelectWidget = (props: Props) => {
   const { setFieldDirty } = useFormState();
   const fieldOptions =
     globalOptions?.model?.[resource!]?.edit?.fields?.[name as Field<ModelName>];
+  const { relationshipsRawData } = useFormData();
 
   const onRemoveClick = (value: any) => {
     setFieldDirty(name);
@@ -149,6 +151,7 @@ const MultiSelectWidget = (props: Props) => {
             onRemoveClick={onRemoveClick}
             deletable={!props.disabled}
             pagination={fieldPagination}
+            rawData={relationshipsRawData?.[name]}
           />
 
           <Button

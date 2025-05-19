@@ -10,15 +10,7 @@ import { insertDmmfData } from "./dmmf";
 generatorHandler({
   onManifest: () => {
     return {
-      defaultOutput: path.resolve(
-        path.join(
-          require.resolve("@premieroctet/next-admin"),
-          "..",
-          "..",
-          "node_modules",
-          ".next-admin"
-        )
-      ),
+      defaultOutput: path.dirname(require.resolve("@premieroctet/next-admin")),
       prettyName: "Next Admin JSON Schema Generator",
     };
   },
@@ -37,10 +29,14 @@ generatorHandler({
           : parseEnvValue(options.generator.output);
 
       await fs.mkdir(outputDir, { recursive: true });
-      await fs.writeFile(
-        path.join(outputDir, "schema.json"),
-        JSON.stringify(jsonSchema, null, 2)
-      );
+
+      const cjsContent = `module.exports = ${JSON.stringify(jsonSchema, null, 2)}`;
+
+      await fs.writeFile(path.join(outputDir, "schema.cjs"), cjsContent);
+
+      const mjsContent = `export default ${JSON.stringify(jsonSchema, null, 2)}`;
+
+      await fs.writeFile(path.join(outputDir, "schema.mjs"), mjsContent);
     }
   },
 });

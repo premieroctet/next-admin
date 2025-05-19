@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { NextApiRequest } from "next";
+import type { NextApiRequest } from "next";
 import { Writable } from "node:stream";
 import {
   AdminFormData,
@@ -22,6 +22,7 @@ import {
   SchemaProperty,
   UploadedFile,
 } from "../types";
+import { getSchema, getResources as getResourcesInit } from "./globals";
 import { getRawData } from "./prisma";
 import {
   isFileUploadFormat,
@@ -32,24 +33,8 @@ import {
 } from "./tools";
 
 export const getJsonSchema = (): Schema => {
-  try {
-    const schema = require(".next-admin/schema.json");
-
-    return schema as Schema;
-  } catch {
-    throw new Error(
-      "Schema not found, make sure you added the generator to your schema.prisma file"
-    );
-  }
+  return getSchema();
 };
-
-export const globalSchema = getJsonSchema();
-export const resources = Object.keys(globalSchema.definitions).filter(
-  (modelName) => {
-    // Enums are not resources
-    return !globalSchema.definitions[modelName as ModelName].enum;
-  }
-) as ModelName[];
 
 export const enumValueForEnumType = (
   definition: Schema["definitions"][ModelName],
@@ -114,7 +99,7 @@ export const getEnableToExecuteActions = async <M extends ModelName>(
 };
 
 export const getModelIdProperty = (model: ModelName) => {
-  const schemaModel = globalSchema.definitions[model];
+  const schemaModel = getSchema().definitions[model];
 
   if (!schemaModel || !schemaModel.properties) {
     return "id";
@@ -135,7 +120,7 @@ const getDeepRelationModel = <M extends ModelName>(
   model: M,
   property: Field<M>
 ) => {
-  const schemaModel = globalSchema.definitions[
+  const schemaModel = getSchema().definitions[
     model
   ] as SchemaDefinitions[ModelName];
   const schemaModelProperty = schemaModel.properties;
@@ -146,7 +131,7 @@ const getDeepRelationModel = <M extends ModelName>(
 };
 
 export const modelHasIdField = (model: ModelName) => {
-  const schemaModel = globalSchema.definitions[model];
+  const schemaModel = getSchema().definitions[model];
   const schemaModelProperty = schemaModel.properties;
 
   return Object.entries(schemaModelProperty).some(
@@ -160,7 +145,7 @@ export const getResources = (
   const definedModels = options?.model
     ? (Object.keys(options.model) as Prisma.ModelName[])
     : [];
-  return definedModels.length > 0 ? definedModels : resources;
+  return definedModels.length > 0 ? definedModels : getResourcesInit();
 };
 
 export const getToStringForRelations = <M extends ModelName>(
@@ -351,7 +336,7 @@ export const transformData = <M extends ModelName>(
   options?: NextAdminOptions
 ) => {
   const modelName = resource;
-  const model = globalSchema.definitions[
+  const model = getSchema().definitions[
     modelName
   ] as SchemaDefinitions[ModelName];
   if (!model) return data;
@@ -502,9 +487,7 @@ export const findRelationInData = (
               type: "link",
               value: {
                 label: item[property],
-                url: `${propertyType as ModelName}/${
-                  item[property][idProperty]
-                }`,
+                url: `${uncapitalize(propertyType as ModelName)}/${item[property][idProperty]}`,
               },
             };
           }
@@ -613,7 +596,7 @@ export const parseFormData = <M extends ModelName>(
 };
 
 export const formatId = (resource: ModelName, id: string) => {
-  const model = globalSchema.definitions[
+  const model = getSchema().definitions[
     resource
   ] as SchemaDefinitions[ModelName];
   const modelProperties = model.properties;
@@ -629,7 +612,7 @@ export const formatId = (resource: ModelName, id: string) => {
 const getExplicitManyToManyTableFields = <M extends ModelName>(
   manyToManyResource: M
 ) => {
-  const model = globalSchema.definitions[
+  const model = getSchema().definitions[
     manyToManyResource
   ] as SchemaDefinitions[ModelName];
   const modelProperties = model.properties;
@@ -644,7 +627,7 @@ const getExplicitManyToManyTableFields = <M extends ModelName>(
 const getExplicitManyToManyTablePrimaryKey = <M extends ModelName>(
   resource: M
 ) => {
-  const model = globalSchema.definitions[
+  const model = getSchema().definitions[
     resource
   ] as SchemaDefinitions[ModelName];
 
@@ -1091,7 +1074,9 @@ export const formattedFormData = async <M extends ModelName>(
                 });
               }
               const uploaded = await handleUploadProperty({
-                files: (formData[propertyName] as unknown as UploadedFile[]).filter(isUploadFile),
+                files: (
+                  formData[propertyName] as unknown as UploadedFile[]
+                ).filter(isUploadFile),
                 resourceId,
                 editOptions,
                 property: propertyName,

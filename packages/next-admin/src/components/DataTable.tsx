@@ -1,10 +1,5 @@
-import {
-  DndContext,
-  DragEndEvent
-} from '@dnd-kit/core';
-import {
-  SortableContext
-} from '@dnd-kit/sortable';
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { SortableContext } from "@dnd-kit/sortable";
 import { Bars2Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import {
   ColumnDef,
@@ -28,7 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "./radix/Table";
-import SortableTableRow from './SortableTableRow';
+import SortableTableRow from "./SortableTableRow";
 
 interface DataTableDefaultProps {
   columns: ColumnDef<ListDataItem<ModelName>>[];
@@ -45,10 +40,16 @@ interface DataTableDefaultProps {
   orderField?: undefined;
 }
 
-type OrderableDataTableProps = Omit<DataTableDefaultProps, "onOrderChange" | "orderField"> & {
-  onOrderChange: (value: { currentId: string | number, moveOverId: string | number }) => void;
+type OrderableDataTableProps = Omit<
+  DataTableDefaultProps,
+  "onOrderChange" | "orderField"
+> & {
+  onOrderChange: (value: {
+    currentId: string | number;
+    moveOverId: string | number;
+  }) => void;
   orderField: string;
-}
+};
 
 export function DataTable({
   columns,
@@ -79,16 +80,18 @@ export function DataTable({
 
   const modelIdProperty = resourcesIdProperty[resource];
 
-  const handleColumnOrderChange = onOrderChange ? (value: any) => {
-    onOrderChange(value);
-  } : undefined;
+  const handleColumnOrderChange = onOrderChange
+    ? (value: any) => {
+        onOrderChange(value);
+      }
+    : undefined;
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (over && active.id !== over.id) {
       onOrderChange?.({
         currentId: active.id,
-        moveOverId: over.id
+        moveOverId: over.id,
       });
     }
   };
@@ -136,15 +139,15 @@ export function DataTable({
                     key={headerGroup.id}
                     className="border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default"
                   >
-                    <TableHead className='w-10' />
+                    <TableHead className="w-10" />
                     {headerGroup.headers.map((header) => (
                       <TableHead key={header.id}>
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                       </TableHead>
                     ))}
                   </TableRow>
@@ -153,31 +156,44 @@ export function DataTable({
             )}
             <TableBody>
               {table.getRowModel().rows?.length ? (
-                <SortableContext items={data.map(row => row[modelIdProperty].value as string)}>
+                <SortableContext
+                  items={data.map(
+                    (row) => row[modelIdProperty].value as string
+                  )}
+                >
                   {table.getRowModel().rows.map((row) => (
                     <SortableTableRow
                       key={row.id}
                       id={row.original[modelIdProperty].value as string}
                       data-state={row.getIsSelected() && "selected"}
-                      className={`hover:bg-nextadmin-background-muted text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted/75 border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default cursor-pointer border-b ${row.getIsSelected()
-                        ? "bg-nextadmin-background-emphasis/40 dark:bg-dark-nextadmin-background-subtle"
-                        : "even:bg-nextadmin-background-subtle dark:even:bg-dark-nextadmin-background-subtle/60"
-                        }`}
+                      className={`hover:bg-nextadmin-background-muted text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted/75 border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default cursor-pointer border-b ${
+                        row.getIsSelected()
+                          ? "bg-nextadmin-background-emphasis/40 dark:bg-dark-nextadmin-background-subtle"
+                          : "even:bg-nextadmin-background-subtle dark:even:bg-dark-nextadmin-background-subtle/60"
+                      }`}
                       onClick={() => {
-                        window.location.href = `${basePath}/${slugify(resource)}/${row.original[modelIdProperty].value
-                          }`;
+                        window.location.href = `${basePath}/${slugify(resource)}/${
+                          row.original[modelIdProperty].value
+                        }`;
                       }}
-                      grabElement={<TableCell className='pr-0'>
-                        <Bars2Icon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-grab active:cursor-grabbing" />
-                      </TableCell>}
+                      grabElement={
+                        <TableCell className="pr-0">
+                          <Bars2Icon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-grab active:cursor-grabbing" />
+                        </TableCell>
+                      }
                     >
                       {row.getVisibleCells().map((cell) => (
                         <TableCell
-                          className={`group py-3 ${cell.column.id === "__nextadmin-actions" && "text-right"
-                            }`}
+                          className={`group py-3 ${
+                            cell.column.id === "__nextadmin-actions" &&
+                            "text-right"
+                          }`}
                           key={cell.id}
                         >
-                          {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
                         </TableCell>
                       ))}
                       {deletable && onRemoveClick && (
@@ -185,7 +201,9 @@ export function DataTable({
                           <XMarkIcon
                             onClick={(e) => {
                               e.stopPropagation();
-                              return onRemoveClick(row.original[modelIdProperty].value);
+                              return onRemoveClick(
+                                row.original[modelIdProperty].value
+                              );
                             }}
                             className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-5 w-5 cursor-pointer"
                           />
@@ -222,9 +240,9 @@ export function DataTable({
                         {header.isPlaceholder
                           ? null
                           : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                       </TableHead>
                     );
                   })}
@@ -238,22 +256,30 @@ export function DataTable({
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className={`hover:bg-nextadmin-background-muted text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted/75 border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default cursor-pointer border-b ${row.getIsSelected()
-                    ? "bg-nextadmin-background-emphasis/40 dark:bg-dark-nextadmin-background-subtle"
-                    : "even:bg-nextadmin-background-subtle dark:even:bg-dark-nextadmin-background-subtle/60"
-                    }`}
+                  className={`hover:bg-nextadmin-background-muted text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted/75 border-b-nextadmin-border-strong dark:border-b-dark-nextadmin-border-default cursor-pointer border-b ${
+                    row.getIsSelected()
+                      ? "bg-nextadmin-background-emphasis/40 dark:bg-dark-nextadmin-background-subtle"
+                      : "even:bg-nextadmin-background-subtle dark:even:bg-dark-nextadmin-background-subtle/60"
+                  }`}
                   onClick={() => {
-                    window.location.href = `${basePath}/${slugify(resource)}/${row.original[modelIdProperty].value
-                      }`;
+                    window.location.href = `${basePath}/${slugify(resource)}/${
+                      row.original[modelIdProperty].value
+                    }`;
                   }}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell
-                      className={`group py-3 ${cell.column.id === "__nextadmin-actions" && "text-right"
-                        }`}
+                      className={`group py-3 ${
+                        cell.column.id === "__nextadmin-actions"
+                          ? "text-right"
+                          : ""
+                      }`}
                       key={cell.id}
                     >
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </TableCell>
                   ))}
                   {deletable && onRemoveClick && (

@@ -7,5 +7,12 @@
   "access": "public",
   "baseBranch": "origin/main",
   "updateInternalDependencies": "patch",
-  "ignore": ["example", "docs"]
+  "ignore": [
+    "example",
+    "docs",
+    "database",
+    "examples-common",
+    "example-remix",
+    "example-start"
+  ]
 }

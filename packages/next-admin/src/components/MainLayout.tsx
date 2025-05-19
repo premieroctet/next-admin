@@ -25,7 +25,7 @@ export const MainLayout = ({
   resourcesIcons,
   user,
   externalLinks,
-  title,
+  title: titleProp,
   options,
   apiBasePath,
   resourcesIdProperty,
@@ -33,6 +33,8 @@ export const MainLayout = ({
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
+
+  const title = titleProp || options?.title;
 
   return (
     <ConfigProvider

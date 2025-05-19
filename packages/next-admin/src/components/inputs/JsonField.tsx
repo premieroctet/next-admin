@@ -1,5 +1,5 @@
 "use client";
-import Editor from "@monaco-editor/react";
+import { Editor } from "@monaco-editor/react";
 import { useMemo } from "react";
 import { useColorScheme } from "../../context/ColorSchemeContext";
 import { CustomInputProps } from "../../types";

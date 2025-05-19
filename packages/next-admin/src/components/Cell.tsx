@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react";
+import React, { ReactElement, ReactNode } from "react";
 
 import clsx from "clsx";
-import Link from "next/link";
+import Link from "./common/Link";
 import { useConfig } from "../context/ConfigContext";
 import { ListDataFieldValue, NextAdminContext } from "../types";
 import { getDisplayedValue } from "../utils/tools";
@@ -11,12 +11,22 @@ type Props = {
   cell: ListDataFieldValue;
   formatter?: (cell: any, context?: NextAdminContext) => ReactNode;
   copyable?: boolean;
+  getRawData?: () => any;
 };
 
-export default function Cell({ cell, formatter, copyable }: Props) {
+export default function Cell({ cell, formatter, copyable, getRawData }: Props) {
   const { basePath, nextAdminContext } = useConfig();
 
   let cellValue = cell?.__nextadmin_formatted;
+
+  const renderCustomElement = (val: ReactElement) => {
+    return (
+      <div className="flex gap-1">
+        {val}
+        {copyable && <Clipboard value={getDisplayedValue(val)} />}
+      </div>
+    );
+  };
 
   const isReactNode = (
     cell: ListDataFieldValue["__nextadmin_formatted"]
@@ -26,15 +36,14 @@ export default function Cell({ cell, formatter, copyable }: Props) {
 
   if (cell && cell !== null) {
     if (React.isValidElement(cellValue)) {
-      return (
-        <div className="flex gap-1">
-          {cellValue}
-          {copyable && <Clipboard value={getDisplayedValue(cellValue)} />}
-        </div>
-      );
+      return renderCustomElement(cellValue);
     } else if (typeof cell === "object" && !isReactNode(cellValue)) {
       if (formatter) {
-        cellValue = formatter(cell?.value, nextAdminContext);
+        cellValue = formatter(getRawData?.(), nextAdminContext);
+
+        if (React.isValidElement(cellValue)) {
+          return renderCustomElement(cellValue);
+        }
       }
 
       if (cell.type === "link") {
