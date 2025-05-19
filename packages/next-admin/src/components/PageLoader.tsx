@@ -3,14 +3,21 @@ import NProgress from "nprogress";
 import { useEffect } from "react";
 import * as NextNProgress from "nextjs-toploader";
 
+/**
+ * Compat with TurboPack and non TurboPack
+ */
+const NextNProgressDefault =
+  "default" in NextNProgress.default
+    ? // @ts-expect-error
+      NextNProgress.default.default
+    : NextNProgress.default;
+
 const PageLoader = () => {
   useEffect(() => {
     NProgress.done();
   }, []);
 
-  // I dont know why I need to do this
-  // @ts-expect-error
-  return <NextNProgress.default.default color="#6366f1" showSpinner={false} />;
+  return <NextNProgressDefault color="#6366f1" showSpinner={false} />;
 };
 
 export default PageLoader;
