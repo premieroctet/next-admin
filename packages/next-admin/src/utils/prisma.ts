@@ -282,6 +282,7 @@ const preparePrismaListRequest = async <M extends ModelName>(
   options?: NextAdminOptions,
   skipFilters: boolean = false
 ): Promise<PrismaListRequest<M>> => {
+  const idProperty = getModelIdProperty(resource);
   const model = globalSchema.definitions[
     resource
   ] as SchemaDefinitions[ModelName];
@@ -314,7 +315,9 @@ const preparePrismaListRequest = async <M extends ModelName>(
     })
     ?.map((filter) => filter.value);
 
-  let orderBy: Order<typeof resource> | Order<typeof resource>[] = {};
+  let orderBy: Order<typeof resource> | Order<typeof resource>[] = {
+    [idProperty]: "asc",
+  } as Order<typeof resource>;
 
   if (options?.model?.[resource]?.list?.orderField) {
     orderBy[options?.model?.[resource]?.list?.orderField] = "asc";
