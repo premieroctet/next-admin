@@ -1,5 +1,5 @@
 import { Decimal } from "@prisma/client/runtime/library";
-import { any } from "jest-mock-extended";
+import { any, mockReset } from "jest-mock-extended";
 import { getMappedDataList, optionsFromResource } from "../utils/prisma";
 import { options, prismaMock } from "./singleton";
 
@@ -32,9 +32,9 @@ describe("getMappedDataList", () => {
       },
     ];
 
-    prismaMock.post.findMany.mockResolvedValueOnce(postData);
+    prismaMock.post.findMany.mockResolvedValue(postData);
 
-    prismaMock.post.count.mockResolvedValueOnce(2);
+    prismaMock.post.count.mockResolvedValue(2);
 
     const result = await getMappedDataList({
       prisma: prismaMock,
@@ -50,6 +50,10 @@ describe("getMappedDataList", () => {
       total: postData.length,
       error: null,
     });
+  });
+
+  afterEach(() => {
+    mockReset(prismaMock);
   });
 });
 
@@ -82,9 +86,9 @@ describe("optionsFromResource", () => {
       },
     ];
 
-    prismaMock.post.findMany.mockResolvedValueOnce(postData);
+    prismaMock.post.findMany.mockResolvedValue(postData);
 
-    prismaMock.post.count.mockResolvedValueOnce(2);
+    prismaMock.post.count.mockResolvedValue(2);
 
     const result = await optionsFromResource({
       prisma: prismaMock,
@@ -106,5 +110,9 @@ describe("optionsFromResource", () => {
       total: postData.length,
       error: null,
     });
+  });
+
+  afterEach(() => {
+    mockReset(prismaMock);
   });
 });
