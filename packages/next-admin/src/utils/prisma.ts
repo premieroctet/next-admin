@@ -315,9 +315,7 @@ const preparePrismaListRequest = async <M extends ModelName>(
     })
     ?.map((filter) => filter.value);
 
-  let orderBy: Order<typeof resource> | Order<typeof resource>[] = {
-    [idProperty]: "asc",
-  } as Order<typeof resource>;
+  let orderBy: Order<typeof resource> | Order<typeof resource>[] = {};
 
   if (options?.model?.[resource]?.list?.orderField) {
     orderBy[options?.model?.[resource]?.list?.orderField] = "asc";
@@ -403,6 +401,12 @@ const preparePrismaListRequest = async <M extends ModelName>(
     otherFilters: [...(fieldFilters ?? []), ...(list?.where ?? [])],
     advancedSearch,
   });
+
+  if (Object.keys(orderBy).length === 0) {
+    orderBy = {
+      [idProperty]: "asc",
+    } as Order<typeof resource>;
+  }
 
   return {
     select,
