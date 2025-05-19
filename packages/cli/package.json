@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin-cli",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "CLI for Next-Admin, an admin dashboard for Next.js applications.",
   "bin": "dist/index.js",
   "keywords": [
