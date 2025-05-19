@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 7.6.5
+
+### Patch Changes
+
+- [18cace8](https://github.com/premieroctet/next-admin/commit/18cace890a3d0840777d23989ea3257df6afb905): fix: default sort on id property
+
 ## 7.6.4
 
 ### Patch Changes
