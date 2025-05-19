@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 7.6.4
+
+### Patch Changes
+
+- [e14d6a4](https://github.com/premieroctet/next-admin/commit/e14d6a45b6544f3d47f335d20505d7facca4e87b): Fix request prisma latency on list
+  `formatter` is now taking the count value as a parameter for OneToMany relation fields
+
 ## 7.6.3
 
 ### Patch Changes
