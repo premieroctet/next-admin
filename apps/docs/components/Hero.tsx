@@ -13,18 +13,18 @@ export const GitHubIcon = () => (
 
 export function Hero() {
   return (
-    <div className="relative flex h-[35rem] w-full overflow-hidden border-b border-dashed bg-transparent antialiased dark:border-b-stone-500 md:items-center md:justify-center">
+    <div className="relative flex h-[35rem] w-full overflow-hidden border-b border-dashed bg-transparent antialiased md:items-center md:justify-center dark:border-b-stone-500">
       <Spotlight
         className="-top-40 left-0 md:-top-20 md:left-60"
         fill="#82e9a6"
       />
       <div className="relative z-10 mx-auto w-full max-w-7xl p-4 pt-20 md:pt-0">
-        <h1 className="bg-opacity-50 bg-gradient-to-b from-black/70 to-black/90 bg-clip-text text-center text-4xl font-bold text-transparent dark:text-white md:text-7xl">
+        <h1 className="bg-opacity-50 bg-gradient-to-b from-black/70 to-black/90 bg-clip-text text-center text-4xl font-bold text-transparent md:text-7xl dark:text-white">
           Full-featured Admin
-          <br /> for Next.js
+          <br /> for React frameworks
         </h1>
         <p className="mx-auto mt-4 max-w-xl text-center text-2xl font-normal text-black dark:text-white">
-          Ready-to-go Admin for Next.js and Prisma
+          Ready-to-go Admin for React frameworks and Prisma
         </p>
         <div className="mx-auto mt-10 flex max-w-xl flex-col justify-center gap-4 text-center sm:flex-row">
           <Link
