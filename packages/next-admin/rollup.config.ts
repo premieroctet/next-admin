@@ -10,8 +10,6 @@ const basePath = path.dirname(fileURLToPath(import.meta.url));
 
 const themeCssPath = path.resolve(basePath, "src/theme.css");
 
-console.log("themeCssPath", themeCssPath);
-
 export default defineConfig({
   plugins: [
     typescript(),
