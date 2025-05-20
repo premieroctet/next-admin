@@ -29,7 +29,7 @@
   "homepage": "https://next-admin.js.org/",
   "license": "MIT",
   "scripts": {
-    "build": "rollup -c --configPlugin typescript",
+    "build": "rollup -c --configPlugin typescript && cp src/theme.css dist/theme.css",
     "dev": "rollup -c --configPlugin typescript --watch",
     "lint": "eslint \"**/*.{ts,tsx}\"",
     "test": "vitest",
