@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 8.1.0
+
+### Minor Changes
+
+- [8121a90](https://github.com/premieroctet/next-admin/commit/8121a90ab59fe2215ea3c5f938b91fed86557168): feat: add support for Tailwind v4 ([#573](https://github.com/premieroctet/next-admin/issues/573))
+
 ## 8.0.0
 
 ### Major Changes
