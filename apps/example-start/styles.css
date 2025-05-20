@@ -1,5 +1,9 @@
 @import "tailwindcss";
-@config "./tailwind.config.js";
+@import "@premieroctet/next-admin/theme";
+@source "./node_modules/@premieroctet/next-admin/dist";
+@source "./node_modules/examples-common/dist";
+
+@custom-variant dark (&:where(.dark, .dark *));
 
 @layer base {
   button,

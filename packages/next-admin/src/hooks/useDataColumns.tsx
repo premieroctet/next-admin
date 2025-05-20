@@ -166,17 +166,19 @@ const useDataColumns = ({
       : [];
   }, [
     data,
+    allDisplayedFields,
+    t,
+    resource,
+    options?.aliases,
     options?.list?.display,
     options?.list?.fields,
     options?.list?.copy,
-    options?.aliases,
+    sortable,
     sortDirection,
     sortColumn,
-    sortable,
     router,
     query,
     isAppDir,
-    resourcesIdProperty,
     rawData,
   ]);
 };
