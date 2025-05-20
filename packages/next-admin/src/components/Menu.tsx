@@ -89,7 +89,7 @@ export default function Menu({
         className={clsx(
           item.current
             ? "bg-nextadmin-menu-muted dark:bg-dark-nextadmin-menu-muted dark:text-dark-nextadmin-menu-emphasis text-nextadmin-menu-emphasis"
-            : "text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color dark:hover:bg-dark-nextadmin-menu-muted hover:bg-nextadmin-menu-muted hover:text-nextadmin-menu-emphasis",
+            : "text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color dark:hover:bg-dark-nextadmin-menu-muted hover:bg-nextadmin-menu-muted hover:text-nextadmin-menu-emphasis dark:hover:text-dark-nextadmin-menu-emphasis",
           "group flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm leading-6 transition-colors"
         )}
       >
@@ -153,8 +153,6 @@ export default function Menu({
       }
     };
 
-    const hasDropdown = user.logout; // Add more conditions here if needed
-
     return (
       <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color flex flex-1 items-center gap-1 px-2 py-3 text-sm font-semibold leading-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
@@ -182,7 +180,7 @@ export default function Menu({
         <Button
           variant="ghost"
           size="sm"
-          className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
+          className="order-2 flex-shrink-0 basis-auto !px-2 py-2"
           type="button"
           onClick={logoutBind}
         >
@@ -201,7 +199,7 @@ export default function Menu({
       <Link
         key={link.url}
         href={link.url}
-        className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted flex flex-row items-center justify-between gap-2 rounded-lg p-3 text-sm font-medium transition-colors"
+        className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis dark:hover:text-dark-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted flex flex-row items-center justify-between gap-2 rounded-lg p-3 text-sm font-medium transition-colors"
         target="_blank"
         rel="noopener"
       >

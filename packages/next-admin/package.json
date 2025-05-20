@@ -145,6 +145,11 @@
     "./schema": {
       "import": "./dist/schema.mjs",
       "require": "./dist/schema.cjs"
+    },
+    "./theme": {
+      "import": "./dist/theme.css",
+      "require": "./dist/theme.css",
+      "default": "./dist/theme.css"
     }
   },
   "peerDependencies": {

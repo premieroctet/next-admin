@@ -7,11 +7,15 @@ import {
   NEXTADMIN_CSS_FILENAME,
 } from "./constants.js";
 
-export const addTailwindCondig = async (basePath: string) => {
-  const { stdout: libPath } =
-    await execa`node -p path.dirname(require.resolve('@premieroctet/next-admin'))`;
+export const addTailwindCondig = async (
+  basePath: string,
+  isAtLeastV4: boolean
+) => {
+  if (isAtLeastV4) {
+    const { stdout: libPath } =
+      await execa`node -p path.dirname(require.resolve('@premieroctet/next-admin'))`;
 
-  const content = `
+    const content = `
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -24,13 +28,17 @@ module.exports = {
 };
   `;
 
-  writeFileSync(
-    path.join(basePath, NEXTADMIN_TAILWIND_CONFIG_FILENAME),
-    content
-  );
+    writeFileSync(
+      path.join(basePath, NEXTADMIN_TAILWIND_CONFIG_FILENAME),
+      content
+    );
+  }
 
-  const adminCssContent = `
-@config "./${NEXTADMIN_TAILWIND_CONFIG_FILENAME}";
+  const adminCssContent = isAtLeastV4
+    ? `@import "tailwindcss";
+@import "@premieroctet/next-admin/theme";
+@source "./node_modules/@premieroctet/next-admin/dist";`
+    : `@config "./${NEXTADMIN_TAILWIND_CONFIG_FILENAME}";
 
 @tailwind base;
 @tailwind components;

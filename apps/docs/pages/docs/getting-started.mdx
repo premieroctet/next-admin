@@ -60,7 +60,17 @@ pnpm add @premieroctet/next-admin @premieroctet/next-admin-generator-prisma
 
 Next-Admin relies on [TailwindCSS](https://tailwindcss.com/) for the style. If you do not have it, you can [install TailwindCSS](https://tailwindcss.com/docs/installation) with the following configuration :
 
-```typescript copy filename="tailwind.config.js"
+<Tabs items={["v4", "<=v3"]}>
+<Tabs.Tab>
+```css copy filename="styles.css"
+@import "tailwindcss";
+@import "@premieroctet/next-admin/theme";
+@source "./node_modules/@premieroctet/next-admin/dist";
+@source "./node_modules/examples-common/dist";
+```
+</Tabs.Tab>
+<Tabs.Tab>
+```javascript copy filename="tailwind.config.js"
 module.exports = {
   content: [
     "./node_modules/@premieroctet/next-admin/dist/**/*.{js,ts,jsx,tsx}",
@@ -69,6 +79,8 @@ module.exports = {
   presets: [require("@premieroctet/next-admin/preset")],
 };
 ```
+</Tabs.Tab>
+</Tabs>
 
 Then import your `.css` file containing Tailwind rules into a page file or a parent layout.
 

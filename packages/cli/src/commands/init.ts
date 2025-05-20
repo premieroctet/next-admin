@@ -112,13 +112,16 @@ export const initAction = async ({
     process.exit(1);
   }
 
+  const packageDependencies = getPackageDependencies(basePath);
+
   spinner.text = "Creating Tailwind CSS configuration";
 
-  addTailwindCondig(basePath);
+  const tailwindVersion = packageDependencies.tailwindcss;
+  const isTailwindAtLeastV4 = semver.satisfies(tailwindVersion, ">=4");
+
+  addTailwindCondig(basePath, isTailwindAtLeastV4);
 
   spinner.text = "Get Next.js version";
-
-  const packageDependencies = getPackageDependencies(basePath);
 
   const nextDep = packageDependencies.next;
 

@@ -2,9 +2,22 @@ import typescript from "@rollup/plugin-typescript";
 import { glob } from "glob";
 import { defineConfig } from "rollup";
 import preserveDirectives from "rollup-preserve-directives";
+import { copyFileSync } from "node:fs";
 
 export default defineConfig({
-  plugins: [typescript(), preserveDirectives()],
+  plugins: [
+    typescript(),
+    preserveDirectives(),
+    {
+      name: "cp-theme-css",
+      buildStart: function () {
+        this.addWatchFile("src/theme.css");
+      },
+      buildEnd: function () {
+        copyFileSync("src/theme.css", "dist/theme.css");
+      },
+    },
+  ],
   input: glob.sync("src/**/*.{ts,tsx}", {
     ignore: ["**/tests/*", "**/*.test.{ts,tsx}"],
   }),

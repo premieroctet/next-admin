@@ -178,7 +178,11 @@ function List({
       return (
         <Dropdown>
           <DropdownTrigger asChild>
-            <Button variant="ghost" size="sm" className="!px-2 py-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hover:bg-nextadmin-background-emphasis !px-2 py-2"
+            >
               <EllipsisVerticalIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-6 w-6" />
             </Button>
           </DropdownTrigger>
