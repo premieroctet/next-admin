@@ -330,9 +330,8 @@ export const buildUIBlocks = <M extends ModelName>(
                 }
 
                 const childResourceName = (
-                  isArrayConditionKey
-                    ? schemaProperty.items?.$ref || (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref
-                    : schemaProperty.$ref || (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref
+                  schemaProperty.__nextadmin?.relation?.$ref ||
+                  (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref
                 )
                   ?.split("/")
                   ?.at(-1)! as keyof typeof schema.definitions;
@@ -476,7 +475,9 @@ export const buildQueryBlocks = <M extends ModelName>(
             has: getValueForUiBlock(block),
           });
         } else {
-          const childResource = schemaProperty.items?.$ref?.split("/")?.at(-1)!;
+          const childResource = schemaProperty.__nextadmin?.relation?.$ref
+            ?.split("/")
+            ?.at(-1)!;
 
           if (!get(acc, [path, basePath].filter(Boolean))) {
             set(acc, [path, basePath].filter(Boolean).join("."), {
@@ -500,11 +501,12 @@ export const buildQueryBlocks = <M extends ModelName>(
         }
       } else if (
         schemaProperty &&
-        (schemaProperty?.$ref || (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref)
+        (schemaProperty?.__nextadmin?.relation?.$ref ||
+          (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref)
       ) {
         const ref =
-          schemaProperty.$ref ||
-          (schemaProperty.anyOf?.[0] as JSONSchema7)?.$ref;
+          schemaProperty?.__nextadmin?.relation?.$ref ||
+          (schemaProperty?.anyOf?.[0] as JSONSchema7)?.$ref;
         const childResource = ref!.split("/").at(-1)!;
 
         if (!get(acc, [path, basePath].filter(Boolean))) {
