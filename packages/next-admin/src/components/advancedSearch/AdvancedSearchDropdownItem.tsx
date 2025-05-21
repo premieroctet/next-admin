@@ -36,10 +36,7 @@ const AdvancedSearchDropdownItem = ({
     schemaDef.properties[property as keyof typeof schemaDef.properties];
   const hasChildren = isSchemaPropertyScalarArray(schemaDef, property)
     ? false
-    : schemaProperty?.$ref ||
-      // @ts-expect-error
-      schemaProperty?.anyOf?.[0]?.$ref ||
-      schemaProperty?.type === "array";
+    : schemaProperty?.__nextadmin?.relation || schemaProperty?.type === "array";
   const [openChildren, setOpenChildren] = useState(false);
 
   const childResource = useMemo(() => {
@@ -50,8 +47,7 @@ const AdvancedSearchDropdownItem = ({
     const modelRef =
       schemaProperty?.type === "array"
         ? schemaProperty?.items?.$ref
-        : // @ts-expect-error
-          (schemaProperty?.anyOf?.[0]?.$ref ?? schemaProperty?.$ref);
+        : schemaProperty?.__nextadmin?.relation?.$ref;
 
     const model = modelRef?.split("/")?.at(-1);
 

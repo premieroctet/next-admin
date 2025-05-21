@@ -29,9 +29,18 @@ const schema: JSONSchema4 = {
           items: {
             $ref: "#/definitions/Test3",
           },
+          __nextadmin: {
+            relation: {
+              $ref: "#/definitions/Test3",
+            },
+          },
         },
         test5: {
-          $ref: "#/definitions/Test5",
+          __nextadmin: {
+            relation: {
+              $ref: "#/definitions/Test5",
+            },
+          },
         },
         testBool: {
           type: "boolean",
@@ -65,6 +74,11 @@ const schema: JSONSchema4 = {
           type: "array",
           items: {
             $ref: "#/definitions/Test5",
+          },
+          __nextadmin: {
+            relation: {
+              $ref: "#/definitions/Test5",
+            },
           },
         },
       },
