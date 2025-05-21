@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 8.1.1
+
+### Patch Changes
+
+- [3cdf4e2](https://github.com/premieroctet/next-admin/commit/3cdf4e290b8fd057e8e31ad7dde876f52085bc3b): fix: advanced search on simple relations ([#602](https://github.com/premieroctet/next-admin/issues/602))
+
 ## 8.1.0
 
 ### Minor Changes
