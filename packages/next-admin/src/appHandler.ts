@@ -32,9 +32,13 @@ export const createHandler = <P extends string = "nextadmin">({
 }: CreateAppHandlerParams<P>) => {
   const router = createEdgeRouter<Request, RequestContext<P>>();
 
+  router.use(async (req, res, next) => {
+    await initGlobals();
+    return next();
+  });
+
   if (onRequest) {
     router.use(async (req, ctxPromise, next) => {
-      await initGlobals();
       const ctx = await ctxPromise;
       const response = await onRequest(req, ctx);
 
