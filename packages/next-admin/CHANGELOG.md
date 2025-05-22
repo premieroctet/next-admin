@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 8.1.2
+
+### Patch Changes
+
+- [7aefc45](https://github.com/premieroctet/next-admin/commit/7aefc45bdfdd192c5723a37cf3f66a376525beb0): fix: initGlobals app handler ([#605](https://github.com/premieroctet/next-admin/issues/605))
+
 ## 8.1.1
 
 ### Patch Changes
