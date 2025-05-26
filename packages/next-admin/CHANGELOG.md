@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 8.1.3
+
+### Patch Changes
+
+- [fe5e1c3](https://github.com/premieroctet/next-admin/commit/fe5e1c3c166265fa0316f2ad35a14baffdf652de): fix: default value for many to many in form ([#605](https://github.com/premieroctet/next-admin/issues/605))
+
 ## 8.1.2
 
 ### Patch Changes
