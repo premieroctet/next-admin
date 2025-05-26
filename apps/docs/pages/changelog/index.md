@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 8.1.4
+
+### Patch Changes
+
+- [362aaaa](https://github.com/premieroctet/next-admin/commit/362aaaa92da7df8a49fd83dc26d6d400fc918a63): fix: infinite queries in select widget ([#612](https://github.com/premieroctet/next-admin/issues/612))
+
 ## 8.1.3
 
 ### Patch Changes
