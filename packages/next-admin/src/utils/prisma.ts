@@ -758,26 +758,25 @@ export const selectPayloadForModel = <M extends ModelName>(
                 [name]: true,
               },
             };
-          } else {
-            acc[name] = {
-              select: selectPayloadForModel(
-                fieldNextAdmin.type as ModelName,
-                {},
-                "scalar"
-              ),
+          }
+          acc[name] = {
+            select: selectPayloadForModel(
+              fieldNextAdmin.type as ModelName,
+              {},
+              "scalar"
+            ),
+          };
+
+          const orderField =
+            (options as EditOptions<M>)?.fields?.[
+              name as Field<M>
+              // @ts-expect-error
+            ]?.orderField || (options as ListOptions<M>)?.orderField;
+
+          if (orderField) {
+            acc[name].orderBy = {
+              [orderField]: "asc",
             };
-
-            const orderField =
-              (options as EditOptions<M>)?.fields?.[
-                name as Field<M>
-                // @ts-expect-error
-              ]?.orderField || (options as ListOptions<M>)?.orderField;
-
-            if (orderField) {
-              acc[name].orderBy = {
-                [orderField]: "asc",
-              };
-            }
           }
         } else {
           acc[name] = true;
