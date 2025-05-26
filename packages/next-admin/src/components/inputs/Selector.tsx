@@ -34,6 +34,7 @@ export const Selector = forwardRef<HTMLDivElement, SelectorProps>(
       searchPage,
       setAllOptions,
       totalSearchedItems,
+      hasNextPage,
     } = useSearchPaginatedResource({
       fieldName: name,
       initialOptions: options,
@@ -89,7 +90,7 @@ export const Selector = forwardRef<HTMLDivElement, SelectorProps>(
 
     const onScroll = () => {
       // No need to do an infinite scroll for enums
-      if (!containerRef.current || options) {
+      if (!containerRef.current || options || !hasNextPage) {
         return;
       }
       const scrollY =
