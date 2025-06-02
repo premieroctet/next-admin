@@ -1,10 +1,10 @@
 // https://www.prisma.io/docs/guides/testing/unit-testing#singleton
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../types-prisma";
 import { DeepMockProxy, mockDeep, mockReset } from "vitest-mock-extended";
 import { beforeEach, vi } from "vitest";
 import React from "react";
 
-import prisma from "@prisma/client";
+import prisma from "../types-prisma";
 import { NextAdminOptions, Schema } from "../types";
 import { getJsonSchema } from "../utils/server";
 

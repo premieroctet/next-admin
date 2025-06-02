@@ -153,7 +153,6 @@
     }
   },
   "peerDependencies": {
-    "@prisma/client": ">=5",
     "prisma": ">=5",
     "react": ">=17",
     "react-dom": ">=17",
