@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 import { generatorHandler } from "@prisma/generator-helper";
 import { parseEnvValue } from "@prisma/internals";
-import path from "path";
-import fs from "fs/promises";
+import path from "node:path";
+import fs from "node:fs/promises";
 // @ts-expect-error
 import { transformDMMF } from "prisma-json-schema-generator/dist/generator/transformDMMF";
 import { insertDmmfData } from "./dmmf";
+import {
+  getNewPrismaClientGenerator,
+  updateNextAdminPrismaTypesImport,
+} from "./generator";
 
 generatorHandler({
   onManifest: () => {
@@ -37,6 +41,17 @@ generatorHandler({
       const mjsContent = `export default ${JSON.stringify(jsonSchema, null, 2)}`;
 
       await fs.writeFile(path.join(outputDir, "schema.mjs"), mjsContent);
+    }
+
+    const newPrismaClient = getNewPrismaClientGenerator(
+      options.otherGenerators
+    );
+
+    if (newPrismaClient) {
+      if (!newPrismaClient.output) {
+        throw new Error("Prisma Client output is required");
+      }
+      updateNextAdminPrismaTypesImport(newPrismaClient);
     }
   },
 });

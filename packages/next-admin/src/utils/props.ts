@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "../types-prisma";
 import cloneDeep from "lodash.clonedeep";
 import {
   AdminComponentProps,
