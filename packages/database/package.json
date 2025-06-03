@@ -13,7 +13,9 @@
     "prisma:migrate:dev": "prisma migrate dev"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./generated/prisma": "./dist/generated/prisma/index.js",
+    "./generated/prisma/*": "./dist/generated/prisma/*.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -21,11 +23,11 @@
   "dependencies": {
     "@premieroctet/next-admin": "workspace:*",
     "@premieroctet/next-admin-generator-prisma": "workspace:*",
-    "@prisma/client": "5.14.0"
+    "@prisma/client": "catalog:prisma"
   },
   "devDependencies": {
     "@types/node": "^22.14.1",
-    "prisma": "5.14.0",
+    "prisma": "catalog:prisma",
     "tsconfig": "workspace:*",
     "tsx": "^4.19.4",
     "typescript": "^5.1.6"

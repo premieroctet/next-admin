@@ -36,6 +36,7 @@
     "@premieroctet/next-admin-json-schema": "workspace:^",
     "@prisma/generator-helper": "^5.20.0",
     "@prisma/internals": "^5.20.0",
+    "glob": "^11.0.0",
     "prisma-json-schema-generator": "5.1.5"
   },
   "devDependencies": {

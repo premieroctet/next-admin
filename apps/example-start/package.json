@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@premieroctet/next-admin": "workspace:*",
-    "@prisma/client": "5.14.0",
     "@tanstack/react-router": "catalog:tanstack-start",
     "@tanstack/react-router-devtools": "catalog:tanstack-start",
     "@tanstack/react-start": "catalog:tanstack-start",
