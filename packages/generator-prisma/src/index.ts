@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 import { generatorHandler } from "@prisma/generator-helper";
-import { parseEnvValue } from "@prisma/internals";
-import path from "node:path";
 import fs from "node:fs/promises";
+import path from "node:path";
 // @ts-expect-error
 import { transformDMMF } from "prisma-json-schema-generator/dist/generator/transformDMMF";
 import { insertDmmfData } from "./dmmf";
+import { getEnvValue } from "./env";
 import {
   getNewPrismaClientGenerator,
   updateNextAdminPrismaTypesImport,
@@ -27,10 +27,7 @@ generatorHandler({
     insertDmmfData(options.dmmf, jsonSchema);
 
     if (options.generator.output) {
-      const outputDir =
-        typeof options.generator.output === "string"
-          ? options.generator.output
-          : parseEnvValue(options.generator.output);
+      const outputDir = getEnvValue(options.generator.output) as string;
 
       await fs.mkdir(outputDir, { recursive: true });
 
@@ -51,7 +48,14 @@ generatorHandler({
       if (!newPrismaClient.output) {
         throw new Error("Prisma Client output is required");
       }
-      updateNextAdminPrismaTypesImport(newPrismaClient);
+      updateNextAdminPrismaTypesImport(
+        newPrismaClient,
+        getEnvValue(
+          options.generator.config.generatedClientImportPath as
+            | string
+            | undefined
+        )
+      );
     }
   },
 });

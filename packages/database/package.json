@@ -13,7 +13,8 @@
     "prisma:migrate:dev": "prisma migrate dev"
   },
   "exports": {
-    ".": "./dist/index.js"
+    ".": "./dist/index.js",
+    "./generated/prisma": "./dist/generated/prisma/index.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
