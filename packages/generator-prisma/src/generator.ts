@@ -25,8 +25,8 @@ export const updateNextAdminPrismaTypesImport = (
     const filePath = path.join(nextAdminPath, file);
     const fileContent = fs.readFileSync(filePath, "utf8");
     const updatedContent = fileContent.replace(
-      "@prisma/client",
-      pathReplacement ?? path.relative(path.dirname(filePath), generatorOutput)
+      /('|")@prisma\/client('|")/g,
+      `"${pathReplacement ?? path.relative(path.dirname(filePath), generatorOutput)}"`
     );
     fs.writeFileSync(filePath, updatedContent, "utf8");
   });
