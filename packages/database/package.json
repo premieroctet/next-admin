@@ -14,7 +14,8 @@
   },
   "exports": {
     ".": "./dist/index.js",
-    "./generated/prisma": "./dist/generated/prisma/index.js"
+    "./generated/prisma": "./dist/generated/prisma/index.js",
+    "./generated/prisma/*": "./dist/generated/prisma/*.js"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

@@ -32,12 +32,4 @@ export default defineConfig({
     noExternal: ["react-datepicker"],
     external: ["@premieroctet/next-admin"],
   },
-  resolve: {
-    alias: {
-      ".prisma/client/index-browser": path.join(
-        prismaClientPath,
-        "index-browser.js"
-      ),
-    },
-  },
 });
