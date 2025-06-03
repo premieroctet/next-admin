@@ -1,41 +1,33 @@
 import { GeneratorConfig } from "@prisma/generator-helper";
-import path from "node:path";
-import fs from "node:fs";
-import { parseEnvValue } from "@prisma/internals";
 import { glob } from "glob";
+import fs from "node:fs";
+import path from "node:path";
+import { getEnvValue } from "./env";
 
 export const getNewPrismaClientGenerator = (generators: GeneratorConfig[]) => {
   return generators.find((gen) => {
-    const providerName =
-      typeof gen.provider === "string"
-        ? gen.provider
-        : parseEnvValue(gen.provider!);
+    const providerName = getEnvValue(gen.provider!);
     return providerName === "prisma-client";
   });
 };
 
 export const updateNextAdminPrismaTypesImport = (
-  generator: GeneratorConfig
+  generator: GeneratorConfig,
+  pathReplacement?: string
 ) => {
   const nextAdminPath = path.dirname(
     require.resolve("@premieroctet/next-admin")
   );
 
-  const generatorOutput =
-    typeof generator.output === "string"
-      ? generator.output
-      : parseEnvValue(generator.output!);
+  const generatorOutput = getEnvValue(generator.output!) ?? "";
 
   glob.sync("**/*.{js,mjs,ts}", { cwd: nextAdminPath }).forEach((file) => {
-    const fileContent = fs.readFileSync(path.join(nextAdminPath, file), "utf8");
-    console.log(
-      "relative path:",
-      path.relative(nextAdminPath, generatorOutput)
-    );
+    const filePath = path.join(nextAdminPath, file);
+    const fileContent = fs.readFileSync(filePath, "utf8");
     const updatedContent = fileContent.replace(
       "@prisma/client",
-      path.relative(nextAdminPath, generatorOutput)
+      pathReplacement ?? path.relative(path.dirname(filePath), generatorOutput)
     );
-    fs.writeFileSync(path.join(nextAdminPath, file), updatedContent, "utf8");
+    fs.writeFileSync(filePath, updatedContent, "utf8");
   });
 };

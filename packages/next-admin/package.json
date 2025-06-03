@@ -153,6 +153,7 @@
     }
   },
   "peerDependencies": {
+    "@prisma/client": ">=5",
     "prisma": ">=5",
     "react": ">=17",
     "react-dom": ">=17",
@@ -226,11 +227,13 @@
     "@types/react-dom": "^19.0.2",
     "autoprefixer": "^10.4.14",
     "concurrently": "^8.0.1",
+    "database": "workspace:*",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",
     "glob": "^11.0.0",
     "lodash.debounce": "^4.0.8",
     "next": "^15.3.1",
+    "prisma": "catalog:prisma",
     "postcss": "^8.4.21",
     "tailwindcss": "^3.2.7",
     "ts-node": "^10.9.1",
