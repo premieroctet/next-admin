@@ -1,12 +1,12 @@
 import * as OutlineIcons from "@heroicons/react/24/outline";
+import type { NextAdminJSONSchema } from "@premieroctet/next-admin-json-schema";
 import { Prisma, PrismaClient } from "@prisma/client";
-import type { JSONSchema7 } from "json-schema";
-import { NextRequest, NextResponse } from "next/server";
-import type { ChangeEvent, ReactNode } from "react";
+import type { NextApiRequest } from "next";
+import type React from "react";
+import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
-import { NextApiRequest } from "next";
 
-declare type JSONSchema7Definition = JSONSchema7 & {
+declare type JSONSchema7Definition = NextAdminJSONSchema & {
   relation?: ModelName;
 };
 
@@ -167,7 +167,9 @@ export type ListFieldsOptions<T extends ModelName> = {
      */
     formatter?: (
       item: P extends keyof ObjectField<T>
-        ? ModelFromProperty<T, P>
+        ? ObjectField<T>[P] extends Array<any>
+          ? number
+          : ModelFromProperty<T, P>
         : Model<T>[P],
       context?: NextAdminContext
     ) => ReactNode;
@@ -204,6 +206,10 @@ export type FilterWrapper<T extends ModelName> = {
    * @link https://www.prisma.io/docs/orm/reference/prisma-client-reference#filter-conditions-and-operators
    */
   value: Filter<T>;
+  /**
+   * An id that will be used to give filters with the same group name a radio like behavior
+   */
+  group?: string;
 };
 
 type RelationshipSearch<T> = {
@@ -239,6 +245,12 @@ type OptionFormatterFromRelationshipSearch<
       };
 }[RelationshipSearch<ModelFromProperty<T, P>>["field"]];
 
+export type RelationshipPagination = {
+  perPage?: number;
+};
+
+export type ScalarArray = string[] | number[] | boolean[];
+
 export type EditFieldsOptions<T extends ModelName> = {
   [P in Field<T>]?: {
     /**
@@ -258,7 +270,7 @@ export type EditFieldsOptions<T extends ModelName> = {
     /**
      * a React Element that should receive [`CustomInputProps`](#custominputprops). For App Router, this element must be a client component. Don't set any props, they will be passed automatically to the component.
      */
-    input?: React.ReactElement;
+    input?: React.ReactElement<CustomInputProps>;
     /**
      * a helper text that is displayed underneath the input.
      */
@@ -279,6 +291,7 @@ export type EditFieldsOptions<T extends ModelName> = {
      * a function that takes the field value as parameter and returns a boolean to determine if the field is displayed in the form.
      */
     visible?: (value: ModelWithoutRelationships<T>) => boolean;
+    maxLength?: Model<T>[P] extends ScalarArray ? number : never;
   } & (P extends keyof ObjectField<T>
     ? OptionFormatterFromRelationshipSearch<T, P> &
         (
@@ -291,9 +304,17 @@ export type EditFieldsOptions<T extends ModelName> = {
                *
                * @default "select"
                */
-              display?: "table" | "select";
+              display?: "select";
             }
-          | { display?: "list"; orderField?: keyof ModelFromProperty<T, P> }
+          | {
+              display?: "table";
+              pagination?: RelationshipPagination;
+            }
+          | {
+              display?: "list";
+              orderField?: keyof ModelFromProperty<T, P>;
+              pagination?: RelationshipPagination;
+            }
         )
     : P extends keyof ScalarField<T>
       ? ScalarField<T>[P] extends (infer Q)[]
@@ -302,6 +323,14 @@ export type EditFieldsOptions<T extends ModelName> = {
           : {}
         : {}
       : {});
+};
+
+export type UploadedFile = {
+  buffer: Buffer;
+  infos: {
+    name: string;
+    type: string | null;
+  };
 };
 
 export type Handler<
@@ -317,31 +346,41 @@ export type Handler<
   get?: (input: T) => any;
   /**
    * an async function that is used only for formats `file` and `data-url`. It takes a buffer as parameter and must return a string. Useful to upload a file to a remote provider.
-   * @param file
-   * @returns
+   * @param file - This object contains the file buffer and information.
+   * @param context - This object contains record information, such as the resource ID.
+   * @returns result - Promise<string> - the file uri
    */
   upload?: (
     buffer: Buffer,
     infos: {
       name: string;
       type: string | null;
+    },
+    context: {
+      /**
+       * the resource ID if it exists, otherwise undefined
+       */
+      resourceId: string | number | undefined;
     }
   ) => Promise<string>;
+  /**
+   * an async function that is used to remove a file from a remote provider
+   *
+   * @param fileUri string - the remote file uri
+   * @returns success - Promise<boolean> - true if the deletion succeeded, false otherwise. If false is returned, the file will not be removed from the record.
+   */
+  deleteFile?: (fileUri: string) => Promise<boolean>;
   /**
    * an optional string displayed in the input field as an error message in case of a failure during the upload handler.
    */
   uploadErrorMessage?: string;
+  /**
+   * an async function that takes the resource value as parameter and returns a boolean. If false is returned, the deletion will not happen.
+   * @param input
+   * @returns boolean
+   */
+  delete?: (input: T) => Promise<boolean> | boolean;
 };
-
-export type UploadParameters = Parameters<
-  (
-    buffer: Buffer,
-    infos: {
-      name: string;
-      type: string | null;
-    }
-  ) => Promise<string>
->;
 
 export type RichTextFormat = "html" | "json";
 
@@ -366,7 +405,9 @@ export type FormatOptions<T> = T extends string
     ? "date" | "date-time" | "time"
     : never | T extends number
       ? "updown" | "range"
-      : never;
+      : never | T extends string[]
+        ? "file"
+        : never;
 
 export type ListExport = {
   /**
@@ -379,6 +420,41 @@ export type ListExport = {
   url: string;
 };
 
+export type FieldSort<T extends ModelName> = {
+  /**
+   * the model's field name on which the sort is applied. It is mandatory.
+   */
+  field: Field<T>;
+  /**
+   * the sort direction to apply. It is optional
+   */
+  direction?: Prisma.SortOrder;
+};
+
+type VirtualFieldWithType<T extends ModelName> = {
+  formatter: (context: NextAdminContext<Model<T>>) => string;
+} & (
+  | {
+      type?: "link";
+      url: (context: NextAdminContext<Model<T>>) => string;
+    }
+  | {
+      type?: Exclude<ListDataFieldValue["type"], "link">;
+    }
+);
+
+export type VirtualField<T extends ModelName> = {
+  key: string;
+  label: string;
+  dependsOn?: Field<T>[];
+} & (
+  | VirtualFieldWithType<T>
+  | {
+      formatter: (context: NextAdminContext<Model<T>>) => React.ReactElement;
+      type?: never;
+    }
+);
+
 export type ListOptions<T extends ModelName> = {
   /**
    * an url to export the list data as CSV.
@@ -388,7 +464,7 @@ export type ListOptions<T extends ModelName> = {
    * an array of fields that are displayed in the list.
    * @default all scalar
    */
-  display?: Field<T>[];
+  display?: Array<Field<T> | VirtualField<T>>;
   /**
    * an array of searchable fields.
    * @default all scalar
@@ -406,21 +482,24 @@ export type ListOptions<T extends ModelName> = {
   /**
    * an optional object to determine the default sort to apply on the list.
    */
-  defaultSort?: {
-    /**
-     * the model's field name on which the sort is applied. It is mandatory.
-     */
-    field: Field<T>;
-    /**
-     * the sort direction to apply. It is optional
-     */
-    direction?: Prisma.SortOrder;
-  };
+  defaultSort?: FieldSort<T> | FieldSort<T>[];
+  /**
+   * An optional field to enable ordering on the list.
+   * ⚠️ When enabled, it will disable all other types of sorting.
+   * @restriction Only scalar fields are allowed, and primary keys are not permitted. The field must be a numeric type.
+   */
+  orderField?: keyof ScalarField<T>;
   /**
    * define a set of Prisma filters that user can choose in list
    */
-  filters?: FilterWrapper<T>[];
+  filters?: Array<FilterWrapper<T> | (() => Promise<FilterWrapper<T>[]>)>;
+  /**
+   * define a set of Prisma filters that are always active in list
+   */
+  where?: Filter<T>[];
 };
+
+export type RelationshipsRawData = Record<string, any>;
 
 export type SubmitResourceResponse =
   | {
@@ -449,6 +528,7 @@ export type SubmitResourceResponse =
       created?: undefined;
       createdId?: undefined;
       validation?: undefined;
+      relationshipsRawData?: RelationshipsRawData;
     }
   | {
       error?: undefined;
@@ -458,6 +538,7 @@ export type SubmitResourceResponse =
       created: true;
       createdId: any;
       validation?: undefined;
+      relationshipsRawData?: RelationshipsRawData;
     };
 
 export type EditModelHooks = {
@@ -471,10 +552,10 @@ export type EditModelHooks = {
    * @throws HookError - if the hook fails, the status and message will be sent in the handler's response
    */
   beforeDb?: (
-    data: Record<string, string | UploadParameters | null>,
+    data: Record<string, string | (UploadedFile | string)[] | null>,
     mode: "create" | "edit",
-    request: NextRequest | NextApiRequest
-  ) => Promise<Record<string, string | UploadParameters | null>>;
+    request: Request | NextApiRequest
+  ) => Promise<Record<string, string | (UploadedFile | string)[] | null>>;
   /**
    * a function that is called after the form submission. It takes the response of the db insertion as a parameter.
    * @param data
@@ -482,7 +563,7 @@ export type EditModelHooks = {
   afterDb?: (
     data: SubmitResourceResponse,
     mode: "create" | "edit",
-    request: NextRequest | NextApiRequest
+    request: Request | NextApiRequest
   ) => Promise<SubmitResourceResponse>;
 };
 
@@ -522,7 +603,7 @@ export type EditOptions<T extends ModelName> = {
 
 type CustomFieldsType = {
   [key: string]: {
-    input?: React.ReactElement;
+    input?: React.ReactElement<CustomInputProps>;
     tooltip?: string;
     format?: FormatOptions<any>;
     helperText?: string;
@@ -532,14 +613,72 @@ type CustomFieldsType = {
 
 export type ActionStyle = "default" | "destructive";
 
-export type ModelAction = {
+export type MessageData = {
+  type: "error" | "info" | "success";
+  message: string;
+};
+
+export type ServerActionCustomComponent = React.ReactElement<{
+  message?: string;
+}>;
+
+export type MessageDataWithCustomComponent = MessageData & {
+  component?: ServerActionCustomComponent;
+};
+
+export type MessageContextType = {
+  showMessage: (message: MessageDataWithCustomComponent) => void;
+  message: MessageDataWithCustomComponent | null;
+  hideMessage: () => void;
+};
+
+export type BareModelAction<M extends ModelName> = {
   title: string;
   id: string;
-  action: (ids: string[] | number[]) => Promise<void>;
+  canExecute?: (item: Model<M>) => boolean;
+  icon?: keyof typeof OutlineIcons;
   style?: ActionStyle;
+  /**
+   * Max depth of the related records to select
+   *
+   * @default 2
+   */
+  depth?: number;
+};
+
+export type ServerAction = {
+  type: "server";
+  action: (ids: string[] | number[]) => Promise<void | MessageData>;
   successMessage?: string;
   errorMessage?: string;
-};
+  /**
+   * Component shown inside the Message component. If not passed, the message
+   * string is displayed in a `p` HTML element.
+   */
+  component?: ServerActionCustomComponent;
+} & BareModelAction<ModelName>;
+
+export type ClientAction<T extends ModelName> = {
+  type: "dialog";
+  component: React.ReactElement<ClientActionDialogContentProps<T>>;
+  /**
+   * Class name to apply to the dialog content
+   */
+  className?: string;
+} & BareModelAction<T>;
+
+export type ModelAction<T extends ModelName> = ServerAction | ClientAction<T>;
+
+export type UnionModelAction = {
+  [M in ModelName]: ModelAction<M>;
+}[ModelName];
+
+export type OutputModelAction = (Omit<
+  UnionModelAction,
+  "action" | "canExecute" | "component"
+> & {
+  allowedIds?: string[] | number[];
+})[];
 
 export type ModelIcon = keyof typeof OutlineIcons;
 
@@ -550,6 +689,25 @@ export enum Permission {
 }
 
 export type PermissionType = "create" | "edit" | "delete";
+
+export type ModelMiddleware<T extends ModelName> = {
+  /**
+   * a function that is called before the form data is sent to the database.
+   * @param data - the form data as a record
+   * @param currentData - the current data in the database
+   * @returns boolean - if false is returned, the update will not happen.
+   */
+  edit?: (
+    updatedData: Model<T>,
+    currentData: Model<T>
+  ) => Promise<boolean> | boolean;
+  /**
+   * a function that is called before resource is deleted from the database.
+   * @param data - the current data in the database
+   * @returns boolean - if false is returned, the deletion will not happen.
+   */
+  delete?: (data: Model<T>) => Promise<boolean> | boolean;
+};
 
 export type ModelOptions<T extends ModelName> = {
   [P in T]?: {
@@ -574,7 +732,7 @@ export type ModelOptions<T extends ModelName> = {
      * an object containing the aliases of the model fields as keys, and the field name.
      */
     aliases?: Partial<Record<Field<P>, string>> & { [key: string]: string };
-    actions?: ModelAction[];
+    actions?: ModelAction<P>[];
     /**
      * the outline HeroIcon name displayed in the sidebar and pages title
      * @type ModelIcon
@@ -582,6 +740,7 @@ export type ModelOptions<T extends ModelName> = {
      */
     icon?: ModelIcon;
     permissions?: PermissionType[];
+    middlewares?: ModelMiddleware<P>;
   };
 };
 
@@ -624,7 +783,7 @@ export type NextAdminOptions = {
    *
    * @default "Admin"
    */
-  title?: string;
+  title?: ReactNode;
   /**
    * `model` is an object that represents the customization options for each model in your schema.
    */
@@ -670,14 +829,14 @@ export type NextAdminOptions = {
 /** Type for Schema */
 
 export type SchemaProperty<M extends ModelName> = {
-  [P in Field<M>]?: JSONSchema7 & {
+  [P in Field<M>]?: NextAdminJSONSchema & {
     items?: JSONSchema7Definition;
     relation?: ModelName;
   };
 };
 
 export type SchemaModel<M extends ModelName> = Partial<
-  Omit<JSONSchema7, "properties">
+  Omit<NextAdminJSONSchema, "properties">
 > & {
   properties: SchemaProperty<M>;
 };
@@ -686,7 +845,7 @@ export type SchemaDefinitions = {
   [M in ModelName]: SchemaModel<M>;
 };
 
-export type Schema = Partial<Omit<JSONSchema7, "definitions">> & {
+export type Schema = Partial<Omit<NextAdminJSONSchema, "definitions">> & {
   definitions: SchemaDefinitions;
 };
 
@@ -750,6 +909,7 @@ export type ListDataFieldValue = ListDataFieldValueWithFormat &
           label: string;
           url: string;
         };
+        isOverridden?: boolean | null;
       }
     | {
         type: "date";
@@ -770,9 +930,12 @@ export type AdminUser = {
 export type AdminComponentProps = {
   basePath: string;
   apiBasePath: string;
-  schema?: Schema;
+  schema: Schema;
   data?: ListData<ModelName>;
-  resource?: ModelName;
+  rawData?: any[];
+  relationshipsRawData?: RelationshipsRawData;
+  listFilterOptions?: Array<FilterWrapper<ModelName>>;
+  resource?: ModelName | null;
   slug?: string;
   /**
    * Page router only
@@ -781,38 +944,61 @@ export type AdminComponentProps = {
     type: "success" | "info";
     content: string;
   };
-  error?: string;
+  error?: string | null;
   validation?: PropertyValidationError[];
   resources?: ModelName[];
   total?: number;
-  dmmfSchema?: readonly Prisma.DMMF.Field[];
   isAppDir?: boolean;
-  locale?: string;
+  locale?: string | null;
   /**
    * Mandatory for page router
    */
   options?: NextAdminOptions;
   resourcesTitles?: Record<Prisma.ModelName, string | undefined>;
   resourcesIcons?: Record<Prisma.ModelName, ModelIcon>;
-  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  customInputs?: Record<
+    Field<ModelName>,
+    React.ReactElement<CustomInputProps> | undefined
+  > | null;
   resourcesIdProperty?: Record<ModelName, string>;
   /**
    * App router only
    */
   pageComponent?: React.ComponentType;
   customPages?: Array<{ title: string; path: string; icon?: ModelIcon }>;
-  actions?: Omit<ModelAction, "action">[];
+  actions?: OutputModelAction;
   translations?: Translations;
   /**
    * Global admin title
    *
    * @default "Admin"
    */
-  title?: string;
+  title?: ReactNode;
   sidebar?: SidebarConfiguration;
   user?: AdminUser;
   externalLinks?: ExternalLink[];
+  dialogComponents?: Record<
+    string,
+    React.ReactElement<ClientActionDialogContentProps<ModelName>>
+  > | null;
 };
+
+export type AppRouterComponentProps = AdminComponentProps;
+
+export type PageRouterComponentProps =
+  | AppRouterComponentProps
+  | Omit<AdminComponentProps, "resource" | "action">
+  | Pick<
+      AdminComponentProps,
+      | "pageComponent"
+      | "basePath"
+      | "apiBasePath"
+      | "isAppDir"
+      | "message"
+      | "resources"
+      | "error"
+      | "schema"
+    >;
 
 export type MainLayoutProps = Pick<
   AdminComponentProps,
@@ -832,11 +1018,12 @@ export type MainLayoutProps = Pick<
   | "externalLinks"
   | "options"
   | "resourcesIdProperty"
-  | "dmmfSchema"
+  | "schema"
 >;
 
 export type CustomUIProps = {
-  dashboard?: JSX.Element | (() => JSX.Element);
+  dashboard?: React.JSX.Element | (() => React.JSX.Element);
+  pageLoader?: React.JSX.Element;
 };
 
 export type ActionFullParams = ActionParams & {
@@ -859,12 +1046,12 @@ export type SubmitFormResult = {
   validation?: any;
 };
 
-export type NextAdminContext = {
-  locale?: string;
-  row?: any;
+export type NextAdminContext<ModelData = any> = {
+  locale?: string | null;
+  row?: ModelData;
 };
 
-export type CustomInputProps = Partial<{
+export type CustomInputProps<TItem extends any = any> = Partial<{
   name: string;
   value: string;
   onChange: (evt: ChangeEvent<HTMLInputElement>) => void;
@@ -873,7 +1060,9 @@ export type CustomInputProps = Partial<{
   disabled: boolean;
   required?: boolean;
   mode: "create" | "edit";
-}>;
+  item: TItem;
+}> &
+  ComponentProps<"input">;
 
 export type TranslationKeys =
   | "actions.delete.label"
@@ -941,10 +1130,14 @@ export const colorSchemes = ["light", "dark", "system"];
 export type ColorScheme = (typeof colorSchemes)[number];
 export type BasicColorScheme = Exclude<ColorScheme, "system">;
 
-export type PageProps = Readonly<{
+export type PageProps = {
   params: { [key: string]: string[] | string };
   searchParams: { [key: string]: string | string[] | undefined } | undefined;
-}>;
+};
+
+export type PromisePageProps = {
+  [key in keyof PageProps]: Promise<PageProps[key]>;
+};
 
 export type GetNextAdminPropsParams = {
   /**
@@ -969,10 +1162,6 @@ export type GetNextAdminPropsParams = {
    */
   options?: NextAdminOptions;
   /**
-   * `schema` is an object that represents the JSON schema of your Prisma schema.
-   */
-  schema: any;
-  /**
    * `prisma` is an instance of PrismaClient.
    */
   prisma: PrismaClient;
@@ -995,7 +1184,9 @@ export type GetMainLayoutPropsParams = Omit<
 >;
 
 export type RequestContext<P extends string> = {
-  params: Record<P, string[]>;
+  params: Promise<{
+    [key in P]: string[];
+  }>;
 };
 
 export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
@@ -1015,11 +1206,11 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    * A function that acts as a middleware. Useful to add authentication logic for example.
    */
   onRequest?: (
-    req: NextRequest,
+    req: Request,
     ctx: RequestContext<P>
   ) =>
-    | ReturnType<NextResponse["json"]>
-    | ReturnType<NextResponse["text"]>
+    | ReturnType<Response["json"]>
+    | ReturnType<Response["text"]>
     | Promise<void>;
   /**
    * A string indicating the name of the dynamic segment.
@@ -1031,22 +1222,29 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
    * @default "nextadmin"
    */
   paramKey?: P;
-  /**
-   * Generated JSON schema from Prisma
-   */
-  schema: any;
 };
 
 export type FormProps = {
   data: any;
-  schema: any;
-  dmmfSchema: readonly Prisma.DMMF.Field[];
+  schema: SchemaDefinitions[ModelName];
   resource: ModelName;
   slug?: string;
   validation?: PropertyValidationError[];
   title: string;
-  customInputs?: Record<Field<ModelName>, React.ReactElement | undefined>;
+  customInputs?: Record<
+    Field<ModelName>,
+    React.ReactElement<CustomInputProps> | undefined
+  > | null;
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   resourcesIdProperty: Record<ModelName, string>;
+  clientActionsComponents?: AdminComponentProps["dialogComponents"];
+  relationshipsRawData?: RelationshipsRawData;
 };
+
+export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
+  resource: ModelName;
+  resourceIds: Array<string | number>;
+  data: Array<Model<T>>;
+  onClose: (message?: MessageData) => void;
+}>;

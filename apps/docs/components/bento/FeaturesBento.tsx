@@ -24,7 +24,7 @@ const items = [
     title: "App Router support",
     description: (
       <span className="text-sm">
-        Built-in support for Next.js App Router and Page Router
+        Built-in support for Next.js, Remix & Tanstack Start
       </span>
     ),
     header: <SkeletonOne />,

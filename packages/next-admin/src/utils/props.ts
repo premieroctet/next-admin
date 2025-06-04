@@ -1,21 +1,24 @@
 import { Prisma } from "@prisma/client";
-import { cloneDeep } from "lodash";
+import cloneDeep from "lodash.clonedeep";
 import {
   AdminComponentProps,
   EditOptions,
+  FilterWrapper,
   GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
   MainLayoutProps,
+  ModelAction,
   ModelIcon,
   ModelName,
   NextAdminOptions,
+  PageRouterComponentProps,
 } from "../types";
-import { getCustomInputs } from "./options";
-import { getDataItem, getMappedDataList } from "./prisma";
+import { getClientActionsComponents, getCustomInputs } from "./options";
+import { getDataItem, getMappedDataList, mapModelFilters } from "./prisma";
 import {
   applyVisiblePropertiesInSchema,
+  getEnableToExecuteActions,
   getModelIdProperty,
-  getPrismaModelForResource,
   getResourceFromParams,
   getResourceIdFromParam,
   getResources,
@@ -23,6 +26,7 @@ import {
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
+import { getSchema, initGlobals } from "./globals";
 
 enum Page {
   LIST = 1,
@@ -33,45 +37,30 @@ export async function getPropsFromParams({
   params,
   searchParams,
   options,
-  schema,
   prisma,
   isAppDir = true,
   locale,
   getMessages,
   basePath,
   apiBasePath,
-}: GetNextAdminPropsParams): Promise<
-  | AdminComponentProps
-  | Omit<AdminComponentProps, "dmmfSchema" | "schema" | "resource" | "action">
-  | Pick<
-      AdminComponentProps,
-      | "pageComponent"
-      | "basePath"
-      | "apiBasePath"
-      | "isAppDir"
-      | "message"
-      | "resources"
-      | "error"
-    >
-> {
+}: GetNextAdminPropsParams): Promise<PageRouterComponentProps> {
   const {
     resource,
     resources,
     resourcesTitles,
+    resourcesIdProperty,
     customPages,
     title,
     sidebar,
     resourcesIcons,
     externalLinks,
-  } = getMainLayoutProps({ basePath, apiBasePath, options, params, isAppDir });
-
-  const resourcesIdProperty = resources!.reduce(
-    (acc, resource) => {
-      acc[resource] = getModelIdProperty(resource);
-      return acc;
-    },
-    {} as Record<ModelName, string>
-  );
+  } = await getMainLayoutProps({
+    basePath,
+    apiBasePath,
+    options,
+    params,
+    isAppDir,
+  });
 
   const clientOptions: NextAdminOptions | undefined =
     extractSerializable(options);
@@ -88,15 +77,17 @@ export async function getPropsFromParams({
     sidebar,
     resourcesIcons,
     externalLinks,
-    locale,
+    locale: locale ?? null,
+    schema: getSchema(),
   };
 
   if (!params) return defaultProps;
 
   if (!resource) return defaultProps;
 
-  // We don't need to pass the action function to the component
+  // We don't need to pass the action function and canExecute to the component
   const actions = options?.model?.[resource]?.actions?.map((action) => {
+    // @ts-expect-error
     const { action: _, ...actionRest } = action;
     return actionRest;
   });
@@ -120,9 +111,13 @@ export async function getPropsFromParams({
     };
   }
 
+  const dialogActionsComponents = isAppDir
+    ? getClientActionsComponents(resource, options)
+    : null;
+
   switch (params.length) {
     case Page.LIST: {
-      const { data, total, error } = await getMappedDataList({
+      const { data, total, error, rawData } = await getMappedDataList({
         prisma,
         resource,
         options,
@@ -133,20 +128,50 @@ export async function getPropsFromParams({
         appDir: isAppDir,
       });
 
+      if (options?.model?.[resource]?.list?.filters) {
+        // @ts-expect-error
+        clientOptions.model[resource].list.filters = await mapModelFilters(
+          options.model![resource]!.list!.filters
+        );
+      }
+
+      const dataIds = data.map(
+        (item) => item[getModelIdProperty(resource)].value
+      );
+
+      const fullfilledAction = await getEnableToExecuteActions<typeof resource>(
+        resource,
+        prisma,
+        dataIds,
+        actions as ModelAction<typeof resource>[]
+      );
+
+      let serializedActions = extractSerializable(
+        cloneDeep(fullfilledAction),
+        isAppDir
+      );
+
+      // const verifiedAction = actions?.map((action) => {
+      //   action.canExecute = action.canExecute ?? (() => true);
+      // });
+
       return {
         ...defaultProps,
         resource,
         data,
         total,
-        error: error ?? (searchParams?.error as string),
-        schema,
-        actions: isAppDir ? actions : undefined,
+        error: error ?? (searchParams?.error as string) ?? null,
+        actions: serializedActions,
+        dialogComponents: dialogActionsComponents,
+        rawData: extractSerializable(rawData),
+        listFilterOptions:
+          (clientOptions?.model?.[resource]?.list
+            ?.filters as FilterWrapper<ModelName>[]) ?? null,
       };
     }
     case Page.EDIT: {
       const resourceId = getResourceIdFromParam(params[1], resource);
 
-      const dmmfSchema = getPrismaModelForResource(resource);
       const edit = options?.model?.[resource]?.edit as EditOptions<
         typeof resource
       >;
@@ -155,13 +180,11 @@ export async function getPropsFromParams({
         resource,
         edit,
         options
-      )(cloneDeep(schema));
-      const customInputs = isAppDir
-        ? getCustomInputs(resource, options)
-        : undefined;
+      )(cloneDeep(getSchema()));
+      const customInputs = isAppDir ? getCustomInputs(resource, options) : null;
 
       if (resourceId !== undefined) {
-        const data = await getDataItem({
+        const { data, relationshipsRawData } = await getDataItem({
           prisma,
           resource,
           resourceId,
@@ -179,15 +202,35 @@ export async function getPropsFromParams({
 
         applyVisiblePropertiesInSchema(resource, edit, data, deepCopySchema);
 
+        const dataId = data[getModelIdProperty(resource)];
+
+        const fullfilledAction = await getEnableToExecuteActions<
+          typeof resource
+        >(
+          resource,
+          prisma,
+          [dataId],
+          actions as ModelAction<typeof resource>[]
+        );
+
+        let serializedActions = extractSerializable(
+          cloneDeep(fullfilledAction),
+          isAppDir
+        );
+
         return {
           ...defaultProps,
           resource,
           data,
           slug,
           schema: deepCopySchema,
-          dmmfSchema: dmmfSchema?.fields,
           customInputs,
-          actions: isAppDir ? actions : undefined,
+          actions: serializedActions,
+          dialogComponents: dialogActionsComponents,
+          relationshipsRawData: extractSerializable(
+            relationshipsRawData,
+            isAppDir
+          ),
         };
       }
 
@@ -196,7 +239,6 @@ export async function getPropsFromParams({
           ...defaultProps,
           resource,
           schema: deepCopySchema,
-          dmmfSchema: dmmfSchema?.fields,
           customInputs,
         };
       }
@@ -207,22 +249,23 @@ export async function getPropsFromParams({
   }
 }
 
-export const getMainLayoutProps = ({
+export const getMainLayoutProps = async ({
   basePath,
   apiBasePath,
   options,
   params,
   isAppDir = true,
-}: GetMainLayoutPropsParams): MainLayoutProps => {
+}: GetMainLayoutPropsParams): Promise<MainLayoutProps> => {
   if (params !== undefined && !Array.isArray(params)) {
     throw new Error(
       "`params` parameter in `getMainLayoutProps` should be an array of strings."
     );
   }
 
+  await initGlobals();
+
   const resources = getResources(options);
   const resource = getResourceFromParams(params ?? [], resources);
-  const dmmfSchema = getPrismaModelForResource(resource!);
   const resourcesIdProperty = resources!.reduce(
     (acc, resource) => {
       acc[resource] = getModelIdProperty(resource);
@@ -266,12 +309,12 @@ export const getMainLayoutProps = ({
     customPages,
     resourcesTitles,
     isAppDir,
-    title: options?.title ?? "Admin",
+    title: isAppDir ? (options?.title ?? "Admin") : null,
     sidebar: options?.sidebar,
     resourcesIcons,
     externalLinks: options?.externalLinks,
-    options: extractSerializable(options),
-    dmmfSchema: dmmfSchema?.fields,
+    options: extractSerializable(options, isAppDir),
     resourcesIdProperty: resourcesIdProperty,
+    schema: getSchema(),
   };
 };

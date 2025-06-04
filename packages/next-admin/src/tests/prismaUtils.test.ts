@@ -1,6 +1,9 @@
 import { Decimal } from "@prisma/client/runtime/library";
-import { any } from "jest-mock-extended";
+import cloneDeep from "lodash.clonedeep";
+import { afterEach, describe, expect, it } from "vitest";
+import { mockReset } from "vitest-mock-extended";
 import { getMappedDataList, optionsFromResource } from "../utils/prisma";
+import { extractSerializable } from "../utils/tools";
 import { options, prismaMock } from "./singleton";
 
 describe("getMappedDataList", () => {
@@ -16,6 +19,7 @@ describe("getMappedDataList", () => {
         rate: new Decimal(5),
         order: 0,
         tags: [],
+        images: [],
       },
       {
         id: 2,
@@ -27,12 +31,14 @@ describe("getMappedDataList", () => {
         rate: new Decimal(5),
         order: 1,
         tags: [],
+        images: [],
       },
     ];
+    const originalPostData = cloneDeep(postData);
 
-    prismaMock.post.findMany.mockResolvedValueOnce(postData);
+    prismaMock.post.findMany.mockResolvedValue(postData);
 
-    prismaMock.post.count.mockResolvedValueOnce(2);
+    prismaMock.post.count.mockResolvedValue(2);
 
     const result = await getMappedDataList({
       prisma: prismaMock,
@@ -47,7 +53,12 @@ describe("getMappedDataList", () => {
       data: postData,
       total: postData.length,
       error: null,
+      rawData: extractSerializable(originalPostData),
     });
+  });
+
+  afterEach(() => {
+    mockReset(prismaMock);
   });
 });
 
@@ -64,6 +75,7 @@ describe("optionsFromResource", () => {
         rate: new Decimal(5),
         order: 0,
         tags: [],
+        images: [],
       },
       {
         id: 2,
@@ -75,12 +87,13 @@ describe("optionsFromResource", () => {
         rate: new Decimal(5),
         order: 1,
         tags: [],
+        images: [],
       },
     ];
 
-    prismaMock.post.findMany.mockResolvedValueOnce(postData);
+    prismaMock.post.findMany.mockResolvedValue(postData);
 
-    prismaMock.post.count.mockResolvedValueOnce(2);
+    prismaMock.post.count.mockResolvedValue(2);
 
     const result = await optionsFromResource({
       prisma: prismaMock,
@@ -94,13 +107,18 @@ describe("optionsFromResource", () => {
     });
 
     expect(result).toEqual({
-      data: postData.map((post) => ({
-        label: post.title,
-        value: post.id,
-        data: any(Object),
-      })),
+      data: postData.map((post) =>
+        expect.objectContaining({
+          label: post.title,
+          value: post.id,
+        })
+      ),
       total: postData.length,
       error: null,
     });
+  });
+
+  afterEach(() => {
+    mockReset(prismaMock);
   });
 });

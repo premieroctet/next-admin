@@ -14,7 +14,10 @@ export const DialogOverlay = forwardRef<
   return (
     <Dialog.Overlay
       className={twMerge(
-        clsx("fixed inset-0 z-[51] bg-black/20 dark:bg-white/20", className)
+        clsx(
+          "fixed inset-0 z-[51] bg-zinc-950/25 dark:bg-zinc-950/50",
+          className
+        )
       )}
       ref={ref}
       {...props}
@@ -30,7 +33,7 @@ export const DialogContent = forwardRef<
     <Dialog.Content
       className={twMerge(
         clsx(
-          "text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis border-nextadmin-border-strong dark:border-dark-nextadmin-border-strong bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default fixed top-[50%] z-[52] w-full translate-y-[-50%] rounded-md border p-4 md:left-[50%] md:w-[50vw] md:translate-x-[-50%]",
+          "text-nextadmin-content-emphasis dark:text-dark-nextadmin-content-emphasis border-nextadmin-border-strong dark:border-dark-nextadmin-border-strong bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default fixed top-[50%] z-[52] w-full translate-y-[-50%] rounded-lg border bg-white p-6 shadow-lg md:left-[50%] md:w-[50vw] md:translate-x-[-50%] max-h-[90vh] overflow-y-auto",
           className
         )
       )}
@@ -50,7 +53,7 @@ export const DialogTitle = forwardRef<
     <Dialog.Title
       className={twMerge(
         clsx(
-          "text-nextadmin-content-default dark:text-dark-nextadmin-content-default text-lg font-medium",
+          "text-nextadmin-content-default dark:text-dark-nextadmin-content-default text-lg",
           className
         )
       )}

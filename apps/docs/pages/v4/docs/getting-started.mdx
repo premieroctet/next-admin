@@ -134,9 +134,23 @@ To get started with next-admin follow the steps below.
 
   Then run the following command :
 
-  ```bash copy
+<Tabs items={["yarn", "npm", "pnpm"]}>
+    <Tabs.Tab>
+      ```bash copy
   yarn run prisma generate
-  ```
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash copy
+  npm run prisma generate
+      ```
+    </Tabs.Tab>
+    <Tabs.Tab>
+      ```bash copy
+  pnpm prisma generate
+      ```
+    </Tabs.Tab>
+  </Tabs>
 
   This will create a `json-schema.json` file in the `prisma/json-schema` directory.
 

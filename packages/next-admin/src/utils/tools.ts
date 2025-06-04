@@ -1,5 +1,6 @@
+import sortBy from "lodash.sortby";
 import React from "react";
-import { UploadParameters } from "../types";
+import { ListDataItem, ModelName, UploadedFile } from "../types";
 
 export const capitalize = <T extends string>(str: T): Capitalize<T> => {
   let capitalizedStr = str.charAt(0).toLocaleUpperCase() + str.slice(1);
@@ -31,18 +32,25 @@ export const pipe =
     }, Promise.resolve(x));
   };
 
-export const extractSerializable = <T>(obj: T): T => {
+export const extractSerializable = <T>(obj: T, isAppDir?: boolean): T => {
   if (Array.isArray(obj)) {
-    return obj.map(extractSerializable) as unknown as T;
+    return obj.map((item) =>
+      extractSerializable(item, isAppDir)
+    ) as unknown as T;
+  } else if (obj instanceof Date) {
+    return obj.toISOString() as unknown as T;
   } else if (obj === null) {
     return obj;
   } else if (typeof obj === "object") {
+    if (isAppDir && React.isValidElement(obj)) {
+      return obj;
+    }
     let newObj = {} as T;
     for (const key in obj) {
       if (obj.hasOwnProperty(key)) {
         newObj = {
           ...newObj,
-          [key]: extractSerializable(obj[key]),
+          [key]: extractSerializable(obj[key], isAppDir),
         };
       }
     }
@@ -50,7 +58,7 @@ export const extractSerializable = <T>(obj: T): T => {
   } else if (isScalar(obj)) {
     return obj;
   } else {
-    return undefined as unknown as T;
+    return null as unknown as T;
   }
 };
 
@@ -67,14 +75,12 @@ export const formatLabel = (label: string) => {
   return capitalize(spacedLabel.toLowerCase());
 };
 
-//Create a function that check if object satifies UploadParameters
-export const isUploadParameters = (obj: any): obj is UploadParameters => {
+export const isUploadFile = (obj: any): obj is UploadedFile => {
   return (
-    obj?.length === 2 &&
-    Buffer.isBuffer(obj[0]) &&
-    typeof obj[1] === "object" &&
-    "name" in obj[1] &&
-    "type" in obj[1]
+    typeof obj === "object" &&
+    "buffer" in obj &&
+    "infos" in obj &&
+    obj.buffer.length > 0
   );
 };
 
@@ -93,4 +99,48 @@ export const getDisplayedValue = (
   } else {
     return "";
   }
+};
+
+export const getDeletedFilesFieldName = (field: string) =>
+  `${field}__nextadmin_deleted`;
+
+export const isFileUploadFormat = (
+  format: string
+): format is "data-url" | "file" => {
+  return ["data-url", "file"].includes(format);
+};
+
+export const reorderData = <T extends ListDataItem<ModelName>>(
+  data: T[],
+  fromId: number | string,
+  toId: number | string,
+  orderField: string,
+  idField: string
+) => {
+  const result = Array.from(data);
+  const from = result.find((item) => item[idField].value === fromId);
+  const to = result.find((item) => item[idField].value === toId);
+  if (!from || !to) {
+    return result;
+  }
+
+  const fromIndex = result.indexOf(from);
+  const toIndex = result.indexOf(to);
+
+  result[fromIndex][orderField].value = to[orderField].value;
+  if (fromIndex < toIndex) {
+    for (let i = fromIndex + 1; i <= toIndex; i++) {
+      const current = result[i][orderField].value as number;
+      result[i][orderField].value = current - 1;
+    }
+  } else {
+    for (let i = toIndex; i < fromIndex; i++) {
+      const current = result[i][orderField].value as number;
+      result[i][orderField].value = current + 1;
+    }
+  }
+
+  return sortBy(result, function (item) {
+    return item[orderField].value;
+  });
 };

@@ -1,9 +1,6 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "globalDependencies": [
-    "**/.env.*local",
-    "**/.env"
-  ],
+  "globalDependencies": ["**/.env.*local", "**/.env"],
   "globalEnv": [
     "NODE_ENV",
     "BASE_URL",
@@ -13,14 +10,24 @@
   ],
   "tasks": {
     "start": {},
+    "@premieroctet/next-admin#build": {
+      "dependsOn": ["database#generate:client-only"]
+    },
+    "database#generate:client-only": {
+      "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"]
+    },
+    "example#build": {
+      "dependsOn": ["database#generate"]
+    },
     "build": {
-      "dependsOn": [
-        "^build"
-      ],
+      "dependsOn": ["^build"],
       "outputs": [
         "dist/**",
         ".next/**",
-        "!.next/cache/**"
+        "!.next/cache/**",
+        ".output/**",
+        ".vinxi/**",
+        "build/**"
       ]
     },
     "lint": {
@@ -34,9 +41,13 @@
     "test:coverage": {},
     "test:e2e": {},
     "database": {},
+    "typecheck": {},
     "reset-database": {
       "cache": false
-    }
+    },
+    "clean": {},
+    "generate": {}
   },
-  "ui": "stream"
+  "ui": "stream",
+  "concurrency": "11"
 }

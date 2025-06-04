@@ -1,3 +1,6 @@
+import { ChangeEvent, cloneElement } from "react";
+import { twMerge } from "tailwind-merge";
+import { CustomInputProps } from "../../../types";
 import BaseInput from "../BaseInput";
 import DndItem from "../DndItem";
 
@@ -9,6 +12,7 @@ type Props = {
   inputValue: string;
   id: string;
   scalarType: string;
+  customInput?: React.ReactElement<CustomInputProps>;
 };
 
 const ScalarArrayFieldItem = ({
@@ -18,18 +22,16 @@ const ScalarArrayFieldItem = ({
   onRemoveClick,
   id,
   scalarType,
+  customInput = <BaseInput />,
 }: Props) => {
-  const renderInput = () => {
-    return (
-      <BaseInput
-        value={value}
-        onChange={(evt) => onChange(evt.target.value)}
-        disabled={disabled}
-        className="w-full"
-        type={scalarType === "number" ? "number" : "text"}
-      />
-    );
-  };
+  const renderInput = () => cloneElement(customInput, {
+    ...customInput.props,
+    value,
+    onChange: (evt: ChangeEvent<HTMLInputElement>) => onChange(evt.target.value),
+    disabled,
+    className: twMerge("w-full", customInput.props.className),
+    type: scalarType === "number" ? "number" : "text",
+  });
 
   return (
     <DndItem

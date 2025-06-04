@@ -1,4 +1,5 @@
 import { JSONSchema4 } from "json-schema";
+import { describe, expect, it, vi } from "vitest";
 import {
   buildQueryBlocks,
   buildUIBlocks,
@@ -7,7 +8,7 @@ import {
 } from "./advancedSearch";
 
 // @ts-expect-error
-jest.spyOn(global, "crypto", "get").mockImplementation(() => {
+vi.spyOn(global, "crypto", "get").mockImplementation(() => {
   return {
     randomUUID: () => "1",
   };
@@ -28,9 +29,18 @@ const schema: JSONSchema4 = {
           items: {
             $ref: "#/definitions/Test3",
           },
+          __nextadmin: {
+            relation: {
+              $ref: "#/definitions/Test3",
+            },
+          },
         },
         test5: {
-          $ref: "#/definitions/Test5",
+          __nextadmin: {
+            relation: {
+              $ref: "#/definitions/Test5",
+            },
+          },
         },
         testBool: {
           type: "boolean",
@@ -64,6 +74,11 @@ const schema: JSONSchema4 = {
           type: "array",
           items: {
             $ref: "#/definitions/Test5",
+          },
+          __nextadmin: {
+            relation: {
+              $ref: "#/definitions/Test5",
+            },
           },
         },
       },
@@ -153,6 +168,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[0]",
         nullable: true,
+        displayPath: "test",
       },
       {
         type: "filter",
@@ -164,6 +180,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[1]",
         nullable: true,
+        displayPath: "test",
       },
       {
         type: "filter",
@@ -175,6 +192,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[2]",
         nullable: true,
+        displayPath: "test",
       },
       {
         type: "filter",
@@ -186,6 +204,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[3]",
         nullable: false,
+        displayPath: "test2",
       },
       {
         type: "filter",
@@ -197,6 +216,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[4]",
         nullable: false,
+        displayPath: "test5 → test6",
       },
       {
         type: "filter",
@@ -208,6 +228,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[5]",
         nullable: false,
+        displayPath: "test5 → some",
       },
       {
         type: "and",
@@ -224,6 +245,7 @@ describe("advancedSearch", () => {
             canHaveChildren: false,
             internalPath: "[6].children[0]",
             nullable: false,
+            displayPath: "test3 → test",
           },
           {
             type: "filter",
@@ -235,6 +257,7 @@ describe("advancedSearch", () => {
             canHaveChildren: false,
             internalPath: "[6].children[1]",
             nullable: false,
+            displayPath: "test3 → test2",
           },
           {
             type: "or",
@@ -251,6 +274,7 @@ describe("advancedSearch", () => {
                 canHaveChildren: false,
                 internalPath: "[6].children[2].children[0]",
                 nullable: false,
+                displayPath: "test5 → test6",
               },
             ],
           },
@@ -266,6 +290,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[7]",
         nullable: false,
+        displayPath: "testBool",
       },
       {
         type: "filter",
@@ -277,6 +302,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[8]",
         nullable: true,
+        displayPath: "testNull",
       },
       {
         type: "filter",
@@ -288,6 +314,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[9]",
         nullable: false,
+        displayPath: "testArray",
       },
     ];
 
@@ -322,6 +349,7 @@ describe("advancedSearch", () => {
         canHaveChildren: false,
         internalPath: "[0]",
         nullable: false,
+        displayPath: "test2",
       },
     ];
 

@@ -10,10 +10,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
+      - name: Enable corepack
+        run: corepack enable && corepack prepare pnpm@9.12.3 --activate
       - name: Install dependencies
-        run: yarn install
+        run: pnpm install
       - name: Reset database
         env:
-          POSTGRES_URL_NON_POOLING: ${{ env.POSTGRES_URL_NON_POOLING }}
-          POSTGRES_URL: ${{ env.POSTGRES_URL }}
-        run: yarn reset-database
+          POSTGRES_PRISMA_URL: ${{ secrets.POSTGRES_PRISMA_URL }}
+          POSTGRES_URL_NON_POOLING: ${{ secrets.POSTGRES_URL_NON_POOLING }}
+        run: pnpm reset-database

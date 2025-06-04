@@ -3,6 +3,7 @@ import { Translations } from "./types";
 export const defaultTranslations: Translations = {
   "actions.delete.label": "Delete",
   "actions.label": "Action",
+  "actions.some_failed_condition": "Some record cannot complete the action",
   "export.label": "Export",
   "actions.create.label": "Create",
   "actions.edit.label": "Edit",
@@ -31,6 +32,10 @@ export const defaultTranslations: Translations = {
   "form.widgets.file_upload.delete": "Delete",
   "form.widgets.multiselect.select": "Select items",
   "form.widgets.scalar_array.add": "Add new item",
+  "form.create.succeed": "Created successfully",
+  "form.update.succeed": "Updated successfully",
+  "form.delete.succeed": "Deleted successfully",
+  "form.validation.error": "Validation error",
   "selector.loading": "Loading...",
   "theme.dark": "Dark",
   "theme.light": "Light",

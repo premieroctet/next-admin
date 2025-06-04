@@ -5,22 +5,25 @@ import {
   TrashIcon,
 } from "@heroicons/react/24/outline";
 import RjsfForm from "@rjsf/core";
+import type { FormProps as RjsfFormProps } from "@rjsf/core";
 import {
   BaseInputTemplateProps,
   ErrorSchema,
+  FieldErrorProps,
+  FieldProps,
   FieldTemplateProps,
-  getSubmitButtonOptions,
   ObjectFieldTemplateProps,
   SubmitButtonProps,
 } from "@rjsf/utils";
 import validator from "@rjsf/validator-ajv8";
 import clsx from "clsx";
-import dynamic from "next/dynamic";
 import React, {
   ChangeEvent,
   cloneElement,
   forwardRef,
   HTMLProps,
+  lazy,
+  Suspense,
   useCallback,
   useEffect,
   useMemo,
@@ -28,11 +31,12 @@ import React, {
   useState,
 } from "react";
 import { twMerge } from "tailwind-merge";
+import ClientActionDialogProvider from "../context/ClientActionDialogContext";
 import { useConfig } from "../context/ConfigContext";
 import FormDataProvider, { useFormData } from "../context/FormDataContext";
 import FormStateProvider, { useFormState } from "../context/FormStateContext";
 import { useI18n } from "../context/I18nContext";
-import { MessageProvider, useMessage } from "../context/MessageContext";
+import { useMessage } from "../context/MessageContext";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
@@ -44,18 +48,19 @@ import {
   Permission,
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
-import { formatLabel, slugify } from "../utils/tools";
+import { formatLabel, isFileUploadFormat, slugify } from "../utils/tools";
 import FormHeader from "./FormHeader";
 import ArrayField from "./inputs/ArrayField";
+import BaseInput from "./inputs/BaseInput";
 import CheckboxWidget from "./inputs/CheckboxWidget";
 import DateTimeWidget from "./inputs/DateTimeWidget";
 import DateWidget from "./inputs/DateWidget";
-import FileWidget from "./inputs/FileWidget";
+import FileWidget from "./inputs/FileWidget/FileWidget";
 import JsonField from "./inputs/JsonField";
 import NullField from "./inputs/NullField";
 import SelectWidget from "./inputs/SelectWidget";
 import TextareaWidget from "./inputs/TextareaWidget";
-import Message from "./Message";
+import { Message } from "./Message";
 import Button from "./radix/Button";
 import {
   TooltipContent,
@@ -64,18 +69,11 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import BaseInput from "./inputs/BaseInput";
+import { getSubmitButtonOptions } from "../utils/rjsf";
 
-const RichTextField = dynamic(() => import("./inputs/RichText/RichTextField"), {
-  ssr: false,
-});
+const RichTextField = lazy(() => import("./inputs/RichText/RichTextField"));
 
-const fields: RjsfForm["props"]["fields"] = {
-  ArrayField,
-  NullField,
-};
-
-const widgets: RjsfForm["props"]["widgets"] = {
+const widgets: RjsfFormProps["widgets"] = {
   DateWidget: DateWidget,
   DateTimeWidget: DateTimeWidget,
   SelectWidget: SelectWidget,
@@ -87,7 +85,6 @@ const widgets: RjsfForm["props"]["widgets"] = {
 const Form = ({
   data,
   schema,
-  dmmfSchema,
   resource,
   validation: validationProp,
   customInputs,
@@ -108,7 +105,6 @@ const Form = ({
   const { edit, id, ...schemas } = getSchemas(
     data,
     schema,
-    dmmfSchema,
     modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
   );
   const { router } = useRouterInternal();
@@ -116,7 +112,7 @@ const Form = ({
   const formRef = useRef<RjsfForm>(null);
   const [isPending, setIsPending] = useState(false);
   const allDisabled = edit && !canEdit;
-  const { runDeletion } = useDeleteAction(resource);
+  const { runSingleDeletion } = useDeleteAction(resource);
   const { showMessage } = useMessage();
   const { cleanAll } = useFormState();
   const { setFormData } = useFormData();
@@ -177,20 +173,20 @@ const Form = ({
                   } else {
                     try {
                       setIsPending(true);
-                      await runDeletion([id!] as string[] | number[]);
+                      await runSingleDeletion(id!);
                       router.replace({
                         pathname: `${basePath}/${slugify(resource)}`,
                         query: {
                           message: JSON.stringify({
                             type: "success",
-                            message: "Deleted successfully",
+                            message: t("form.delete.succeed"),
                           }),
                         },
                       });
                     } catch (e) {
                       showMessage({
                         type: "error",
-                        message: (e as Error).message,
+                        message: t((e as Error).message),
                       });
                     } finally {
                       setIsPending(false);
@@ -233,74 +229,68 @@ const Form = ({
             body: formData,
           }
         );
-
         const result = await response.json();
-
         if (result?.validation) {
           setValidation(result.validation);
         } else {
           setValidation(undefined);
         }
-
         if (result?.data) {
           setFormData(result.data);
           cleanAll();
         }
-
         if (result?.deleted) {
           return router.replace({
             pathname: `${basePath}/${slugify(resource)}`,
             query: {
               message: JSON.stringify({
                 type: "success",
-                message: "Deleted successfully",
+                message: t("form.delete.succeed"),
               }),
             },
           });
         }
-
         if (result?.created) {
           const pathname = result?.redirect
             ? `${basePath}/${slugify(resource)}`
             : `${basePath}/${slugify(resource)}/${result.createdId}`;
+
           return router.push({
             pathname,
             query: {
               message: JSON.stringify({
                 type: "success",
-                message: "Created successfully",
+                message: t("form.create.succeed"),
               }),
             },
           });
         }
-
         if (result?.updated) {
           const pathname = result?.redirect
             ? `${basePath}/${slugify(resource)}`
             : location.pathname;
-
           if (pathname === location.pathname) {
+            router.refresh();
             showMessage({
               type: "success",
-              message: "Updated successfully",
+              message: t("form.update.succeed"),
             });
           } else {
-            return router.push({
+            router.push({
               pathname,
               query: {
                 message: JSON.stringify({
                   type: "success",
-                  message: "Updated successfully",
+                  message: t("form.update.succeed"),
                 }),
               },
             });
           }
         }
-
         if (result?.error) {
           showMessage({
             type: "error",
-            message: result.error,
+            message: t(result.error),
           });
         }
       } finally {
@@ -310,7 +300,24 @@ const Form = ({
     [apiBasePath, id]
   );
 
-  const templates: RjsfForm["props"]["templates"] = {
+  const fields: RjsfFormProps["fields"] = useMemo(
+    () => ({
+      ArrayField: (props: FieldProps) => {
+        const customInput = customInputs?.[props.name as Field<ModelName>];
+        const improvedCustomInput = customInput
+          ? cloneElement(customInput, {
+              ...customInput.props,
+              mode: edit ? "edit" : "create",
+            })
+          : undefined;
+        return <ArrayField {...props} customInput={improvedCustomInput} />;
+      },
+      NullField,
+    }),
+    [customInputs, edit]
+  );
+
+  const templates: RjsfFormProps["templates"] = {
     FieldTemplate: (props: FieldTemplateProps) => {
       const {
         id,
@@ -423,6 +430,7 @@ const Form = ({
           required: props.required,
           disabled: props.disabled,
           mode: edit ? "edit" : "create",
+          item: data,
         });
       }
 
@@ -438,16 +446,22 @@ const Form = ({
       }
       if (schema?.format?.startsWith("richtext-")) {
         return (
-          <RichTextField
-            onChange={onChangeOverride || onTextChange}
-            readonly={readonly}
-            rawErrors={rawErrors}
-            name={props.name}
-            value={props.value}
-            schema={schema}
-            disabled={props.disabled}
-            required={props.required}
-          />
+          <Suspense
+            fallback={
+              <div className="h-48 animate-pulse rounded bg-gray-500" />
+            }
+          >
+            <RichTextField
+              onChange={onChangeOverride || onTextChange}
+              readonly={readonly}
+              rawErrors={rawErrors}
+              name={props.name}
+              value={props.value}
+              schema={schema}
+              disabled={props.disabled}
+              required={props.required}
+            />
+          </Suspense>
         );
       }
 
@@ -485,13 +499,18 @@ const Form = ({
     FieldErrorTemplate: ({ errors }) => {
       return errors ? (
         <div className="mt-1 text-sm text-red-600 dark:text-red-400">
-          {errors.map((error, idx) => {
-            if (typeof error === "string") {
-              return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
-            }
+          {errors.map(
+            (
+              error: NonNullable<FieldErrorProps["errors"]>[number],
+              idx: number
+            ) => {
+              if (typeof error === "string") {
+                return <React.Fragment key={idx}>{t(error)}</React.Fragment>;
+              }
 
-            return <React.Fragment key={idx}>{error}</React.Fragment>;
-          })}
+              return <React.Fragment key={idx}>{error}</React.Fragment>;
+            }
+          )}
         </div>
       ) : null;
     },
@@ -502,31 +521,69 @@ const Form = ({
         </span>
       ) : null;
     },
+    ButtonTemplates: {
+      SubmitButton: submitButton,
+    },
   };
 
-  const CustomForm = forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>(
-    (props, ref) => {
-      const { dirtyFields } = useFormState();
-      return (
-        <form
-          {...props}
-          ref={ref}
-          onSubmit={(e) => {
-            e.preventDefault();
-            const formValues = new FormData(e.target as HTMLFormElement);
-            const data = new FormData();
-            dirtyFields.forEach((field) => {
-              data.append(field, formValues.get(field) as string);
-            });
+  const CustomForm = useMemo(
+    () =>
+      forwardRef<HTMLFormElement, HTMLProps<HTMLFormElement>>((props, ref) => {
+        const { dirtyFields } = useFormState();
+        const { formData } = useFormData();
+        return (
+          <form
+            {...props}
+            ref={ref}
+            onSubmit={(e) => {
+              e.preventDefault();
+              const formValues = new FormData(e.target as HTMLFormElement);
+              const data = new FormData();
+              dirtyFields.forEach((field) => {
+                const schemaProperties =
+                  schema.properties[field as keyof typeof schema.properties];
+                const isFieldArrayOfFiles =
+                  schemaProperties?.type === "array" &&
+                  isFileUploadFormat(schemaProperties.format ?? "");
 
-            // @ts-expect-error
-            const submitter = e.nativeEvent.submitter as HTMLButtonElement;
-            data.append(submitter.name, submitter.value);
-            onSubmit(data);
-          }}
-        />
-      );
-    }
+                if (isFieldArrayOfFiles) {
+                  const files = formValues
+                    .getAll(field)
+                    .filter(
+                      (file) =>
+                        typeof file === "string" ||
+                        (file instanceof File && !!file.name)
+                    );
+                  const values = formData[
+                    field as keyof typeof formData
+                  ] as string[];
+
+                  values.forEach((val) => {
+                    data.append(field, val);
+                  });
+
+                  if (files.length > 0) {
+                    files.forEach((file) => {
+                      data.append(field, file);
+                    });
+                  } else {
+                    data.append(field, new File([], ""));
+                  }
+                  return;
+                }
+
+                data.append(field, formValues.get(field) as string);
+              });
+
+              // @ts-expect-error
+              const submitter = e.nativeEvent.submitter as HTMLButtonElement;
+              data.append(submitter.name, submitter.value);
+              onSubmit(data);
+            }}
+          />
+        );
+      }),
+    [onSubmit, schema]
   );
 
   const RjsfFormComponent = useMemo(
@@ -548,11 +605,8 @@ const Form = ({
             extraErrors={extraErrors}
             fields={fields}
             disabled={allDisabled}
-            formContext={{ isPending, dmmfSchema }}
-            templates={{
-              ...templates,
-              ButtonTemplates: { SubmitButton: submitButton },
-            }}
+            formContext={{ isPending, schema }}
+            templates={templates}
             widgets={widgets}
             ref={ref}
             className="relative"
@@ -564,7 +618,7 @@ const Form = ({
 
   return (
     <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8 ">
+      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
         <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
           <RjsfFormComponent ref={formRef} />
@@ -574,18 +628,23 @@ const Form = ({
   );
 };
 
-const FormWrapper = (props: FormProps) => {
+const FormWrapper = ({
+  clientActionsComponents,
+  relationshipsRawData,
+  ...props
+}: FormProps) => {
   return (
-    <>
+    <ClientActionDialogProvider componentsMap={clientActionsComponents}>
       <FormHeader {...props} />
-      <MessageProvider>
-        <FormDataProvider data={props.data}>
-          <FormStateProvider>
-            <Form {...props} />
-          </FormStateProvider>
-        </FormDataProvider>
-      </MessageProvider>
-    </>
+      <FormDataProvider
+        data={props.data}
+        relationshipsRawData={relationshipsRawData}
+      >
+        <FormStateProvider>
+          <Form {...props} />
+        </FormStateProvider>
+      </FormDataProvider>
+    </ClientActionDialogProvider>
   );
 };
 

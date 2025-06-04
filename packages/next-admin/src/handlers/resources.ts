@@ -5,18 +5,21 @@ import {
 } from "@prisma/client/runtime/library";
 import {
   EditFieldsOptions,
+  Model,
   ModelName,
+  ModelOptions,
   NextAdminOptions,
   Permission,
+  Schema,
   SubmitResourceResponse,
-  UploadParameters,
+  UploadedFile,
 } from "../types";
 import { hasPermission } from "../utils/permissions";
 import { getDataItem } from "../utils/prisma";
 import {
+  formatId,
   formattedFormData,
   getModelIdProperty,
-  getPrismaModelForResource,
   parseFormData,
 } from "../utils/server";
 import { uncapitalize } from "../utils/tools";
@@ -26,20 +29,52 @@ type DeleteResourceParams = {
   prisma: PrismaClient;
   resource: ModelName;
   body: string[] | number[];
+  modelOptions?: ModelOptions<ModelName>[ModelName];
 };
 
-export const deleteResource = ({
+export const deleteResource = async ({
   prisma,
   resource,
   body,
+  modelOptions,
 }: DeleteResourceParams) => {
   const modelIdProperty = getModelIdProperty(resource);
+
+  if (modelOptions?.middlewares?.delete) {
+    // @ts-expect-error
+    const resources = await prisma[uncapitalize(resource)].findMany({
+      where: {
+        [modelIdProperty]: {
+          in: body.map((id) => formatId(resource, id.toString())),
+        },
+      },
+    });
+
+    const middlewareExec: PromiseSettledResult<boolean>[] =
+      await Promise.allSettled(
+        // @ts-expect-error
+        resources.map(async (res) => {
+          const isSuccessDelete =
+            await modelOptions?.middlewares?.delete?.(res);
+
+          return isSuccessDelete;
+        })
+      );
+
+    if (
+      middlewareExec.some(
+        (exec) => exec.status === "rejected" || exec.value === false
+      )
+    ) {
+      return false;
+    }
+  }
 
   // @ts-expect-error
   return prisma[uncapitalize(resource)].deleteMany({
     where: {
       [modelIdProperty]: {
-        in: body,
+        in: body.map((id) => formatId(resource, id.toString())),
       },
     },
   });
@@ -48,10 +83,10 @@ export const deleteResource = ({
 type SubmitResourceParams = {
   prisma: PrismaClient;
   resource: ModelName;
-  body: Record<string, string | UploadParameters | null>;
+  body: Record<string, string | (UploadedFile | string)[] | null>;
   id?: string | number;
   options?: NextAdminOptions;
-  schema: any;
+  schema: Schema;
 };
 
 export const submitResource = async ({
@@ -64,8 +99,14 @@ export const submitResource = async ({
 }: SubmitResourceParams): Promise<SubmitResourceResponse> => {
   const { __admin_redirect: redirect, ...formValues } = body;
 
-  const dmmfSchema = getPrismaModelForResource(resource);
-  const parsedFormData = parseFormData(formValues, dmmfSchema?.fields!);
+  const schemaDefinition = schema.definitions[resource];
+  const parsedFormData = parseFormData(
+    formValues,
+    schemaDefinition,
+    options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
+      typeof resource
+    >
+  );
   const resourceIdField = getModelIdProperty(resource);
 
   const fields = options?.model?.[resource]?.edit?.fields as EditFieldsOptions<
@@ -76,14 +117,7 @@ export const submitResource = async ({
     validate(parsedFormData, fields);
 
     const { formattedData, complementaryFormattedData, errors } =
-      await formattedFormData(
-        formValues,
-        dmmfSchema?.fields!,
-        schema,
-        resource,
-        id,
-        fields
-      );
+      await formattedFormData(formValues, schema, resource, id, fields, prisma);
 
     if (errors.length) {
       return {
@@ -105,22 +139,50 @@ export const submitResource = async ({
         };
       }
 
-      // @ts-expect-error
-      await prisma[resource].update({
-        where: {
-          [resourceIdField]: id,
-        },
-        data: formattedData,
+      await prisma.$transaction(async (client) => {
+        let canEdit = true;
+        if (options?.model?.[resource]?.middlewares?.edit) {
+          const currentData = await prisma[
+            uncapitalize(resource)
+            // @ts-expect-error
+          ].findUniqueOrThrow({
+            where: {
+              [resourceIdField]: formatId(resource, id.toString()),
+            },
+          });
+
+          canEdit = await options?.model?.[resource]?.middlewares?.edit(
+            formattedData,
+            currentData
+          );
+        }
+
+        if (!canEdit) {
+          throw new Error("Unable to edit this item");
+        }
+
+        // @ts-expect-error
+        await prisma[resource].update({
+          where: {
+            [resourceIdField]: id,
+          },
+          data: formattedData,
+        });
       });
 
-      const data = await getDataItem({
+      const { data, relationshipsRawData } = await getDataItem({
         prisma,
         resource,
         resourceId: id,
         options,
       });
 
-      return { updated: true, data, redirect: redirect === "list" };
+      return {
+        updated: true,
+        data,
+        redirect: redirect === "list",
+        relationshipsRawData,
+      };
     }
 
     if (!hasPermission(options?.model?.[resource], Permission.CREATE)) {
@@ -142,7 +204,7 @@ export const submitResource = async ({
       data: complementaryFormattedData,
     });
 
-    const responseData = await getDataItem({
+    const { data: responseData, relationshipsRawData } = await getDataItem({
       prisma,
       resource,
       resourceId: data[resourceIdField],
@@ -154,6 +216,7 @@ export const submitResource = async ({
       createdId: data[resourceIdField],
       data: responseData,
       redirect: redirect === "list",
+      relationshipsRawData,
     };
   } catch (error: any) {
     if (

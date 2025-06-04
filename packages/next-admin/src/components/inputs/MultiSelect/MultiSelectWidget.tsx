@@ -6,12 +6,18 @@ import { useFormState } from "../../../context/FormStateContext";
 import { useI18n } from "../../../context/I18nContext";
 import useClickOutside from "../../../hooks/useCloseOnOutsideClick";
 import { useDisclosure } from "../../../hooks/useDisclosure";
-import { Enumeration, Field, ModelName } from "../../../types";
+import {
+  Enumeration,
+  Field,
+  ModelName,
+  RelationshipPagination,
+} from "../../../types";
 import Button from "../../radix/Button";
 import { Selector } from "../Selector";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectDisplayTable from "./MultiSelectDisplayTable";
 import MultiSelectItem from "./MultiSelectItem";
+import { useFormData } from "../../../utils";
 
 type Props = {
   options?: Enumeration[];
@@ -32,6 +38,7 @@ const MultiSelectWidget = (props: Props) => {
   const { setFieldDirty } = useFormState();
   const fieldOptions =
     globalOptions?.model?.[resource!]?.edit?.fields?.[name as Field<ModelName>];
+  const { relationshipsRawData } = useFormData();
 
   const onRemoveClick = (value: any) => {
     setFieldDirty(name);
@@ -42,8 +49,13 @@ const MultiSelectWidget = (props: Props) => {
 
   const displayMode =
     !!fieldOptions && "display" in fieldOptions
-      ? fieldOptions.display ?? "select"
+      ? (fieldOptions.display ?? "select")
       : "select";
+
+  const fieldPagination =
+    !!fieldOptions && "pagination" in fieldOptions
+      ? (fieldOptions.pagination as RelationshipPagination)
+      : undefined;
 
   const fieldSortable =
     // @ts-expect-error
@@ -117,6 +129,7 @@ const MultiSelectWidget = (props: Props) => {
               setFieldDirty(name);
               onChange(value);
             }}
+            pagination={fieldPagination}
           />
 
           <Button
@@ -137,6 +150,8 @@ const MultiSelectWidget = (props: Props) => {
             schema={schema}
             onRemoveClick={onRemoveClick}
             deletable={!props.disabled}
+            pagination={fieldPagination}
+            rawData={relationshipsRawData?.[name]}
           />
 
           <Button

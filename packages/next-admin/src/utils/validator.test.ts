@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { validate } from "../utils/validator";
 
 describe("validator", () => {
@@ -23,6 +24,6 @@ describe("validator", () => {
           },
         }
       )
-    ).toThrow("Validation error");
+    ).toThrow("form.validation.error");
   });
 });

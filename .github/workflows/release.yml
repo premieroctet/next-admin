@@ -16,22 +16,25 @@ jobs:
       - name: Checkout Repo
         uses: actions/checkout@v3
 
+      - name: Enable corepack
+        run: corepack enable && corepack prepare pnpm@9.12.3 --activate
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install Dependencies
-        run: yarn install
+        run: pnpm install
 
-      - name: Link
-        run: yarn lint
+      - name: Lint
+        run: pnpm lint
 
       - name: Create Release Pull Request or Publish (${{ github.ref_name }})
         uses: changesets/action@v1
         with:
-          version: yarn changeset-version
-          publish: yarn publish-package
+          version: pnpm changeset-version
+          publish: pnpm publish-packages
           title: ${{github.ref_name}} — Version Packages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,14 +1,11 @@
-import dynamic from "next/dynamic";
-import { AdminComponentProps, CustomUIProps } from "../types";
+import merge from "lodash.merge";
+import type { AdminComponentProps, CustomUIProps } from "../types";
 import { getSchemaForResource } from "../utils/jsonSchema";
-import { getCustomInputs } from "../utils/options";
+import { getClientActionsComponents, getCustomInputs } from "../utils/options";
 import Dashboard from "./Dashboard";
 import Form from "./Form";
 import List from "./List";
 import { MainLayout } from "./MainLayout";
-import PageLoader from "./PageLoader";
-
-const Head = dynamic(() => import("next/head"));
 
 // Components
 export function NextAdmin({
@@ -20,7 +17,6 @@ export function NextAdmin({
   resources,
   slug,
   total,
-  dmmfSchema,
   dashboard,
   validation,
   isAppDir,
@@ -28,8 +24,9 @@ export function NextAdmin({
   resourcesTitles,
   resourcesIdProperty,
   customInputs: customInputsProp,
+  dialogComponents: dialogComponentsProp,
   customPages,
-  actions: actionsProp,
+  actions,
   translations,
   locale,
   title,
@@ -37,6 +34,10 @@ export function NextAdmin({
   resourcesIcons,
   user,
   externalLinks,
+  pageLoader,
+  rawData,
+  relationshipsRawData,
+  listFilterOptions,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -44,14 +45,21 @@ export function NextAdmin({
     );
   }
 
-  const actions =
-    actionsProp || (resource ? options?.model?.[resource]?.actions : undefined);
+  let mergedActions = merge(
+    actions ?? [],
+    resource ? options?.model?.[resource]?.actions : []
+  );
 
   const modelSchema =
     resource && schema ? getSchemaForResource(schema, resource) : undefined;
 
   const resourceTitle = resourcesTitles?.[resource!] ?? resource;
   const resourceIcon = resourcesIcons?.[resource!];
+  const dialogComponents = resource
+    ? isAppDir
+      ? dialogComponentsProp
+      : getClientActionsComponents(resource, options)
+    : undefined;
 
   const renderMainComponent = () => {
     if (Array.isArray(data) && resource && typeof total != "undefined") {
@@ -63,9 +71,12 @@ export function NextAdmin({
           total={total}
           title={resourceTitle!}
           resourcesIdProperty={resourcesIdProperty!}
-          actions={actions}
+          actions={mergedActions}
           icon={resourceIcon}
           schema={schema!}
+          clientActionsComponents={dialogComponents}
+          rawData={rawData!}
+          listFilterOptions={listFilterOptions}
         />
       );
     }
@@ -73,21 +84,22 @@ export function NextAdmin({
     if ((data && !Array.isArray(data)) || (modelSchema && !data)) {
       const customInputs = isAppDir
         ? customInputsProp
-        : getCustomInputs(resource!, options!);
+        : getCustomInputs(resource!, options);
 
       return (
         <Form
           data={data}
           slug={slug}
           schema={modelSchema}
-          dmmfSchema={dmmfSchema!}
           resource={resource!}
           validation={validation}
           title={resourceTitle!}
           customInputs={customInputs}
-          actions={actions}
+          actions={mergedActions}
           icon={resourceIcon}
           resourcesIdProperty={resourcesIdProperty!}
+          clientActionsComponents={dialogComponents}
+          relationshipsRawData={relationshipsRawData}
         />
       );
     }
@@ -98,16 +110,11 @@ export function NextAdmin({
     }
   };
 
+  const titleElement = isAppDir ? title : options?.title;
+
   return (
     <>
-      <PageLoader />
-      {!isAppDir && (
-        <Head>
-          <title>{title}</title>
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-          <link rel="icon" href="/favicon.ico" />
-        </Head>
-      )}
+      {pageLoader}
       <MainLayout
         resource={resource}
         resources={resources}
@@ -118,14 +125,14 @@ export function NextAdmin({
         isAppDir={isAppDir}
         translations={translations}
         locale={locale}
-        title={title}
+        title={titleElement}
         sidebar={sidebar}
         resourcesIcons={resourcesIcons}
         user={user}
         externalLinks={externalLinks}
         options={options}
-        dmmfSchema={dmmfSchema}
         resourcesIdProperty={resourcesIdProperty!}
+        schema={schema}
       >
         {renderMainComponent()}
       </MainLayout>

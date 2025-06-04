@@ -4,7 +4,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { WidgetProps } from "@rjsf/utils";
 import clsx from "clsx";
-import Link from "next/link";
+import Link from "../common/Link";
 import { useMemo } from "react";
 import DoubleArrow from "../../assets/icons/DoubleArrow";
 import { useConfig } from "../../context/ConfigContext";
@@ -36,7 +36,7 @@ const SelectWidget = ({
 
   const { basePath } = useConfig();
 
-  const handleChange = (option: Enumeration) => {
+  const handleChange = (option: Enumeration | null) => {
     setFieldDirty(props.name);
     onChange(option);
     onClose();
@@ -95,7 +95,7 @@ const SelectWidget = ({
               className="flex items-center"
               onClick={(e) => {
                 e.preventDefault();
-                onChange({});
+                handleChange(null);
               }}
             >
               <XMarkIcon className="h-5 w-5 cursor-pointer text-gray-400" />

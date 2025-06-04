@@ -1,0 +1,17 @@
+diff --git a/lib/mergeDefaultsWithFormData.js b/lib/mergeDefaultsWithFormData.js
+index 23f33ea8aa96b4971de9f0700f62b319cb9b6ffe..73e1087f28bf44f51b09a9200070b3a81fa5dac1 100644
+--- a/lib/mergeDefaultsWithFormData.js
++++ b/lib/mergeDefaultsWithFormData.js
+@@ -49,10 +49,10 @@ export default function mergeDefaultsWithFormData(defaults, formData, mergeExtra
+             const keyValue = get(formData, key);
+             const keyExistsInDefaults = isObject(defaults) && key in defaults;
+             const keyExistsInFormData = key in formData;
+-            acc[key] = mergeDefaultsWithFormData(defaults ? get(defaults, key) : {}, keyValue, mergeExtraArrayDefaults, defaultSupercedesUndefined, 
++            acc[key] = mergeDefaultsWithFormData(defaults ? get(defaults, key) : {}, keyValue, mergeExtraArrayDefaults, defaultSupercedesUndefined,
+             // overrideFormDataWithDefaults can be true only when the key value exists in defaults
+             // Or if the key value doesn't exist in formData
+-            overrideFormDataWithDefaults && (keyExistsInDefaults || !keyExistsInFormData));
++            overrideFormDataWithDefaults && (keyExistsInDefaults && !keyExistsInFormData));
+             return acc;
+         }, acc);
+     }

@@ -1,7 +1,7 @@
-import { Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
-import { NextApiRequest } from "next";
+import type { NextApiRequest } from "next";
 import { Writable } from "node:stream";
 import {
   AdminFormData,
@@ -10,59 +10,133 @@ import {
   Enumeration,
   Field,
   Model,
+  ModelAction,
   ModelName,
   ModelWithoutRelationships,
   NextAdminOptions,
   ObjectField,
+  OutputModelAction,
   ScalarField,
   Schema,
-  UploadParameters,
+  SchemaDefinitions,
+  SchemaProperty,
+  UploadedFile,
 } from "../types";
-import { isNativeFunction, isUploadParameters, pipe } from "./tools";
+import { getSchema, getResources as getResourcesInit } from "./globals";
+import { getRawData } from "./prisma";
+import {
+  isFileUploadFormat,
+  isNativeFunction,
+  isUploadFile,
+  pipe,
+  uncapitalize,
+} from "./tools";
 
-export const models: readonly Prisma.DMMF.Model[] = Prisma.dmmf.datamodel
-  .models as Prisma.DMMF.Model[];
-export const enums = Prisma.dmmf.datamodel.enums;
-export const resources = models.map((model) => model.name as ModelName);
-
-const getEnumValues = (enumName: string) => {
-  const enumValues = enums.find((en) => en.name === enumName);
-  return enumValues?.values;
+export const getJsonSchema = (): Schema => {
+  return getSchema();
 };
 
-export const enumValueForEnumType = (enumName: string, value: string) => {
-  const enumValues = getEnumValues(enumName);
-
-  if (enumValues) {
-    return enumValues.find((enumValue) => enumValue.name === value);
+export const enumValueForEnumType = (
+  definition: Schema["definitions"][ModelName],
+  value: string
+): string | false | undefined => {
+  if (definition.enum) {
+    return definition.enum.find((enumValue) => enumValue === value) as
+      | string
+      | undefined;
   }
 
   return false;
 };
 
-export const getPrismaModelForResource = (
-  resource: ModelName
-): Prisma.DMMF.Model | undefined =>
-  models.find((datamodel) => datamodel.name === resource);
+export const getEnableToExecuteActions = async <M extends ModelName>(
+  resource: M,
+  prisma: PrismaClient,
+  ids: string[] | number[],
+  actions?: Omit<ModelAction<M>, "action">[]
+): Promise<OutputModelAction | undefined> => {
+  if (actions?.some((action) => action.canExecute)) {
+    const maxDepth = Math.max(0, ...actions.map((action) => action.depth ?? 0));
+
+    const data: Model<typeof resource>[] = await getRawData<typeof resource>({
+      prisma,
+      resource,
+      resourceIds: ids,
+      // Apply the default value if its 0
+      maxDepth: maxDepth || undefined,
+    });
+
+    return actions?.reduce(
+      async (acc, action) => {
+        const accResolved = await acc;
+        const { canExecute, ...restAction } = action;
+        if (canExecute) {
+          const allowedIds = data
+            .filter((item) =>
+              (canExecute as (item: Model<typeof resource>) => boolean)(item)
+            )
+            .map(
+              (item) =>
+                item[
+                  getModelIdProperty(resource) as keyof Model<typeof resource>
+                ]
+            ) as string[] | number[];
+
+          accResolved.push({ ...restAction, allowedIds });
+        } else {
+          accResolved.push(restAction);
+        }
+        return Promise.resolve(accResolved);
+      },
+      Promise.resolve([] as OutputModelAction)
+    );
+  } else {
+    return actions?.map((action) => {
+      const { canExecute, ...restAction } = action;
+      return restAction;
+    });
+  }
+};
 
 export const getModelIdProperty = (model: ModelName) => {
-  const prismaModel = models.find((m) => m.name === model);
-  const idField = prismaModel?.fields.find((f) => f.isId);
-  return idField?.name ?? "id";
+  const schemaModel = getSchema().definitions[model];
+
+  if (!schemaModel || !schemaModel.properties) {
+    return "id";
+  }
+
+  const schemaModelProperty = schemaModel.properties;
+
+  return (
+    Object.keys(schemaModelProperty).find(
+      (property) =>
+        schemaModelProperty[property as keyof typeof schemaModelProperty]
+          ?.__nextadmin?.primaryKey
+    ) ?? "id"
+  );
 };
 
 const getDeepRelationModel = <M extends ModelName>(
   model: M,
   property: Field<M>
-): Prisma.DMMF.Field | undefined => {
-  const prismaModel = getPrismaModelForResource(model);
-  const relationField = prismaModel?.fields.find((f) => f.name === property);
+) => {
+  const schemaModel = getSchema().definitions[
+    model
+  ] as SchemaDefinitions[ModelName];
+  const schemaModelProperty = schemaModel.properties;
+
+  const relationField =
+    schemaModelProperty[property as keyof typeof schemaModelProperty];
   return relationField;
 };
 
 export const modelHasIdField = (model: ModelName) => {
-  const prismaModel = models.find((m) => m.name === model);
-  return !!prismaModel?.fields.some((f) => f.isId);
+  const schemaModel = getSchema().definitions[model];
+  const schemaModelProperty = schemaModel.properties;
+
+  return Object.entries(schemaModelProperty).some(
+    ([, value]) => value.__nextadmin?.primaryKey
+  );
 };
 
 export const getResources = (
@@ -71,7 +145,7 @@ export const getResources = (
   const definedModels = options?.model
     ? (Object.keys(options.model) as Prisma.ModelName[])
     : [];
-  return definedModels.length > 0 ? definedModels : resources;
+  return definedModels.length > 0 ? definedModels : getResourcesInit();
 };
 
 export const getToStringForRelations = <M extends ModelName>(
@@ -125,8 +199,7 @@ export const getToStringForModel = <M extends ModelName>(
 const orderSchema =
   (resource: ModelName, options?: NextAdminOptions) => (schema: Schema) => {
     const modelName = resource;
-    const model = models.find((model) => model.name === modelName);
-    if (!model) return schema;
+    if (!schema.definitions[resource]) return schema;
     const edit = options?.model?.[modelName]?.edit as EditOptions<
       typeof modelName
     >;
@@ -165,28 +238,34 @@ export const fillRelationInSchema =
   (resource: ModelName, options?: NextAdminOptions) =>
   async (schema: Schema) => {
     const modelName = resource;
-    const model = models.find((model) => model.name === modelName);
+    const modelSchema = schema.definitions[
+      modelName
+    ] as SchemaDefinitions[ModelName];
+    const modelProperties = modelSchema?.properties;
     const display = options?.model?.[modelName]?.edit?.display;
     let fields;
-    if (model?.fields && display) {
-      fields = model.fields?.filter((field) => display.includes(field.name));
+    if (modelProperties && display) {
+      fields = Object.entries(modelProperties).filter(([field]) =>
+        display.includes(field)
+      );
     } else {
-      fields = model?.fields;
+      fields = Object.entries(modelProperties);
     }
 
-    if (!model || !fields) return schema;
+    if (!modelSchema || !fields) return schema;
+
     await Promise.all(
-      fields.map(async (field) => {
-        const fieldName = field.name as Field<typeof modelName>;
-        const fieldType = field.type;
-        const fieldKind = field.kind;
-        const relationToFields = field.relationToFields;
-        const relationFromFields = field.relationFromFields;
+      fields.map(async ([name, value]) => {
+        const fieldName = name as Field<typeof modelName>;
+        const fieldNextAdmin = value.__nextadmin;
+        const fieldType = fieldNextAdmin?.type;
+        const fieldKind = fieldNextAdmin?.kind;
+        const relationFromField = fieldNextAdmin?.relation?.fromField;
 
         if (fieldKind === "enum") {
           const fieldValue =
             schema.definitions[modelName].properties[
-              field.name as Field<typeof modelName>
+              name as Field<typeof modelName>
             ];
           if (fieldValue) {
             fieldValue.enum = fieldValue.enum?.map((item) =>
@@ -204,51 +283,46 @@ export const fillRelationInSchema =
         if (fieldKind === "object") {
           const modelNameRelation = fieldType as ModelName;
 
-          if (relationToFields!.length > 0) {
+          let fieldValue =
+            schema.definitions[modelName].properties[
+              name as Field<typeof modelName>
+            ];
+
+          if (!fieldValue) return;
+
+          delete fieldValue.$ref;
+
+          const enumeration: Enumeration[] = [];
+          const required = schema.definitions[modelName].required;
+          const relationFromFieldsRequired = required?.includes(
+            relationFromField!
+          );
+
+          if (relationFromFieldsRequired) {
+            required?.push(fieldName);
+            schema.definitions[modelName].required = required;
+          }
+
+          if (fieldValue.type !== "array") {
             //Relation One-to-Many, Many side
-            const enumeration: Enumeration[] = [];
-            schema.definitions[modelName].properties[fieldName] = {
+            fieldValue.type = "string";
+            fieldValue.relation = modelNameRelation;
+            fieldValue.enum = enumeration;
+            fieldValue.__nextadmin = fieldNextAdmin;
+          } else {
+            //Relation Many-to-One
+            fieldValue.items = {
               type: "string",
               relation: modelNameRelation,
               enum: enumeration,
             };
 
-            const required = schema.definitions[modelName].required;
-            const relationFromFieldsRequired = relationFromFields?.every(
-              (field) => required?.includes(field)
-            );
-
-            if (relationFromFieldsRequired) {
-              required?.push(fieldName);
-              schema.definitions[modelName].required = required;
-            }
-          } else {
-            const fieldValue =
-              schema.definitions[modelName].properties[
-                field.name as Field<typeof modelName>
-              ];
-            if (fieldValue) {
-              const enumeration: Enumeration[] = [];
-
-              if (fieldValue.type === "array") {
-                //Relation Many-to-One
-                fieldValue.items = {
-                  type: "string",
-                  relation: modelNameRelation,
-                  enum: enumeration,
-                };
-              } else {
-                //Relation One-to-One
-                fieldValue.type = "string";
-                fieldValue.relation = modelNameRelation;
-                fieldValue.enum = enumeration;
-                delete fieldValue.anyOf;
-              }
-            }
+            delete fieldValue.anyOf;
           }
         }
       })
     );
+
     return schema;
   };
 
@@ -262,149 +336,158 @@ export const transformData = <M extends ModelName>(
   options?: NextAdminOptions
 ) => {
   const modelName = resource;
-  const model = models.find((model) => model.name === modelName);
+  const model = getSchema().definitions[
+    modelName
+  ] as SchemaDefinitions[ModelName];
   if (!model) return data;
 
-  return Object.keys(data).reduce((acc, key) => {
-    const field = model.fields?.find((field) => field.name === key);
-    const fieldKind = field?.kind;
-    const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
-    const explicitManyToManyRelationField =
-      // @ts-expect-error
-      editOptions?.fields?.[key as Field<M>]?.relationshipSearchField;
+  const schemaProperties = model.properties;
 
-    if (get) {
-      acc[key] = get(data[key]);
-    } else if (fieldKind === "enum") {
-      const value = data[key];
-      if (Array.isArray(value)) {
-        acc[key] = value.map((item) => {
-          return { label: item, value: item };
-        });
-      } else {
-        acc[key] = value ? { label: value, value } : null;
-      }
-    } else if (fieldKind === "object") {
-      const modelRelation = field!.type as ModelName;
-      const modelRelationIdField = getModelIdProperty(modelRelation);
-      let deepRelationModel: Prisma.DMMF.Field | undefined;
-      let deepModelRelationIdField: string;
+  return Object.keys(data).reduce(
+    async (accP, key) => {
+      const acc = await accP;
+      const field = schemaProperties[key as keyof typeof schemaProperties];
+      const fieldKind = field?.__nextadmin?.kind;
+      const get = editOptions?.fields?.[key as Field<M>]?.handler?.get;
+      const explicitManyToManyRelationField =
+        // @ts-expect-error
+        editOptions?.fields?.[key as Field<M>]?.relationshipSearchField;
 
-      if (explicitManyToManyRelationField) {
-        deepRelationModel = getDeepRelationModel(
-          modelRelation,
+      if (get) {
+        acc[key] = await get(data[key]);
+      } else if (fieldKind === "enum") {
+        const value = data[key];
+        if (Array.isArray(value)) {
+          acc[key] = value.map((item) => {
+            return { label: item, value: item };
+          });
+        } else {
+          acc[key] = value ? { label: value, value } : null;
+        }
+      } else if (fieldKind === "object") {
+        const modelRelation = field?.__nextadmin?.type as ModelName;
+        const modelRelationIdField = getModelIdProperty(modelRelation);
+        let deepRelationModel:
+          | SchemaProperty<ModelName>[Field<ModelName>]
+          | undefined;
+        let deepModelRelationIdField: string;
+
+        if (explicitManyToManyRelationField) {
+          deepRelationModel = getDeepRelationModel(
+            modelRelation,
+            explicitManyToManyRelationField
+          );
+          deepModelRelationIdField = getModelIdProperty(
+            deepRelationModel?.__nextadmin?.type as ModelName
+          );
+        }
+
+        const toStringForRelations = getToStringForRelations(
+          modelName,
+          key as Field<M>,
           explicitManyToManyRelationField
+            ? (deepRelationModel?.__nextadmin?.type as ModelName)
+            : modelRelation,
+          options
         );
-        deepModelRelationIdField = getModelIdProperty(
-          deepRelationModel?.type as ModelName
-        );
-      }
 
-      const toStringForRelations = getToStringForRelations(
-        modelName,
-        key as Field<M>,
-        explicitManyToManyRelationField
-          ? (deepRelationModel?.type as ModelName)
-          : modelRelation,
-        options
-      );
-
-      if (Array.isArray(data[key])) {
-        acc[key] = data[key].map((item: any) => {
-          if (
-            !!editOptions?.fields?.[key as Field<M>] &&
-            "display" in editOptions.fields[key as Field<M>]! &&
-            // @ts-expect-error
-            editOptions.fields[key as keyof ObjectField<M>]!.display === "table"
-          ) {
-            return {
-              data: item,
-              value: item[modelRelationIdField].value,
-            };
-          }
-
-          return {
-            label: explicitManyToManyRelationField
-              ? toStringForRelations(item[explicitManyToManyRelationField])
-              : toStringForRelations(item),
-            value: explicitManyToManyRelationField
-              ? item[explicitManyToManyRelationField]?.[
-                  deepModelRelationIdField
-                ]
-              : item[modelRelationIdField],
-            data: {
-              modelName: deepRelationModel?.type as ModelName,
-            },
-          };
-        });
-      } else {
-        acc[key] = data[key]
-          ? {
-              label: toStringForRelations(data[key]),
-              value: data[key][modelRelationIdField],
+        if (Array.isArray(data[key])) {
+          acc[key] = data[key].map((item: any) => {
+            if (
+              !!editOptions?.fields?.[key as Field<M>] &&
+              "display" in editOptions.fields[key as Field<M>]! &&
+              // @ts-expect-error
+              editOptions.fields[key as keyof ObjectField<M>]!.display ===
+                "table"
+            ) {
+              return {
+                data: item,
+                value: item[modelRelationIdField].value,
+              };
             }
-          : null;
-      }
-    } else if (field?.isList && field.kind === "scalar") {
-      acc[key] = data[key];
-    } else {
-      const fieldTypes = field?.type;
-      if (fieldTypes === "DateTime") {
-        acc[key] = data[key] ? data[key].toISOString() : null;
-      } else if (fieldTypes === "Json") {
-        acc[key] = data[key] ? JSON.stringify(data[key]) : null;
-      } else if (fieldTypes === "Decimal") {
-        acc[key] = data[key] ? Number(data[key]) : null;
-      } else if (fieldTypes === "BigInt") {
-        acc[key] = data[key] ? BigInt(data[key]).toString() : null;
+
+            return {
+              label: explicitManyToManyRelationField
+                ? toStringForRelations(item[explicitManyToManyRelationField])
+                : toStringForRelations(item),
+              value: explicitManyToManyRelationField
+                ? item[explicitManyToManyRelationField]?.[
+                    deepModelRelationIdField
+                  ]
+                : item[modelRelationIdField],
+              data: {
+                modelName:
+                  (deepRelationModel?.__nextadmin?.type as ModelName) ?? null,
+              },
+            };
+          });
+        } else {
+          acc[key] = data[key]
+            ? {
+                label: toStringForRelations(data[key]),
+                value: data[key][modelRelationIdField],
+              }
+            : null;
+        }
+      } else if (
+        field?.__nextadmin?.isList &&
+        field.__nextadmin?.kind === "scalar"
+      ) {
+        acc[key] = data[key];
       } else {
-        acc[key] = data[key] ? data[key] : null;
+        const fieldTypes = field?.__nextadmin?.type;
+        if (fieldTypes === "DateTime") {
+          acc[key] = data[key] ? data[key].toISOString() : null;
+        } else if (fieldTypes === "Json") {
+          acc[key] = data[key] ? JSON.stringify(data[key]) : null;
+        } else if (fieldTypes === "Decimal") {
+          acc[key] = data[key] ? Number(data[key]) : null;
+        } else if (fieldTypes === "BigInt") {
+          acc[key] = data[key] ? BigInt(data[key]).toString() : null;
+        } else {
+          acc[key] = data[key] ? data[key] : null;
+        }
       }
-    }
-    return acc;
-  }, {} as any);
+      return acc;
+    },
+    Promise.resolve({}) as any
+  );
 };
 
 /**
  * Fill fields in data with the their values and url for the related model
  *
  * @param data
- * @param dmmfSchema
+ * @param schema
  *
  * @returns data
  * */
 export const findRelationInData = (
   data: any[],
-  dmmfSchema?: readonly Prisma.DMMF.Field[]
+  schema: SchemaDefinitions[ModelName]
 ) => {
-  dmmfSchema?.forEach((dmmfProperty) => {
-    const dmmfPropertyName = dmmfProperty.name;
-    const dmmfPropertyType = dmmfProperty.type;
-    const dmmfPropertyKind = dmmfProperty.kind;
-    const dmmfPropertyRelationFromFields = dmmfProperty.relationFromFields;
-    const dmmfPropertyRelationToFields = dmmfProperty.relationToFields;
+  Object.entries(schema.properties).forEach(([property, value]) => {
+    const propertyType = value.__nextadmin?.type;
+    const propertyKind = value.__nextadmin?.kind;
+    const propertyRelationFrom = value.__nextadmin?.relation?.fromField;
+    const propertyRelationToField = value.__nextadmin?.relation?.toField;
+    const isList = value.__nextadmin?.isList;
 
-    if (dmmfPropertyKind === "object") {
+    if (propertyKind === "object") {
       /**
        * Handle one-to-one relation
        * Make sure that we are in a relation that is not a list
        * because one side of a one-to-one relation will not have relationFromFields
        */
-      if (
-        (dmmfPropertyRelationFromFields!.length > 0 &&
-          dmmfPropertyRelationToFields!.length > 0) ||
-        !dmmfProperty.isList
-      ) {
-        const idProperty = getModelIdProperty(dmmfProperty.type as ModelName);
+      if (propertyRelationFrom && propertyRelationToField && !isList) {
+        const idProperty = getModelIdProperty(propertyType as ModelName);
         data.forEach((item) => {
-          if (item[dmmfPropertyName]) {
-            item[dmmfPropertyName] = {
+          if (item[property]) {
+            item[property] = {
               type: "link",
               value: {
-                label: item[dmmfPropertyName],
-                url: `${dmmfProperty.type as ModelName}/${
-                  item[dmmfPropertyName][idProperty]
-                }`,
+                label: item[property],
+                url: `${uncapitalize(propertyType as ModelName)}/${item[property][idProperty]}`,
               },
             };
           }
@@ -412,10 +495,10 @@ export const findRelationInData = (
         });
       } else {
         data.forEach((item) => {
-          if (item[dmmfPropertyName]) {
-            item[dmmfPropertyName] = {
+          if (item[property]) {
+            item[property] = {
               type: "count",
-              value: item[dmmfPropertyName].length,
+              value: item[property].length,
             };
           }
           return item;
@@ -423,12 +506,12 @@ export const findRelationInData = (
       }
     }
 
-    if (["scalar", "enum"].includes(dmmfPropertyKind) && dmmfProperty.isList) {
+    if (["scalar", "enum"].includes(propertyKind ?? "") && isList) {
       data.forEach((item) => {
-        if (item[dmmfPropertyName]) {
-          item[dmmfPropertyName] = {
+        if (item[property]) {
+          item[property] = {
             type: "count",
-            value: item[dmmfPropertyName].length,
+            value: item[property].length,
           };
         }
         return item;
@@ -436,23 +519,21 @@ export const findRelationInData = (
     }
 
     if (
-      dmmfPropertyType === "DateTime" ||
-      dmmfPropertyType === "Decimal" ||
-      dmmfPropertyType === "BigInt"
+      propertyType === "DateTime" ||
+      propertyType === "Decimal" ||
+      propertyType === "BigInt"
     ) {
       data.forEach((item) => {
-        if (item[dmmfProperty.name]) {
-          if (dmmfPropertyType === "DateTime") {
-            item[dmmfProperty.name] = {
+        if (item[property]) {
+          if (propertyType === "DateTime") {
+            item[property] = {
               type: "date",
-              value: item[dmmfProperty.name].toISOString(),
+              value: item[property].toISOString(),
             };
-          } else if (dmmfPropertyType === "Decimal") {
-            item[dmmfProperty.name] = Number(item[dmmfProperty.name]);
-          } else if (dmmfPropertyType === "BigInt") {
-            item[dmmfProperty.name] = BigInt(
-              item[dmmfProperty.name]
-            ).toString();
+          } else if (propertyType === "Decimal") {
+            item[property] = Number(item[property]);
+          } else if (propertyType === "BigInt") {
+            item[property] = BigInt(item[property]).toString();
           }
         } else {
           return item;
@@ -465,39 +546,49 @@ export const findRelationInData = (
 
 export const parseFormData = <M extends ModelName>(
   formData: AdminFormData<M>,
-  dmmfSchema: readonly Prisma.DMMF.Field[]
+  schemaResource: SchemaDefinitions[ModelName],
+  editFieldOptions?: EditFieldsOptions<M>
 ): Partial<ModelWithoutRelationships<M>> => {
   const parsedData: Partial<ModelWithoutRelationships<M>> = {};
-  dmmfSchema.forEach((dmmfProperty) => {
-    if (dmmfProperty.name in formData) {
-      const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
-      const dmmfPropertyType = dmmfProperty.type;
-      const dmmfPropertyKind = dmmfProperty.kind;
-      if (dmmfPropertyKind === "object") {
-        if (formData[dmmfPropertyName]) {
-          parsedData[dmmfPropertyName] = formData[
-            dmmfPropertyName
-          ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+  Object.entries(schemaResource.properties).forEach(([property, value]) => {
+    if (property in formData) {
+      const formPropertyName = property as keyof ScalarField<M>;
+      const propertyNextAdminData = value.__nextadmin;
+      const propertyType = propertyNextAdminData?.type;
+      const propertyKind = propertyNextAdminData?.kind;
+
+      if (propertyKind === "object") {
+        if (formData[formPropertyName]) {
+          parsedData[formPropertyName] = formData[
+            formPropertyName
+          ] as unknown as ModelWithoutRelationships<M>[typeof formPropertyName];
         } else {
-          parsedData[dmmfPropertyName] =
-            null as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+          parsedData[formPropertyName] =
+            null as ModelWithoutRelationships<M>[typeof formPropertyName];
         }
-      } else if (dmmfProperty.isList && dmmfProperty.kind === "scalar") {
-        parsedData[dmmfPropertyName] = JSON.parse(
-          formData[dmmfPropertyName]!
-        ) as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
-      } else if (dmmfPropertyType === "Int") {
-        const value = Number(formData[dmmfPropertyName]) as number;
-        parsedData[dmmfPropertyName] = isNaN(value)
+      } else if (
+        propertyNextAdminData?.isList &&
+        propertyNextAdminData.kind === "scalar" &&
+        !isFileUploadFormat(
+          editFieldOptions?.[property as keyof typeof editFieldOptions]
+            ?.format ?? ""
+        )
+      ) {
+        parsedData[formPropertyName] = JSON.parse(
+          formData[formPropertyName]!
+        ) as unknown as ModelWithoutRelationships<M>[typeof formPropertyName];
+      } else if (propertyType === "Int") {
+        const value = Number(formData[formPropertyName]) as number;
+        parsedData[formPropertyName] = isNaN(value)
           ? undefined
-          : (value as ModelWithoutRelationships<M>[typeof dmmfPropertyName]);
-      } else if (dmmfPropertyType === "Boolean") {
-        parsedData[dmmfPropertyName] = (formData[dmmfPropertyName] ===
-          "on") as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+          : (value as ModelWithoutRelationships<M>[typeof formPropertyName]);
+      } else if (propertyType === "Boolean") {
+        parsedData[formPropertyName] = (formData[formPropertyName] ===
+          "on") as unknown as ModelWithoutRelationships<M>[typeof formPropertyName];
       } else {
-        parsedData[dmmfPropertyName] = formData[
-          dmmfPropertyName
-        ] as unknown as ModelWithoutRelationships<M>[typeof dmmfPropertyName];
+        parsedData[formPropertyName] = formData[
+          formPropertyName
+        ] as unknown as ModelWithoutRelationships<M>[typeof formPropertyName];
       }
     }
   });
@@ -505,11 +596,15 @@ export const parseFormData = <M extends ModelName>(
 };
 
 export const formatId = (resource: ModelName, id: string) => {
-  const model = models.find((model) => model.name === resource);
+  const model = getSchema().definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
+  const modelProperties = model.properties;
   const idProperty = getModelIdProperty(resource);
 
-  return model?.fields?.find((field) => field.name === idProperty)?.type ===
-    "Int"
+  return Object.entries(modelProperties).find(
+    ([name]) => name === idProperty
+  )?.[1].__nextadmin?.type === "Int"
     ? Number(id)
     : id;
 };
@@ -517,9 +612,13 @@ export const formatId = (resource: ModelName, id: string) => {
 const getExplicitManyToManyTableFields = <M extends ModelName>(
   manyToManyResource: M
 ) => {
-  const model = getPrismaModelForResource(manyToManyResource);
-  const relationFields = model?.fields.filter(
-    (field) => field.kind === "object"
+  const model = getSchema().definitions[
+    manyToManyResource
+  ] as SchemaDefinitions[ModelName];
+  const modelProperties = model.properties;
+
+  const relationFields = Object.entries(modelProperties).filter(
+    ([, value]) => value.__nextadmin?.kind === "object"
   );
 
   return relationFields;
@@ -528,53 +627,150 @@ const getExplicitManyToManyTableFields = <M extends ModelName>(
 const getExplicitManyToManyTablePrimaryKey = <M extends ModelName>(
   resource: M
 ) => {
-  const model = getPrismaModelForResource(resource);
+  const model = getSchema().definitions[
+    resource
+  ] as SchemaDefinitions[ModelName];
 
   return {
-    name: model?.primaryKey?.fields.join("_"),
-    fields: model?.primaryKey?.fields,
+    name: model?.__nextadmin?.primaryKeyField?.name,
+    fields: model?.__nextadmin?.primaryKeyField?.fields,
   };
+};
+
+type HandleUploadPropertyParams<M extends ModelName> = {
+  files: UploadedFile[];
+  resourceId: string | number | undefined;
+  editOptions?: EditFieldsOptions<M>;
+  property: keyof ScalarField<M>;
+};
+
+const handleUploadProperty = async <M extends ModelName>({
+  files,
+  resourceId,
+  editOptions,
+  property,
+}: HandleUploadPropertyParams<M>) => {
+  const uploadHandler = editOptions?.[property]?.handler?.upload;
+
+  if (!uploadHandler) {
+    console.warn("You need to provide an upload handler for data-url format");
+  } else {
+    return Promise.all(
+      files.map(async (file) => {
+        if (typeof file === "string") {
+          return;
+        }
+
+        const uploadResult = await uploadHandler(file.buffer, file.infos, {
+          resourceId,
+        });
+        if (typeof uploadResult !== "string") {
+          console.warn(
+            "Upload handler must return a string, fallback to no-op for field " +
+              property.toString()
+          );
+          return;
+        }
+
+        return uploadResult;
+      })
+    );
+  }
+};
+
+type HandleFileDeletionParams<M extends ModelName> = {
+  fileUris: string[];
+  editOptions?: EditFieldsOptions<M>;
+  property: keyof ScalarField<M>;
+};
+
+const handleFileDeletion = async <M extends ModelName>({
+  fileUris,
+  editOptions,
+  property,
+}: HandleFileDeletionParams<M>) => {
+  const deleteHandler = editOptions?.[property]?.handler?.deleteFile;
+
+  if (!deleteHandler) {
+    console.warn(
+      "Delete handler not provided, files will not be deleted from your remote storage"
+    );
+    return fileUris;
+  } else {
+    const deletedFiles = await Promise.all(
+      fileUris.map(async (uri) => {
+        try {
+          const isDeleted = await deleteHandler(uri);
+
+          if (isDeleted) {
+            return uri;
+          }
+        } catch (e) {
+          console.error("An error occured while deleting file", e);
+        }
+      })
+    );
+
+    return deletedFiles.filter(Boolean) as string[];
+  }
 };
 
 /**
  * Convert the form data to the format expected by Prisma
  *
  * @param formData
- * @param dmmfSchema
- *
+ * @param schema
+ * @param resource
+ * @param resourceId
+ * @param editOptions
+ * @param prisma
  */
 export const formattedFormData = async <M extends ModelName>(
   formData: AdminFormData<M>,
-  dmmfSchema: readonly Prisma.DMMF.Field[],
   schema: Schema,
   resource: M,
   resourceId: string | number | undefined,
-  editOptions?: EditFieldsOptions<M>
+  editOptions: EditFieldsOptions<M> | undefined,
+  prisma: PrismaClient
 ) => {
   const formattedData: any = {};
   const complementaryFormattedData: any = {};
   const modelName = resource;
   const errors: Array<{ field: string; message: string }> = [];
   const creating = resourceId === undefined;
+  const resourceSchema = schema.definitions[
+    modelName
+  ] as SchemaDefinitions[ModelName];
+  const resourceIdProperty = getModelIdProperty(resource);
+  const resourceIdField = getModelIdProperty(resource);
+
+  const currentRecord = resourceId
+    ? // @ts-expect-error
+      await prisma[uncapitalize(resource)].findUnique({
+        where: {
+          [resourceIdProperty]: resourceId,
+        },
+      })
+    : undefined;
 
   const results = await Promise.allSettled(
-    dmmfSchema.map(async (dmmfProperty) => {
-      if (dmmfProperty.name in formData) {
-        const dmmfPropertyType = dmmfProperty.type;
-        const dmmfPropertyKind = dmmfProperty.kind;
-        if (dmmfPropertyKind === "object") {
-          const dmmfPropertyName = dmmfProperty.name as keyof ObjectField<M>;
-          const dmmfPropertyTypeTyped = dmmfPropertyType as Prisma.ModelName;
+    Object.entries(resourceSchema.properties).map(async ([property, value]) => {
+      if (property in formData) {
+        const propertyNextAdminData = value.__nextadmin;
+        const propertyType = propertyNextAdminData?.type;
+        const propertyKind = propertyNextAdminData?.kind;
+        const isList = propertyNextAdminData?.isList;
+        if (propertyKind === "object") {
+          const propertyName = property as keyof ObjectField<M>;
+          const propertyTypeTyped = propertyType as Prisma.ModelName;
           const fieldValue =
             schema.definitions[modelName].properties[
-              dmmfPropertyName as Field<typeof dmmfPropertyTypeTyped>
+              propertyName as Field<typeof propertyTypeTyped>
             ];
           if (fieldValue?.type === "array") {
-            formData[dmmfPropertyName] = JSON.parse(
-              formData[dmmfPropertyName]!
-            );
+            formData[propertyName] = JSON.parse(formData[propertyName]!);
 
-            const fieldOptions = editOptions?.[dmmfPropertyName];
+            const fieldOptions = editOptions?.[propertyName];
 
             const orderField =
               fieldOptions &&
@@ -586,29 +782,27 @@ export const formattedFormData = async <M extends ModelName>(
               "relationshipSearchField" in fieldOptions &&
               fieldOptions?.relationshipSearchField
             ) {
-              const relationFields = getExplicitManyToManyTableFields(
-                dmmfPropertyTypeTyped
-              )!;
+              const relationFields =
+                getExplicitManyToManyTableFields(propertyTypeTyped)!;
 
               const currentResourceField = relationFields.filter(
-                (field) => field.type === resource
+                ([, field]) => field.__nextadmin?.type === resource
               )[0];
               const externalResourceField = relationFields.filter(
-                (field) => field.type !== resource
+                ([, field]) => field.__nextadmin?.type !== resource
               )[0];
 
               if (creating) {
-                formattedData[dmmfPropertyName] = {
+                formattedData[propertyName] = {
                   create: (
-                    formData[
-                      dmmfPropertyName
-                    ] as unknown as Enumeration["value"][]
+                    formData[propertyName] as unknown as Enumeration["value"][]
                   ).map((item, index) => {
                     const data: Record<string, any> = {
-                      [externalResourceField.name]: {
+                      [externalResourceField[0]]: {
                         connect: {
-                          id: formatId(
-                            externalResourceField.type as ModelName,
+                          [resourceIdField]: formatId(
+                            externalResourceField[1].__nextadmin
+                              ?.type as ModelName,
                             item
                           ),
                         },
@@ -623,33 +817,35 @@ export const formattedFormData = async <M extends ModelName>(
                   }),
                 };
               } else {
-                const resourcePrimaryKey = getExplicitManyToManyTablePrimaryKey(
-                  dmmfPropertyTypeTyped
-                )!;
+                const resourcePrimaryKey =
+                  getExplicitManyToManyTablePrimaryKey(propertyTypeTyped)!;
 
                 const resourcePrimaryKeyCurrentResourceField =
                   resourcePrimaryKey.fields!.find(
                     (field) =>
-                      field === currentResourceField.relationFromFields?.[0]
+                      field ===
+                      currentResourceField[1].__nextadmin?.relation
+                        ?.fromFieldDbName
                   )!;
                 const resourcePrimaryKeyExternalResourceField =
                   resourcePrimaryKey.fields!.find(
                     (field) =>
-                      field === externalResourceField.relationFromFields?.[0]
+                      field ===
+                      externalResourceField[1].__nextadmin?.relation
+                        ?.fromFieldDbName
                   )!;
 
-                formattedData[dmmfPropertyName] = {
+                formattedData[propertyName] = {
                   upsert: (
-                    formData[
-                      dmmfPropertyName
-                    ] as unknown as Enumeration["value"][]
+                    formData[propertyName] as unknown as Enumeration["value"][]
                   ).map((item, index) => {
                     const formattedItem: Record<string, any> = {
                       create: {
-                        [externalResourceField.name]: {
+                        [externalResourceField[0]]: {
                           connect: {
                             id: formatId(
-                              externalResourceField.type as ModelName,
+                              externalResourceField[1].__nextadmin
+                                ?.type as ModelName,
                               item
                             ),
                           },
@@ -662,16 +858,18 @@ export const formattedFormData = async <M extends ModelName>(
                             resourceId.toString()
                           ),
                           [resourcePrimaryKeyExternalResourceField]: formatId(
-                            externalResourceField.type as ModelName,
+                            externalResourceField[1]?.__nextadmin
+                              ?.type as ModelName,
                             item
                           ),
                         },
                       },
                       update: {
-                        [externalResourceField.name]: {
+                        [externalResourceField[0]]: {
                           connect: {
                             id: formatId(
-                              externalResourceField.type as ModelName,
+                              externalResourceField[1]?.__nextadmin
+                                ?.type as ModelName,
                               item
                             ),
                           },
@@ -694,10 +892,14 @@ export const formattedFormData = async <M extends ModelName>(
                     [resourcePrimaryKeyExternalResourceField]: {
                       notIn: (
                         formData[
-                          dmmfPropertyName
+                          propertyName
                         ] as unknown as Enumeration["value"][]
                       ).map((item) =>
-                        formatId(externalResourceField.type as ModelName, item)
+                        formatId(
+                          externalResourceField[1]?.__nextadmin
+                            ?.type as ModelName,
+                          item
+                        )
                       ),
                     },
                   },
@@ -707,12 +909,12 @@ export const formattedFormData = async <M extends ModelName>(
               const updateRelatedField = {
                 ...(orderField && {
                   update: formData[
-                    dmmfPropertyName
+                    propertyName
                     // @ts-expect-error
                   ]?.map((item: any, index: number) => {
                     return {
                       where: {
-                        id: formatId(dmmfPropertyType as ModelName, item),
+                        id: formatId(propertyType as ModelName, item),
                       },
                       data: {
                         ...(orderField && {
@@ -724,140 +926,176 @@ export const formattedFormData = async <M extends ModelName>(
                 }),
               };
 
-              formattedData[dmmfPropertyName] = {
+              formattedData[propertyName] = {
                 // @ts-expect-error
-                [creating ? "connect" : "set"]: formData[dmmfPropertyName].map(
+                [creating ? "connect" : "set"]: formData[propertyName].map(
                   (item: any) => ({
-                    id: formatId(dmmfPropertyType as ModelName, item),
+                    id: formatId(propertyType as ModelName, item),
                   })
                 ),
                 ...(!creating && updateRelatedField),
               };
 
               if (creating) {
-                complementaryFormattedData[dmmfPropertyName] =
-                  updateRelatedField;
+                complementaryFormattedData[propertyName] = updateRelatedField;
               }
             }
           } else {
-            const connect = Boolean(formData[dmmfPropertyName]);
+            const connect = Boolean(formData[propertyName]);
             if (connect) {
-              formattedData[dmmfPropertyName] = {
+              formattedData[propertyName] = {
                 connect: {
                   id: formatId(
-                    dmmfPropertyType as ModelName,
-                    formData[dmmfPropertyName]!
+                    propertyType as ModelName,
+                    formData[propertyName]!
                   ),
                 },
               };
             } else if (!creating) {
-              formattedData[dmmfPropertyName] = { disconnect: true };
+              formattedData[propertyName] = { disconnect: true };
             }
           }
-        } else if (dmmfPropertyKind === "scalar" && dmmfProperty.isList) {
-          const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
+        } else if (propertyKind === "scalar" && isList) {
+          const propertyName = property as keyof ScalarField<M>;
 
-          const formDataValue = JSON.parse(formData[dmmfPropertyName]!) as
-            | string[]
-            | number[];
+          const formDataValue =
+            typeof formData[propertyName] === "string"
+              ? JSON.parse(formData[propertyName]!)
+              : formData[propertyName];
 
           if (
-            dmmfPropertyType === "Int" ||
-            dmmfPropertyType === "Float" ||
-            dmmfPropertyType === "Decimal"
+            propertyType === "Int" ||
+            propertyType === "Float" ||
+            propertyType === "Decimal"
           ) {
-            formattedData[dmmfPropertyName] = {
-              set: formDataValue
+            formattedData[propertyName] = {
+              set: (formDataValue as string[] | number[])
                 .map((item) =>
                   !isNaN(Number(item)) ? Number(item) : undefined
                 )
                 .filter(Boolean),
             };
+          } else if (
+            propertyType === "String" &&
+            isFileUploadFormat(editOptions?.[propertyName]?.format ?? "")
+          ) {
+            const uploadErrorMessage =
+              editOptions?.[propertyName]?.handler?.uploadErrorMessage;
+            const deletedFiles: string[] = currentRecord[propertyName]?.filter(
+              (existing: string) => {
+                return !formData[propertyName]?.includes(existing);
+              }
+            );
+            try {
+              const unsetFiles = await handleFileDeletion({
+                fileUris: deletedFiles,
+                editOptions,
+                property: propertyName,
+              });
+              const filteredFiles = currentRecord[propertyName].filter(
+                (name: string) => !unsetFiles.includes(name)
+              );
+              const uploadedFiles = await handleUploadProperty({
+                files: (
+                  formData[propertyName] as unknown as (string | UploadedFile)[]
+                ).filter(isUploadFile),
+                resourceId,
+                editOptions,
+                property: propertyName,
+              });
+              formattedData[propertyName] = {
+                set: [
+                  ...filteredFiles,
+                  ...(uploadedFiles?.filter(Boolean) ?? []),
+                ],
+              };
+            } catch (e) {
+              errors.push({
+                field: propertyName.toString(),
+                message:
+                  uploadErrorMessage ??
+                  `Upload failed: ${(e as Error).message}`,
+              });
+            }
           } else {
-            formattedData[dmmfPropertyName] = {
+            formattedData[propertyName] = {
               set: formDataValue,
             };
           }
-        } else if (dmmfPropertyKind === "enum" && dmmfProperty.isList) {
-          const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
+        } else if (propertyKind === "enum" && isList) {
+          const propertyName = property as keyof ScalarField<M>;
 
-          const data = JSON.parse(formData[dmmfPropertyName] ?? "[]");
-          formattedData[dmmfPropertyName] = {
+          const data = JSON.parse(formData[propertyName] ?? "[]");
+          formattedData[propertyName] = {
             set: data,
           };
         } else {
-          const dmmfPropertyName = dmmfProperty.name as keyof ScalarField<M>;
-          if (formData[dmmfPropertyName] === "") {
-            formattedData[dmmfPropertyName] = null;
+          const propertyName = property as keyof ScalarField<M>;
+          if (formData[propertyName] === "") {
+            formattedData[propertyName] = null;
           } else if (
-            dmmfPropertyType === "Int" ||
-            dmmfPropertyType === "Float" ||
-            dmmfPropertyType === "Decimal"
+            propertyType === "Int" ||
+            propertyType === "Float" ||
+            propertyType === "Decimal"
           ) {
-            formattedData[dmmfPropertyName] = !isNaN(
-              Number(formData[dmmfPropertyName])
-            )
-              ? Number(formData[dmmfPropertyName])
+            formattedData[propertyName] = !isNaN(Number(formData[propertyName]))
+              ? Number(formData[propertyName])
               : undefined;
-          } else if (dmmfPropertyType === "Boolean") {
-            formattedData[dmmfPropertyName] =
-              formData[dmmfPropertyName] === "on";
-          } else if (dmmfPropertyType === "DateTime") {
-            formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
-              ? new Date(formData[dmmfPropertyName]!)
+          } else if (propertyType === "Boolean") {
+            formattedData[propertyName] = formData[propertyName] === "on";
+          } else if (propertyType === "DateTime") {
+            formattedData[propertyName] = formData[propertyName]
+              ? new Date(formData[propertyName]!)
               : null;
-          } else if (dmmfPropertyType === "Json") {
+          } else if (propertyType === "Json") {
             try {
-              formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
-                ? JSON.parse(formData[dmmfPropertyName]!)
+              formattedData[propertyName] = formData[propertyName]
+                ? JSON.parse(formData[propertyName]!)
                 : null;
             } catch {
               // no-op
             }
-          } else if (dmmfPropertyType === "BigInt") {
-            formattedData[dmmfPropertyName] = formData[dmmfPropertyName]
-              ? BigInt(formData[dmmfPropertyName]!)
+          } else if (propertyType === "BigInt") {
+            formattedData[propertyName] = formData[propertyName]
+              ? BigInt(formData[propertyName]!)
               : null;
           } else if (
-            dmmfPropertyType === "String" &&
-            ["data-url", "file"].includes(
-              editOptions?.[dmmfPropertyName]?.format ?? ""
-            ) &&
-            isUploadParameters(formData[dmmfPropertyName])
+            propertyType === "String" &&
+            isFileUploadFormat(editOptions?.[propertyName]?.format ?? "")
           ) {
-            const uploadHandler =
-              editOptions?.[dmmfPropertyName]?.handler?.upload;
             const uploadErrorMessage =
-              editOptions?.[dmmfPropertyName]?.handler?.uploadErrorMessage;
-
-            if (!uploadHandler) {
-              console.warn(
-                "You need to provide an upload handler for data-url format"
-              );
-            } else {
-              try {
-                const uploadResult = await uploadHandler(
-                  ...(formData[dmmfPropertyName] as unknown as UploadParameters)
-                );
-                if (typeof uploadResult !== "string") {
-                  console.warn(
-                    "Upload handler must return a string, fallback to no-op for field " +
-                      dmmfPropertyName.toString()
-                  );
-                } else {
-                  formattedData[dmmfPropertyName] = uploadResult;
-                }
-              } catch (e) {
-                errors.push({
-                  field: dmmfPropertyName.toString(),
-                  message:
-                    uploadErrorMessage ??
-                    `Upload failed: ${(e as Error).message}`,
+              editOptions?.[propertyName]?.handler?.uploadErrorMessage;
+            try {
+              if (currentRecord?.[propertyName]) {
+                await handleFileDeletion({
+                  fileUris: [currentRecord[propertyName]],
+                  property: propertyName,
+                  editOptions,
                 });
               }
+              const uploaded = await handleUploadProperty({
+                files: (
+                  formData[propertyName] as unknown as UploadedFile[]
+                ).filter(isUploadFile),
+                resourceId,
+                editOptions,
+                property: propertyName,
+              });
+              if (uploaded?.length) {
+                formattedData[propertyName] = uploaded[0];
+              } else {
+                formattedData[propertyName] = null;
+              }
+            } catch (e) {
+              errors.push({
+                field: propertyName.toString(),
+                message:
+                  uploadErrorMessage ??
+                  `Upload failed: ${(e as Error).message}`,
+              });
             }
           } else {
-            formattedData[dmmfPropertyName] = formData[dmmfPropertyName];
+            formattedData[propertyName] = formData[propertyName];
           }
         }
       }
@@ -915,7 +1153,8 @@ export const transformSchema = <M extends ModelName>(
     fillRelationInSchema(resource, options),
     fillDescriptionInSchema(resource, edit),
     addCustomProperties(resource, edit),
-    orderSchema(resource, options)
+    orderSchema(resource, options),
+    applyArrayMaxLength(resource, edit)
   );
 
 export const applyVisiblePropertiesInSchema = <M extends ModelName>(
@@ -925,8 +1164,10 @@ export const applyVisiblePropertiesInSchema = <M extends ModelName>(
   schema: Schema
 ) => {
   const modelName = resource;
-  const model = models.find((model) => model.name === modelName);
-  if (!model) return schema;
+  const modelSchema = schema.definitions[
+    modelName
+  ] as SchemaDefinitions[ModelName];
+  if (!modelSchema) return schema;
   const display = edit?.display;
   const fields = edit?.fields;
   if (display) {
@@ -949,17 +1190,16 @@ const fillDescriptionInSchema = <M extends ModelName>(
 ) => {
   return (schema: Schema) => {
     const modelName = resource;
-    const model = models.find((model) => model.name === modelName);
-    if (!model) return schema;
-    model.fields.forEach((dmmfProperty) => {
-      const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
-      const fieldValue =
-        schema.definitions[modelName].properties[
-          dmmfPropertyName as Field<typeof modelName>
-        ];
-      if (fieldValue && editOptions?.fields?.[dmmfPropertyName]?.helperText) {
+    const modelSchema = schema.definitions[
+      modelName
+    ] as SchemaDefinitions[ModelName];
+    if (!modelSchema) return schema;
+    Object.entries(modelSchema.properties).forEach(([name, value]) => {
+      const propertyName = name as Field<typeof modelName>;
+      const fieldValue = schema.definitions[modelName].properties[propertyName];
+      if (fieldValue && editOptions?.fields?.[propertyName]?.helperText) {
         fieldValue.description =
-          editOptions?.fields?.[dmmfPropertyName]?.helperText;
+          editOptions?.fields?.[propertyName]?.helperText;
       }
     });
     return schema;
@@ -970,27 +1210,29 @@ export const changeFormatInSchema =
   <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
   (schema: Schema) => {
     const modelName = resource;
-    const model = models.find((model) => model.name === modelName);
-    if (!model) return schema;
-    model.fields.forEach((dmmfProperty) => {
-      const dmmfPropertyName = dmmfProperty.name as Field<typeof modelName>;
+    const modelSchema = schema.definitions[
+      modelName
+    ] as SchemaDefinitions[ModelName];
+    if (!modelSchema) return schema;
+    Object.entries(modelSchema.properties).forEach(([name, value]) => {
+      const propertyName = name as Field<typeof modelName>;
       const fieldValue =
         schema.definitions[modelName].properties[
-          dmmfPropertyName as Field<typeof modelName>
+          propertyName as Field<typeof modelName>
         ];
 
-      if (fieldValue && dmmfProperty.type === "Json") {
+      if (fieldValue && value.__nextadmin?.type === "Json") {
         fieldValue.type = "string";
       }
 
-      if (fieldValue && editOptions?.fields?.[dmmfPropertyName]?.input) {
+      if (fieldValue && editOptions?.fields?.[propertyName]?.input) {
         fieldValue.format = "string";
-      } else if (editOptions?.fields?.[dmmfPropertyName]?.format) {
+      } else if (editOptions?.fields?.[propertyName]?.format) {
         if (fieldValue) {
-          if (editOptions?.fields?.[dmmfPropertyName]?.format === "file") {
+          if (editOptions?.fields?.[propertyName]?.format === "file") {
             fieldValue.format = "data-url";
           } else {
-            fieldValue.format = editOptions?.fields?.[dmmfPropertyName]?.format;
+            fieldValue.format = editOptions?.fields?.[propertyName]?.format;
           }
         }
       }
@@ -1024,11 +1266,16 @@ export const addCustomProperties =
         ] = {
           type: "string",
           description: fieldOptions?.helperText ?? "",
-          format: fieldOptions?.format,
         };
 
         if (fieldOptions.required) {
           schema.definitions[resource].required?.push(property);
+        }
+
+        if (fieldOptions.format) {
+          schema.definitions[resource].properties[
+            property as Field<typeof resource>
+          ]!.format = fieldOptions.format;
         }
       }
     });
@@ -1036,14 +1283,34 @@ export const addCustomProperties =
     return schema;
   };
 
+export const applyArrayMaxLength =
+  <M extends ModelName>(resource: M, editOptions: EditOptions<M>) =>
+  (schema: Schema) => {
+    const modelName = resource;
+    const modelSchema = schema.definitions[
+      modelName
+    ] as SchemaDefinitions[ModelName];
+    if (!modelSchema) return schema;
+    Object.entries(modelSchema.properties).forEach(([name]) => {
+      const propertyName = name as Field<typeof modelName>;
+      const fieldValue = schema.definitions[modelName].properties[propertyName];
+      if (fieldValue && editOptions?.fields?.[propertyName]?.maxLength) {
+        fieldValue.maxItems = editOptions?.fields?.[propertyName]?.maxLength;
+      }
+    });
+    return schema;
+  };
+
 export const getResourceFromParams = (
   params: string[],
   resources: Prisma.ModelName[]
 ) => {
-  return resources.find((r) => {
-    const slugifiedResource = r.toLowerCase();
-    return params.some((param) => param.toLowerCase() === slugifiedResource);
-  });
+  return (
+    resources.find((r) => {
+      const slugifiedResource = r.toLowerCase();
+      return params.some((param) => param.toLowerCase() === slugifiedResource);
+    }) ?? null
+  );
 };
 
 /**
@@ -1092,9 +1359,9 @@ export const getFormDataValues = async (req: IncomingMessage) => {
       });
     },
   });
-  return new Promise<Record<string, string | UploadParameters | null>>(
+  return new Promise<Record<string, string | Array<UploadedFile | string>>>(
     (resolve, reject) => {
-      const files = {} as Record<string, UploadParameters[] | [null]>;
+      const files = {} as Record<string, Array<UploadedFile | string>>;
 
       form.on("fileBegin", (name, file) => {
         // @ts-expect-error
@@ -1106,18 +1373,18 @@ export const getFormDataValues = async (req: IncomingMessage) => {
               callback();
             },
             final(callback) {
-              if (!file.originalFilename) {
-                files[name] = [null];
-              } else {
-                files[name] = [
-                  [
-                    Buffer.concat(chunks),
-                    {
-                      name: file.originalFilename,
-                      type: file.mimetype,
-                    },
-                  ],
-                ];
+              if (file.originalFilename) {
+                if (!files[name]) {
+                  files[name] = [];
+                }
+
+                files[name].push({
+                  buffer: Buffer.concat(chunks),
+                  infos: {
+                    name: file.originalFilename,
+                    type: file.mimetype,
+                  },
+                });
               }
               callback();
             },
@@ -1129,48 +1396,84 @@ export const getFormDataValues = async (req: IncomingMessage) => {
         if (err) {
           reject(err);
         }
-        const joinedFormData = Object.entries({ ...fields, ...files }).reduce(
-          (acc, [key, value]) => {
-            if (Array.isArray(value)) {
-              acc[key] = value[0];
+
+        resolve({
+          ...Object.entries(fields).reduce(
+            (acc, [key, value]) => {
+              if (Array.isArray(value)) {
+                acc[key] = value[0];
+              }
+
+              return acc;
+            },
+            {} as Record<string, string>
+          ),
+          ...Object.entries(files).reduce((acc, [key, value]) => {
+            if (key in fields && Array.isArray(fields[key])) {
+              acc[key] = [...fields[key], ...value];
             }
+
             return acc;
-          },
-          {} as Record<string, string | UploadParameters | null>
-        );
-        resolve(joinedFormData);
+          }, files),
+        });
       });
     }
   );
 };
 
-export const getFormValuesFromFormData = async (formData: FormData) => {
-  const tmpFormValues = {} as Record<string, string | File | null>;
+export const getFormValuesFromFormData = async <M extends ModelName>(
+  formData: FormData,
+  editFieldOptions?: EditFieldsOptions<M>
+) => {
+  const tmpFormValues = {} as Record<string, string | (File | string)[] | null>;
   formData.forEach((val, key) => {
     if (key.startsWith("$ACTION")) {
       return;
     }
-    tmpFormValues[key] = val;
+
+    if (
+      isFileUploadFormat(
+        editFieldOptions?.[key as keyof typeof editFieldOptions]?.format ?? ""
+      )
+    ) {
+      tmpFormValues[key] = formData.getAll(key) as (File | string)[];
+    } else {
+      tmpFormValues[key] = val as string | null;
+    }
   });
 
-  const formValues = {} as Record<string, string | UploadParameters | null>;
+  const formValues = {} as Record<
+    string,
+    string | Array<UploadedFile | string> | null
+  >;
 
   await Promise.allSettled(
     Object.entries(tmpFormValues).map(async ([key, value]) => {
-      if (typeof value === "object") {
-        const file = value as unknown as File;
-        if (file.size === 0) {
-          formValues[key] = null;
-          return;
-        }
-        const buffer = await file.arrayBuffer();
-        formValues[key] = [
-          Buffer.from(buffer),
-          {
-            name: file.name,
-            type: file.type,
-          },
-        ];
+      if (
+        isFileUploadFormat(
+          editFieldOptions?.[key as keyof typeof editFieldOptions]?.format ?? ""
+        ) &&
+        Array.isArray(value)
+      ) {
+        const parameters = await Promise.all(
+          value.map(async (file) => {
+            // We are not uploading a new file
+            if (typeof file === "string") {
+              return file;
+            }
+
+            const buffer = await file.arrayBuffer();
+
+            return {
+              buffer: Buffer.from(buffer),
+              infos: {
+                name: file.name,
+                type: file.type,
+              },
+            } satisfies UploadedFile;
+          })
+        );
+        formValues[key] = parameters;
       } else {
         formValues[key] = value as string;
       }

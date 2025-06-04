@@ -1,22 +1,32 @@
-import React, { ReactNode } from "react";
+import React, { ReactElement, ReactNode } from "react";
 
 import clsx from "clsx";
-import Link from "next/link";
+import Link from "./common/Link";
 import { useConfig } from "../context/ConfigContext";
-import { ListDataFieldValue } from "../types";
+import { ListDataFieldValue, NextAdminContext } from "../types";
 import { getDisplayedValue } from "../utils/tools";
 import Clipboard from "./common/Clipboard";
 
 type Props = {
   cell: ListDataFieldValue;
-  formatter?: (cell: any) => ReactNode;
+  formatter?: (cell: any, context?: NextAdminContext) => ReactNode;
   copyable?: boolean;
+  getRawData?: () => any;
 };
 
-export default function Cell({ cell, formatter, copyable }: Props) {
-  const { basePath } = useConfig();
+export default function Cell({ cell, formatter, copyable, getRawData }: Props) {
+  const { basePath, nextAdminContext } = useConfig();
 
   let cellValue = cell?.__nextadmin_formatted;
+
+  const renderCustomElement = (val: ReactElement) => {
+    return (
+      <div className="flex gap-1">
+        {val}
+        {copyable && <Clipboard value={getDisplayedValue(val)} />}
+      </div>
+    );
+  };
 
   const isReactNode = (
     cell: ListDataFieldValue["__nextadmin_formatted"]
@@ -26,26 +36,29 @@ export default function Cell({ cell, formatter, copyable }: Props) {
 
   if (cell && cell !== null) {
     if (React.isValidElement(cellValue)) {
-      return (
-        <div className="flex gap-1">
-          {cellValue}
-          {copyable && <Clipboard value={getDisplayedValue(cellValue)} />}
-        </div>
-      );
+      return renderCustomElement(cellValue);
     } else if (typeof cell === "object" && !isReactNode(cellValue)) {
       if (formatter) {
-        cellValue = formatter(cell?.value);
+        cellValue = formatter(getRawData?.(), nextAdminContext);
+
+        if (React.isValidElement(cellValue)) {
+          return renderCustomElement(cellValue);
+        }
       }
 
       if (cell.type === "link") {
+        const url = cell.isOverridden
+          ? cell.value.url
+          : `${basePath}/${cell.value.url}`;
+
         return (
           <Link
             onClick={(e) => e.stopPropagation()}
-            href={`${basePath}/${cell.value.url}`}
+            href={url}
             className="text-nextadmin-brand-emphasis dark:text-dark-nextadmin-brand-subtle hover:text-nextadmin-brand-emphasis dark:hover:text-dark-nextadmin-brand-emphasis flex cursor-pointer items-center gap-1 font-semibold hover:underline"
           >
             {cellValue}
-            {copyable && <Clipboard value={cell.value.url} />}
+            {copyable && <Clipboard value={url} />}
           </Link>
         );
       } else if (cell.type === "count") {
@@ -83,7 +96,7 @@ export default function Cell({ cell, formatter, copyable }: Props) {
               "bg-nextadmin-background-subtle dark:bg-dark-nextadmin-background-subtle text-nextadmin-brand-subtle dark:text-dark-nextadmin-content-subtle"
             )}
           >
-            <p>{cellValue}</p>
+            <p>{cellValue?.toString()}</p>
           </div>
         );
       }

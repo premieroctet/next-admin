@@ -21,14 +21,23 @@
 - 🎨 Dashboard widgets and customizable panels
 - ⚛️ Integration with Prisma ORM
 - 👔 Customizable list and form
-- ⚙️ Supports App Router and Page Router
+- ⚙️ Support for Next.js (App Router and Pages Router), Remix, TanStack Start
+- 🚀 Support for any full stack framework
 
 ## Installation
+
+### With the CLI
+
+```shell copy
+npx @premieroctet/next-admin-cli@latest init
+```
+
+### Manually
 
 To install the library, run the following command:
 
 ```shell copy
-yarn add @premieroctet/next-admin prisma-json-schema-generator
+yarn add @premieroctet/next-admin @premieroctet/next-admin-generator-prisma
 ```
 
 ## Documentation
@@ -51,7 +60,7 @@ Bonus: Customize the admin dashboard by passing the `NextAdminOptions` options t
 
 An example of `next-admin` options:
 
-```tsx 
+```tsx
 // app/admin/options.ts
 import { NextAdminOptions } from "@premieroctet/next-admin";
 
@@ -118,7 +127,6 @@ export const options: NextAdminOptions = {
   },
 };
 ```
-
 
 ## 📄 Documentation
 

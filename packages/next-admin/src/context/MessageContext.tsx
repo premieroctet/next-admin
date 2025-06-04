@@ -1,17 +1,18 @@
 "use client";
-import { PropsWithChildren, createContext, useContext, useState } from "react";
+import {
+  PropsWithChildren,
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useRouterInternal } from "../hooks/useRouterInternal";
-
-type MessageData = {
-  type: "error" | "info" | "success";
-  message: string;
-};
-
-type MessageContextType = {
-  showMessage: (message: MessageData) => void;
-  message: MessageData | null;
-  hideMessage: () => void;
-};
+import {
+  MessageContextType,
+  MessageData,
+  MessageDataWithCustomComponent,
+} from "../types";
 
 const MessageContext = createContext<MessageContextType>({
   showMessage: () => {},
@@ -21,10 +22,16 @@ const MessageContext = createContext<MessageContextType>({
 
 export const MessageProvider = ({ children }: PropsWithChildren) => {
   const { query } = useRouterInternal();
-  const [message, setMessage] = useState<MessageData | null>(() => {
+
+  const parseMessage = useCallback(() => {
     if (query.message) {
       try {
-        const data = JSON.parse(query.message);
+        /**
+         * Hack to fix TanStack Start
+         */
+        const data = JSON.parse(
+          query.message.replaceAll("\\", "").replaceAll(/(^")|("$)/g, "")
+        );
 
         if (data.type && data.message) {
           return data;
@@ -37,7 +44,15 @@ export const MessageProvider = ({ children }: PropsWithChildren) => {
     }
 
     return null;
-  });
+  }, [query.message]);
+
+  const [message, setMessage] = useState<MessageDataWithCustomComponent | null>(
+    parseMessage
+  );
+
+  useEffect(() => {
+    setMessage(parseMessage);
+  }, [query.message]);
 
   const showMessage = (messageData: MessageData) => {
     setMessage(messageData);

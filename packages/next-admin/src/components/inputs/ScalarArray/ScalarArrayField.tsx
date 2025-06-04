@@ -1,12 +1,12 @@
-import { RJSFSchema } from "@rjsf/utils";
-import Button from "../../radix/Button";
-import { useI18n } from "../../../context/I18nContext";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { SortableContext } from "@dnd-kit/sortable";
+import { RJSFSchema } from "@rjsf/utils";
 import { useEffect, useState } from "react";
 import { useFormState } from "../../../context/FormStateContext";
+import { useI18n } from "../../../context/I18nContext";
+import { CustomInputProps } from "../../../types";
+import Button from "../../radix/Button";
 import ScalarArrayFieldItem from "./ScalarArrayFieldItem";
-import clsx from "clsx";
 
 type Scalar = number | string;
 
@@ -16,6 +16,7 @@ type Props = {
   name: string;
   disabled: boolean;
   schema: RJSFSchema;
+  customInput?: React.ReactElement<CustomInputProps>;
 };
 
 const ScalarArrayField = ({
@@ -24,6 +25,7 @@ const ScalarArrayField = ({
   name,
   disabled,
   schema,
+  customInput,
 }: Props) => {
   const { t } = useI18n();
   const { setFieldDirty } = useFormState();
@@ -77,19 +79,26 @@ const ScalarArrayField = ({
           id={value.id}
           // @ts-expect-error
           scalarType={schema.items.type}
+          customInput={customInput}
         />
       );
     });
   };
 
   const onAddNewItem = () => {
-    setFormDataList((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        value: "",
-      },
-    ]);
+    setFormDataList((prev) => {
+      if (schema.maxItems && prev.length >= schema.maxItems) {
+        return prev;
+      }
+
+      return [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          value: "",
+        },
+      ];
+    });
     setFieldDirty(name);
   };
 
@@ -112,7 +121,10 @@ const ScalarArrayField = ({
       <Button
         type="button"
         className="w-fit"
-        disabled={disabled}
+        disabled={
+          disabled ||
+          (schema.maxItems ? formDataList.length >= schema.maxItems : false)
+        }
         onClick={onAddNewItem}
       >
         {t("form.widgets.scalar_array.add")}

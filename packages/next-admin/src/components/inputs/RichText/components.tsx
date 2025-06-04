@@ -12,15 +12,15 @@ import {
 } from "./utils";
 
 interface BaseProps {
-  className: string;
-  [key: string]: unknown;
+  className?: string;
 }
 
 type ButtonProps = PropsWithChildren<
   {
-    format: any;
-    icon: React.ReactElement;
+    format: string;
+    icon: React.ReactElement<React.SVGAttributes<SVGSVGElement>>;
     title?: string;
+    disabled?: boolean;
   } & BaseProps
 >;
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -41,7 +41,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         toggleMark(editor, format);
       };
     } else {
-      active = isBlockActive(editor, format as TypeElement);
+      active = isBlockActive(editor, format as unknown as TypeElement);
       handleMouseDown = (
         event: React.MouseEvent<HTMLButtonElement, MouseEvent>
       ) => {
@@ -109,7 +109,7 @@ export const Toolbar = React.forwardRef<HTMLDivElement, ToolbarProps>(
       data-test-id="menu"
       className={clsx(
         //on last child remove border right
-        "ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong  !last:border-r-0 flex flex-row gap-1 rounded-t-md border-b-0 p-1.5 ring-1",
+        "ring-nextadmin-border-default dark:ring-dark-nextadmin-border-strong !last:border-r-0 flex flex-row gap-1 rounded-t-md border-b-0 p-1.5 ring-1",
         className
       )}
     />

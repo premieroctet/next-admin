@@ -5,7 +5,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { useState } from "react";
 import { useI18n } from "../context/I18nContext";
-import { ModelAction, ModelName } from "../types";
+import { ModelName, OutputModelAction } from "../types";
 import ActionDropdownItem from "./ActionDropdownItem";
 import {
   Dropdown,
@@ -15,7 +15,7 @@ import {
 } from "./radix/Dropdown";
 
 type Props = {
-  actions: Array<ModelAction | Omit<ModelAction, "action">>;
+  actions: OutputModelAction;
   selectedIds: string[] | number[];
   resource: ModelName;
   selectedCount?: number;

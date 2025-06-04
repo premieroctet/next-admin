@@ -1,17 +1,45 @@
 import { FieldProps } from "@rjsf/utils";
+import type { CustomInputProps, Enumeration, FormProps } from "../../types";
 import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import ScalarArrayField from "./ScalarArray/ScalarArrayField";
-import type { Enumeration, FormProps } from "../../types";
+import FileWidget from "./FileWidget/FileWidget";
 
-const ArrayField = (props: FieldProps) => {
-  const { formData, onChange, name, disabled, schema, required, formContext } =
-    props;
+const ArrayField = (
+  props: FieldProps & { customInput?: React.ReactElement<CustomInputProps> }
+) => {
+  const {
+    formData,
+    onChange,
+    name,
+    disabled,
+    schema,
+    required,
+    formContext,
+    customInput,
+  } = props;
 
-  const dmmfSchema = formContext.dmmfSchema as FormProps["dmmfSchema"];
+  const resourceDefinition: FormProps["schema"] = formContext.schema;
 
-  const dmmfField = dmmfSchema.find((field) => field.name === name);
+  const field =
+    resourceDefinition.properties[
+      name as keyof typeof resourceDefinition.properties
+    ];
 
-  if (dmmfField?.kind === "scalar" && dmmfField?.isList) {
+  if (field?.__nextadmin?.kind === "scalar" && field?.__nextadmin?.isList) {
+    if (schema.format === "data-url") {
+      return (
+        <FileWidget
+          id={props.name}
+          name={props.name}
+          value={props.formData}
+          disabled={props.disabled}
+          rawErrors={props.rawErrors}
+          required={props.required}
+          schema={props.schema}
+        />
+      );
+    }
+
     return (
       <ScalarArrayField
         name={name}
@@ -19,12 +47,15 @@ const ArrayField = (props: FieldProps) => {
         onChange={onChange}
         disabled={disabled ?? false}
         schema={schema}
+        customInput={customInput}
       />
     );
   }
 
   const options =
-    dmmfField?.kind === "enum" ? (schema.enum as Enumeration[]) : undefined;
+    field?.__nextadmin?.kind === "enum"
+      ? (schema.enum as Enumeration[])
+      : undefined;
 
   return (
     <MultiSelectWidget

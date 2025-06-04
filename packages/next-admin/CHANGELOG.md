@@ -1,5 +1,349 @@
 # @premieroctet/next-admin
 
+## 8.1.4
+
+### Patch Changes
+
+- [362aaaa](https://github.com/premieroctet/next-admin/commit/362aaaa92da7df8a49fd83dc26d6d400fc918a63): fix: infinite queries in select widget ([#612](https://github.com/premieroctet/next-admin/issues/612))
+
+## 8.1.3
+
+### Patch Changes
+
+- [fe5e1c3](https://github.com/premieroctet/next-admin/commit/fe5e1c3c166265fa0316f2ad35a14baffdf652de): fix: default value for many to many in form ([#605](https://github.com/premieroctet/next-admin/issues/605))
+
+## 8.1.2
+
+### Patch Changes
+
+- [7aefc45](https://github.com/premieroctet/next-admin/commit/7aefc45bdfdd192c5723a37cf3f66a376525beb0): fix: initGlobals app handler ([#605](https://github.com/premieroctet/next-admin/issues/605))
+
+## 8.1.1
+
+### Patch Changes
+
+- [3cdf4e2](https://github.com/premieroctet/next-admin/commit/3cdf4e290b8fd057e8e31ad7dde876f52085bc3b): fix: advanced search on simple relations ([#602](https://github.com/premieroctet/next-admin/issues/602))
+
+## 8.1.0
+
+### Minor Changes
+
+- [8121a90](https://github.com/premieroctet/next-admin/commit/8121a90ab59fe2215ea3c5f938b91fed86557168): feat: add support for Tailwind v4 ([#573](https://github.com/premieroctet/next-admin/issues/573))
+
+## 8.0.0
+
+### Major Changes
+
+- [a05e12f](https://github.com/premieroctet/next-admin/commit/a05e12f9df24f0caf64a5cd6b77d0d48f73a695e): fix: page router display for functional filters
+- [75a2932](https://github.com/premieroctet/next-admin/commit/75a2932981e788a051ab89679613b794231ee600): fix: page router formatters
+- [8c3e567](https://github.com/premieroctet/next-admin/commit/8c3e567de41f85902266ef89e88b4dc2776dffe5): feat: support all frameworks, with provided adapters for Next.js, Remix and TanStack Start
+
+  This introduces a few breaking changes :
+
+  - The `NextAdmin` component now requires to be imported from the correct adapter
+
+  ```tsx
+  import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
+
+  // in the page render
+  <NextAdmin {...adminProps} />;
+  ```
+
+  - For Next.js Page Router, the `req` property of the `getNextAdminProps` function has been removed in favor of `url`, since we only need the URL from the request. Example :
+
+  ```ts
+  await getNextAdminProps({
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
+    prisma,
+    options,
+    url: req.url!,
+  });
+  ```
+
+  - Page loading indicator has now been removed and can be provided directly as a prop. A loader is exposed by the library to be used in Next.js projects.
+
+  ```tsx
+  import PageLoader from "@premieroctet/next-admin/pageLoader";
+
+  <NextAdmin {...adminProps} pageLoader={<PageLoader />} />;
+  ```
+
+- [75a2932](https://github.com/premieroctet/next-admin/commit/75a2932981e788a051ab89679613b794231ee600): feat: change the way to initialize globals
+
+  This is a **Breaking Change**. This changes the `getMainLayoutProps` function to be asynchronous. This will mainly affect custom pages.
+
+## 7.6.5
+
+### Patch Changes
+
+- [18cace8](https://github.com/premieroctet/next-admin/commit/18cace890a3d0840777d23989ea3257df6afb905): fix: default sort on id property
+
+## 7.6.4
+
+### Patch Changes
+
+- [e14d6a4](https://github.com/premieroctet/next-admin/commit/e14d6a45b6544f3d47f335d20505d7facca4e87b): Fix request prisma latency on list
+  `formatter` is now taking the count value as a parameter for OneToMany relation fields
+
+## 7.6.3
+
+### Patch Changes
+
+- [0612716](https://github.com/premieroctet/next-admin/commit/061271623c8afee333488c0b0c300ceffd482e1d): fix: error when marking a FileWidget as required
+- [e1879b1](https://github.com/premieroctet/next-admin/commit/e1879b1706435e723ab4213dd561107833efa861): feat: expose breadcrumbs to external client
+- [e1879b1](https://github.com/premieroctet/next-admin/commit/e1879b1706435e723ab4213dd561107833efa861): feat: export more base components (Breadcrumb, Spinner) as well as inputs
+
+## 7.6.2
+
+### Patch Changes
+
+- [6b6d4f5](https://github.com/premieroctet/next-admin/commit/6b6d4f551334aa09c39256b2be757e6c17937cdb): fix: wrong utils export
+
+## 7.6.1
+
+### Patch Changes
+
+- [6c4fff3](https://github.com/premieroctet/next-admin/commit/6c4fff3ab49758dfa89094a726669710739f0fc5): fix: error with empty list when no display option is specified for a model
+
+## 7.6.0
+
+### Minor Changes
+
+- [fcd835e](https://github.com/premieroctet/next-admin/commit/fcd835e8a6daf3784eec53c4837a1eec13df032c): feat: add custom input item data
+  feat: add a new `utils` export, currently containing `useFormData`
+
+## 7.5.2
+
+### Patch Changes
+
+- [d99f749](https://github.com/premieroctet/next-admin/commit/d99f7491ab7fe1d318b3db29db4671156defff34): fix: client dialog action error in prod build
+
+## 7.5.1
+
+### Patch Changes
+
+- [9f4ba10](https://github.com/premieroctet/next-admin/commit/9f4ba10298f5bbd2c2ba9695baa88f7fbc5a61be): fix: absolute url for virtual fields
+
+## 7.5.0
+
+### Minor Changes
+
+- [52a0faf](https://github.com/premieroctet/next-admin/commit/52a0faf2da1d3fa077fa327d885dfb5c2572d5db): feat: add virtual fields ([#559](https://github.com/premieroctet/next-admin/issues/559))
+
+### Patch Changes
+
+- [d22befa](https://github.com/premieroctet/next-admin/commit/d22befaf3791d4eae675cc5daaf8eadb278e220c): feat: add new server side action component ([#514](https://github.com/premieroctet/next-admin/issues/514))
+
+## 7.4.0
+
+### Minor Changes
+
+- [eee26d8](https://github.com/premieroctet/next-admin/commit/eee26d84c3b7c515897c961e4d09fe3a52b24857): feat: add multiple fields for default sort
+
+### Patch Changes
+
+- [5a8031b](https://github.com/premieroctet/next-admin/commit/5a8031ba53f00ef205920f0566d0a3696edab552): Add order mode on table view [#362](https://github.com/premieroctet/next-admin/issues/362)
+- [c5f0720](https://github.com/premieroctet/next-admin/commit/c5f0720435c2e07d15faf4088b0fab967d144607): feat: add max items for scalar arrays
+- [4950153](https://github.com/premieroctet/next-admin/commit/49501530db21d746bb3b70bd87d364f7532b743e): feat: allow pagination for relationship display
+- [323a929](https://github.com/premieroctet/next-admin/commit/323a9294bd0cf3116c8a6dc047bf45c335363d2b): Export <Message /> component to usage in custom pages
+
+## 7.3.1
+
+### Patch Changes
+
+- [811813e](https://github.com/premieroctet/next-admin/commit/811813e7532719fae0b88396123a60b2abe551c4): Fix deleting files ([#535](https://github.com/premieroctet/next-admin/issues/535), [#536](https://github.com/premieroctet/next-admin/issues/536))
+- [811813e](https://github.com/premieroctet/next-admin/commit/811813e7532719fae0b88396123a60b2abe551c4): Add scroll in advanced filter modal ([#509](https://github.com/premieroctet/next-admin/issues/509))
+
+## 7.3.0
+
+### Minor Changes
+
+- [e390d30](https://github.com/premieroctet/next-admin/commit/e390d309fe6cc6b7bbb6bbe2f2d3cafb5fcda5a4): feat: allow multifile upload ([#519](https://github.com/premieroctet/next-admin/issues/519))
+- [f4d1d95](https://github.com/premieroctet/next-admin/commit/f4d1d957812a353ea66e6bcdacf8c2d569b3711a): feat: add edit and delete middlewares ([#527](https://github.com/premieroctet/next-admin/issues/527) [#528](https://github.com/premieroctet/next-admin/issues/528))
+
+### Patch Changes
+
+- [5854cce](https://github.com/premieroctet/next-admin/commit/5854cce371999758c18f4ff0c9a2a522ed431cf9): feat: add loader skeleton for rich text ([#462](https://github.com/premieroctet/next-admin/issues/462))
+
+## 7.2.0
+
+### Minor Changes
+
+- [7be5369](https://github.com/premieroctet/next-admin/commit/7be5369196355a8a24d6aaf74c7f49266fad6ac3): feat: support react node as title ([#512](https://github.com/premieroctet/next-admin/issues/512))
+
+### Patch Changes
+
+- [522c5b2](https://github.com/premieroctet/next-admin/commit/522c5b20a9920085dc6d532e557a79b990b71fdb): fix: Dialog title and description errors ([#520](https://github.com/premieroctet/next-admin/issues/520))
+
+## 7.1.2
+
+### Patch Changes
+
+- [97ac9bf](https://github.com/premieroctet/next-admin/commit/97ac9bf99b8bb49bd8711cfbf4d06727094bc5a6): Allow custom inputs in array field ([#510](https://github.com/premieroctet/next-admin/issues/510))
+
+## 7.1.1
+
+### Patch Changes
+
+- [5cb3457](https://github.com/premieroctet/next-admin/commit/5cb3457d5ce05cff524fa149030a2b3e706660c7): chore: upgrade heroicons ([#505](https://github.com/premieroctet/next-admin/issues/505))
+
+## 7.1.0
+
+### Minor Changes
+
+- [07d8996](https://github.com/premieroctet/next-admin/commit/07d8996cf4c771fc0e70762518a083489e9d975a): feat: add dynamic filters ([#491](https://github.com/premieroctet/next-admin/issues/491))
+
+### Patch Changes
+
+- [e49ec99](https://github.com/premieroctet/next-admin/commit/e49ec991c538e49d3b593f20d31afd8120f5fb95): fix: broken clickoutside & example custom page
+- [71f65ec](https://github.com/premieroctet/next-admin/commit/71f65ece06137baee4a10a8cbbb97f3fd8023a46): fix: dnd on touch devices ([#461](https://github.com/premieroctet/next-admin/issues/461))
+- [b762132](https://github.com/premieroctet/next-admin/commit/b7621323bb80862a4d34ed3bcd1f69405bffc6c7): feat: update gear icon to logout icon ([#460](https://github.com/premieroctet/next-admin/issues/460))
+
+## 7.0.2
+
+### Patch Changes
+
+- [bdb6ba0](https://github.com/premieroctet/next-admin/commit/bdb6ba0212a023f8bed10e57417a556c84c250ce): chore: upgrade to React 19, fix some serialization issues on Page Router
+
+## 7.0.1
+
+### Patch Changes
+
+- [46a3dba](https://github.com/premieroctet/next-admin/commit/46a3dbab9b40f535b880fc28f66c7ab39df4feec): Add where clause to model options - Thanks to [@didrikmunther](https://github.com/didrikmunther)
+- [9959cfd](https://github.com/premieroctet/next-admin/commit/9959cfdd666ba2789e2fa06855014deb1f35a3ba): When uploading, include record information - Thanks to [@huinalam](https://github.com/huinalam)
+
+## 7.0.0
+
+### Major Changes
+
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): feat: add custom generator ([#414](https://github.com/premieroctet/next-admin/issues/414))
+
+### Patch Changes
+
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Fix generator
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Explictly install lodash.debounce
+- [64737aa](https://github.com/premieroctet/next-admin/commit/64737aaf636ee958efd028165ab4dd9ec050e29f): Merge main
+
+## 7.0.0-rc.4
+
+### Patch Changes
+
+- Explictly install lodash.debounce
+
+## 7.0.0-rc.3
+
+### Patch Changes
+
+- Fix generator
+
+## 7.0.0-rc.1
+
+### Patch Changes
+
+- [6e060f2](https://github.com/premieroctet/next-admin/commit/6e060f2): Merge main
+
+## 7.0.0-rc.0
+
+### Major Changes
+
+- [1fa56bc](https://github.com/premieroctet/next-admin/commit/1fa56bc): feat: add custom generator ([#414](https://github.com/premieroctet/next-admin/issues/414))
+
+## 6.1.8
+
+### Patch Changes
+
+- [fa0b2af](https://github.com/premieroctet/next-admin/commit/fa0b2af118ba7ec5922ba42904385e9fa7adc2f3): Support Next 15
+
+## 6.1.8-beta.0
+
+### Patch Changes
+
+- [ba36b45](https://github.com/premieroctet/next-admin/commit/ba36b456e4530ae52b96bd1087e21e732e743cc2): Support Next 15
+
+## 6.1.7
+
+### Patch Changes
+
+- [cb7987d](https://github.com/premieroctet/next-admin/commit/cb7987d): Fix advanced filter on nullable field
+
+## 6.1.6
+
+### Patch Changes
+
+- [56ea03b](https://github.com/premieroctet/next-admin/commit/56ea03b): feat: add depth selection for actions ([#443](https://github.com/premieroctet/next-admin/issues/443))
+- [81b2e54](https://github.com/premieroctet/next-admin/commit/81b2e54): Fix relation one-to-many - nullable relation
+- [3225788](https://github.com/premieroctet/next-admin/commit/3225788): Fix image (get async)
+
+## 6.1.5
+
+### Patch Changes
+
+- [6077955](https://github.com/premieroctet/next-admin/commit/6077955): fix: default boolean display ([#466](https://github.com/premieroctet/next-admin/issues/466))
+- [c25f61c](https://github.com/premieroctet/next-admin/commit/c25f61c): fix: crash on undefined relationship length ([#465](https://github.com/premieroctet/next-admin/issues/465))
+
+## 6.1.4
+
+### Patch Changes
+
+- [11dff98](https://github.com/premieroctet/next-admin/commit/11dff98): Fix in/notin operators in advanced filters
+
+## 6.1.3
+
+### Patch Changes
+
+- [62436a5](https://github.com/premieroctet/next-admin/commit/62436a5): fix: pass locale to page router props ([#452](https://github.com/premieroctet/next-admin/issues/452))
+
+## 6.1.2
+
+### Patch Changes
+
+- [017a2e0](https://github.com/premieroctet/next-admin/commit/017a2e0): Add refresh on action perform (list and form)
+- [89b38df](https://github.com/premieroctet/next-admin/commit/89b38df): add refresh on dialog action
+
+## 6.1.1
+
+### Patch Changes
+
+- [003805d](https://github.com/premieroctet/next-admin/commit/003805d): fix: correctly display path in advanced search
+- [84ae5d6](https://github.com/premieroctet/next-admin/commit/84ae5d6): improve dialog UI
+
+## 6.1.0
+
+### Minor Changes
+
+- [68700e6](https://github.com/premieroctet/next-admin/commit/68700e6): - Allow custom actions messages
+  - Allow custom dialog actions messages
+  - `type` prop is now required on `actions` items
+  - `action` function now can return a Message object to display a message after the action is done
+  - Error thrown by `action` function are now caught and displayed in a message
+  - `onClose` prop can now receive a Message object to display a message after the dialog is closed
+
+### Patch Changes
+
+- [0ccbbab](https://github.com/premieroctet/next-admin/commit/0ccbbab): Add align on RichText Editor
+- [a338dda](https://github.com/premieroctet/next-admin/commit/a338dda): Add conditional action through `canExecute` function
+- [68700e6](https://github.com/premieroctet/next-admin/commit/68700e6): Fix form action message
+
+## 6.0.1
+
+### Patch Changes
+
+- [497ab87](https://github.com/premieroctet/next-admin/commit/497ab87): Add translation for success/error messages in form
+- [f5347cf](https://github.com/premieroctet/next-admin/commit/f5347cf): Fix dialog action in form
+- [f5347cf](https://github.com/premieroctet/next-admin/commit/f5347cf): Add icons on action dropdown
+- [32f5562](https://github.com/premieroctet/next-admin/commit/32f5562): Fix user pictures in menu
+
+## 6.0.0
+
+### Major Changes
+
+- [db30b5c](https://github.com/premieroctet/next-admin/commit/db30b5c): feat: use exports field ([#379](https://github.com/premieroctet/next-admin/issues/379))
+
+### Minor Changes
+
+- [cdebaac](https://github.com/premieroctet/next-admin/commit/cdebaac): feat: add client actions ([#401](https://github.com/premieroctet/next-admin/issues/401))
+
 ## 5.5.0
 
 ### Minor Changes

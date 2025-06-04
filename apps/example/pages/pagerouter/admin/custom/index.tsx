@@ -1,5 +1,6 @@
-import { MainLayout, MainLayoutProps } from "@premieroctet/next-admin";
-import { getMainLayoutProps } from "@premieroctet/next-admin/dist/pageRouter";
+import { MainLayoutProps } from "@premieroctet/next-admin";
+import { MainLayout } from "@premieroctet/next-admin/adapters/next";
+import { getMainLayoutProps } from "@premieroctet/next-admin/pageRouter";
 import { GetServerSideProps } from "next";
 import { options } from "../../../../options";
 import { prisma } from "../../../../prisma";
@@ -48,12 +49,12 @@ const CustomPage = ({
               {stats.map((item) => (
                 <div
                   key={item.name}
-                  className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6"
+                  className="overflow-hidden rounded-lg bg-white px-4 py-5 shadow sm:p-6 dark:bg-gray-800"
                 >
-                  <dt className="truncate text-sm font-medium text-gray-500">
+                  <dt className="truncate text-sm font-medium text-gray-500 dark:text-gray-400">
                     {item.name}
                   </dt>
-                  <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900">
+                  <dd className="mt-1 text-3xl font-semibold tracking-tight text-gray-900 dark:text-gray-200">
                     {item.stat}
                   </dd>
                 </div>
@@ -71,7 +72,7 @@ export default CustomPage;
 export const getServerSideProps: GetServerSideProps<Props> = async ({
   req,
 }) => {
-  const mainLayoutProps = getMainLayoutProps({
+  const mainLayoutProps = await getMainLayoutProps({
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
     options: pageOptions,

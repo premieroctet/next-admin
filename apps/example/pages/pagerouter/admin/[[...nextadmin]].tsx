@@ -1,9 +1,11 @@
-import { AdminComponentProps, NextAdmin } from "@premieroctet/next-admin";
-import { getNextAdminProps } from "@premieroctet/next-admin/dist/pageRouter";
+import { AdminComponentProps } from "@premieroctet/next-admin";
+import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
+import PageLoader from "@premieroctet/next-admin/pageLoader";
+import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
+import en from "examples-common/messages/en";
 import { GetServerSideProps } from "next";
 import { options } from "../../../pageRouterOptions";
 import { prisma } from "../../../prisma";
-import schema from "../../../prisma/json-schema/json-schema.json";
 import "../../../styles.css";
 
 const pageOptions = options;
@@ -19,6 +21,7 @@ export default function Admin(props: AdminComponentProps) {
         },
         logout: ["/"],
       }}
+      pageLoader={<PageLoader />}
     />
   );
 }
@@ -28,7 +31,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) =>
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
     prisma,
-    schema,
     options: pageOptions,
-    req,
+    url: req.url!,
+    getMessages: async () => en.admin as unknown as Record<string, string>,
   });

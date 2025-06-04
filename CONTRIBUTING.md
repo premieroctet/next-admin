@@ -6,11 +6,14 @@ An auto generated admin from Prisma models for your Next.js app.
 
 ### Apps and Packages
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `next-admin`: the admin library used by both `web` and `docs` applications
-- `eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `tsconfig`: `tsconfig.json`s used throughout the monorepo
+- `apps/docs`: a [Next.js](https://nextjs.org/) app
+- `apps/example`: a [Next.js](https://nextjs.org/) app that uses the `next-admin` package
+- `packages/next-admin`: the admin library used by both `web` and `docs` applications
+- `packages/cli`: a CLI to generate the admin in your Next.js app
+- `packages/generator-prisma`: a CLI to generate a json schema of your Prisma models
+- `packages/json-schema`: a packages to normalize the Prisma schema to a json schema (primarily used to type the generated and next-admin packages)
+- `packages/eslint-config-custom`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
+- `packagestsconfig`: `tsconfig.json`s used throughout the monorepo
 
 ### Utilities
 
@@ -19,6 +22,54 @@ This turborepo has some additional tools already setup for you:
 - [TypeScript](https://www.typescriptlang.org/) for static type checking
 - [ESLint](https://eslint.org/) for code linting
 - [Prettier](https://prettier.io) for code formatting
+
+### Setup 
+
+To setup the project, run the following command:
+
+```
+pnpm install
+```
+
+Then you need to create a `.env` file in the `apps/example` project with the following content:
+
+```
+DATABASE_URL="postgresql://user:password@localhost:5432/dbname"
+```
+
+And run the following command to setup the packages:
+
+```
+pnpm setup:packages
+```
+
+The `setup:packages` command will build packages, generate Prisma and then build `next-admin` package. 
+
+### Prisma (first time setup)
+
+To setup the database, run the following command:
+
+```
+pnpm database
+```
+
+### Develop
+
+To develop all apps and packages, run the following command:
+
+```
+pnpm dev
+docker-compose up
+cd apps/example && pnpm database
+```
+
+### Build
+
+To build all apps and packages, run the following command:
+
+```
+pnpm build
+```
 
 ### Workflow
 
@@ -29,7 +80,7 @@ The project workflow uses GitHub Actions to run tests, build, deploy (prod - pre
 To increase the version of a package, you need to create a `changeset` file. You can create a `changeset` file by running the following command:
 
 ```sh
-yarn changeset
+pnpm changeset
 ```
 
 Any PR without a `changeset` file will just trigger the tests and eventually deploy/preview the app.
@@ -51,24 +102,6 @@ If you want to fix a previous major version, you can create a PR on the relative
 ![schema-fix](https://github.com/premieroctet/next-admin/assets/7901622/18d463a2-7bea-4a62-bedb-968c58bc0cd2)
 
 Once a fix has been released, you can cherry-pick the fix on the `develop` branch if that fix is still relevant.
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-yarn run build
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-```
-yarn run dev
-docker-compose up
-cd apps/example && yarn database
-```
 
 ### E2E
 

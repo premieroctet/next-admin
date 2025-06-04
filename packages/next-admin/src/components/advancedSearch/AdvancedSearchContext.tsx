@@ -1,6 +1,6 @@
-import { createContext, PropsWithChildren, useContext } from "react";
-import { UIQueryBlock } from "../../utils/advancedSearch";
+import { createContext, useContext } from "react";
 import { ModelName, Schema } from "../../types";
+import { UIQueryBlock } from "../../utils/advancedSearch";
 
 type AdvancedSearchContextType = {
   addUiBlock: (uiBlock: UIQueryBlock) => void;

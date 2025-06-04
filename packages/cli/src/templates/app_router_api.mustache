@@ -1,0 +1,11 @@
+import prisma from "{{prismaClientPath}}";
+import { createHandler } from "@premieroctet/next-admin/appHandler";
+import options from "{{optionsPath}}";
+
+const { run } = createHandler({
+  apiBasePath: "{{apiBasePath}}",
+  prisma,
+  options
+});
+ 
+export { run as DELETE, run as GET, run as POST };

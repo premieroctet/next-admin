@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import { getCustomInputs } from "../utils/options";
 import { options } from "./singleton";
 

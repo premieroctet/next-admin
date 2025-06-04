@@ -1,20 +1,20 @@
 {
   "extends": "tsconfig/react-library.json",
-  "include": [
-    "./src/pageRouter.ts",
-    "src/index.ts",
-    "./src/appRouter.ts",
-    "./src/actions/index.ts",
-    "./src/plugin.ts",
-    "./src/preset.ts",
-    "./src/appHandler.ts",
-    "./src/pageHandler.ts"
+  "include": ["./src/**/*"],
+  "exclude": [
+    "dist",
+    "build",
+    "node_modules",
+    "src/tests",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx"
   ],
-  "exclude": ["dist", "build", "node_modules"],
   "compilerOptions": {
-    "lib": ["dom"],
+    "lib": ["dom", "ESNext"],
     "outDir": "dist",
-    "target": "ES2017",
-    "rootDir": "./src"
+    "target": "ESNext",
+    "module": "ESNext",
+    "rootDir": "./src",
+    "moduleResolution": "bundler"
   }
 }

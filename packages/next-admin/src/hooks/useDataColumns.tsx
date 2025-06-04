@@ -10,6 +10,8 @@ import {
   ListDataItem,
   ListFieldsOptions,
   ModelName,
+  NextAdminContext,
+  VirtualField,
 } from "../types";
 import { useRouterInternal } from "./useRouterInternal";
 
@@ -20,6 +22,7 @@ type UseDataColumnsParams = {
   sortDirection?: "asc" | "desc";
   sortColumn?: string;
   resourcesIdProperty: Record<ModelName, string>;
+  rawData?: any[];
 };
 
 const useDataColumns = ({
@@ -29,6 +32,7 @@ const useDataColumns = ({
   sortDirection,
   sortColumn,
   resourcesIdProperty,
+  rawData,
 }: UseDataColumnsParams) => {
   const { router, query } = useRouterInternal();
   const { isAppDir, options: configOptions } = useConfig();
@@ -36,34 +40,73 @@ const useDataColumns = ({
 
   const options = configOptions?.model?.[resource];
 
+  const allDisplayedFields = useMemo(() => {
+    if (options?.list?.display) {
+      return options.list.display.map((disp) => {
+        if (typeof disp === "string") {
+          return {
+            name: disp,
+            virtual: false,
+            label: undefined,
+          };
+        }
+        return {
+          name: disp.key,
+          virtual: true,
+          label: t(disp.label),
+        };
+      });
+    }
+
+    if (data?.[0]) {
+      return Object.keys(data[0]).map((key) => ({
+        name: key,
+        virtual: false,
+        label: undefined,
+      }));
+    }
+
+    return [];
+  }, []);
+
   return useMemo<ColumnDef<ListDataItem<ModelName>>[]>(() => {
     return data && data?.length > 0
-      ? (options?.list?.display || Object.keys(data[0])).map((property) => {
+      ? allDisplayedFields.map((property) => {
+          const propertyName = property.name;
+          const isVirtualField = property.virtual;
+
           const propertyAlias = t(
-            `model.${resource}.fields.${property}`,
+            `model.${resource}.fields.${propertyName}`,
             {},
             options?.aliases?.[
-              property as keyof ListFieldsOptions<typeof resource>
-            ] || property
+              propertyName as keyof ListFieldsOptions<typeof resource>
+            ] ||
+              property.label ||
+              propertyName
           );
 
+          const isColumnSortable = sortable && !isVirtualField;
+
           return {
-            accessorKey: property,
+            accessorKey: propertyName,
             header: () => {
               return (
                 <TableHead
+                  className={
+                    isColumnSortable ? "cursor-pointer" : "cursor-default"
+                  }
                   sortDirection={sortDirection}
                   sortColumn={sortColumn}
-                  property={property}
+                  property={propertyName}
                   propertyName={propertyAlias}
-                  key={property}
+                  key={propertyName}
                   onClick={() => {
-                    if (sortable) {
+                    if (isColumnSortable) {
                       router?.push({
                         pathname: location.pathname,
                         query: {
                           ...query,
-                          sortColumn: property,
+                          sortColumn: propertyName,
                           sortDirection:
                             query.sortDirection === "asc" ? "desc" : "asc",
                         },
@@ -76,28 +119,45 @@ const useDataColumns = ({
             cell: ({ row }) => {
               const modelData = row.original;
               const cellData = modelData[
-                property as keyof ListFieldsOptions<ModelName>
+                propertyName as keyof ListFieldsOptions<ModelName>
               ] as unknown as ListDataFieldValue;
-
-              const dataFormatter =
-                options?.list?.fields?.[
-                  property as keyof ListFieldsOptions<ModelName>
-                ]?.formatter ||
-                ((cell: any) => {
-                  if (typeof cell === "object") {
-                    return cell[resourcesIdProperty[property as ModelName]];
-                  } else {
-                    return cell;
-                  }
-                });
+              const dataFormatter = isVirtualField
+                ? (
+                    options?.list?.display?.find(
+                      (disp) =>
+                        typeof disp === "object" && disp.key === propertyName
+                    ) as VirtualField<ModelName>
+                  )?.formatter
+                : options?.list?.fields?.[
+                    propertyName as keyof ListFieldsOptions<ModelName>
+                  ]?.formatter;
 
               return (
                 <Cell
                   cell={cellData}
-                  formatter={!isAppDir ? dataFormatter : undefined}
+                  formatter={
+                    !isAppDir
+                      ? dataFormatter
+                        ? (row: any, ctx?: NextAdminContext) => {
+                            if (isVirtualField) {
+                              // @ts-expect-error
+                              return dataFormatter?.({
+                                row,
+                                locale: ctx?.locale,
+                              });
+                            } else {
+                              return dataFormatter?.(row[propertyName], ctx);
+                            }
+                          }
+                        : undefined
+                      : undefined
+                  }
                   copyable={options?.list?.copy?.includes(
-                    property as Field<ModelName>
+                    propertyName as Field<ModelName>
                   )}
+                  getRawData={() => {
+                    return rawData?.[row.index];
+                  }}
                 />
               );
             },
@@ -106,17 +166,20 @@ const useDataColumns = ({
       : [];
   }, [
     data,
+    allDisplayedFields,
+    t,
+    resource,
+    options?.aliases,
     options?.list?.display,
     options?.list?.fields,
     options?.list?.copy,
-    options?.aliases,
+    sortable,
     sortDirection,
     sortColumn,
-    sortable,
     router,
     query,
     isAppDir,
-    resourcesIdProperty,
+    rawData,
   ]);
 };
 

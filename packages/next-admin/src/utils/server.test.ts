@@ -1,3 +1,4 @@
+import { describe, expect, it } from "vitest";
 import {
   getParamsFromUrl,
   getResourceFromParams,
@@ -19,7 +20,7 @@ describe("Server utils", () => {
     });
 
     it("should not return a resource with /admin/Post", () => {
-      expect(getResourceFromParams(["Post"], ["User"])).toEqual(undefined);
+      expect(getResourceFromParams(["Post"], ["User"])).toEqual(null);
     });
   });
 

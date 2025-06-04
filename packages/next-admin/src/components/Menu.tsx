@@ -6,18 +6,16 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import {
+  ArrowRightEndOnRectangleIcon,
   ArrowTopRightOnSquareIcon,
   Bars3Icon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
-import dynamic from "next/dynamic";
-import Link from "next/link";
-import { Fragment, useState } from "react";
+import Link from "./common/Link";
+import { Fragment, useState, ReactNode, lazy, Suspense } from "react";
 
-import { Cog6ToothIcon, PowerIcon } from "@heroicons/react/24/solid";
 import { useTheme } from "next-themes";
-import Image from "next/image";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import { useRouterInternal } from "../hooks/useRouterInternal";
@@ -31,22 +29,11 @@ import { slugify } from "../utils/tools";
 import Divider from "./Divider";
 import ResourceIcon from "./common/ResourceIcon";
 import Button from "./radix/Button";
-import {
-  Dropdown,
-  DropdownBody,
-  DropdownContent,
-  DropdownItem,
-  DropdownLabel,
-  DropdownSeparator,
-  DropdownTrigger,
-} from "./radix/Dropdown";
 
-const ColorSchemeSwitch = dynamic(() => import("./ColorSchemeSwitch"), {
-  ssr: false,
-});
+const ColorSchemeSwitch = lazy(() => import("./ColorSchemeSwitch"));
 
 export type MenuProps = {
-  resource?: ModelName;
+  resource?: ModelName | null;
   resources?: ModelName[];
   resourcesTitles?: Record<ModelName, string | undefined>;
   customPages?: AdminComponentProps["customPages"];
@@ -54,7 +41,7 @@ export type MenuProps = {
   resourcesIcons: AdminComponentProps["resourcesIcons"];
   user?: AdminComponentProps["user"];
   externalLinks?: AdminComponentProps["externalLinks"];
-  title?: string;
+  title?: ReactNode;
 };
 
 export default function Menu({
@@ -102,7 +89,7 @@ export default function Menu({
         className={clsx(
           item.current
             ? "bg-nextadmin-menu-muted dark:bg-dark-nextadmin-menu-muted dark:text-dark-nextadmin-menu-emphasis text-nextadmin-menu-emphasis"
-            : "text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color dark:hover:bg-dark-nextadmin-menu-muted hover:bg-nextadmin-menu-muted hover:text-nextadmin-menu-emphasis",
+            : "text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color dark:hover:bg-dark-nextadmin-menu-muted hover:bg-nextadmin-menu-muted hover:text-nextadmin-menu-emphasis dark:hover:text-dark-nextadmin-menu-emphasis",
           "group flex items-center gap-x-2 rounded-lg px-3 py-2 text-sm leading-6 transition-colors"
         )}
       >
@@ -125,7 +112,7 @@ export default function Menu({
 
   const getItemProps = (model: ModelName) => {
     return {
-      name: t(`model.${model}.plural`, {}, resourcesTitles?.[model] || model),
+      name: t(`model.${model}.plural`, {}, resourcesTitles?.[model] ?? model),
       href: `${basePath}/${slugify(model)}`,
       current: model === currentResource,
       icon: resourcesIcons?.[model],
@@ -166,13 +153,13 @@ export default function Menu({
       }
     };
 
-    const hasDropdown = user.logout; // Add more conditions here if needed
-
     return (
       <div className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color flex flex-1 items-center gap-1 px-2 py-3 text-sm font-semibold leading-6">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {user.data.picture ? (
-            <Image
+            <img
+              width={32}
+              height={32}
               className="flex h-8 w-8 flex-shrink-0 rounded-full"
               src={user.data.picture}
               alt="User picture"
@@ -190,37 +177,15 @@ export default function Menu({
             {user.data.name}
           </span>
         </div>
-        {hasDropdown && (
-          <Dropdown>
-            <DropdownTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex-grow-1 order-2 flex-shrink-0 basis-auto !px-2 py-2"
-              >
-                <Cog6ToothIcon className="h-6 w-6" />
-              </Button>
-            </DropdownTrigger>
-            <DropdownBody>
-              <DropdownContent side="top" sideOffset={5} className="px-1 py-2">
-                <DropdownLabel className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted px-4 py-1 font-normal">
-                  {user.data.name}
-                </DropdownLabel>
-                <DropdownSeparator className="bg-nextadmin-border-default dark:bg-dark-nextadmin-border-emphasis" />
-                <DropdownItem asChild>
-                  <button
-                    type="button"
-                    onClick={logoutBind}
-                    className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted hover:text-nextadmin-content-emphasis hover:bg-nextadmin-background-muted dark:hover:text-dark-nextadmin-content-inverted dark:hover:bg-dark-nextadmin-background-muted flex items-center gap-2 rounded px-4 py-1 font-medium"
-                  >
-                    <PowerIcon className="h-4 w-4" />
-                    <span>{t("user.logout")}</span>
-                  </button>
-                </DropdownItem>
-              </DropdownContent>
-            </DropdownBody>
-          </Dropdown>
-        )}
+        <Button
+          variant="ghost"
+          size="sm"
+          className="order-2 flex-shrink-0 basis-auto !px-2 py-2"
+          type="button"
+          onClick={logoutBind}
+        >
+          <ArrowRightEndOnRectangleIcon className="h-6 w-6" />
+        </Button>
       </div>
     );
   };
@@ -234,7 +199,7 @@ export default function Menu({
       <Link
         key={link.url}
         href={link.url}
-        className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted flex flex-row items-center justify-between gap-2 rounded-lg p-3 text-sm font-medium transition-colors"
+        className="text-nextadmin-menu-color dark:text-dark-nextadmin-menu-color hover:text-nextadmin-menu-emphasis dark:hover:text-dark-nextadmin-menu-emphasis hover:bg-nextadmin-menu-muted dark:hover:bg-dark-nextadmin-menu-muted flex flex-row items-center justify-between gap-2 rounded-lg p-3 text-sm font-medium transition-colors"
         target="_blank"
         rel="noopener"
       >
@@ -253,9 +218,13 @@ export default function Menu({
               href={basePath}
               className="flex h-[40px] items-center gap-2 overflow-hidden"
             >
-              <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
-                {title}
-              </div>
+              {typeof title === "string" ? (
+                <div className="text-md dark:text-dark-nextadmin-brand-inverted overflow-hidden text-ellipsis whitespace-nowrap font-semibold">
+                  {title}
+                </div>
+              ) : (
+                title
+              )}
             </Link>
           </div>
           <Divider />
@@ -309,7 +278,11 @@ export default function Menu({
             </ul>
             <div className="flex flex-col">
               {renderExternalLinks()}
-              {!forcedTheme && <ColorSchemeSwitch />}
+              {!forcedTheme && (
+                <Suspense>
+                  <ColorSchemeSwitch />
+                </Suspense>
+              )}
               {renderUser()}
             </div>
           </nav>

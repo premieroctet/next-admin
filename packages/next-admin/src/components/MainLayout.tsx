@@ -1,9 +1,10 @@
-import { merge } from "lodash";
+import merge from "lodash.merge";
 import { ThemeProvider } from "next-themes";
 import { PropsWithChildren } from "react";
 import { ColorSchemeProvider } from "../context/ColorSchemeContext";
 import { ConfigProvider } from "../context/ConfigContext";
 import { I18nProvider } from "../context/I18nContext";
+import { MessageProvider } from "../context/MessageContext";
 import { defaultTranslations } from "../i18n";
 import { MainLayoutProps } from "../types";
 import Menu from "./Menu";
@@ -24,14 +25,16 @@ export const MainLayout = ({
   resourcesIcons,
   user,
   externalLinks,
-  title,
+  title: titleProp,
   options,
   apiBasePath,
   resourcesIdProperty,
-  dmmfSchema,
+  schema,
 }: PropsWithChildren<Props>) => {
   const mergedTranslations = merge({ ...defaultTranslations }, translations);
   const localePath = locale ? `/${locale}` : "";
+
+  const title = titleProp || options?.title;
 
   return (
     <ConfigProvider
@@ -39,9 +42,10 @@ export const MainLayout = ({
       basePath={`${localePath}${basePath}`}
       isAppDir={isAppDir}
       apiBasePath={apiBasePath}
-      dmmfSchema={dmmfSchema}
       resource={resource}
       resourcesIdProperty={resourcesIdProperty!}
+      schema={schema}
+      nextAdminContext={{ locale }}
     >
       <I18nProvider translations={mergedTranslations}>
         <ThemeProvider
@@ -63,7 +67,9 @@ export const MainLayout = ({
                 user={user}
                 externalLinks={externalLinks}
               />
-              <main className="lg:pl-72">{children}</main>
+              <MessageProvider>
+                <main className="lg:pl-72">{children}</main>
+              </MessageProvider>
             </div>
           </ColorSchemeProvider>
         </ThemeProvider>

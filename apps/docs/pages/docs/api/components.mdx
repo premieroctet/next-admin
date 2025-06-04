@@ -1,0 +1,152 @@
+import OptionsTable from "../../../components/OptionsTable";
+
+# Components
+
+Next-Admin exports a set of UI components which are, for most of those, extending [Radix UI primitives](https://www.radix-ui.com/primitives). These components are available through the `@premieroctet/next-admin/components` import.
+
+## `Button`
+
+The button element accepts all the base `button` tag attributes and extends it with the following:
+
+<OptionsTable
+  options={[
+    {
+      name: "variant",
+      description:
+        "The button variant. Possible values are `default`, `destructive`, `destructiveOutline`, `outline`, `secondary`, `ghost`, `link`",
+      defaultValue: "default",
+    },
+    {
+      name: "size",
+      description: "The button size. Possible values are `default`, `sm`, `lg`",
+    },
+    {
+      name: "icon",
+      description: "A boolean indicating the presence of an icon",
+    },
+    {
+      name: "asChild",
+      description: (
+        <>
+          A boolean to render a{" "}
+          <a href="https://www.radix-ui.com/primitives/docs/utilities/slot">
+            Radix Slot component
+          </a>
+        </>
+      ),
+    },
+    {
+      name: "loading",
+      description: "A boolean to render a spinner",
+    },
+  ]}
+/>
+
+## `BaseInput`
+
+The input component rendered in the Form component. It accepts all the base `input` tag attributes.
+
+## `Switch`
+
+The [Radix Switch](https://www.radix-ui.com/primitives/docs/components/switch) component.
+
+## `Select`
+
+The [Radix Select](https://www.radix-ui.com/primitives/docs/components/select) component.
+
+## `Checkbox`
+
+An implementation of the [Radix Checkbox](https://www.radix-ui.com/primitives/docs/components/checkbox) component. It accepts all the props of the [Checkbox Root](https://www.radix-ui.com/primitives/docs/components/switch#root) component, and the following:
+
+<OptionsTable
+  options={[
+    {
+      name: "indeterminate",
+      description: "A boolean to render the checkbox in an indeterminate state",
+    },
+  ]}
+/>
+
+## `Dropdown`
+
+The [Radix Dropdown](https://www.radix-ui.com/primitives/docs/components/dropdown) component.
+
+## `Table`
+
+The [Radix Table](https://www.radix-ui.com/primitives/docs/components/table) component.
+
+## `Tooltip`
+
+The [Radix Tooltip](https://www.radix-ui.com/primitives/docs/components/tooltip) component.
+
+## `Breadcrumbs`
+
+The `Breadcrumb` accepts the following options:
+
+```tsx
+<Breadcrumb
+  breadcrumbItems={[
+    {
+      href: "/admin/post",
+      label: "Posts",
+      icon: "BlogIcon",
+      current: false,
+    },
+    {
+      href: "/admin/post/batch-upload",
+      label: "Batch Upload",
+      current: true,
+    },
+  ]}
+/>
+```
+
+## Spinner
+
+The `Spinner` component is used to display a loading spinner.
+
+# Inputs
+
+The inputs used across next-admin are available to be used in custom pages. These components are available through the `@premieroctet/next-admin/inputs` import.
+Most expect to be wrapped within a `FormDataProvider`:
+
+```tsx
+// pages/admin/coupons/batch-upload.tsx
+import { FormDataProvider, FileWidget, useFormData } from "@premieroctet/next-admin/inputs";
+
+const BatchUploadWidget = () => {
+  const { setFormData } = useFormData();
+  return <Widget
+    name="address"
+    onChange={(e) => {
+      setFormData((old) => ({ ...old, address: e.target.value }));
+    }}
+  />
+}
+
+export default function BatchUploadPage() {
+  return (
+    // Wrap your page in a provider to enable
+    // the fields to to plug into it
+    <FormDataProvider>
+      <BatchUploadWidget />
+    </FormDataProvider>
+  );
+}
+```
+
+## Components
+
+
+| Component | Description |
+| --- | --- |
+| `FileWidget` | Used to upload files. |
+| `RichTextField` | Used to edit rich text content. |
+| `SelectWidget` | Used to select a value from a list of options. |
+| `TextareaWidget` | Used to edit a text area. |
+| `CheckboxWidget` | Used to select a boolean value. |
+| `DateTimeWidget` | Used to select a date and time. |
+| `DateWidget` | Used to select a date. |
+| `JsonField` | Used to edit a JSON object. |
+| `NullField` | Used to select a null value. |
+| `ArrayField` | Used to edit an array of values. |

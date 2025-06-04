@@ -5,7 +5,7 @@ import {
   PlusSmallIcon,
 } from "@heroicons/react/24/outline";
 import { RowSelectionState } from "@tanstack/react-table";
-import Link from "next/link";
+import Link from "./common/Link";
 import { ChangeEvent, useMemo } from "react";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
@@ -70,11 +70,13 @@ export default function ListHeader({
   const selectedRowsCount = Object.keys(selectedRows).length;
 
   const actions = useMemo(() => {
-    const defaultActions: ModelAction[] = canDelete
+    const defaultActions: ModelAction<ModelName>[] = canDelete
       ? [
           {
+            type: "server",
             id: SPECIFIC_IDS_TO_RUN_ACTION.DELETE,
             title: t("actions.delete.label"),
+            icon: "TrashIcon",
             style: "destructive",
             action: async () => {
               await onDelete();
@@ -83,7 +85,7 @@ export default function ListHeader({
         ]
       : [];
 
-    return [...(actionsProp || []), ...defaultActions];
+    return [...(actionsProp ?? []), ...defaultActions];
   }, [actionsProp, onDelete, t, canDelete]);
 
   const resourcePluralName = t(`model.${resource}.plural`, {}, title);
@@ -150,7 +152,6 @@ export default function ListHeader({
               <ExportDropdown exports={modelOptions?.list?.exports} />
             ) : (
               <Link
-                prefetch={false}
                 href={modelOptions?.list?.exports.url}
                 target="_blank"
                 className="text-nextadmin-content-inverted dark:text-dark-nextadmin-brand-inverted border-nextadmin-border-default dark:border-dark-nextadmin-border-default dark:bg-dark-nextadmin-background-subtle flex min-w-fit items-center gap-x-2 rounded-md border bg-transparent px-3 py-2 text-sm"

@@ -1,6 +1,6 @@
 "use client";
 import { PlusSmallIcon } from "@heroicons/react/24/outline";
-import Link from "next/link";
+import Link from "./common/Link";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
 import {
@@ -23,7 +23,6 @@ export default function FormHeader({
   resource,
   data,
   schema,
-  dmmfSchema,
 }: FormProps) {
   const { t } = useI18n();
   const { basePath, options } = useConfig();
@@ -36,7 +35,6 @@ export default function FormHeader({
   const { edit, id } = getSchemas(
     data,
     schema,
-    dmmfSchema,
     modelOptions?.edit?.fields as EditFieldsOptions<typeof resource>
   );
 

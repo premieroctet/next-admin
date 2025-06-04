@@ -1,19 +1,17 @@
 import { notFound } from "next/navigation";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, use } from "react";
 import "../../styles.css";
 
-type Props = {
-  params: {
-    locale: "en" | "fr";
-  };
-};
-
+type ParamsProps = Promise<{
+  locale: "en" | "fr";
+}>;
 const locales = ["en", "fr"];
 
 export default function Layout({
   children,
-  params: { locale },
-}: PropsWithChildren<Props>) {
+  params,
+}: PropsWithChildren<{ params: ParamsProps }>) {
+  const locale = use(params)?.locale;
   if (!locales.includes(locale)) {
     notFound();
   }

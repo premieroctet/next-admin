@@ -1,27 +1,38 @@
 "use client";
-import { EllipsisVerticalIcon } from "@heroicons/react/24/outline";
+import { EllipsisVerticalIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { ColumnDef, RowSelectionState } from "@tanstack/react-table";
-import debounce from "lodash/debounce";
-import { ChangeEvent, useEffect, useState, useTransition } from "react";
+import clsx from "clsx";
+import debounce from "lodash.debounce";
+import {
+  ChangeEvent,
+  useEffect,
+  useOptimistic,
+  useState,
+  useTransition,
+} from "react";
+import { twMerge } from "tailwind-merge";
 import { ITEMS_PER_PAGE } from "../config";
+import ClientActionDialogProvider from "../context/ClientActionDialogContext";
 import { useConfig } from "../context/ConfigContext";
 import { useI18n } from "../context/I18nContext";
-import { MessageProvider } from "../context/MessageContext";
 import useDataColumns from "../hooks/useDataColumns";
 import { useDeleteAction } from "../hooks/useDeleteAction";
 import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
+  FilterWrapper,
   ListData,
   ListDataItem,
   ModelIcon,
   ModelName,
   Schema,
 } from "../types";
+import { reorderData, slugify } from "../utils/tools";
+import ActionDropdownItem from "./ActionDropdownItem";
 import { DataTable } from "./DataTable";
 import Filters from "./Filters";
 import ListHeader from "./ListHeader";
-import Message from "./Message";
+import { Message } from "./Message";
 import { Pagination } from "./Pagination";
 import TableRowsIndicator from "./TableRowsIndicator";
 import Button from "./radix/Button";
@@ -38,9 +49,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
 } from "./radix/Select";
-import ActionDropdownItem from "./ActionDropdownItem";
 
 export type ListProps = {
   resource: ModelName;
@@ -51,6 +60,9 @@ export type ListProps = {
   actions?: AdminComponentProps["actions"];
   icon?: ModelIcon;
   schema: Schema;
+  clientActionsComponents?: AdminComponentProps["dialogComponents"];
+  rawData: any[];
+  listFilterOptions?: Array<FilterWrapper<ModelName>>;
 };
 
 function List({
@@ -62,33 +74,48 @@ function List({
   title,
   icon,
   schema,
+  clientActionsComponents,
+  rawData,
+  listFilterOptions,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
-  const { options } = useConfig();
+  const [_orderPending, startOrderTransition] = useTransition();
+  const { options, apiBasePath } = useConfig();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
-  const sortColumn = query.sortColumn as string;
-  const sortDirection = query.sortDirection as "asc" | "desc";
+  const modelOptions = options?.["model"]?.[resource];
+  const sortColumn = !modelOptions?.list?.orderField
+    ? (query.sortColumn as string)
+    : undefined;
+  const sortDirection = !modelOptions?.list?.orderField
+    ? (query.sortDirection as "asc" | "desc")
+    : undefined;
   const { deleteItems } = useDeleteAction(resource);
   const { t } = useI18n();
   const columns = useDataColumns({
     data,
     resource,
-    sortable: true,
+    sortable: modelOptions?.list?.orderField ? false : true,
     resourcesIdProperty,
     sortColumn,
     sortDirection,
+    rawData,
   });
 
   let onSearchChange;
-  const modelOptions = options?.["model"]?.[resource];
+
+  const [optimisticData, optimisticOrderData] = useOptimistic(
+    data,
+    (prevData, newData: ListData<ModelName>) => {
+      if (!modelOptions?.list?.orderField) return prevData;
+      return newData;
+    }
+  );
 
   const hasDeletePermission =
     !modelOptions?.permissions || modelOptions?.permissions?.includes("delete");
-
-  const filterOptions = modelOptions?.list?.filters;
   if (
     !(modelOptions?.list?.search && modelOptions?.list?.search?.length === 0)
   ) {
@@ -151,7 +178,11 @@ function List({
       return (
         <Dropdown>
           <DropdownTrigger asChild>
-            <Button variant="ghost" size="sm" className="!px-2 py-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="hover:bg-nextadmin-background-emphasis !px-2 py-2"
+            >
               <EllipsisVerticalIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-6 w-6" />
             </Button>
           </DropdownTrigger>
@@ -172,17 +203,19 @@ function List({
                   />
                 );
               })}
-              <DropdownItem asChild>
-                <Button
-                  variant="destructiveOutline"
-                  className="h-6 w-full"
-                  onClick={(evt) => {
-                    evt.stopPropagation();
-                    deleteItems([row.original[idProperty].value as string]);
-                  }}
-                >
-                  {t("list.row.actions.delete.label")}
-                </Button>
+              <DropdownItem
+                className={twMerge(
+                  clsx(
+                    "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-red-700 hover:bg-red-50 dark:text-red-400"
+                  )
+                )}
+                onClick={(evt) => {
+                  evt.stopPropagation();
+                  deleteItems([row.original[idProperty].value as string]);
+                }}
+              >
+                <TrashIcon className="h-5 w-5" />
+                {t("list.row.actions.delete.label")}
               </DropdownItem>
             </DropdownContent>
           </DropdownBody>
@@ -209,8 +242,30 @@ function List({
       | number[];
   };
 
+  const handleOrderChange = modelOptions?.list?.orderField
+    ? (value: { currentId: string | number; moveOverId: string | number }) => {
+        startOrderTransition(async () => {
+          const idField = resourcesIdProperty[resource];
+          const newData = reorderData(
+            optimisticData,
+            value.currentId,
+            value.moveOverId,
+            modelOptions?.list?.orderField!,
+            idField
+          );
+          optimisticOrderData(newData);
+
+          await fetch(`${apiBasePath}/${slugify(resource)}/order`, {
+            method: "POST",
+            body: JSON.stringify(optimisticData),
+          });
+          router.refresh();
+        });
+      }
+    : undefined;
+
   return (
-    <>
+    <ClientActionDialogProvider componentsMap={clientActionsComponents}>
       <div className="flow-root h-full">
         <ListHeader
           title={title}
@@ -230,18 +285,20 @@ function List({
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
           <div className="-mt-2 mb-2 space-y-4 sm:-mt-4 sm:mb-4">
             <Message />
-            <Filters filters={filterOptions!} />
+            <Filters filters={listFilterOptions!} />
           </div>
           <DataTable
             resource={resource}
-            data={data}
+            data={optimisticData}
             columns={[checkboxColumn, ...columns, actionsColumn]}
             resourcesIdProperty={resourcesIdProperty}
             rowSelection={rowSelection}
             setRowSelection={setRowSelection}
             icon={icon}
+            onOrderChange={handleOrderChange!}
+            orderField={modelOptions?.list?.orderField!}
           />
-          {data.length ? (
+          {optimisticData.length ? (
             <div className="flex flex-1 flex-wrap items-center justify-between gap-2 py-4">
               <div>
                 <TableRowsIndicator
@@ -266,11 +323,9 @@ function List({
                   }}
                 >
                   <SelectTrigger className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-subtle max-h-[36px] max-w-[100px]">
-                    <SelectValue asChild>
-                      <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
-                        {pageSize}
-                      </span>
-                    </SelectValue>
+                    <span className="text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted pointer-events-none">
+                      {pageSize}
+                    </span>
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value={"10"}>10</SelectItem>
@@ -298,16 +353,8 @@ function List({
           ) : null}
         </div>
       </div>
-    </>
+    </ClientActionDialogProvider>
   );
 }
 
-const ListWrapper = (props: ListProps) => {
-  return (
-    <MessageProvider>
-      <List {...props} />
-    </MessageProvider>
-  );
-};
-
-export default ListWrapper;
+export default List;

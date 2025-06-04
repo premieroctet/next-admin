@@ -114,9 +114,8 @@ By default, if no models are defined, they will all be displayed in the admin. I
       description: (
         <>
           {" "}
-          an array of actions (see <a href="#actions-property">
-            actions property
-          </a>)
+          an array of actions (see{" "}
+          <a href="#actions-property">actions property</a>)
         </>
       ),
     },
@@ -158,8 +157,18 @@ This property determines how your data is displayed in the [list View](/docs/glo
     {
       name: "display",
       type: "Array",
-      description: "an array of fields that are displayed in the list",
+      description: (
+        <>
+          an array of fields that are displayed in the list. You can also pass an object, check <a href="#virtual-list-fields">virtual list fields</a>
+        </>
+      ),
       defaultValue: "All scalar fields are displayed by default",
+    },
+    {
+      name: "orderField",
+      type: "String",
+      description:
+        "the field to use for ordering the list, it must be a numeric field. ⚠️ When enabled, it will disable all other types of sorting.",
     },
     {
       name: "fields",
@@ -200,9 +209,8 @@ This property determines how your data is displayed in the [list View](/docs/glo
       description: (
         <>
           {" "}
-          define a set of Prisma filters that user can choose in list (see <a href="#listfilters-property">
-            filters
-          </a>)
+          define a set of Prisma filters that user can choose in list (see{" "}
+          <a href="#listfilters-property">filters</a>)
         </>
       ),
     },
@@ -279,8 +287,16 @@ The `filters` property allow you to define a set of Prisma filters that user can
         </>
       ),
     },
+    {
+      name: "group",
+      type: "String",
+      description:
+        "an id that will be used to give filters with the same group name a radio like behavior",
+    },
   ]}
 />
+
+It can also be an async function that returns the above type so that you can have a dynamic list of filters.
 
 #### `list.exports` property
 
@@ -315,6 +331,7 @@ The `exports` property is available in the `list` property. It's an object or an
 This property determines how your data is displayed in the [edit view](/docs/glossary#edit-view)
 
 {" "}
+
 <OptionsTable
   options={[
     {
@@ -323,10 +340,9 @@ This property determines how your data is displayed in the [edit view](/docs/glo
       description: (
         <>
           {" "}
-          an array of fields that are displayed in the form. It can also be an object
-          that will be displayed in the form of a notice (see <a href="#notice">
-            notice
-          </a>)
+          an array of fields that are displayed in the form. It can also be an
+          object that will be displayed in the form of a notice (see{" "}
+          <a href="#notice">notice</a>)
         </>
       ),
       defaultValue: "all scalar fields are displayed",
@@ -450,8 +466,10 @@ When you define a field, use the field's name as the key and the following objec
           an async function that is used only for formats <code>file</code> and{" "}
           <code>data-url</code>. It takes a Buffer object and an information
           object containing <code>name</code> and <code>type</code> properties
-          as parameters and must return a string. It can be useful to upload a
-          file to a remote provider
+          as parameters and must return a string. It has <code>context</code> as
+          a parameter, which holds record information such as the resource ID,
+          which does not exist during record creation. It can be useful to
+          upload a file to a remote provider
         </>
       ),
     },
@@ -460,6 +478,15 @@ When you define a field, use the field's name as the key and the following objec
       type: "String",
       description:
         "an optional string displayed in the input field as an error message in case of a failure during the upload handler",
+    },
+    {
+      name: "handler.deleteFile",
+      type: "Function",
+      description: (
+        <>
+          an async function that is used to remove a file from a remote provider. Takes the file URI as an argument.
+        </>
+      )
     },
     {
       name: "optionFormatter",
@@ -548,6 +575,21 @@ When you define a field, use the field's name as the key and the following objec
       description:
         "a function that takes the resource value as a parameter, and returns a boolean that shows or hides the field in the edit form",
     },
+    {
+      name: "pagination",
+      type: "object",
+      description: (
+        <>
+          An object (can be empty) that adds pagination for multi select fields (with <code>display</code> set to either <code>table</code> or <code>list</code>).
+          It accepts a property <code>perPage</code> defining the amount of items per page (defaults to 20)
+        </>
+      )
+    },
+    {
+      name: "maxLength",
+      type: "Number",
+      description: "a number that defines the maximum number of items a scalar array can contain."
+    }
   ]}
 />
 
@@ -590,12 +632,59 @@ The `actions` property is an array of objects that allows you to define a set of
       description: "mandatory, action's unique identifier",
     },
     {
+      name: "type",
+      type: "String",
+      description:
+        "action type for client side actions, possible value is 'dialog' | 'server'. By default action with no type is executed on the server",
+    },
+    {
+      name: "component",
+      type: "ReactElement",
+      description: (
+        <>
+          a React component that will be displayed in a dialog when the action
+          is triggered. Its mandatory if the action type `dialog` is specified.
+          See the{" "}
+          <a href="#clientactiondialogcontentprops">
+            ClientActionDialogContentProps
+          </a>{" "}
+          for the props passed to the component.<br /><br />
+          For a server side action, it is used inside the message shown at the top of the page
+          after the action execution. It receives a prop <code>message</code> containing the
+          message to be displayed. Useful in case you want to display custom content,
+          for example as Markdown.
+        </>
+      ),
+    },
+    {
+      name: "className",
+      type: "string",
+      description: (
+        <>
+          class name applied to the dialog displayed when the action type is set
+          to 'dialog'.
+        </>
+      ),
+    },
+    {
       name: "action",
       type: "Function",
       description: (
         <>
           an async function that will be triggered when selecting the action in
-          the dropdown. For App Router, it must be defined as a server action
+          the dropdown. Its mandatory if the action type is not specified. Can
+          return a message object to display a message after the action is done
+          or throw an error to display a message
+        </>
+      ),
+    },
+    {
+      name: "canExecute",
+      type: "Function",
+      description: (
+        <>
+          a function that takes a record as a parameter and returns a boolean.
+          It is used to determine if the action can be executed on the record
         </>
       ),
     },
@@ -603,12 +692,53 @@ The `actions` property is an array of objects that allows you to define a set of
       name: "successMessage",
       type: "String",
       description:
-        "a message that will be displayed when the action is successful",
+        "a message that will be displayed when the action is successful if action doesn't return a message object",
     },
     {
       name: "errorMessage",
       type: "String",
-      description: "a message that will be displayed when the action fails",
+      description:
+        "a message that will be displayed when the action fails if action doesn't return a message object or throw an error with a message",
+    },
+    {
+      name: "depth",
+      type: "Number",
+      description:
+        "a number that defines the depth of the relations to select in the resource. Use this with caution, a number too high can potentially cause slower queries. Defaults to 2.",
+    },
+    {
+      name: "icon",
+      type: "String",
+      description: (
+        <>
+          the outline{" "}
+          <a href="https://heroicons.com/" target="_blank">
+            HeroIcon
+          </a>{" "}
+          name displayed in the actions dropdown for this action
+        </>
+      ),
+    }
+  ]}
+/>
+
+## `middlewares` property
+
+The `middlewares` property is an object of functions executed either before a record's update or deletion, where you can control if the deletion and update should happen or not. It can have the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "edit",
+      type: "Function",
+      description:
+        "a function that is called before the form data is sent to the database. It takes the submitted form data as its first argument, and the current value in the database as its second argument. If false is returned, the update will not happen.",
+    },
+    {
+      name: "delete",
+      type: "Function",
+      description:
+        "a function that is called before the record is deleted. It takes the record to delete as its only argument. If false is returned, the deletion will not happen.",
     },
   ]}
 />
@@ -682,7 +812,7 @@ export const options: NextAdminOptions = {
   model: {
     User: {
       /**
-        ...some configuration 
+        ...some configuration
       **/
       edit: {
         display: [
@@ -732,9 +862,11 @@ Represents the props that are passed to the custom input component.
       description: (
         <>
           {" "}
-          a function taking a <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event">
+          a function taking a{" "}
+          <a href="https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/change_event">
             ChangeEvent
-          </a> as a parameter
+          </a>{" "}
+          as a parameter
         </>
       ),
     },
@@ -753,8 +885,21 @@ Represents the props that are passed to the custom input component.
       type: "Boolean",
       description: "boolean indicating if the field is disabled",
     },
+    {
+      name: "item",
+      type: "any",
+      description: <>the <b>initial</b> value of the resource being edited</>,
+    },
   ]}
 />
+
+You can access the current form data state using the `useFormData` hook imported from `@premieroctet/next-admin/utils`.
+
+```tsx
+import { useFormData } from '@premieroctet/next-admin/utils'
+
+const { formData } = useFormData()
+```
 
 ## HookError
 
@@ -773,5 +918,195 @@ The `HookError` is an error that can be thrown in the `beforeDb` hook of the `ed
       description:
         "an error object that must contain at least an error property which is a string",
     },
+  ]}
+/>
+
+## ClientActionDialogContentProps
+
+Represents the props that are passed to the custom dialog component.
+
+<OptionsTable
+  options={[
+    {
+      name: "resource",
+      type: "String",
+      description: "the current Prisma model name",
+    },
+    {
+      name: "resourceId",
+      type: "String | Number",
+      description: "the selected record id",
+    },
+    {
+      name: "data",
+      type: "Record<string, ListDataFieldValue>",
+      description: (
+        <>
+          A record of row's properties with{" "}
+          <a href="#listdatafieldvalue">ListDataFieldValue</a> as value
+        </>
+      ),
+    },
+    {
+      name: "onClose",
+      type: "Function",
+      description:
+        "a function to close the dialog, it can receive a message object to display a message after the dialog is closed",
+    },
+  ]}
+/>
+
+## ListDataFieldValue
+
+Represents a formatted value used by Next-Admin. It will have different shapes depending of the data type.
+
+It will always have the following :
+
+<OptionsTable
+  options={[
+    {
+      name: "__nextadmin_formatted",
+      type: "ReactNode",
+      description:
+        "A React Node used to have a custom rendering of the field, if needed",
+    },
+  ]}
+/>
+
+### Scalar
+
+<OptionsTable
+  options={[
+    {
+      name: "type",
+      type: "`scalar`",
+      description: "The type of data. It is always `scalar`",
+    },
+    {
+      name: "value",
+      type: "String | Number | boolean",
+      description: "the value coming from the database",
+    },
+  ]}
+/>
+
+### Count
+
+<OptionsTable
+  options={[
+    {
+      name: "type",
+      type: "`count`",
+      description: "The type of data. It is always `count`",
+    },
+    {
+      name: "value",
+      type: "Number",
+      description: "the value coming from the database",
+    },
+  ]}
+/>
+
+### Link
+
+<OptionsTable
+  options={[
+    {
+      name: "type",
+      type: "`link`",
+      description: "The type of data. It is always `link`",
+    },
+    {
+      name: "value",
+      type: "object",
+      description: "the link data displayed in the link CTA",
+    },
+    {
+      name: "value.label",
+      type: "String",
+      description: "the link CTA label",
+    },
+    {
+      name: "value.url",
+      type: "String",
+      description: "the link CTA href",
+    },
+  ]}
+/>
+
+### Date
+
+<OptionsTable
+  options={[
+    {
+      name: "type",
+      type: "`date`",
+      description: "The type of data. It is always `date`",
+    },
+    {
+      name: "value",
+      type: "Date",
+      description: "the value coming from the database",
+    },
+  ]}
+/>
+
+## Virtual list fields
+
+It is possible to add custom columns in the list panel that are computed from the value of other columns. This is done by setting an object in the `list.display` array of a model. This object takes the following properties:
+
+<OptionsTable
+  options={[
+    {
+      name: "key",
+      type: "String",
+      description: "A unique key used to index the value in the data",
+    },
+    {
+      name: "label",
+      type: "String",
+      description: (
+        <>
+          An optional explicit label for the table header. If a translation under the <code>model.your_resource.fields.your_key</code>" is provided, this translation will be used, else this label, otherwise the key.
+        </>
+      ),
+    },
+    {
+      name: "dependsOn",
+      type: "String[]",
+      description: (
+        <>
+          An array of fields on the current resource that the virtual field depends on. You should typically include fields that are not already in the <code>display</code> array.
+        </>
+      ),
+    },
+    {
+      name: "formatter",
+      type: "Function",
+      description: (
+        <>
+          A function that takes a <a href="#nextadmin-context">NextAdmin context</a> as a parameter, containing the raw data value. This function can either return a string or a react element (currently only for App Router). If a string is returned, a <code>type</code> property can be provided to alter the render of the cell in the table.
+        </>
+      ),
+    },
+    {
+      name: "type",
+      type: "String",
+      description: (
+        <>
+          An optional type used to alter the render of the cell. Available values are <code>scalar</code>, <code>count</code>, <code>date</code> and <code>link</code>. If <code>link</code> is used, the <code>url</code> function must be provided.
+        </>
+      ),
+      defaultValue: "scalar"
+    },
+    {
+      name: "url",
+      type: "Function",
+      description: (
+        <>
+          A function that takes a <a href="#nextadmin-context">NextAdmin context</a> as a parameter, containing the raw data value. This function should return a string representing the URL to which the cell should link.
+        </>
+      ),
+    }
   ]}
 />

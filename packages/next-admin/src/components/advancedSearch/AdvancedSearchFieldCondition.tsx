@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import { useI18n } from "../../context/I18nContext";
+import { QueryCondition, UIQueryBlock } from "../../utils/advancedSearch";
+import { Button } from "../radix/Button";
 import {
   Dropdown,
   DropdownBody,
@@ -5,9 +9,6 @@ import {
   DropdownItem,
   DropdownTrigger,
 } from "../radix/Dropdown";
-import { Button } from "../radix/Button";
-import { QueryCondition, UIQueryBlock } from "../../utils/advancedSearch";
-import { useI18n } from "../../context/I18nContext";
 import { useAdvancedSearchContext } from "./AdvancedSearchContext";
 
 type Props = {
@@ -17,6 +18,24 @@ type Props = {
 const AdvancedSearchFieldCondition = ({ uiBlock }: Props) => {
   const { t } = useI18n();
   const { updateUiBlock } = useAdvancedSearchContext();
+
+  useEffect(() => {
+    if (uiBlock.type === "filter") {
+      const condition = uiBlock.condition;
+      if ((condition === "equals" || condition === "not") && uiBlock.enum) {
+        updateUiBlock({
+          ...uiBlock,
+          condition,
+          value: Boolean(uiBlock.value)
+            ? String(uiBlock.value)
+                ?.split(",")
+                .map((v) => v.trim())[0]
+            : (uiBlock.defaultValue ?? null),
+        });
+      }
+    }
+    // @ts-expect-error
+  }, [uiBlock.condition]);
 
   if (uiBlock.type !== "filter") {
     return null;
@@ -39,13 +58,19 @@ const AdvancedSearchFieldCondition = ({ uiBlock }: Props) => {
     ];
     const numberConditions: QueryCondition[] = ["lt", "lte", "gt", "gte"];
 
-    if (uiBlock.contentType !== "boolean") {
+    if (
+      uiBlock.contentType !== "boolean" &&
+      uiBlock.contentType !== "datetime"
+    ) {
       commonValidConditions.push(...nonBooleanConditions);
     }
 
     if (uiBlock.contentType === "text") {
       commonValidConditions.push(...textConditions);
-    } else if (uiBlock.contentType !== "boolean") {
+    } else if (
+      uiBlock.contentType === "number" ||
+      uiBlock.contentType === "datetime"
+    ) {
       commonValidConditions.push(...numberConditions);
     }
 

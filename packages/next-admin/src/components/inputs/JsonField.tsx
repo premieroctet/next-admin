@@ -1,10 +1,10 @@
 "use client";
-import Editor from "@monaco-editor/react";
+import { Editor } from "@monaco-editor/react";
 import { useMemo } from "react";
 import { useColorScheme } from "../../context/ColorSchemeContext";
 import { CustomInputProps } from "../../types";
 
-type Props = CustomInputProps;
+type Props = Omit<CustomInputProps, "onFocus" | "onBlur">;
 
 const JsonField = ({ value, onChange, name, disabled, required }: Props) => {
   const { colorScheme } = useColorScheme();

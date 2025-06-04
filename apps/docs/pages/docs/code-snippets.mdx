@@ -370,12 +370,12 @@ You can create custom pages in the Next Admin UI. By reusing the `MainLayout` co
 ```typescript copy filename="app/custom/page.tsx"
 
 import { MainLayout } from "@premieroctet/next-admin";
-import { getMainLayoutProps } from "@premieroctet/next-admin/dist/appRouter";
+import { getMainLayoutProps } from "@premieroctet/next-admin/appRouter";
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 
 const CustomPage = async () => {
-  const mainLayoutProps = getMainLayoutProps({
+  const mainLayoutProps = await getMainLayoutProps({
     basePath: "/admin",
     apiBasePath: "/api/admin",
     /*options*/
