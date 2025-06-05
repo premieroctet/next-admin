@@ -1,5 +1,6 @@
 import { RJSFSchema } from "@rjsf/utils";
 import clsx from "clsx";
+import { ReactNode, useState } from "react";
 import DoubleArrow from "../../../assets/icons/DoubleArrow";
 import { useConfig } from "../../../context/ConfigContext";
 import { useFormState } from "../../../context/FormStateContext";
@@ -12,12 +13,13 @@ import {
   ModelName,
   RelationshipPagination,
 } from "../../../types";
+import { useFormData } from "../../../utils";
 import Button from "../../radix/Button";
+import EmbeddedFormModal from "../EmbeddedForm/EmbeddedFormModal";
 import { Selector } from "../Selector";
 import MultiSelectDisplayList from "./MultiSelectDisplayList";
 import MultiSelectDisplayTable from "./MultiSelectDisplayTable";
 import MultiSelectItem from "./MultiSelectItem";
-import { useFormData } from "../../../utils";
 
 type Props = {
   options?: Enumeration[];
@@ -30,7 +32,7 @@ type Props = {
 };
 
 const MultiSelectWidget = (props: Props) => {
-  const { options: globalOptions, resource } = useConfig();
+  const { options: globalOptions, resource, resourcesIdProperty } = useConfig();
   const { onToggle, isOpen, onClose } = useDisclosure();
   const containerRef = useClickOutside<HTMLDivElement>(() => onClose());
   const { formData, onChange, options, name, schema } = props;
@@ -39,6 +41,9 @@ const MultiSelectWidget = (props: Props) => {
   const fieldOptions =
     globalOptions?.model?.[resource!]?.edit?.fields?.[name as Field<ModelName>];
   const { relationshipsRawData } = useFormData();
+
+  // State for embedded form modal
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const onRemoveClick = (value: any) => {
     setFieldDirty(name);
@@ -60,6 +65,29 @@ const MultiSelectWidget = (props: Props) => {
   const fieldSortable =
     // @ts-expect-error
     displayMode === "list" && (!!fieldOptions?.orderField || !!schema.enum);
+
+  // Check if allowCreate is enabled for this field
+  const allowCreate = !!fieldOptions && "allowCreate" in fieldOptions && fieldOptions.allowCreate;
+
+  // Get the related model name from schema
+  // @ts-expect-error
+  const relatedModel = schema.items?.relation as ModelName;
+
+  // Handle successful creation of new item
+  const handleCreateSuccess = (newItemData: any) => {
+    if (newItemData && resourcesIdProperty) {
+      const idProperty = resourcesIdProperty[relatedModel];
+      const newItem: Enumeration = {
+        value: newItemData[idProperty],
+        label: newItemData.toString?.() || newItemData[idProperty]?.toString() || "New Item",
+        data: newItemData,
+      };
+
+      setFieldDirty(name);
+      onChange([...(formData || []), newItem]);
+    }
+    setShowCreateModal(false);
+  };
 
   const select = (
     <select
@@ -85,36 +113,51 @@ const MultiSelectWidget = (props: Props) => {
     </select>
   );
 
+  const createButton: ReactNode = allowCreate && relatedModel && !props.disabled ? (
+    <Button
+      aria-disabled={props.disabled}
+      type="button"
+      disabled={props.disabled}
+      className="relative"
+      onClick={() => setShowCreateModal(true)}
+    >
+      {t("form.widgets.multiselect.create")}
+    </Button>
+  ) : null;
+
   return (
     <div className="relative">
       {displayMode === "select" && (
-        <div
-          className={clsx(
-            "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default ring-nextadmin-border-default flex min-h-[38px] w-[100%] w-full appearance-none flex-wrap gap-x-1 gap-y-1 rounded-md border-0 border-gray-300 px-2 py-1.5 pr-10 text-sm placeholder-gray-500 shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 sm:leading-6",
-            {
-              "cursor-not-allowed opacity-50": props.disabled,
-            }
-          )}
-          aria-disabled={props.disabled}
-        >
-          {select}
-          {formData?.map(
-            (value: any, index: number) =>
-              value && (
-                <MultiSelectItem
-                  key={index}
-                  item={value}
-                  schema={schema}
-                  onRemoveClick={onRemoveClick}
-                  deletable={!props.disabled}
-                />
-              )
-          )}
-          {!props.disabled && (
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
-              <DoubleArrow />
-            </div>
-          )}
+        <div>
+          <div
+            className={clsx(
+              "dark:bg-dark-nextadmin-background-subtle dark:ring-dark-nextadmin-border-strong text-nextadmin-content-inverted dark:text-dark-nextadmin-content-inverted dark:border-dark-nextadmin-border-default ring-nextadmin-border-default flex min-h-[38px] w-[100%] w-full appearance-none flex-wrap gap-x-1 gap-y-1 rounded-md border-0 border-gray-300 px-2 py-1.5 pr-10 text-sm placeholder-gray-500 shadow-sm ring-1 ring-inset transition-all duration-300 placeholder:text-gray-400 sm:leading-6",
+              {
+                "cursor-not-allowed opacity-50": props.disabled,
+              }
+            )}
+            aria-disabled={props.disabled}
+          >
+            {select}
+            {formData?.map(
+              (value: any, index: number) =>
+                value && (
+                  <MultiSelectItem
+                    key={index}
+                    item={value}
+                    schema={schema}
+                    onRemoveClick={onRemoveClick}
+                    deletable={!props.disabled}
+                  />
+                )
+            )}
+            {!props.disabled && (
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-3">
+                <DoubleArrow />
+              </div>
+            )}
+          </div>
+          {createButton}
         </div>
       )}
       {displayMode === "list" && (
@@ -132,15 +175,18 @@ const MultiSelectWidget = (props: Props) => {
             pagination={fieldPagination}
           />
 
-          <Button
-            aria-disabled={props.disabled}
-            type="button"
-            disabled={props.disabled}
-            className="relative"
-          >
-            {select}
-            {t("form.widgets.multiselect.select")}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              aria-disabled={props.disabled}
+              type="button"
+              disabled={props.disabled}
+              className="relative"
+            >
+              {select}
+              {t("form.widgets.multiselect.select")}
+            </Button>
+            {createButton}
+          </div>
         </div>
       )}
       {displayMode === "table" && (
@@ -154,15 +200,18 @@ const MultiSelectWidget = (props: Props) => {
             rawData={relationshipsRawData?.[name]}
           />
 
-          <Button
-            aria-disabled={props.disabled}
-            type="button"
-            disabled={props.disabled}
-            className="relative"
-          >
-            {select}
-            {t("form.widgets.multiselect.select")}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              aria-disabled={props.disabled}
+              type="button"
+              disabled={props.disabled}
+              className="relative"
+            >
+              {select}
+              {t("form.widgets.multiselect.select")}
+            </Button>
+            {createButton}
+          </div>
         </div>
       )}
 
@@ -177,6 +226,16 @@ const MultiSelectWidget = (props: Props) => {
         }}
         selectedOptions={selectedValues}
       />
+
+      {/* Embedded Form Modal for creating new items */}
+      {showCreateModal && allowCreate && relatedModel ? (
+        <EmbeddedFormModal
+          originalResource={resource!}
+          resource={relatedModel}
+          onClose={() => setShowCreateModal(false)}
+          onSuccess={handleCreateSuccess}
+        />
+      ) : null}
     </div>
   );
 };

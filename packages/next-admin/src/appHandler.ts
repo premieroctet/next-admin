@@ -12,6 +12,7 @@ import {
   RequestContext,
   ServerAction,
 } from "./types";
+import { getSchema, initGlobals } from "./utils/globals";
 import { hasPermission } from "./utils/permissions";
 import { getRawData } from "./utils/prisma";
 import {
@@ -21,7 +22,6 @@ import {
   getResourceFromParams,
   getResources,
 } from "./utils/server";
-import { getSchema, initGlobals } from "./utils/globals";
 
 export const createHandler = <P extends string = "nextadmin">({
   apiBasePath,
@@ -32,21 +32,20 @@ export const createHandler = <P extends string = "nextadmin">({
 }: CreateAppHandlerParams<P>) => {
   const router = createEdgeRouter<Request, RequestContext<P>>();
 
-  router.use(async (req, res, next) => {
+  router.use(async (req, ctx, next) => {
     await initGlobals();
-    return next();
+    await next();
   });
 
   if (onRequest) {
-    router.use(async (req, ctxPromise, next) => {
-      const ctx = await ctxPromise;
+    router.use(async (req, ctx, next) => {
       const response = await onRequest(req, ctx);
 
       if (response) {
         return response;
       }
 
-      return next();
+      await next();
     });
   }
 
