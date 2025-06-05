@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "typecheck": "tsc --noEmit"
   },
   "exports": {
     "./components": "./dist/components/index.js",
