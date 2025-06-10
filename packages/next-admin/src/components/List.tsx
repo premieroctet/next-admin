@@ -6,6 +6,7 @@ import debounce from "lodash.debounce";
 import {
   ChangeEvent,
   useEffect,
+  useMemo,
   useOptimistic,
   useState,
   useTransition,
@@ -65,6 +66,8 @@ export type ListProps = {
   listFilterOptions?: Array<FilterWrapper<ModelName>>;
 };
 
+const itemsPerPageSizes = [10, 25, 50, 100];
+
 function List({
   resource,
   data,
@@ -84,7 +87,10 @@ function List({
   const { options, apiBasePath } = useConfig();
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
-  const pageSize = Number(query.itemsPerPage) || (ITEMS_PER_PAGE as number);
+  const modelDefaultListSize =
+    options?.model?.[resource]?.list?.defaultListSize;
+  const pageSize =
+    Number(query.itemsPerPage) || modelDefaultListSize || ITEMS_PER_PAGE;
   const modelOptions = options?.["model"]?.[resource];
   const sortColumn = !modelOptions?.list?.orderField
     ? (query.sortColumn as string)
@@ -103,6 +109,14 @@ function List({
     sortDirection,
     rawData,
   });
+
+  const allListSizes = useMemo(() => {
+    if (modelDefaultListSize) {
+      return [...itemsPerPageSizes, modelDefaultListSize].sort((a, b) => a - b);
+    }
+
+    return itemsPerPageSizes;
+  }, [modelDefaultListSize]);
 
   let onSearchChange;
 
@@ -328,10 +342,11 @@ function List({
                     </span>
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value={"10"}>10</SelectItem>
-                    <SelectItem value={"20"}>20</SelectItem>
-                    <SelectItem value={"50"}>50</SelectItem>
-                    <SelectItem value={"100"}>100</SelectItem>
+                    {allListSizes.map((size) => (
+                      <SelectItem key={size} value={size.toString()}>
+                        {size}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
 
