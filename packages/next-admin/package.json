@@ -231,6 +231,7 @@
     "glob": "^11.0.0",
     "lodash.debounce": "^4.0.8",
     "next": "^15.3.1",
+    "prisma": "catalog:prisma",
     "postcss": "^8.4.21",
     "rollup": "^4.40.1",
     "rollup-preserve-directives": "^1.1.3",

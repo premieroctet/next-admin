@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "../types-prisma";
 import formidable from "formidable";
 import { IncomingMessage } from "http";
 import type { NextApiRequest } from "next";

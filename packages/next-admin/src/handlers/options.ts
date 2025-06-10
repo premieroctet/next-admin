@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "../types-prisma";
 import { optionsFromResource } from "../utils/prisma";
 import { NextAdminOptions } from "../types";
 
