@@ -232,8 +232,6 @@ export const createHandler = <P extends string = "nextadmin">({
           (await editOptions?.hooks?.afterDb?.(response, mode, req)) ??
           response;
 
-        console.log("after db hook executed", response);
-
         return Response.json(response, { status: id ? 200 : 201 });
       } catch (e) {
         if (e instanceof HookError) {
