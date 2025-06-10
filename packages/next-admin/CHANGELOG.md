@@ -1,5 +1,15 @@
 # @premieroctet/next-admin
 
+## 8.2.0
+
+### Minor Changes
+
+- [63b7b18](https://github.com/premieroctet/next-admin/commit/63b7b1869c316503db80aa796cee37735cfeaa14): feat: add default list size option ([#616](https://github.com/premieroctet/next-admin/issues/616))
+
+### Patch Changes
+
+- [891524f](https://github.com/premieroctet/next-admin/commit/891524f3f2d4ebfc2e0c11f9c53848d8020519b6): chore: remove forgotten log in app handler ([#617](https://github.com/premieroctet/next-admin/issues/617))
+
 ## 8.1.4
 
 ### Patch Changes

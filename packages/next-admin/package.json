@@ -1,6 +1,6 @@
 {
   "name": "@premieroctet/next-admin",
-  "version": "8.1.4",
+  "version": "8.2.0",
   "description": "Next-Admin provides a customizable and turnkey admin dashboard for applications built with Next.js and powered by the Prisma ORM. It aims to simplify the development process by providing a turnkey admin system that can be easily integrated into your project.",
   "keywords": [
     "next.js",
