@@ -302,7 +302,9 @@ const preparePrismaListRequest = async <M extends ModelName>(
   } catch {}
   const page = Number(searchParams.get("page")) || 1;
   const itemsPerPage =
-    Number(searchParams.get("itemsPerPage")) || ITEMS_PER_PAGE;
+    Number(searchParams.get("itemsPerPage")) ||
+    options?.model?.[resource]?.list?.defaultListSize ||
+    ITEMS_PER_PAGE;
 
   const fieldSort = options?.model?.[resource]?.list?.defaultSort;
 

@@ -497,6 +497,10 @@ export type ListOptions<T extends ModelName> = {
    * define a set of Prisma filters that are always active in list
    */
   where?: Filter<T>[];
+  /**
+   * an optional number indicating the default amount of items in the list
+   */
+  defaultListSize?: number;
 };
 
 export type RelationshipsRawData = Record<string, any>;
