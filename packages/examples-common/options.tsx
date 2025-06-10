@@ -111,6 +111,7 @@ export const options: NextAdminOptions = {
           },
           posts: {
             display: "table",
+            allowCreate: true,
           },
           avatar: {
             format: "file",
@@ -299,6 +300,7 @@ export const options: NextAdminOptions = {
             display: "list",
             orderField: "order",
             relationshipSearchField: "category",
+            allowCreate: true,
           },
           images: {
             format: "file",
@@ -357,6 +359,7 @@ export const options: NextAdminOptions = {
             display: "list",
             relationshipSearchField: "post",
             orderField: "order",
+            allowCreate: true,
           },
         },
       },

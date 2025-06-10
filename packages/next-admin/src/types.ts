@@ -234,6 +234,12 @@ type OptionFormatterFromRelationshipSearch<
          * model name on which to execute a research. Useful in case the field is related to an explicit many-to-many table
          */
         relationshipSearchField?: S;
+        /**
+         * Allow creation of new items in the related model
+         * @default false
+         * @type boolean
+         */
+        allowCreate?: boolean;
       }
     | {
         /**
@@ -242,6 +248,12 @@ type OptionFormatterFromRelationshipSearch<
          * @returns
          */
         optionFormatter?: (item: ModelFromProperty<T, P>) => string;
+        /**
+         * Allow creation of new items in the related model
+         * @default false
+         * @type boolean
+         */
+        allowCreate?: boolean;
       };
 }[RelationshipSearch<ModelFromProperty<T, P>>["field"]];
 
@@ -1097,6 +1109,7 @@ export type TranslationKeys =
   | "form.widgets.file_upload.drag_and_drop"
   | "form.widgets.file_upload.delete"
   | "form.widgets.multiselect.select"
+  | "form.widgets.multiselect.create"
   | "form.widgets.scalar_array.add"
   | "selector.loading"
   | "theme.dark"
