@@ -1,9 +1,9 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server"
 import prisma from "database";
 
 const BATCH_SIZE = 1000;
 
-export const APIRoute = createAPIFileRoute("/api/users/export")({
+export const ServerRoute = createServerFileRoute("/api/users/export").methods({
   GET: () => {
     const headers = new Headers();
     headers.set("Content-Type", "text/csv");
