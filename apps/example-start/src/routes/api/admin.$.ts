@@ -1,5 +1,5 @@
+import { createServerFileRoute } from "@tanstack/react-start/server"
 import { createHandler } from "@premieroctet/next-admin/appHandler";
-import { createAPIFileRoute } from "@tanstack/react-start/api";
 import prisma from "database";
 import { options } from "../../options";
 
@@ -9,7 +9,7 @@ const nextAdminApi = createHandler({
   options,
 });
 
-export const APIRoute = createAPIFileRoute("/api/admin/$")({
+export const ServerRoute = createServerFileRoute("/api/admin/$").methods({
   GET: ({ request, params }) => {
     return nextAdminApi.run(request, {
       params: Promise.resolve({

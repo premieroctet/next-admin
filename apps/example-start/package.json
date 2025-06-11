@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vinxi dev --port 3002",
-    "build": "vinxi build",
+    "dev": "vite dev --port 3002",
+    "build": "vite build",
     "start": "PORT=3002 node --env-file node_modules/database/prisma/.env .output/server/index.mjs",
     "clean": "rm -rf .output .vinxi"
   },
@@ -19,8 +19,7 @@
     "examples-common": "workspace:*",
     "react": "catalog:react19",
     "react-datepicker": "catalog:",
-    "react-dom": "catalog:react19",
-    "vinxi": "^0.5.4"
+    "react-dom": "catalog:react19"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.1.4",
@@ -31,6 +30,7 @@
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.4",
     "typescript": "^5.8.3",
+    "vite": "^6.0.0",
     "vite-tsconfig-paths": "^5.1.4"
   }
 }

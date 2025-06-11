@@ -1,7 +1,7 @@
-import { createAPIFileRoute } from "@tanstack/react-start/api";
+import { createServerFileRoute } from "@tanstack/react-start/server"
 import prisma from "database";
 
-export const APIRoute = createAPIFileRoute("/api/posts/export")({
+export const ServerRoute = createServerFileRoute("/api/posts/export").methods({
   GET: async ({ request, params }) => {
     const url = new URL(request.url);
     const format = url.searchParams.get("format");

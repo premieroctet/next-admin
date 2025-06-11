@@ -10,9 +10,9 @@ catalogs:
     "@types/react-dom": ^19.0.2
 
   tanstack-start:
-    "@tanstack/react-router": ^1.119.0
-    "@tanstack/react-router-devtools": ^1.119.1
-    "@tanstack/react-start": ^1.119.2
+    "@tanstack/react-router": ^1.121.0
+    "@tanstack/react-router-devtools": ^1.121.0
+    "@tanstack/react-start": ^1.121.0
 
   remix:
     "@remix-run/dev": ^2.16.5
