@@ -15,6 +15,7 @@
     "target": "ESNext",
     "module": "ESNext",
     "rootDir": "./src",
-    "moduleResolution": "bundler"
+    "moduleResolution": "bundler",
+    "isolatedModules": true
   }
 }
