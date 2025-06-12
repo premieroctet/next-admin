@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 8.2.1
+
+### Patch Changes
+
+- [7ce7fee](https://github.com/premieroctet/next-admin/commit/7ce7fee61bad32fac6118dce49897edbae100cf8): chore: upgrade @rjsf/utils ([#545](https://github.com/premieroctet/next-admin/issues/545))
+
 ## 8.2.0
 
 ### Minor Changes
