@@ -51,8 +51,7 @@
   },
   "pnpm": {
     "patchedDependencies": {
-      "next-connect": "patches/next-connect.patch",
-      "@rjsf/utils": "patches/@rjsf__utils.patch"
+      "next-connect": "patches/next-connect.patch"
     }
   }
 }

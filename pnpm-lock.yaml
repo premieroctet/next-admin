@@ -46,9 +46,6 @@ overrides:
   react-dom: 19.0.0
 
 patchedDependencies:
-  '@rjsf/utils':
-    hash: hq5lvwhsudcqva24kkwg2xcfce
-    path: patches/@rjsf__utils.patch
   next-connect:
     hash: 6fire4cs5cqqlzmfljqqxabt44
     path: patches/next-connect.patch
@@ -638,14 +635,14 @@ importers:
         specifier: ^1.1.1
         version: 1.1.1(@types/react-dom@19.0.2(@types/react@19.0.1))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       '@rjsf/core':
-        specifier: 6.0.0-beta.7
-        version: 6.0.0-beta.7(@rjsf/utils@6.0.0-beta.7(patch_hash=hq5lvwhsudcqva24kkwg2xcfce)(react@19.0.0))(react@19.0.0)
+        specifier: 6.0.0-beta.11
+        version: 6.0.0-beta.11(@rjsf/utils@6.0.0-beta.11(react@19.0.0))(react@19.0.0)
       '@rjsf/utils':
-        specifier: 6.0.0-beta.7
-        version: 6.0.0-beta.7(patch_hash=hq5lvwhsudcqva24kkwg2xcfce)(react@19.0.0)
+        specifier: 6.0.0-beta.11
+        version: 6.0.0-beta.11(react@19.0.0)
       '@rjsf/validator-ajv8':
         specifier: 6.0.0-beta.7
-        version: 6.0.0-beta.7(@rjsf/utils@6.0.0-beta.7(patch_hash=hq5lvwhsudcqva24kkwg2xcfce)(react@19.0.0))
+        version: 6.0.0-beta.7(@rjsf/utils@6.0.0-beta.11(react@19.0.0))
       '@tanstack/react-table':
         specifier: ^8.9.2
         version: 8.20.5(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -3624,15 +3621,15 @@ packages:
   '@remix-run/web-stream@1.1.0':
     resolution: {integrity: sha512-KRJtwrjRV5Bb+pM7zxcTJkhIqWWSy+MYsIxHK+0m5atcznsf15YwUBWHWulZerV2+vvHH1Lp1DD7pw6qKW8SgA==}
 
-  '@rjsf/core@6.0.0-beta.7':
-    resolution: {integrity: sha512-pFAx1N8kI3Lw0oBMNH3Rm8mGDv2R1mD5hZuC22JTuwZ+d/R5XQFK54A3yxtyuPfJE3CveX4/QH5iry8v3t/M0Q==}
+  '@rjsf/core@6.0.0-beta.11':
+    resolution: {integrity: sha512-tadVN0B7CjAzl2p3HDsZKR3V8iCIiQMncblfCYSK0PAh9RqIjigFp8ovrZ3UqkVIRRcD+tQ6Y+psY5yEB4GWqA==}
     engines: {node: '>=20'}
     peerDependencies:
       '@rjsf/utils': ^6.0.0-beta
       react: 19.0.0
 
-  '@rjsf/utils@6.0.0-beta.7':
-    resolution: {integrity: sha512-3NczDXaTEe8woNy4VyeFvUYzd+SJRwaHVGLoQCUH/19g33uxFVg7CI8HFeK8dSAIV8Oc7GU4Kj0ROeU3AKUIcQ==}
+  '@rjsf/utils@6.0.0-beta.11':
+    resolution: {integrity: sha512-tQeyacweXmquRjPcXCVS1pMFfhamFSoqpczNi0zEvMbx+mfu2b6CgoRKi2Hm8KgFEafdVBF+6HLqs+0FnYhRlQ==}
     engines: {node: '>=20'}
     peerDependencies:
       react: 19.0.0
@@ -14213,9 +14210,9 @@ snapshots:
     dependencies:
       web-streams-polyfill: 3.3.3
 
-  '@rjsf/core@6.0.0-beta.7(@rjsf/utils@6.0.0-beta.7(patch_hash=hq5lvwhsudcqva24kkwg2xcfce)(react@19.0.0))(react@19.0.0)':
+  '@rjsf/core@6.0.0-beta.11(@rjsf/utils@6.0.0-beta.11(react@19.0.0))(react@19.0.0)':
     dependencies:
-      '@rjsf/utils': 6.0.0-beta.7(patch_hash=hq5lvwhsudcqva24kkwg2xcfce)(react@19.0.0)
+      '@rjsf/utils': 6.0.0-beta.11(react@19.0.0)
       lodash: 4.17.21
       lodash-es: 4.17.21
       markdown-to-jsx: 7.7.6(react@19.0.0)
@@ -14223,7 +14220,7 @@ snapshots:
       prop-types: 15.8.1
       react: 19.0.0
 
-  '@rjsf/utils@6.0.0-beta.7(patch_hash=hq5lvwhsudcqva24kkwg2xcfce)(react@19.0.0)':
+  '@rjsf/utils@6.0.0-beta.11(react@19.0.0)':
     dependencies:
       fast-uri: 3.0.6
       json-schema-merge-allof: 0.8.1
@@ -14234,9 +14231,9 @@ snapshots:
       react: 19.0.0
       react-is: 18.3.1
 
-  '@rjsf/validator-ajv8@6.0.0-beta.7(@rjsf/utils@6.0.0-beta.7(patch_hash=hq5lvwhsudcqva24kkwg2xcfce)(react@19.0.0))':
+  '@rjsf/validator-ajv8@6.0.0-beta.7(@rjsf/utils@6.0.0-beta.11(react@19.0.0))':
     dependencies:
-      '@rjsf/utils': 6.0.0-beta.7(patch_hash=hq5lvwhsudcqva24kkwg2xcfce)(react@19.0.0)
+      '@rjsf/utils': 6.0.0-beta.11(react@19.0.0)
       ajv: 8.17.1
       ajv-formats: 2.1.1(ajv@8.17.1)
       lodash: 4.17.21
