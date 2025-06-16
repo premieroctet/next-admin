@@ -56,6 +56,9 @@ jobs:
           echo "Run tests for Next.js Page Router"
           cd packages/database && pnpm prisma migrate reset --force && cd -
           BASE_URL=http://localhost:3000/pagerouter/admin pnpm test:e2e
+          echo "Run tests for Tanstack Start"
+          cd packages/database && pnpm prisma migrate reset --force && cd -
+          BASE_URL=http://localhost:3002/admin pnpm test:e2e
           echo "Run tests for Remix"
           cd packages/database && pnpm prisma migrate reset --force && cd -
           BASE_URL=http://localhost:3003/admin pnpm test:e2e
