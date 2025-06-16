@@ -8,6 +8,10 @@ on:
       - "apps/example"
       - "apps/example-*"
   pull_request:
+    paths:
+      - "packages/**"
+      - "apps/example"
+      - "apps/example-*"
 jobs:
   start:
     runs-on: ubuntu-latest
