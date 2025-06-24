@@ -1,9 +1,10 @@
+import { RsbuildPluginAPI } from "@rsbuild/core";
+import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rslib/core";
 import { glob } from "glob";
-import { copyFileSync } from "node:fs";
+import { rmSync } from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import { pluginReact } from "@rsbuild/plugin-react";
 
 const basePath = path.dirname(fileURLToPath(import.meta.url));
 
@@ -15,27 +16,53 @@ export default defineConfig({
       format: "esm",
       output: { filename: { js: "[name].mjs" } },
       bundle: false,
-      dts: true,
+      dts: {
+        bundle: false,
+        abortOnError: false,
+      },
     },
-    { format: "cjs", output: { filename: { js: "[name].js" } }, bundle: false },
+    {
+      format: "cjs",
+      output: { filename: { js: "[name].js" } },
+      bundle: false,
+    },
   ],
   output: {
-    externals: ["@remix-run/react", "@tanstack/react-router", "react"],
+    externals: [
+      "@remix-run/react",
+      "@tanstack/react-router",
+      "react",
+      "@prisma/client",
+    ],
+    copy: [
+      {
+        from: themeCssPath,
+        to: path.resolve(basePath, "dist/theme.css"),
+      },
+    ],
   },
   source: {
     entry: {
       index: glob.sync("src/**/*.{ts,tsx}", {
-        ignore: ["**/tests/*", "**/*.test.{ts,tsx}"],
+        ignore: ["**/tests/*", "**/*.test.{ts,tsx}", "**/generated/*"],
       }),
     },
+    /**
+     * TODO: try to get rid of this at some point.
+     * The issue we have by keeping the "tsconfig.json" is that the path aliases
+     * are being replaced, so "@prisma/client" becomes "./generated/prisma/client" (for example).
+     *
+     * We cannot use the `api.onAfterBuild` hook to replace those, as it has an inconsistent behavior during development.
+     */
+    tsconfigPath: path.resolve(basePath, "tsconfig.build.json"),
   },
   plugins: [
     pluginReact(),
     {
-      name: "cp-theme-css",
-      setup(api) {
+      name: "rm-generated",
+      setup(api: RsbuildPluginAPI) {
         api.onAfterBuild(() => {
-          copyFileSync(themeCssPath, path.resolve(basePath, "dist/theme.css"));
+          rmSync(path.resolve(basePath, "dist/generated"), { recursive: true });
         });
       },
     },

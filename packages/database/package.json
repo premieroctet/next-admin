@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "tsc --watch",
-    "build": "tsc && prisma generate",
+    "dev": "rslib build --watch",
+    "build": "rslib build && prisma generate",
     "clean": "rm -rf dist",
     "database": "prisma migrate dev && prisma db seed",
     "generate": "prisma generate",
@@ -13,9 +13,21 @@
     "prisma:migrate:dev": "prisma migrate dev"
   },
   "exports": {
-    ".": "./dist/index.js",
-    "./generated/prisma": "./dist/generated/prisma/index.js",
-    "./generated/prisma/*": "./dist/generated/prisma/*.js"
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./generated/prisma": {
+      "import": "./dist/generated/prisma/index.mjs",
+      "require": "./dist/generated/prisma/index.js",
+      "types": "./dist/generated/prisma/index.d.ts"
+    },
+    "./generated/prisma/*": {
+      "import": "./dist/generated/prisma/*.mjs",
+      "require": "./dist/generated/prisma/*.js",
+      "types": "./dist/generated/prisma/*.d.ts"
+    }
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -26,7 +38,9 @@
     "@prisma/client": "catalog:prisma"
   },
   "devDependencies": {
+    "@rslib/core": "^0.9.2",
     "@types/node": "^22.14.1",
+    "glob": "^11.0.0",
     "prisma": "catalog:prisma",
     "tsconfig": "workspace:*",
     "tsx": "^4.19.4",

@@ -7,7 +7,8 @@
     "node_modules",
     "src/tests",
     "src/**/*.test.ts",
-    "src/**/*.test.tsx"
+    "src/**/*.test.tsx",
+    "src/generated"
   ],
   "compilerOptions": {
     "lib": ["dom", "ESNext"],
@@ -16,6 +17,9 @@
     "module": "ESNext",
     "rootDir": "./src",
     "moduleResolution": "bundler",
-    "isolatedModules": true
+    "isolatedModules": true,
+    "paths": {
+      "@prisma/client": ["./src/generated/prisma/client"]
+    }
   }
 }

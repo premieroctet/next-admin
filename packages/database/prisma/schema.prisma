@@ -7,6 +7,11 @@ generator client {
   output        = "../generated/prisma"
 }
 
+generator libraryScopedClient {
+  provider = "prisma-client"
+  output   = "../../next-admin/src/generated/prisma"
+}
+
 generator legacyClient {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
