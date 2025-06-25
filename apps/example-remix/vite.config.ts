@@ -30,6 +30,6 @@ export default defineConfig({
   ],
   ssr: {
     noExternal: ["react-datepicker"],
-    external: ["@premieroctet/next-admin"],
+    external: ["@premieroctet/next-admin", "database"],
   },
 });
