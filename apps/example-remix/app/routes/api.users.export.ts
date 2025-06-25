@@ -1,4 +1,4 @@
-import prisma from "database";
+import prisma from "../prisma";
 
 const BATCH_SIZE = 1000;
 

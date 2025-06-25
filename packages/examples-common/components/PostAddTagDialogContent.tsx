@@ -2,7 +2,7 @@
 import { ClientActionDialogContentProps } from "@premieroctet/next-admin";
 import { BaseInput, Button } from "@premieroctet/next-admin/components";
 import { useState } from "react";
-import addTag from "../actions/addTag";
+// import addTag from "../actions/addTag";
 
 type Props = ClientActionDialogContentProps<"User">;
 
@@ -12,26 +12,26 @@ const AddTagDialog = ({ data, onClose }: Props) => {
 
   const handleSubmit = () => {
     setIsPending(true);
-    addTag(
-      tag,
-      data?.map((d) => d.id)
-    )
-      .then(() => {
-        onClose?.({
-          type: "success",
-          message: "Tag added successfully",
-        });
-      })
-      .catch((e) => {
-        console.error(e);
-        onClose?.({
-          type: "error",
-          message: "An error occured",
-        });
-      })
-      .finally(() => {
-        setIsPending(false);
-      });
+    // addTag(
+    //   tag,
+    //   data?.map((d) => d.id)
+    // )
+    //   .then(() => {
+    //     onClose?.({
+    //       type: "success",
+    //       message: "Tag added successfully",
+    //     });
+    //   })
+    //   .catch((e) => {
+    //     console.error(e);
+    //     onClose?.({
+    //       type: "error",
+    //       message: "An error occured",
+    //     });
+    //   })
+    //   .finally(() => {
+    //     setIsPending(false);
+    //   });
   };
 
   return (

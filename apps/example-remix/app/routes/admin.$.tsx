@@ -3,7 +3,7 @@ import { NextAdmin } from "@premieroctet/next-admin/adapters/remix";
 import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import prisma from "database";
+import prisma from "../prisma";
 import { Dashboard } from "examples-common/components";
 import en from "examples-common/messages/en";
 import { options } from "../options";

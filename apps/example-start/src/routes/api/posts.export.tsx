@@ -1,5 +1,5 @@
-import { createServerFileRoute } from "@tanstack/react-start/server"
-import prisma from "database";
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import prisma from "../../prisma";
 
 export const ServerRoute = createServerFileRoute("/api/posts/export").methods({
   GET: async ({ request, params }) => {

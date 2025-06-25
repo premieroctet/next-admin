@@ -1,4 +1,4 @@
-import { options } from "@/pageRouterOptions";
+import { options } from "@/options";
 import { prisma } from "@/prisma";
 import { createHandler } from "@premieroctet/next-admin/pageHandler";
 

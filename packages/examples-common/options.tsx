@@ -1,12 +1,21 @@
 import { faker } from "@faker-js/faker";
 import { NextAdminOptions } from "@premieroctet/next-admin";
-import prisma from "database";
+import type { Prisma } from "database/generated/prisma";
 import DatePicker from "./components/DatePicker";
 import PasswordInput from "./components/PasswordInput";
 import AddTagDialog from "./components/PostAddTagDialogContent";
 import UserDetailsDialog from "./components/UserDetailsDialogContent";
 
-export const options: NextAdminOptions = {
+export type CreateOptionsParams = {
+  getCategories?: () => Promise<
+    Array<Pick<Prisma.CategoryModel, "id" | "name">>
+  >;
+  publishPosts?: (ids: number[] | string[]) => Promise<void>;
+};
+
+export const createOptions = (
+  params: CreateOptionsParams
+): NextAdminOptions => ({
   title: "⚡️ My Admin",
   // We can have errors that cannot be fixed, otherwise we'd need a cyclic dependency
   // between next-admin and database.
@@ -200,16 +209,7 @@ export const options: NextAdminOptions = {
           title: "actions.post.publish.title",
           action: async (ids) => {
             console.log("Publishing " + ids.length + " posts");
-            await prisma.post.updateMany({
-              where: {
-                id: {
-                  in: ids.map((id) => Number(id)),
-                },
-              },
-              data: {
-                published: true,
-              },
-            });
+            await params.publishPosts?.(ids);
             return {
               type: "success",
               message: "actions.post.publish.success",
@@ -263,10 +263,7 @@ export const options: NextAdminOptions = {
             },
           },
           async function byCategoryFilters() {
-            const categories = await prisma.category.findMany({
-              select: { id: true, name: true },
-              take: 5,
-            });
+            const categories = (await params.getCategories?.()) ?? [];
 
             return categories.map((category) => ({
               name: category.name,
@@ -414,4 +411,4 @@ export const options: NextAdminOptions = {
     },
   ],
   defaultColorScheme: "dark",
-};
+});

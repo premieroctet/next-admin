@@ -1,6 +1,6 @@
-import { createServerFileRoute } from "@tanstack/react-start/server"
+import { createServerFileRoute } from "@tanstack/react-start/server";
 import { createHandler } from "@premieroctet/next-admin/appHandler";
-import prisma from "database";
+import prisma from "../../prisma";
 import { options } from "../../options";
 
 const nextAdminApi = createHandler({

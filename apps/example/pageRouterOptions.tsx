@@ -1,3 +1,7 @@
-import { pageRouterOptions as adminOptions } from "examples-common/pageRouterOptions";
+import { pageRouterOptions } from "examples-common/pageRouterOptions";
+import { createOptions } from "examples-common/options";
 
-export const options = adminOptions;
+export const options = {
+  ...createOptions({}),
+  ...pageRouterOptions,
+};

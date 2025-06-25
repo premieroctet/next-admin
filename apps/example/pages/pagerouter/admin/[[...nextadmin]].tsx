@@ -5,6 +5,7 @@ import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import en from "examples-common/messages/en";
 import { GetServerSideProps } from "next";
 import { options } from "../../../pageRouterOptions";
+import { options as appOptions } from "../../../options";
 import { prisma } from "../../../prisma";
 import "../../../styles.css";
 
@@ -31,7 +32,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) =>
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
     prisma,
-    options: pageOptions,
+    options: appOptions,
     url: req.url!,
     getMessages: async () => en.admin as unknown as Record<string, string>,
   });

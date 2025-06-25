@@ -2,7 +2,7 @@ import { MainLayoutProps } from "@premieroctet/next-admin";
 import { MainLayout } from "@premieroctet/next-admin/adapters/remix";
 import { getMainLayoutProps } from "@premieroctet/next-admin/pageRouter";
 import { useLoaderData } from "@remix-run/react";
-import prisma from "database";
+import prisma from "../prisma";
 import { CustomPage } from "examples-common/components";
 import { options } from "../options";
 

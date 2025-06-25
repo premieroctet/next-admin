@@ -1,5 +1,5 @@
 "use server";
-import prisma from "database";
+import prisma from "database/instance";
 
 const addTag = async (tag: string, selectedIds?: number[]) => {
   await prisma.post.updateMany({

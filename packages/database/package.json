@@ -18,10 +18,15 @@
       "require": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
+    "./instance": {
+      "import": "./dist/instance.mjs",
+      "require": "./dist/instance.js",
+      "types": "./dist/instance.d.ts"
+    },
     "./generated/prisma": {
-      "import": "./dist/generated/prisma/index.mjs",
-      "require": "./dist/generated/prisma/index.js",
-      "types": "./dist/generated/prisma/index.d.ts"
+      "import": "./dist/generated/prisma/client.mjs",
+      "require": "./dist/generated/prisma/client.js",
+      "types": "./dist/generated/prisma/client.d.ts"
     },
     "./generated/prisma/*": {
       "import": "./dist/generated/prisma/*.mjs",

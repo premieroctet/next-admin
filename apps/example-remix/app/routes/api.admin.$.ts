@@ -1,6 +1,6 @@
 import { createHandler } from "@premieroctet/next-admin/appHandler";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import prisma from "database";
+import prisma from "../prisma";
 import { options } from "../options";
 
 const nextAdminApi = createHandler({
