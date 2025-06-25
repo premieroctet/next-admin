@@ -7,6 +7,7 @@ import prisma from "../prisma";
 import { Dashboard } from "examples-common/components";
 import en from "examples-common/messages/en";
 import { options } from "../options";
+import { options as clientOptions } from "../options.client";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   return getNextAdminProps({
@@ -33,7 +34,7 @@ export default function Admin() {
     <NextAdmin
       {...(data.props as AdminComponentProps)}
       dashboard={<Dashboard />}
-      options={options}
+      options={clientOptions}
       user={{
         data: {
           name: "John Doe",
