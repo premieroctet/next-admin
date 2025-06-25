@@ -18,8 +18,7 @@ generator legacyClient {
 }
 
 generator nextAdmin {
-  provider                  = "next-admin-generator-prisma"
-  generatedClientImportPath = "database/generated/prisma"
+  provider = "next-admin-generator-prisma"
 }
 
 datasource db {

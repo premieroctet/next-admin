@@ -1,5 +1,3 @@
-import { createRequire } from "node:module";
-import path from "node:path";
 import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
@@ -9,11 +7,6 @@ declare module "@remix-run/node" {
     v3_singleFetch: true;
   }
 }
-
-const require = createRequire(import.meta.url);
-const prismaClientPath = require
-  .resolve("@prisma/client")
-  .replace(/@prisma(\/|\\)client(\/|\\).*/, ".prisma/client");
 
 export default defineConfig({
   plugins: [

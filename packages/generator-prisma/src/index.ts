@@ -48,13 +48,8 @@ generatorHandler({
       if (!newPrismaClient.output) {
         throw new Error("Prisma Client output is required");
       }
-      updateNextAdminPrismaTypesImport(
+      await updateNextAdminPrismaTypesImport(
         newPrismaClient,
-        getEnvValue(
-          options.generator.config.generatedClientImportPath as
-            | string
-            | undefined
-        )
       );
     }
   },
