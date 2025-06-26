@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "turbo run start",
-    "start:examples": "dotenv -e ./packages/database/prisma/.env turbo run start --filter=example --filter=./apps/example-*",
+    "start:examples": "dotenv -e ./packages/database/prisma/.env turbo run start -- --filter=example --filter=./apps/example-*",
     "build": "turbo run build",
     "build:examples": "turbo run build --filter=example --filter=./apps/example-*",
     "build:next-admin": "turbo run build --filter=@premieroctet/next-admin",

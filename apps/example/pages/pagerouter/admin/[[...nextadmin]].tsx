@@ -2,10 +2,11 @@ import { AdminComponentProps } from "@premieroctet/next-admin";
 import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
 import PageLoader from "@premieroctet/next-admin/pageLoader";
 import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
+import type { PrismaClient } from "database";
 import en from "examples-common/messages/en";
 import { GetServerSideProps } from "next";
-import { options } from "../../../pageRouterOptions";
 import { options as appOptions } from "../../../options";
+import { options } from "../../../pageRouterOptions";
 import { prisma } from "../../../prisma";
 import "../../../styles.css";
 
@@ -28,7 +29,7 @@ export default function Admin(props: AdminComponentProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) =>
-  await getNextAdminProps({
+  await getNextAdminProps<PrismaClient>({
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
     prisma,

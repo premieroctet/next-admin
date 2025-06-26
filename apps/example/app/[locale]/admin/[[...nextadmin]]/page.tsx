@@ -4,6 +4,7 @@ import { PromisePageProps } from "@premieroctet/next-admin";
 import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
 import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
 import PageLoader from "@premieroctet/next-admin/pageLoader";
+import { PrismaClient } from "database";
 import { Dashboard } from "examples-common/components";
 import { Metadata, Viewport } from "next";
 import { getMessages } from "next-intl/server";
@@ -22,7 +23,7 @@ export default async function AdminPage(props: PromisePageProps) {
   const params = await props.params;
   const searchParams = await props.searchParams;
 
-  const nextAdminProps = await getNextAdminProps({
+  const nextAdminProps = await getNextAdminProps<PrismaClient>({
     params: params.nextadmin,
     searchParams,
     basePath: "/admin",

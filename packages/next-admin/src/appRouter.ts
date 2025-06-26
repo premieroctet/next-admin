@@ -3,11 +3,14 @@ import {
   getMainLayoutProps as _getMainLayoutProps,
   getPropsFromParams as _getPropsFromParams,
 } from "./utils/props";
+import type { PrismaClient } from "./types-prisma";
 
-export const getNextAdminProps = async (
-  params: Omit<GetNextAdminPropsParams, "schema" | "isAppDir">
+export const getNextAdminProps = async <
+  Client extends PrismaClient = PrismaClient,
+>(
+  params: Omit<GetNextAdminPropsParams<Client>, "schema" | "isAppDir">
 ) => {
-  return _getPropsFromParams({ ...params, isAppDir: true });
+  return _getPropsFromParams<Client>({ ...params, isAppDir: true });
 };
 
 export const getMainLayoutProps = (

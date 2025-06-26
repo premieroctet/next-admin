@@ -62,10 +62,11 @@ export default defineConfig({
       name: "rm-generated",
       setup(api: RsbuildPluginAPI) {
         api.onAfterBuild(() => {
-          rmSync(path.resolve(basePath, "dist/generated"), {
-            recursive: true,
-            force: true,
-          });
+          if (!api.getNormalizedConfig().dev.liveReload)
+            rmSync(path.resolve(basePath, "dist/generated"), {
+              recursive: true,
+              force: true,
+            });
         });
       },
     },

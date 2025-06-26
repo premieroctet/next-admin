@@ -22,14 +22,18 @@ import {
   getResources,
 } from "./utils/server";
 import { getSchema, initGlobals } from "./utils/globals";
+import { PrismaClient } from "./types-prisma";
 
-export const createHandler = <P extends string = "nextadmin">({
+export const createHandler = <
+  P extends string = "nextadmin",
+  Client extends PrismaClient = PrismaClient,
+>({
   apiBasePath,
   options,
   prisma,
   paramKey = "nextadmin" as P,
   onRequest,
-}: CreateAppHandlerParams<P>) => {
+}: CreateAppHandlerParams<P, Client>) => {
   const router = createEdgeRouter<Request, RequestContext<P>>();
 
   router.use(async (req, res, next) => {

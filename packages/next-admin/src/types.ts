@@ -1143,7 +1143,9 @@ export type PromisePageProps = {
   [key in keyof PageProps]: Promise<PageProps[key]>;
 };
 
-export type GetNextAdminPropsParams = {
+export type GetNextAdminPropsParams<
+  Client extends PrismaClient = PrismaClient,
+> = {
   /**
    * `params` is an array of strings that represents the dynamic segments of your route. (e.g. `[[...params]]`)
    */
@@ -1168,7 +1170,7 @@ export type GetNextAdminPropsParams = {
   /**
    * `prisma` is an instance of PrismaClient.
    */
-  prisma: PrismaClient;
+  prisma: Client;
   isAppDir?: boolean;
   /**
    * `locale` is a string that represents the locale of your admin. (e.g. `en`)
@@ -1193,7 +1195,10 @@ export type RequestContext<P extends string> = {
   }>;
 };
 
-export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
+export type CreateAppHandlerParams<
+  P extends string = "nextadmin",
+  Client extends PrismaClient = PrismaClient,
+> = {
   /**
    * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
    */
@@ -1205,7 +1210,7 @@ export type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**
    * Prisma client instance
    */
-  prisma: PrismaClient;
+  prisma: Client;
   /**
    * A function that acts as a middleware. Useful to add authentication logic for example.
    */

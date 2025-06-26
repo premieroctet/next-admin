@@ -1,4 +1,5 @@
 import { GetMainLayoutPropsParams, GetNextAdminPropsParams } from "./types";
+import type { PrismaClient } from "./types-prisma";
 import {
   getMainLayoutProps as _getMainLayoutProps,
   getPropsFromParams,
@@ -6,7 +7,9 @@ import {
 import { formatSearchFields, getParamsFromUrl } from "./utils/server";
 
 // Router
-export const getNextAdminProps = async ({
+export const getNextAdminProps = async <
+  Client extends PrismaClient = PrismaClient,
+>({
   prisma,
   basePath,
   apiBasePath,
@@ -14,7 +17,10 @@ export const getNextAdminProps = async ({
   url,
   locale,
   getMessages,
-}: Omit<GetNextAdminPropsParams, "params" | "searchParams" | "isAppDir"> & {
+}: Omit<
+  GetNextAdminPropsParams<Client>,
+  "params" | "searchParams" | "isAppDir"
+> & {
   url: string;
 }) => {
   const urlObj =

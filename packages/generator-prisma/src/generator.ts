@@ -54,6 +54,7 @@ const buildGeneratedDtsFiles = async (files: string[], outDir: string) => {
     declaration: true,
     emitDeclarationOnly: true,
     outDir,
+    module: ts.ModuleKind.ESNext,
   };
   const host = ts.createCompilerHost(options);
 

@@ -17,9 +17,6 @@ export const createOptions = (
   params: CreateOptionsParams
 ): NextAdminOptions => ({
   title: "⚡️ My Admin",
-  // We can have errors that cannot be fixed, otherwise we'd need a cyclic dependency
-  // between next-admin and database.
-  // @ts-ignore
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,

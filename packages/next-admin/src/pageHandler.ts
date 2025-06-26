@@ -21,7 +21,10 @@ import {
 } from "./utils/server";
 import { getSchema, initGlobals } from "./utils/globals";
 
-type CreateAppHandlerParams<P extends string = "nextadmin"> = {
+type CreateAppHandlerParams<
+  P extends string = "nextadmin",
+  Client extends PrismaClient = PrismaClient,
+> = {
   /**
    * `apiBasePath` is a string that represents the base path of the admin API route. (e.g. `/api`) - optional.
    */
@@ -33,7 +36,7 @@ type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**
    * Prisma client instance
    */
-  prisma: PrismaClient;
+  prisma: Client;
   /**
    * A function that acts as a middleware. Useful to add authentication logic for example.
    */
@@ -54,13 +57,16 @@ type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   paramKey?: P;
 };
 
-export const createHandler = <P extends string = "nextadmin">({
+export const createHandler = <
+  P extends string = "nextadmin",
+  Client extends PrismaClient = PrismaClient,
+>({
   apiBasePath,
   options,
   prisma,
   paramKey = "nextadmin" as P,
   onRequest,
-}: CreateAppHandlerParams<P>) => {
+}: CreateAppHandlerParams<P, Client>) => {
   const router = createRouter<NextApiRequest, NextApiResponse>();
 
   router.use(async (req, res, next) => {

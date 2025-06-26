@@ -1,4 +1,3 @@
-import { Prisma } from "../types-prisma";
 import cloneDeep from "lodash.clonedeep";
 import {
   AdminComponentProps,
@@ -13,6 +12,8 @@ import {
   NextAdminOptions,
   PageRouterComponentProps,
 } from "../types";
+import type { Prisma, PrismaClient } from "../types-prisma";
+import { getSchema, initGlobals } from "./globals";
 import { getClientActionsComponents, getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList, mapModelFilters } from "./prisma";
 import {
@@ -26,14 +27,15 @@ import {
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
-import { getSchema, initGlobals } from "./globals";
 
 enum Page {
   LIST = 1,
   EDIT = 2,
 }
 
-export async function getPropsFromParams({
+export async function getPropsFromParams<
+  Client extends PrismaClient = PrismaClient,
+>({
   params,
   searchParams,
   options,
@@ -43,7 +45,7 @@ export async function getPropsFromParams({
   getMessages,
   basePath,
   apiBasePath,
-}: GetNextAdminPropsParams): Promise<PageRouterComponentProps> {
+}: GetNextAdminPropsParams<Client>): Promise<PageRouterComponentProps> {
   const {
     resource,
     resources,
