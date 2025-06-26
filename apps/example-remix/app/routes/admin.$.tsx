@@ -7,7 +7,7 @@ import prisma from "../prisma";
 import { Dashboard } from "examples-common/components";
 import en from "examples-common/messages/en";
 import { options } from "../options";
-import { options as clientOptions } from "../options.client";
+import { options as clientOptions } from "../clientOptions";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   return getNextAdminProps({
