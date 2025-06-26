@@ -4,8 +4,8 @@ import {
   InformationCircleIcon,
   TrashIcon,
 } from "@heroicons/react/24/outline";
-import RjsfForm from "@rjsf/core";
 import type { FormProps as RjsfFormProps } from "@rjsf/core";
+import RjsfForm from "@rjsf/core";
 import {
   BaseInputTemplateProps,
   ErrorSchema,
@@ -48,6 +48,7 @@ import {
   Permission,
 } from "../types";
 import { getSchemas } from "../utils/jsonSchema";
+import { getSubmitButtonOptions } from "../utils/rjsf";
 import { formatLabel, isFileUploadFormat, slugify } from "../utils/tools";
 import FormHeader from "./FormHeader";
 import ArrayField from "./inputs/ArrayField";
@@ -69,7 +70,6 @@ import {
   TooltipRoot,
   TooltipTrigger,
 } from "./radix/Tooltip";
-import { getSubmitButtonOptions } from "../utils/rjsf";
 
 const RichTextField = lazy(() => import("./inputs/RichText/RichTextField"));
 
@@ -82,12 +82,14 @@ const widgets: RjsfFormProps["widgets"] = {
   TextareaWidget: TextareaWidget,
 };
 
-const Form = ({
+export const Form = ({
   data,
   schema,
   resource,
   validation: validationProp,
   customInputs,
+  onSubmitCallback,
+  isEmbedded,
 }: FormProps) => {
   const [validation, setValidation] = useState(validationProp);
   const { basePath, options, apiBasePath } = useConfig();
@@ -229,6 +231,7 @@ const Form = ({
             body: formData,
           }
         );
+        debugger;
         const result = await response.json();
         if (result?.validation) {
           setValidation(result.validation);
@@ -240,6 +243,12 @@ const Form = ({
           cleanAll();
         }
         if (result?.deleted) {
+
+          if (onSubmitCallback) {
+            onSubmitCallback(result);
+            return;
+          }
+
           return router.replace({
             pathname: `${basePath}/${slugify(resource)}`,
             query: {
@@ -251,6 +260,12 @@ const Form = ({
           });
         }
         if (result?.created) {
+
+          if (onSubmitCallback) {
+            onSubmitCallback(result);
+            return;
+          }
+
           const pathname = result?.redirect
             ? `${basePath}/${slugify(resource)}`
             : `${basePath}/${slugify(resource)}/${result.createdId}`;
@@ -266,6 +281,12 @@ const Form = ({
           });
         }
         if (result?.updated) {
+
+          if (onSubmitCallback) {
+            onSubmitCallback(result);
+            return;
+          }
+
           const pathname = result?.redirect
             ? `${basePath}/${slugify(resource)}`
             : location.pathname;
@@ -306,9 +327,9 @@ const Form = ({
         const customInput = customInputs?.[props.name as Field<ModelName>];
         const improvedCustomInput = customInput
           ? cloneElement(customInput, {
-              ...customInput.props,
-              mode: edit ? "edit" : "create",
-            })
+            ...customInput.props,
+            mode: edit ? "edit" : "create",
+          })
           : undefined;
         return <ArrayField {...props} customInput={improvedCustomInput} />;
       },
@@ -605,7 +626,7 @@ const Form = ({
             extraErrors={extraErrors}
             fields={fields}
             disabled={allDisabled}
-            formContext={{ isPending, schema }}
+            formContext={{ isPending, schema, parentId: id }}
             templates={templates}
             widgets={widgets}
             ref={ref}
@@ -618,9 +639,9 @@ const Form = ({
 
   return (
     <div className="relative h-full">
-      <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
+      <div className={clsx(!isEmbedded && "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default p-4 sm:p-8", "max-w-full align-middle ")}>
         <Message className="-mt-2 mb-2 sm:-mt-4 sm:mb-4" />
-        <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default max-w-screen-md rounded-lg border p-4 sm:p-8">
+        <div className={clsx(!isEmbedded && "bg-nextadmin-background-default dark:bg-dark-nextadmin-background-emphasis border-nextadmin-border-default dark:border-dark-nextadmin-border-default rounded-lg border", "max-w-screen-md  p-4 sm:p-8")}>
           <RjsfFormComponent ref={formRef} />
         </div>
       </div>
@@ -635,7 +656,7 @@ const FormWrapper = ({
 }: FormProps) => {
   return (
     <ClientActionDialogProvider componentsMap={clientActionsComponents}>
-      <FormHeader {...props} />
+      {props?.isEmbedded ? null : <FormHeader {...props} />}
       <FormDataProvider
         data={props.data}
         relationshipsRawData={relationshipsRawData}

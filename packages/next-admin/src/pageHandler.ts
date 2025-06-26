@@ -1,4 +1,5 @@
-import { PrismaClient } from "./types-prisma";
+import type { PrismaClient } from "./types-prisma";
+import cloneDeep from "lodash.clonedeep";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { NextHandler, createRouter } from "next-connect";
 import { HookError } from "./exceptions/HookError";
@@ -10,16 +11,19 @@ import {
   Permission,
   ServerAction,
 } from "./types";
+import { getSchema, initGlobals } from "./utils/globals";
+import { getSchemas } from "./utils/jsonSchema";
 import { hasPermission } from "./utils/permissions";
-import { getRawData } from "./utils/prisma";
+import { getDataItem, getRawData } from "./utils/prisma";
 import {
+  applyVisiblePropertiesInSchema,
   formatId,
   getFormDataValues,
   getJsonBody,
   getResourceFromParams,
   getResources,
+  transformSchema,
 } from "./utils/server";
-import { getSchema, initGlobals } from "./utils/globals";
 
 type CreateAppHandlerParams<P extends string = "nextadmin"> = {
   /**
@@ -171,6 +175,67 @@ export const createHandler = <P extends string = "nextadmin">({
       const data = await handleOptionsSearch(body, prisma, options);
 
       return res.json(data);
+    })
+    .get(`${apiBasePath}/:model/schema/:id`, async (req, res) => {
+      const resources = getResources(options);
+
+      const resource = getResourceFromParams(
+        [req.query[paramKey]![0]],
+        resources
+      );
+
+      if (!resource) {
+        return res.status(404).json({ error: "Resource not found" });
+      }
+
+      const isSchemaRequest = req.query[paramKey]![1] === "schema";
+      if (!isSchemaRequest) {
+        return res.status(400).json({ error: "Invalid schema request" });
+      }
+
+      const id = req.query[paramKey]![2]
+        ? formatId(resource, req.query[paramKey]![2])
+        : undefined;
+
+      const edit = options?.model?.[resource]?.edit;
+
+      try {
+        let deepCopySchema = await transformSchema(
+          resource,
+          //@ts-expect-error
+          edit,
+          options
+        )(cloneDeep(getSchema()));
+
+        let data = null;
+        let relationshipsRawData = null;
+
+        if (id) {
+          const result = await getDataItem({
+            prisma,
+            resource,
+            resourceId: id,
+            options,
+          });
+          data = result.data;
+          relationshipsRawData = result.relationshipsRawData;
+
+          //@ts-expect-error
+          applyVisiblePropertiesInSchema(resource, edit, data, deepCopySchema);
+        }
+
+        //@ts-expect-error
+        const { uiSchema } = getSchemas(data, deepCopySchema, edit?.fields);
+
+        return res.json({
+          data,
+          modelSchema: deepCopySchema,
+          uiSchema,
+          relationshipsRawData,
+        });
+      } catch (e) {
+        return res.status(500).json({ error: (e as Error).message });
+      }
     })
     .post(`${apiBasePath}/:model/:id?`, async (req, res) => {
       const resources = getResources(options);

@@ -1,3 +1,4 @@
+import cloneDeep from "lodash.clonedeep";
 import { createEdgeRouter } from "next-connect";
 import { HookError } from "./exceptions/HookError";
 import { handleOptionsSearch } from "./handlers/options";
@@ -12,17 +13,18 @@ import {
   RequestContext,
   ServerAction,
 } from "./types";
+import { getSchema, initGlobals } from "./utils/globals";
+import { getSchemaForResource, getSchemas } from "./utils/jsonSchema";
 import { hasPermission } from "./utils/permissions";
-import { getRawData } from "./utils/prisma";
+import { getDataItem, getRawData } from "./utils/prisma";
 import {
   formatId,
   getFormValuesFromFormData,
   getModelIdProperty,
   getResourceFromParams,
   getResources,
+  transformSchema,
 } from "./utils/server";
-import { getSchema, initGlobals } from "./utils/globals";
-import { PrismaClient } from "./types-prisma";
 
 export const createHandler = <P extends string = "nextadmin">({
   apiBasePath,
@@ -52,6 +54,88 @@ export const createHandler = <P extends string = "nextadmin">({
   }
 
   router
+    .get(`${apiBasePath}/:model/schema/:id?`, async (req, ctx) => {
+      try {
+        const resources = getResources(options);
+        const params = await ctx.params;
+        const resource = getResourceFromParams(
+          [params[paramKey][0]],
+          resources
+        );
+
+        if (!resource) {
+          return Response.json(
+            { error: "Resource not found" },
+            { status: 404 }
+          );
+        }
+
+        const id =
+          params[paramKey].length > 2 ? params[paramKey][2] : undefined;
+        const edit = options?.model?.[resource]?.edit;
+
+        let deepCopySchema = await transformSchema(
+          resource,
+          //@ts-expect-error
+          edit,
+          options
+        )(cloneDeep(getSchema()));
+
+        const resourceSchema = getSchemaForResource(deepCopySchema, resource);
+
+        if (id) {
+          const formattedId = formatId(resource, id);
+
+          const { data, relationshipsRawData } = await getDataItem({
+            prisma,
+            resource,
+            resourceId: formattedId,
+            options,
+          });
+
+          const { uiSchema, schema } = getSchemas(
+            data,
+            resourceSchema,
+            edit?.fields as EditFieldsOptions<typeof resource>
+          );
+
+          return Response.json({
+            data,
+            modelSchema: schema,
+            uiSchema,
+            relationshipsRawData,
+            resource,
+          });
+        }
+
+        const relationshipsRawData = await getRawData({
+          prisma,
+          resource,
+          resourceIds: [],
+          maxDepth: 2,
+        });
+
+        const { uiSchema, schema } = getSchemas(
+          null,
+          resourceSchema,
+          edit?.fields as EditFieldsOptions<typeof resource>
+        );
+
+        return Response.json({
+          data: null,
+          modelSchema: schema,
+          uiSchema,
+          relationshipsRawData,
+          resource,
+        });
+      } catch (e) {
+        console.error("Error in GET schema endpoint:", e);
+        return Response.json(
+          { error: (e as Error)?.message || "Unknown error occurred" },
+          { status: 500 }
+        );
+      }
+    })
     .get(`${apiBasePath}/:model/raw`, async (req, ctx) => {
       const resources = getResources(options);
       const params = await ctx.params;
@@ -88,6 +172,9 @@ export const createHandler = <P extends string = "nextadmin">({
       });
 
       return Response.json(data);
+    })
+    .get(`${apiBasePath}/:model/:id`, async (req, ctx) => {
+      return Response.json({ error: "Not implemented" }, { status: 200 });
     })
     .post(`${apiBasePath}/:model/actions/:id`, async (req, ctx) => {
       const resources = getResources(options);

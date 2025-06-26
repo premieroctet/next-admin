@@ -105,6 +105,12 @@ export default {
         },
         multiselect: {
           select: "Sélectionner",
+          create: "Créer un élément",
+          edit: "Modifier un élément",
+        },
+        select: {
+          create: "Créer un élément",
+          edit: "Modifier un élément",
         },
       },
       user: {
