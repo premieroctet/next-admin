@@ -4,49 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-catalogs:
-  default:
-    react-datepicker:
-      specifier: ^8.3.0
-      version: 8.3.0
-  prisma:
-    '@prisma/client':
-      specifier: ^6.10.1
-      version: 6.10.1
-    prisma:
-      specifier: ^6.10.1
-      version: 6.10.1
-  react19:
-    '@types/react':
-      specifier: ^19.0.1
-      version: 19.0.1
-    '@types/react-dom':
-      specifier: ^19.0.2
-      version: 19.0.2
-  remix:
-    '@remix-run/dev':
-      specifier: ^2.16.5
-      version: 2.16.5
-    '@remix-run/node':
-      specifier: ^2.16.5
-      version: 2.16.5
-    '@remix-run/react':
-      specifier: ^2.16.5
-      version: 2.16.5
-    '@remix-run/serve':
-      specifier: ^2.16.5
-      version: 2.16.5
-  tanstack-start:
-    '@tanstack/react-router':
-      specifier: ^1.121.0
-      version: 1.121.0
-    '@tanstack/react-router-devtools':
-      specifier: ^1.121.0
-      version: 1.121.0
-    '@tanstack/react-start':
-      specifier: ^1.121.0
-      version: 1.121.0
-
 overrides:
   next: 15.1.0
   react: 19.0.0
