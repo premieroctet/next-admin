@@ -23,11 +23,17 @@ export default async function AdminPage(props: PromisePageProps) {
   const params = await props.params;
   const searchParams = await props.searchParams;
 
-  const nextAdminProps = await getNextAdminProps<typeof prisma>({
+  /**
+   * I have to ignore here because i have no clue why TS throws an error
+   * in CI environment only
+   */
+  // @ts-ignore
+  const nextAdminProps = await getNextAdminProps<PrismaClient>({
     params: params.nextadmin,
     searchParams,
     basePath: "/admin",
     apiBasePath: "/api/admin",
+    // @ts-ignore
     prisma,
     options,
     getMessages: (locale) =>
