@@ -4,6 +4,49 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    react-datepicker:
+      specifier: ^8.3.0
+      version: 8.3.0
+  prisma:
+    '@prisma/client':
+      specifier: ^6.10.1
+      version: 6.10.1
+    prisma:
+      specifier: ^6.10.1
+      version: 6.10.1
+  react19:
+    '@types/react':
+      specifier: ^19.0.1
+      version: 19.0.1
+    '@types/react-dom':
+      specifier: ^19.0.2
+      version: 19.0.2
+  remix:
+    '@remix-run/dev':
+      specifier: ^2.16.5
+      version: 2.16.5
+    '@remix-run/node':
+      specifier: ^2.16.5
+      version: 2.16.5
+    '@remix-run/react':
+      specifier: ^2.16.5
+      version: 2.16.5
+    '@remix-run/serve':
+      specifier: ^2.16.5
+      version: 2.16.5
+  tanstack-start:
+    '@tanstack/react-router':
+      specifier: ^1.121.0
+      version: 1.121.0
+    '@tanstack/react-router-devtools':
+      specifier: ^1.121.0
+      version: 1.121.0
+    '@tanstack/react-start':
+      specifier: ^1.121.0
+      version: 1.121.0
+
 overrides:
   next: 15.1.0
   react: 19.0.0
@@ -585,7 +628,7 @@ importers:
         version: 1.5.13
       '@prisma/client':
         specifier: '>=5'
-        version: 6.8.2(prisma@6.10.1(typescript@5.6.3))(typescript@5.6.3)
+        version: 6.10.1(prisma@6.10.1(typescript@5.6.3))(typescript@5.6.3)
       '@radix-ui/react-checkbox':
         specifier: ^1.1.1
         version: 1.1.2(@types/react-dom@19.0.2(@types/react@19.0.1))(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -2891,18 +2934,6 @@ packages:
 
   '@prisma/client@6.10.1':
     resolution: {integrity: sha512-Re4pMlcUsQsUTAYMK7EJ4Bw2kg3WfZAAlr8GjORJaK4VOP6LxRQUQ1TuLnxcF42XqGkWQ36q5CQF1yVadANQ6w==}
-    engines: {node: '>=18.18'}
-    peerDependencies:
-      prisma: '*'
-      typescript: '>=5.1.0'
-    peerDependenciesMeta:
-      prisma:
-        optional: true
-      typescript:
-        optional: true
-
-  '@prisma/client@6.8.2':
-    resolution: {integrity: sha512-5II+vbyzv4si6Yunwgkj0qT/iY0zyspttoDrL3R4BYgLdp42/d2C8xdi9vqkrYtKt9H32oFIukvyw3Koz5JoDg==}
     engines: {node: '>=18.18'}
     peerDependencies:
       prisma: '*'
@@ -9288,6 +9319,11 @@ packages:
     engines: {node: '>=14'}
     hasBin: true
 
+  prettier@3.6.2:
+    resolution: {integrity: sha512-I7AIg5boAr5R0FFtJ6rCfD+LFsWHp81dolrFD8S79U9tb8Az2nGrJncnMSnys+bpQJfRUzqs9hnA81OAA3hCuQ==}
+    engines: {node: '>=14'}
+    hasBin: true
+
   pretty-bytes@6.1.1:
     resolution: {integrity: sha512-mQUvGU6aUFQ+rNvTIAcZuWGRT9a6f6Yrg9bHs4ImKF+HZCEK+plBvnAZYSIQztknZF2qnzNtr6F8s0+IuptdlQ==}
     engines: {node: ^14.13.1 || >=16.0.0}
@@ -13366,11 +13402,6 @@ snapshots:
       prisma: 6.10.1(typescript@5.8.3)
       typescript: 5.8.3
 
-  '@prisma/client@6.8.2(prisma@6.10.1(typescript@5.6.3))(typescript@5.6.3)':
-    optionalDependencies:
-      prisma: 6.10.1(typescript@5.6.3)
-      typescript: 5.6.3
-
   '@prisma/config@6.10.1':
     dependencies:
       jiti: 2.4.2
@@ -14758,7 +14789,7 @@ snapshots:
       '@tanstack/router-core': 1.121.0
       '@tanstack/router-utils': 1.121.0
       '@tanstack/virtual-file-routes': 1.120.17
-      prettier: 3.6.1
+      prettier: 3.6.2
       recast: 0.23.11
       source-map: 0.7.4
       tsx: 4.19.4
@@ -15645,8 +15676,8 @@ snapshots:
     dependencies:
       '@mapbox/node-pre-gyp': 2.0.0
       '@rollup/pluginutils': 5.1.4(rollup@4.43.0)
-      acorn: 8.14.1
-      acorn-import-attributes: 1.9.5(acorn@8.14.1)
+      acorn: 8.15.0
+      acorn-import-attributes: 1.9.5(acorn@8.15.0)
       async-sema: 3.1.1
       bindings: 1.5.0
       estree-walker: 2.0.2
@@ -15796,9 +15827,9 @@ snapshots:
       acorn-walk: 8.3.4
     optional: true
 
-  acorn-import-attributes@1.9.5(acorn@8.14.1):
+  acorn-import-attributes@1.9.5(acorn@8.15.0):
     dependencies:
-      acorn: 8.14.1
+      acorn: 8.15.0
 
   acorn-jsx@5.3.2(acorn@7.4.1):
     dependencies:
@@ -15807,6 +15838,10 @@ snapshots:
   acorn-jsx@5.3.2(acorn@8.14.1):
     dependencies:
       acorn: 8.14.1
+
+  acorn-jsx@5.3.2(acorn@8.15.0):
+    dependencies:
+      acorn: 8.15.0
 
   acorn-walk@8.3.4:
     dependencies:
@@ -15818,8 +15853,7 @@ snapshots:
 
   acorn@8.14.1: {}
 
-  acorn@8.15.0:
-    optional: true
+  acorn@8.15.0: {}
 
   agent-base@6.0.2:
     dependencies:
@@ -20187,8 +20221,8 @@ snapshots:
 
   micromark-extension-mdxjs@1.0.1:
     dependencies:
-      acorn: 8.14.1
-      acorn-jsx: 5.3.2(acorn@8.14.1)
+      acorn: 8.15.0
+      acorn-jsx: 5.3.2(acorn@8.15.0)
       micromark-extension-mdx-expression: 1.0.8
       micromark-extension-mdx-jsx: 1.0.5
       micromark-extension-mdx-md: 1.0.1
@@ -21516,6 +21550,8 @@ snapshots:
   prettier@2.8.8: {}
 
   prettier@3.6.1: {}
+
+  prettier@3.6.2: {}
 
   pretty-bytes@6.1.1: {}
 
@@ -22908,7 +22944,7 @@ snapshots:
   terser@5.39.0:
     dependencies:
       '@jridgewell/source-map': 0.3.6
-      acorn: 8.14.1
+      acorn: 8.15.0
       commander: 2.20.3
       source-map-support: 0.5.21
 
@@ -23276,7 +23312,7 @@ snapshots:
 
   unctx@2.4.1:
     dependencies:
-      acorn: 8.14.1
+      acorn: 8.15.0
       estree-walker: 3.0.3
       magic-string: 0.30.17
       unplugin: 2.3.2
@@ -23335,7 +23371,7 @@ snapshots:
 
   unimport@5.0.1:
     dependencies:
-      acorn: 8.14.1
+      acorn: 8.15.0
       escape-string-regexp: 5.0.0
       estree-walker: 3.0.3
       local-pkg: 1.1.1
@@ -23475,12 +23511,12 @@ snapshots:
 
   unplugin@1.16.1:
     dependencies:
-      acorn: 8.14.1
+      acorn: 8.15.0
       webpack-virtual-modules: 0.6.2
 
   unplugin@2.3.2:
     dependencies:
-      acorn: 8.14.1
+      acorn: 8.15.0
       picomatch: 4.0.2
       webpack-virtual-modules: 0.6.2
 

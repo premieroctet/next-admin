@@ -29,11 +29,9 @@ export default function Admin(props: AdminComponentProps) {
 }
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) =>
-  // @ts-ignore
   await getNextAdminProps<PrismaClient>({
     basePath: "/pagerouter/admin",
     apiBasePath: "/api/pagerouter/admin",
-    // @ts-ignore
     prisma,
     options: appOptions,
     url: req.url!,

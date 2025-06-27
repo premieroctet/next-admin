@@ -1,13 +1,10 @@
 import { options } from "@/options";
 import { prisma } from "@/prisma";
 import { createHandler } from "@premieroctet/next-admin/appHandler";
-import { PrismaClient } from "database";
 
-// @ts-ignore
-const { run } = createHandler<"nextadmin", PrismaClient>({
+const { run } = createHandler<"nextadmin">({
   apiBasePath: "/api/admin",
   options,
-  // @ts-ignore
   prisma,
 });
 
