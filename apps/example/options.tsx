@@ -1,4 +1,5 @@
 import { createOptions } from "examples-common/options";
+import addTag from "@/actions/addTag";
 
 export const options = createOptions({
   getCategories: async () => {
@@ -17,4 +18,5 @@ export const options = createOptions({
       data: { published: true },
     });
   },
+  addTag,
 });

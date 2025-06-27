@@ -68,3 +68,28 @@ export const publishPosts = createServerFn()
       data: { published: true },
     });
   });
+
+export const addTag = createServerFn()
+  .validator((data) => {
+    if (!data) {
+      throw json({ error: "Missing data" }, { status: 422 });
+    }
+
+    return data as { tag: string; selectedIds?: number[] };
+  })
+  .handler(async ({ data }) => {
+    const { tag, selectedIds } = data;
+
+    await prisma.post.updateMany({
+      where: {
+        id: {
+          in: selectedIds,
+        },
+      },
+      data: {
+        tags: {
+          push: tag,
+        },
+      },
+    });
+  });

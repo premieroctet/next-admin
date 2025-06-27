@@ -11,6 +11,7 @@ export type CreateOptionsParams = {
     Array<Pick<Prisma.CategoryModel, "id" | "name">>
   >;
   publishPosts?: (ids: number[] | string[]) => Promise<void>;
+  addTag?: (tag: string, userIds?: number[]) => Promise<void>;
 };
 
 export const createOptions = (
@@ -220,7 +221,7 @@ export const createOptions = (
           icon: "TagIcon",
           id: "add-tag",
           title: "actions.post.add-tag.title",
-          component: <AddTagDialog />,
+          component: <AddTagDialog addTag={params.addTag} />,
         },
       ],
       list: {

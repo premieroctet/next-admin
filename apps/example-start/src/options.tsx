@@ -9,4 +9,13 @@ export const options = createOptions({
     const { publishPosts } = await import("./functions/nextadmin");
     await publishPosts({ data: ids });
   },
+  addTag: async (tag, userIds) => {
+    const { addTag } = await import("./functions/nextadmin");
+    await addTag({
+      data: {
+        tag,
+        selectedIds: userIds,
+      },
+    });
+  },
 });
