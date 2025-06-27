@@ -21,7 +21,7 @@ export default defineConfig({
   source: {
     entry: {
       index: glob.sync("**/*.{ts,tsx}", {
-        ignore: ["prisma/**"],
+        ignore: ["prisma/**", "rslib.config.ts"],
       }),
     },
   },
