@@ -9,9 +9,11 @@ export const config = {
   },
 };
 
+// @ts-ignore
 const { run } = createHandler<"nextadmin", PrismaClient>({
   apiBasePath: "/api/pagerouter/admin",
   options,
+  // @ts-ignore
   prisma,
 });
 
