@@ -1,10 +1,9 @@
 import { options } from "@/options";
 import { prisma } from "@/prisma";
-import { PromisePageProps } from "@premieroctet/next-admin";
+import type { PromisePageProps, PrismaClient } from "@premieroctet/next-admin";
 import { NextAdmin } from "@premieroctet/next-admin/adapters/next";
 import { getNextAdminProps } from "@premieroctet/next-admin/appRouter";
 import PageLoader from "@premieroctet/next-admin/pageLoader";
-import { PrismaClient } from "database";
 import { Dashboard } from "examples-common/components";
 import { Metadata, Viewport } from "next";
 import { getMessages } from "next-intl/server";
@@ -28,7 +27,7 @@ export default async function AdminPage(props: PromisePageProps) {
     searchParams,
     basePath: "/admin",
     apiBasePath: "/api/admin",
-    prisma,
+    prisma: prisma as PrismaClient,
     options,
     getMessages: (locale) =>
       getMessages({ locale }).then(

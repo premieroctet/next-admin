@@ -4,7 +4,7 @@ import type { NextApiRequest } from "next";
 import type React from "react";
 import type { ChangeEvent, ComponentProps, ReactNode } from "react";
 import type { PropertyValidationError } from "./exceptions/ValidationError";
-import { Prisma, PrismaClient } from "./types-prisma";
+import type { Prisma, PrismaClient } from "./types-prisma";
 
 declare type JSONSchema7Definition = NextAdminJSONSchema & {
   relation?: ModelName;

@@ -102,13 +102,6 @@ export interface RootServerRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/admin/$': {
-      id: '/admin/$'
-      path: '/admin/$'
-      fullPath: '/admin/$'
-      preLoaderRoute: typeof AdminSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/admin/custom': {
       id: '/admin/custom'
       path: '/admin/custom'
@@ -116,50 +109,22 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCustomRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/$': {
-      id: '/api/admin/$'
-      path: ''
-      fullPath: '/api/admin/$'
-      preLoaderRoute: unknown
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/posts/export': {
-      id: '/api/posts/export'
-      path: ''
-      fullPath: '/api/posts/export'
-      preLoaderRoute: unknown
-      parentRoute: typeof rootRouteImport
-    }
-    '/api/users/export': {
-      id: '/api/users/export'
-      path: ''
-      fullPath: '/api/users/export'
-      preLoaderRoute: unknown
+    '/admin/$': {
+      id: '/admin/$'
+      path: '/admin/$'
+      fullPath: '/admin/$'
+      preLoaderRoute: typeof AdminSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
 }
 declare module '@tanstack/react-start/server' {
   interface ServerFileRoutesByPath {
-    '/admin/$': {
-      id: '/admin/$'
-      path: '/admin/$'
-      fullPath: '/admin/$'
-      preLoaderRoute: unknown
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/admin/custom': {
-      id: '/admin/custom'
-      path: '/admin/custom'
-      fullPath: '/admin/custom'
-      preLoaderRoute: unknown
-      parentRoute: typeof rootServerRouteImport
-    }
-    '/api/admin/$': {
-      id: '/api/admin/$'
-      path: '/api/admin/$'
-      fullPath: '/api/admin/$'
-      preLoaderRoute: typeof ApiAdminSplatServerRouteImport
+    '/api/users/export': {
+      id: '/api/users/export'
+      path: '/api/users/export'
+      fullPath: '/api/users/export'
+      preLoaderRoute: typeof ApiUsersExportServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
     '/api/posts/export': {
@@ -169,11 +134,11 @@ declare module '@tanstack/react-start/server' {
       preLoaderRoute: typeof ApiPostsExportServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
-    '/api/users/export': {
-      id: '/api/users/export'
-      path: '/api/users/export'
-      fullPath: '/api/users/export'
-      preLoaderRoute: typeof ApiUsersExportServerRouteImport
+    '/api/admin/$': {
+      id: '/api/admin/$'
+      path: '/api/admin/$'
+      fullPath: '/api/admin/$'
+      preLoaderRoute: typeof ApiAdminSplatServerRouteImport
       parentRoute: typeof rootServerRouteImport
     }
   }
