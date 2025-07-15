@@ -22,7 +22,7 @@ export default async function AdminPage(props: PromisePageProps) {
   const params = await props.params;
   const searchParams = await props.searchParams;
 
-  const nextAdminProps = await getNextAdminProps<PrismaClient>({
+  const nextAdminProps = await getNextAdminProps({
     params: params.nextadmin,
     searchParams,
     basePath: "/admin",

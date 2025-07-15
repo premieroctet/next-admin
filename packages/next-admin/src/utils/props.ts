@@ -33,9 +33,7 @@ enum Page {
   EDIT = 2,
 }
 
-export async function getPropsFromParams<
-  Client extends PrismaClient = PrismaClient,
->({
+export async function getPropsFromParams({
   params,
   searchParams,
   options,
@@ -45,7 +43,7 @@ export async function getPropsFromParams<
   getMessages,
   basePath,
   apiBasePath,
-}: GetNextAdminPropsParams<Client>): Promise<PageRouterComponentProps> {
+}: GetNextAdminPropsParams): Promise<PageRouterComponentProps> {
   const {
     resource,
     resources,

@@ -7,9 +7,7 @@ import {
 import { formatSearchFields, getParamsFromUrl } from "./utils/server";
 
 // Router
-export const getNextAdminProps = async <
-  Client extends PrismaClient = PrismaClient,
->({
+export const getNextAdminProps = async ({
   prisma,
   basePath,
   apiBasePath,
@@ -17,10 +15,7 @@ export const getNextAdminProps = async <
   url,
   locale,
   getMessages,
-}: Omit<
-  GetNextAdminPropsParams<Client>,
-  "params" | "searchParams" | "isAppDir"
-> & {
+}: Omit<GetNextAdminPropsParams, "params" | "searchParams" | "isAppDir"> & {
   url: string;
 }) => {
   const urlObj =
