@@ -1,5 +1,13 @@
 # @premieroctet/next-admin-generator-prisma
 
+## 1.1.0
+
+### Minor Changes
+
+- [f736147](https://github.com/premieroctet/next-admin/commit/f736147672e462f5b9d90670b408afb3856e559c): feat: support new Prisma client
+
+  This is an experimental feature and may evolve as Prisma releases new versions.
+
 ## 1.0.0
 
 ### Major Changes
