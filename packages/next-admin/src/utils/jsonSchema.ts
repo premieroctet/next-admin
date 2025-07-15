@@ -25,6 +25,16 @@ function filterProperties(properties: any): Record<string, any> {
       ) {
         // @ts-expect-error
         filteredProperties[property] = attributes;
+      } else if (
+        // Allow relation fields that have been processed by fillRelationInSchema
+        // These fields will have a 'relation' property and 'enum' array, even if they still have some $ref traces
+        attributes &&
+        (attributes.relation ||
+          (attributes.items && attributes.items.relation)) &&
+        (attributes.enum || (attributes.items && attributes.items.enum))
+      ) {
+        // @ts-expect-error
+        filteredProperties[property] = attributes;
       }
     }
   );
@@ -43,6 +53,13 @@ export function getSchemaForResource(schema: any, resource: string) {
   };
   return resourceSchema;
 }
+
+export function getSchemasForResource(
+  schema: any,
+  resource: string,
+  edit: boolean,
+  editFieldsOptions?: EditFieldsOptions<ModelName>
+) {}
 
 export function getSchemas<M extends ModelName>(
   data: any,

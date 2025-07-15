@@ -121,6 +121,7 @@ export const createOptions = (
           },
           posts: {
             display: "table",
+            allowCreate: true,
           },
           avatar: {
             format: "file",
@@ -297,6 +298,7 @@ export const createOptions = (
             display: "list",
             orderField: "order",
             relationshipSearchField: "category",
+            allowCreate: true,
           },
           images: {
             format: "file",
@@ -355,6 +357,8 @@ export const createOptions = (
             display: "list",
             relationshipSearchField: "post",
             orderField: "order",
+            allowCreate: true,
+            allowEdit: true,
           },
         },
       },

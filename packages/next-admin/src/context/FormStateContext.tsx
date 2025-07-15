@@ -8,8 +8,8 @@ import {
 
 const FormStateContext = createContext({
   dirtyFields: [] as string[],
-  setFieldDirty: (_name: string) => {},
-  cleanAll: () => {},
+  setFieldDirty: (_name: string) => { },
+  cleanAll: () => { },
 });
 
 export const useFormState = () => useContext(FormStateContext);

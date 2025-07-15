@@ -31,7 +31,13 @@ export const defaultTranslations: Translations = {
   "form.widgets.file_upload.drag_and_drop": "or drag and drop",
   "form.widgets.file_upload.delete": "Delete",
   "form.widgets.multiselect.select": "Select items",
+  "form.widgets.multiselect.create": "Create item",
+  "form.widgets.select.create": "Create item",
+  "form.widgets.multiselect.edit": "Edit item",
+  "form.widgets.select.edit": "Edit item",
   "form.widgets.scalar_array.add": "Add new item",
+  "form.embedded.parent_relation_locked":
+    "This field is automatically filled based on the parent record and cannot be modified.",
   "form.create.succeed": "Created successfully",
   "form.update.succeed": "Updated successfully",
   "form.delete.succeed": "Deleted successfully",

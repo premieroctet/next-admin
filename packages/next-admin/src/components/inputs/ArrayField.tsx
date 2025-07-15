@@ -1,8 +1,8 @@
 import { FieldProps } from "@rjsf/utils";
 import type { CustomInputProps, Enumeration, FormProps } from "../../types";
+import FileWidget from "./FileWidget/FileWidget";
 import MultiSelectWidget from "./MultiSelect/MultiSelectWidget";
 import ScalarArrayField from "./ScalarArray/ScalarArrayField";
-import FileWidget from "./FileWidget/FileWidget";
 
 const ArrayField = (
   props: FieldProps & { customInput?: React.ReactElement<CustomInputProps> }
@@ -22,7 +22,7 @@ const ArrayField = (
 
   const field =
     resourceDefinition.properties[
-      name as keyof typeof resourceDefinition.properties
+    name as keyof typeof resourceDefinition.properties
     ];
 
   if (field?.__nextadmin?.kind === "scalar" && field?.__nextadmin?.isList) {
@@ -66,6 +66,7 @@ const ArrayField = (
       required={required}
       schema={schema}
       options={options}
+      formContext={formContext}
     />
   );
 };

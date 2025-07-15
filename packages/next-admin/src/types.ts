@@ -234,6 +234,18 @@ type OptionFormatterFromRelationshipSearch<
          * model name on which to execute a research. Useful in case the field is related to an explicit many-to-many table
          */
         relationshipSearchField?: S;
+        /**
+         * Allow creation of new items in the related model
+         * @default false
+         * @type boolean
+         */
+        allowCreate?: boolean;
+        /**
+         * Allow editing of the selected item in the related model
+         * @default false
+         * @type boolean
+         */
+        allowEdit?: boolean;
       }
     | {
         /**
@@ -242,6 +254,18 @@ type OptionFormatterFromRelationshipSearch<
          * @returns
          */
         optionFormatter?: (item: ModelFromProperty<T, P>) => string;
+        /**
+         * Allow creation of new items in the related model
+         * @default false
+         * @type boolean
+         */
+        allowCreate?: boolean;
+        /**
+         * Allow editing of the selected item in the related model
+         * @default false
+         * @type boolean
+         */
+        allowEdit?: boolean;
       };
 }[RelationshipSearch<ModelFromProperty<T, P>>["field"]];
 
@@ -1097,6 +1121,10 @@ export type TranslationKeys =
   | "form.widgets.file_upload.drag_and_drop"
   | "form.widgets.file_upload.delete"
   | "form.widgets.multiselect.select"
+  | "form.widgets.multiselect.create"
+  | "form.widgets.select.create"
+  | "form.widgets.multiselect.edit"
+  | "form.widgets.select.edit"
   | "form.widgets.scalar_array.add"
   | "selector.loading"
   | "theme.dark"
@@ -1244,6 +1272,8 @@ export type FormProps = {
   resourcesIdProperty: Record<ModelName, string>;
   clientActionsComponents?: AdminComponentProps["dialogComponents"];
   relationshipsRawData?: RelationshipsRawData;
+  onSubmitCallback?: (data: any) => void;
+  isEmbedded?: boolean;
 };
 
 export type ClientActionDialogContentProps<T extends ModelName> = Partial<{
