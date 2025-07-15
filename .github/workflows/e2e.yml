@@ -68,9 +68,3 @@ jobs:
           name: playwright-report
           path: apps/example/playwright-report/
           retention-days: 30
-      - uses: actions/upload-artifact@v4
-        if: ${{ !cancelled() }}
-        with:
-          name: next-admin-dist
-          path: packages/next-admin/dist
-          retention-days: 30
