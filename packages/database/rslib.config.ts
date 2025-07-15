@@ -1,5 +1,6 @@
 import { defineConfig } from "@rslib/core";
 import { glob } from "glob";
+import path from "path";
 
 export default defineConfig({
   lib: [
@@ -17,6 +18,15 @@ export default defineConfig({
   ],
   output: {
     externals: ["@prisma/client"],
+    copy: {
+      patterns: [
+        {
+          from: "*.node",
+          context: path.join(__dirname, "generated", "prisma"),
+          to: "generated/prisma",
+        },
+      ],
+    },
   },
   source: {
     entry: {
