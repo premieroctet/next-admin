@@ -2,3 +2,4 @@ dist
 node_modules
 .turbo
 .next-admin
+generated

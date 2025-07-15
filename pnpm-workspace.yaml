@@ -23,5 +23,9 @@ catalogs:
   next:
     next: ^15.1.0
 
+  prisma:
+    prisma: ^6.10.1
+    "@prisma/client": ^6.10.1
+
 catalog:
   react-datepicker: ^8.3.0

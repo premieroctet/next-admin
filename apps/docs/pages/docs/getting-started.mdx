@@ -97,6 +97,12 @@ generator nextAdmin {
 }
 ```
 
+<Callout emoji="⚠️">
+    If you use the [new Prisma Client generator](https://www.prisma.io/docs/orm/prisma-schema/overview/generators#prisma-client-early-access), make sure
+    the Next-Admin generator is placed AFTER the Prisma Client generator. This is because the Next-Admin generator makes a copy of the generated client inside
+    Next-Admin's `dist` folder.
+</Callout>
+
 Then run the following command :
 
 ```bash copy

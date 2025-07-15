@@ -2,17 +2,25 @@
 import { ClientActionDialogContentProps } from "@premieroctet/next-admin";
 import { BaseInput, Button } from "@premieroctet/next-admin/components";
 import { useState } from "react";
-import addTag from "../actions/addTag";
 
-type Props = ClientActionDialogContentProps<"User">;
+type Props = ClientActionDialogContentProps<"User"> & {
+  addTag?: (tag: string, userIds?: number[]) => Promise<void>;
+};
 
-const AddTagDialog = ({ data, onClose }: Props) => {
+const AddTagDialog = ({ data, onClose, addTag }: Props) => {
   const [tag, setTag] = useState("");
   const [isPending, setIsPending] = useState(false);
 
   const handleSubmit = () => {
+    if (!addTag) {
+      onClose?.({
+        type: "error",
+        message: "addTag function is not provided",
+      });
+      return;
+    }
     setIsPending(true);
-    addTag(
+    addTag?.(
       tag,
       data?.map((d) => d.id)
     )

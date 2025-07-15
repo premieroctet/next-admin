@@ -1,3 +1,21 @@
-import { options as adminOptions } from "examples-common/options";
+import { createOptions } from "examples-common/options";
 
-export const options = adminOptions;
+export const options = createOptions({
+  getCategories: async () => {
+    const { getCategories } = await import("./functions/nextadmin");
+    return getCategories();
+  },
+  publishPosts: async (ids) => {
+    const { publishPosts } = await import("./functions/nextadmin");
+    await publishPosts({ data: ids });
+  },
+  addTag: async (tag, userIds) => {
+    const { addTag } = await import("./functions/nextadmin");
+    await addTag({
+      data: {
+        tag,
+        selectedIds: userIds,
+      },
+    });
+  },
+});

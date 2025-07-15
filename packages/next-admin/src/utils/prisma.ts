@@ -1,8 +1,7 @@
 import type { NextAdminJsonSchemaData } from "@premieroctet/next-admin-json-schema";
-import { Prisma, PrismaClient } from "@prisma/client";
 import cloneDeep from "lodash.clonedeep";
 import { ITEMS_PER_PAGE } from "../config";
-import {
+import type {
   EditOptions,
   Enumeration,
   Field,
@@ -21,8 +20,11 @@ import {
   Select,
   VirtualField,
 } from "../types";
+import type { PrismaClient } from "../types-prisma";
 import { validateQuery } from "./advancedSearch";
+import { getSchema } from "./globals";
 import { getDefinitionFromRef } from "./jsonSchema";
+import { Prisma } from "./prisma-runtime";
 import {
   enumValueForEnumType,
   findRelationInData,
@@ -37,7 +39,6 @@ import {
   isScalar,
   uncapitalize,
 } from "./tools";
-import { getSchema } from "./globals";
 
 type CreateNestedWherePredicateParams<M extends ModelName> = {
   field: NextAdminJsonSchemaData & { name: string };

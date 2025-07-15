@@ -1,11 +1,10 @@
 // https://www.prisma.io/docs/guides/testing/unit-testing#singleton
-import { PrismaClient } from "@prisma/client";
-import { DeepMockProxy, mockDeep, mockReset } from "vitest-mock-extended";
 import { beforeEach, vi } from "vitest";
-import React from "react";
+import { DeepMockProxy, mockDeep, mockReset } from "vitest-mock-extended";
+import type { PrismaClient as PrismaClientType } from "../types-prisma";
 
 import prisma from "@prisma/client";
-import { NextAdminOptions, Schema } from "../types";
+import { NextAdminOptions } from "../types";
 import { getJsonSchema } from "../utils/server";
 
 vi.mock("@prisma/client", () => ({
@@ -18,18 +17,19 @@ vi.mock("@prisma/client", () => ({
       desc: "desc",
     },
   },
-  default: mockDeep<PrismaClient>(),
+  default: mockDeep<PrismaClientType>(),
 }));
+
+export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClientType>;
 
 beforeEach(() => {
   mockReset(prismaMock);
 });
 
-export const prismaMock = prisma as unknown as DeepMockProxy<PrismaClient>;
-
 export const schema = getJsonSchema();
 
 export const options: NextAdminOptions = {
+  // @ts-expect-error
   model: {
     User: {
       toString: (user) => `${user.name} (${user.email})`,

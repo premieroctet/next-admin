@@ -1,11 +1,15 @@
 #!/usr/bin/env node
 import { generatorHandler } from "@prisma/generator-helper";
-import { parseEnvValue } from "@prisma/internals";
-import path from "path";
-import fs from "fs/promises";
+import fs from "node:fs/promises";
+import path from "node:path";
 // @ts-expect-error
 import { transformDMMF } from "prisma-json-schema-generator/dist/generator/transformDMMF";
 import { insertDmmfData } from "./dmmf";
+import { getEnvValue } from "./env";
+import {
+  getNewPrismaClientGenerator,
+  updateNextAdminPrismaTypesImport,
+} from "./generator";
 
 generatorHandler({
   onManifest: () => {
@@ -23,10 +27,7 @@ generatorHandler({
     insertDmmfData(options.dmmf, jsonSchema);
 
     if (options.generator.output) {
-      const outputDir =
-        typeof options.generator.output === "string"
-          ? options.generator.output
-          : parseEnvValue(options.generator.output);
+      const outputDir = getEnvValue(options.generator.output) as string;
 
       await fs.mkdir(outputDir, { recursive: true });
 
@@ -37,6 +38,19 @@ generatorHandler({
       const mjsContent = `export default ${JSON.stringify(jsonSchema, null, 2)}`;
 
       await fs.writeFile(path.join(outputDir, "schema.mjs"), mjsContent);
+    }
+
+    const newPrismaClient = getNewPrismaClientGenerator(
+      options.otherGenerators
+    );
+
+    if (newPrismaClient) {
+      if (!newPrismaClient.output) {
+        throw new Error("Prisma Client output is required");
+      }
+      await updateNextAdminPrismaTypesImport(
+        newPrismaClient,
+      );
     }
   },
 });

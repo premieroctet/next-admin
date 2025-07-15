@@ -1,14 +1,15 @@
+import type { PrismaClient } from "@premieroctet/next-admin";
 import {
   getMainLayoutProps,
   getNextAdminProps,
 } from "@premieroctet/next-admin/pageRouter";
-import { createServerFn } from "@tanstack/react-start";
-import prisma from "database";
+import { createServerFn, json } from "@tanstack/react-start";
 import en from "examples-common/messages/en";
 import { options } from "../options";
+import prisma from "../prisma";
 
 export const getNextAdminPropsFn = createServerFn()
-  .validator((data) => {
+  .validator((data: Record<string, string>) => {
     return {
       url: data.url as string,
       splat: data.splat as string,
@@ -19,7 +20,7 @@ export const getNextAdminPropsFn = createServerFn()
     return getNextAdminProps({
       apiBasePath: "/api/admin",
       basePath: "/admin",
-      prisma: prisma,
+      prisma: prisma as PrismaClient,
       options: options,
       url: data.url,
       getMessages: async () => en.admin as unknown as Record<string, string>,
@@ -45,4 +46,51 @@ export const getNextAdminCustomPageFn = createServerFn()
       totalPosts,
       totalCategories,
     };
+  });
+
+export const getCategories = createServerFn().handler(async () => {
+  return prisma.category.findMany({
+    select: { id: true, name: true },
+    take: 5,
+  });
+});
+
+export const publishPosts = createServerFn()
+  .validator((data) => {
+    if (!data) {
+      throw json({ error: "Missing data" }, { status: 422 });
+    }
+
+    return data as number[] | string[];
+  })
+  .handler(async ({ data }) => {
+    await prisma.post.updateMany({
+      where: { id: { in: data.map((id) => Number(id)) } },
+      data: { published: true },
+    });
+  });
+
+export const addTag = createServerFn()
+  .validator((data) => {
+    if (!data) {
+      throw json({ error: "Missing data" }, { status: 422 });
+    }
+
+    return data as { tag: string; selectedIds?: number[] };
+  })
+  .handler(async ({ data }) => {
+    const { tag, selectedIds } = data;
+
+    await prisma.post.updateMany({
+      where: {
+        id: {
+          in: selectedIds,
+        },
+      },
+      data: {
+        tags: {
+          push: tag,
+        },
+      },
+    });
   });

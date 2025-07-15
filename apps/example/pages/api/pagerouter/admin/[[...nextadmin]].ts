@@ -1,5 +1,6 @@
-import { options } from "@/pageRouterOptions";
+import { options } from "@/options";
 import { prisma } from "@/prisma";
+import type { PrismaClient } from "@premieroctet/next-admin";
 import { createHandler } from "@premieroctet/next-admin/pageHandler";
 
 export const config = {
@@ -8,10 +9,10 @@ export const config = {
   },
 };
 
-const { run } = createHandler({
+const { run } = createHandler<"nextadmin">({
   apiBasePath: "/api/pagerouter/admin",
   options,
-  prisma,
+  prisma: prisma as PrismaClient,
 });
 
 export default run;

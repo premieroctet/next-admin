@@ -1,4 +1,5 @@
 import { GetMainLayoutPropsParams, GetNextAdminPropsParams } from "./types";
+import type { PrismaClient } from "./types-prisma";
 import {
   getMainLayoutProps as _getMainLayoutProps,
   getPropsFromParams,

@@ -3,6 +3,7 @@ import {
   getMainLayoutProps as _getMainLayoutProps,
   getPropsFromParams as _getPropsFromParams,
 } from "./utils/props";
+import type { PrismaClient } from "./types-prisma";
 
 export const getNextAdminProps = async (
   params: Omit<GetNextAdminPropsParams, "schema" | "isAppDir">

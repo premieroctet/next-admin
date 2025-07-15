@@ -1,11 +1,9 @@
-import { PrismaClient } from "@prisma/client";
 import {
   PrismaClientKnownRequestError,
   PrismaClientValidationError,
 } from "@prisma/client/runtime/library";
 import {
   EditFieldsOptions,
-  Model,
   ModelName,
   ModelOptions,
   NextAdminOptions,
@@ -14,6 +12,7 @@ import {
   SubmitResourceResponse,
   UploadedFile,
 } from "../types";
+import type { PrismaClient } from "../types-prisma";
 import { hasPermission } from "../utils/permissions";
 import { getDataItem } from "../utils/prisma";
 import {

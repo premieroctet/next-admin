@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import cloneDeep from "lodash.clonedeep";
 import {
   AdminComponentProps,
@@ -13,6 +12,8 @@ import {
   NextAdminOptions,
   PageRouterComponentProps,
 } from "../types";
+import type { Prisma, PrismaClient } from "../types-prisma";
+import { getSchema, initGlobals } from "./globals";
 import { getClientActionsComponents, getCustomInputs } from "./options";
 import { getDataItem, getMappedDataList, mapModelFilters } from "./prisma";
 import {
@@ -26,7 +27,6 @@ import {
   transformSchema,
 } from "./server";
 import { extractSerializable } from "./tools";
-import { getSchema, initGlobals } from "./globals";
 
 enum Page {
   LIST = 1,

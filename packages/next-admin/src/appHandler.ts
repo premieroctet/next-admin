@@ -22,6 +22,7 @@ import {
   getResources,
 } from "./utils/server";
 import { getSchema, initGlobals } from "./utils/globals";
+import { PrismaClient } from "./types-prisma";
 
 export const createHandler = <P extends string = "nextadmin">({
   apiBasePath,

@@ -1,19 +1,23 @@
-import { AdminComponentProps } from "@premieroctet/next-admin";
+import type {
+  AdminComponentProps,
+  PrismaClient,
+} from "@premieroctet/next-admin";
 import { NextAdmin } from "@premieroctet/next-admin/adapters/remix";
 import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import { LoaderFunctionArgs } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import prisma from "database";
+import prisma from "../prisma";
 import { Dashboard } from "examples-common/components";
 import en from "examples-common/messages/en";
 import { options } from "../options";
+import { options as clientOptions } from "../clientOptions";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   return getNextAdminProps({
     url: request.url,
     apiBasePath: "/api/admin",
     basePath: "/admin",
-    prisma,
+    prisma: prisma as PrismaClient,
     options,
     getMessages: async () => en.admin as unknown as Record<string, string>,
   });
@@ -33,7 +37,7 @@ export default function Admin() {
     <NextAdmin
       {...(data.props as AdminComponentProps)}
       dashboard={<Dashboard />}
-      options={options}
+      options={clientOptions}
       user={{
         data: {
           name: "John Doe",

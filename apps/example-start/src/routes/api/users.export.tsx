@@ -1,5 +1,5 @@
-import { createServerFileRoute } from "@tanstack/react-start/server"
-import prisma from "database";
+import { createServerFileRoute } from "@tanstack/react-start/server";
+import prisma from "../../prisma";
 
 const BATCH_SIZE = 1000;
 

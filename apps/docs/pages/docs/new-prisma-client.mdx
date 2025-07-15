@@ -1,0 +1,43 @@
+import { Callout } from "nextra/components";
+
+# New Prisma client support
+
+Prisma introduced a new generated Prisma client in its version [6.6.0](https://github.com/prisma/prisma/releases/tag/6.6.0). This changes the way the Prisma client is generated and used. No more generation in the `node_modules` directory, it is now generated in a user defined path, most likely in the project directory. This has implications on Next Admin, since we are relying on the `@prisma/client` import for some runtime values and for the typings.
+
+Starting Next Admin 8.3.0, and the generator 1.1.0, the new Prisma Client is supported by Next Admin. What we are doing is copying the generated client into the Next Admin dist directory in the `node_modules`, and patching some imports to use this new client, making the library compatible with both the legacy and the new client.
+
+<Callout type="warning">
+    Because we are making a copy of the generated client, the Next Admin generator needs to be placed AFTER the Prisma client's one.
+</Callout>
+
+However, for TS users, this will lead to typings issues related to the Prisma instance type.
+
+```tsx
+import prisma from "./my-prisma-instance"
+
+const nextAdminProps = await getNextAdminProps({
+    params: params.nextadmin,
+    searchParams,
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
+    prisma,
+//  ^^^^^^ ts error: TS does not like that the inferred PrismaClient type does not come different places
+    options,
+  });
+```
+
+To fix this, you will need to cast the Prisma instance to the `PrismaClient` type imported from `@premieroctet/next-admin`.
+
+```tsx
+import type { PrismaClient } from "@premieroctet/next-admin";
+import prisma from "./my-prisma-instance"
+
+const nextAdminProps = await getNextAdminProps({
+    params: params.nextadmin,
+    searchParams,
+    basePath: "/admin",
+    apiBasePath: "/api/admin",
+    prisma: prisma as PrismaClient, // no more error
+    options,
+  });
+```

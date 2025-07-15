@@ -1,10 +1,11 @@
 import { createHandler } from "@premieroctet/next-admin/appHandler";
+import type { PrismaClient } from "@premieroctet/next-admin";
 import { LoaderFunctionArgs } from "@remix-run/node";
-import prisma from "database";
 import { options } from "../options";
+import prisma from "../prisma";
 
 const nextAdminApi = createHandler({
-  prisma,
+  prisma: prisma as PrismaClient,
   apiBasePath: "/api/admin",
   options,
 });

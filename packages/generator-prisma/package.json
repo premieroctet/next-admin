@@ -36,13 +36,16 @@
     "@premieroctet/next-admin-json-schema": "workspace:^",
     "@prisma/generator-helper": "^5.20.0",
     "@prisma/internals": "^5.20.0",
-    "prisma-json-schema-generator": "5.1.5"
+    "esbuild": "^0.24.0",
+    "glob": "^11.0.0",
+    "prisma-json-schema-generator": "5.1.5",
+    "typescript": "^5.6.2"
   },
   "devDependencies": {
     "@types/json-schema": "^7.0.15",
+    "@types/node": "^24.0.4",
     "eslint": "^7.32.0",
     "eslint-config-custom": "workspace:*",
-    "tsconfig": "workspace:*",
-    "typescript": "^5.6.2"
+    "tsconfig": "workspace:*"
   }
 }
