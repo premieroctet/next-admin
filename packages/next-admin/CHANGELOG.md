@@ -1,5 +1,13 @@
 # @premieroctet/next-admin
 
+## 8.3.0
+
+### Minor Changes
+
+- [f736147](https://github.com/premieroctet/next-admin/commit/f736147672e462f5b9d90670b408afb3856e559c): feat: support new Prisma client
+
+  This is an experimental feature and may evolve as Prisma releases new versions.
+
 ## 8.2.1
 
 ### Patch Changes
@@ -55,7 +63,6 @@
 - [8c3e567](https://github.com/premieroctet/next-admin/commit/8c3e567de41f85902266ef89e88b4dc2776dffe5): feat: support all frameworks, with provided adapters for Next.js, Remix and TanStack Start
 
   This introduces a few breaking changes :
-
   - The `NextAdmin` component now requires to be imported from the correct adapter
 
   ```tsx
@@ -422,9 +429,7 @@
 ### Major Changes
 
 - [a005fdf](https://github.com/premieroctet/next-admin/commit/a005fdf): ## Major Changes
-
   - **Breaking Change**:
-
     - New implementation of `NextAdmin`. Usage of `API route` instead of `server actions`.
     - Configuration of `page.tsx` and `route.ts` files in the `app/admin/[[...nextadmin]]` and `app/api/[[...nextadmin]]` folders respectively.
     - `createHandler` function now available in `appHandler` and `pageHandler` modules to configure the API route.
@@ -874,7 +879,6 @@
 ### Major Changes
 
 - [16aba39](https://github.com/premieroctet/next-admin/commit/16aba39): # New feature
-
   - App router is now supported. You can find an exemple of its usage in the example app.
   - New context object, currently passed only to the `formatter` function
 
@@ -917,7 +921,6 @@
 ### Major Changes
 
 - [dbb5a3e](https://github.com/premieroctet/next-admin/commit/dbb5a3e): - Always fetch `id` property from items
-
   - Hide `id`column in list if it doesn't have `display: true` options
   - Mutualize `NextAdminOptions` to reduce useless duplication of code
   - Add file upload input
@@ -925,7 +928,6 @@
   ⚠️ **Breaking Changes**
 
   To reduce the complexity and duplication of next-admin options, this PR contains major changes to the structure of the options.
-
   - Changed structure for `display` and `search` properties: fields are now entered as an array
 
 ### Patch Changes
