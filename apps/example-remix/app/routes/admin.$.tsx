@@ -1,4 +1,7 @@
-import { AdminComponentProps } from "@premieroctet/next-admin";
+import type {
+  AdminComponentProps,
+  PrismaClient,
+} from "@premieroctet/next-admin";
 import { NextAdmin } from "@premieroctet/next-admin/adapters/remix";
 import { getNextAdminProps } from "@premieroctet/next-admin/pageRouter";
 import { LoaderFunctionArgs } from "@remix-run/node";
@@ -14,7 +17,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     url: request.url,
     apiBasePath: "/api/admin",
     basePath: "/admin",
-    prisma,
+    prisma: prisma as PrismaClient,
     options,
     getMessages: async () => en.admin as unknown as Record<string, string>,
   });

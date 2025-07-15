@@ -1,3 +1,4 @@
+import type { PrismaClient } from "@premieroctet/next-admin";
 import {
   getMainLayoutProps,
   getNextAdminProps,
@@ -19,7 +20,7 @@ export const getNextAdminPropsFn = createServerFn()
     return getNextAdminProps({
       apiBasePath: "/api/admin",
       basePath: "/admin",
-      prisma: prisma,
+      prisma: prisma as PrismaClient,
       options: options,
       url: data.url,
       getMessages: async () => en.admin as unknown as Record<string, string>,
