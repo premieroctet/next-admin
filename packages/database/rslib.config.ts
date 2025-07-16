@@ -20,6 +20,7 @@ export default defineConfig({
     minify: {
       jsOptions: {
         minimizerOptions: {
+          minify: false,
           format: {
             comments: "all",
           },
