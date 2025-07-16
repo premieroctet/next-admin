@@ -1,6 +1,4 @@
-import { PrismaClient } from "../generated/prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../instance";
 
 const categories = [
   "Science",

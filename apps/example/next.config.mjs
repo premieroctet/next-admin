@@ -1,9 +1,11 @@
-const withNextIntl = require("next-intl/plugin")("./i18n.ts");
-const { withSuperjson } = require("next-superjson");
-const { PrismaPlugin } = require("@prisma/nextjs-monorepo-workaround-plugin");
+import intlPlugin from "next-intl/plugin";
+import { withSuperjson } from "next-superjson";
+import { PrismaPlugin } from "@prisma/nextjs-monorepo-workaround-plugin";
+
+const withNextIntl = intlPlugin("./i18n.ts");
 
 /** @type {import('next').NextConfig} */
-module.exports = withNextIntl(
+const config = withNextIntl(
   withSuperjson({
     reactStrictMode: true,
     experimental: {
@@ -26,3 +28,5 @@ module.exports = withNextIntl(
     },
   })
 );
+
+export default config;

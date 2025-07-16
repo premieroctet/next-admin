@@ -5,5 +5,5 @@
     "declaration": true,
     "target": "ESNext"
   },
-  "include": ["index.ts"]
+  "include": ["index.ts", "instance.ts"]
 }
