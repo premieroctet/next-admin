@@ -10,13 +10,7 @@ catalogs:
       specifier: ^8.3.0
       version: 8.4.0
   prisma:
-    '@prisma/adapter-pg':
-      specifier: ^6.12.0
-      version: 6.12.0
     '@prisma/client':
-      specifier: ^6.12.0
-      version: 6.12.0
-    prisma:
       specifier: ^6.12.0
       version: 6.12.0
   react19:
@@ -26,29 +20,6 @@ catalogs:
     '@types/react-dom':
       specifier: ^19.0.2
       version: 19.1.6
-  remix:
-    '@remix-run/dev':
-      specifier: ^2.16.5
-      version: 2.16.8
-    '@remix-run/node':
-      specifier: ^2.16.5
-      version: 2.16.8
-    '@remix-run/react':
-      specifier: ^2.16.5
-      version: 2.16.8
-    '@remix-run/serve':
-      specifier: ^2.16.5
-      version: 2.16.8
-  tanstack-start:
-    '@tanstack/react-router':
-      specifier: ^1.121.0
-      version: 1.123.0
-    '@tanstack/react-router-devtools':
-      specifier: ^1.121.0
-      version: 1.123.0
-    '@tanstack/react-start':
-      specifier: ^1.121.0
-      version: 1.123.0
 
 overrides:
   next: 15.1.0
@@ -168,6 +139,9 @@ importers:
       '@premieroctet/next-admin':
         specifier: workspace:*
         version: link:../../packages/next-admin
+      '@prisma/client':
+        specifier: catalog:prisma
+        version: 6.12.0(prisma@6.12.0(typescript@5.8.3))(typescript@5.8.3)
       '@tremor/react':
         specifier: ^3.2.2
         version: 3.18.7(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -205,9 +179,6 @@ importers:
       '@playwright/test':
         specifier: ^1.37.0
         version: 1.53.1
-      '@prisma/nextjs-monorepo-workaround-plugin':
-        specifier: ^6.11.1
-        version: 6.11.1
       '@types/node':
         specifier: ^17.0.12
         version: 17.0.45
@@ -2684,9 +2655,6 @@ packages:
 
   '@prisma/internals@5.8.1':
     resolution: {integrity: sha512-9okoCgLeMqql58IbEG3YmzgNLRUQdN+qZUYp2DojWC7VAmL9TSOKQ5Dcc0588cKAsCBBDUQ2jfdflorYkzeFKw==}
-
-  '@prisma/nextjs-monorepo-workaround-plugin@6.11.1':
-    resolution: {integrity: sha512-dio46aOdNMX0974lN/c4uX7mL7q1+Ci7q+7pY+HzAgZepw9WfSA9VpQk34BIDisY2sGfjitHcR9MGPLpAtxDUA==}
 
   '@prisma/prisma-schema-wasm@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2':
     resolution: {integrity: sha512-WPNB7SgTxF/rSHMa5o5/9AIINy4oVnRhvUkRzqR4Nfp8Hu9Q2IyUptxuiDuzRVJdjJBRi/U82sHTxyiD3oBBhQ==}
@@ -12609,8 +12577,6 @@ snapshots:
       '@prisma/prisma-schema-wasm': 5.8.1-1.78caf6feeaed953168c64e15a249c3e9a033ebe2
       arg: 5.0.2
       prompts: 2.4.2
-
-  '@prisma/nextjs-monorepo-workaround-plugin@6.11.1': {}
 
   '@prisma/prisma-schema-wasm@5.22.0-44.605197351a3c8bdd595af2d2a9bc3025bca48ea2': {}
 
