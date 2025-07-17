@@ -10,7 +10,13 @@ catalogs:
       specifier: ^8.3.0
       version: 8.4.0
   prisma:
+    '@prisma/adapter-pg':
+      specifier: ^6.12.0
+      version: 6.12.0
     '@prisma/client':
+      specifier: ^6.12.0
+      version: 6.12.0
+    prisma:
       specifier: ^6.12.0
       version: 6.12.0
   react19:
@@ -20,6 +26,29 @@ catalogs:
     '@types/react-dom':
       specifier: ^19.0.2
       version: 19.1.6
+  remix:
+    '@remix-run/dev':
+      specifier: ^2.16.5
+      version: 2.16.8
+    '@remix-run/node':
+      specifier: ^2.16.5
+      version: 2.16.8
+    '@remix-run/react':
+      specifier: ^2.16.5
+      version: 2.16.8
+    '@remix-run/serve':
+      specifier: ^2.16.5
+      version: 2.16.8
+  tanstack-start:
+    '@tanstack/react-router':
+      specifier: ^1.121.0
+      version: 1.123.0
+    '@tanstack/react-router-devtools':
+      specifier: ^1.121.0
+      version: 1.123.0
+    '@tanstack/react-start':
+      specifier: ^1.121.0
+      version: 1.123.0
 
 overrides:
   next: 15.1.0
@@ -306,6 +335,9 @@ importers:
       '@premieroctet/next-admin':
         specifier: workspace:*
         version: link:../../packages/next-admin
+      '@prisma/client':
+        specifier: catalog:prisma
+        version: 6.12.0(prisma@6.12.0(typescript@5.8.3))(typescript@5.8.3)
       '@tanstack/react-router':
         specifier: catalog:tanstack-start
         version: 1.123.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
@@ -10855,7 +10887,7 @@ snapshots:
       '@babel/types': 7.27.7
       '@jridgewell/gen-mapping': 0.3.10
       '@jridgewell/trace-mapping': 0.3.27
-      jsesc: 3.0.2
+      jsesc: 3.1.0
 
   '@babel/helper-annotate-as-pure@7.27.3':
     dependencies:
@@ -19882,7 +19914,7 @@ snapshots:
 
   parse-json@8.3.0:
     dependencies:
-      '@babel/code-frame': 7.26.2
+      '@babel/code-frame': 7.27.1
       index-to-position: 1.1.0
       type-fest: 4.41.0
 
