@@ -2,6 +2,7 @@
   "name": "example",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,6 +19,7 @@
     "@heroicons/react": "^2.0.18",
     "@picocss/pico": "^1.5.7",
     "@premieroctet/next-admin": "workspace:*",
+    "@prisma/client": "catalog:prisma",
     "@tremor/react": "^3.2.2",
     "database": "workspace:*",
     "examples-common": "workspace:*",

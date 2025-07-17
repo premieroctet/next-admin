@@ -6,7 +6,8 @@
     "BASE_URL",
     "BASE_DOMAIN",
     "POSTGRES_PRISMA_URL",
-    "POSTGRES_URL_NON_POOLING"
+    "POSTGRES_URL_NON_POOLING",
+    "VERCEL"
   ],
   "tasks": {
     "start": {},
@@ -16,7 +17,7 @@
     "database#generate:client-only": {
       "dependsOn": ["@premieroctet/next-admin-generator-prisma#build"]
     },
-    "example#build": {
+    "database#build": {
       "dependsOn": ["database#generate"]
     },
     "build": {

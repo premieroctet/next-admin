@@ -4,12 +4,13 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev --port 3002",
-    "build": "vite build",
+    "build": "vite build && find node_modules/@prisma/client/runtime/ -type f -name '*.postgresql.wasm' -exec cp '{}' .output/server/node_modules/@prisma/client/runtime/ ';'",
     "start": "PORT=3002 node --env-file node_modules/database/prisma/.env .output/server/index.mjs",
     "clean": "rm -rf .output .vinxi"
   },
   "dependencies": {
     "@premieroctet/next-admin": "workspace:*",
+    "@prisma/client": "catalog:prisma",
     "@tanstack/react-router": "catalog:tanstack-start",
     "@tanstack/react-router-devtools": "catalog:tanstack-start",
     "@tanstack/react-start": "catalog:tanstack-start",

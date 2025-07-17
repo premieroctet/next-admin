@@ -1,9 +1,6 @@
 import { Page, expect } from "@playwright/test";
 import { ModelName } from "@premieroctet/next-admin";
-import { PrismaClient } from "database";
 import { models } from "./001-crud.spec";
-
-export const prisma = new PrismaClient();
 
 type DataTest = {
   [key in (typeof models)[number]]: {

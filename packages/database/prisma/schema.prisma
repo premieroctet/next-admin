@@ -2,19 +2,20 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider      = "prisma-client"
-  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
-  output        = "../generated/prisma"
+  provider        = "prisma-client"
+  output          = "../generated/prisma"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
 }
 
 generator libraryScopedClient {
-  provider = "prisma-client"
-  output   = "../../next-admin/src/generated/prisma"
+  provider        = "prisma-client"
+  output          = "../../next-admin/src/generated/prisma"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
 }
 
 generator legacyClient {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "rhel-openssl-1.0.x", "rhel-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  previewFeatures = ["queryCompiler", "driverAdapters"]
 }
 
 generator nextAdmin {

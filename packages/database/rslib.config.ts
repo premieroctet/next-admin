@@ -17,6 +17,17 @@ export default defineConfig({
   ],
   output: {
     externals: ["@prisma/client"],
+    minify: {
+      jsOptions: {
+        minimizerOptions: {
+          minify: false,
+          mangle: false,
+          format: {
+            comments: "all",
+          },
+        },
+      },
+    },
   },
   source: {
     entry: {

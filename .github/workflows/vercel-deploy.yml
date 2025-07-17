@@ -1,6 +1,7 @@
 name: Vercel deploy
 env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL: 1
 
 on:
   workflow_call:
