@@ -9,11 +9,11 @@ const withNextIntl = intlPlugin("./i18n.ts");
 const _require = createRequire(import.meta.url);
 
 const prismaClientRequire = path.relative(
-  fileURLToPath(import.meta.url),
+  process.cwd(),
   path.dirname(_require.resolve("@prisma/client"))
 );
 
-const monoRepoRoot = path.join(fileURLToPath(import.meta.url), "../../..");
+const monoRepoRoot = path.join(process.cwd(), "../..");
 
 const initialConfig = withNextIntl(
   withSuperjson({
@@ -37,9 +37,7 @@ const baseConfig = {
   outputFileTracingRoot: monoRepoRoot,
   outputFileTracingIncludes: {
     "/\\[locale\\]/admin/\\[\\[\\.\\.\\.nextadmin\\]\\]": [
-      path
-        .join(prismaClientRequire, "runtime/*.postgresql.wasm")
-        .replace("../", ""),
+      path.join(prismaClientRequire, "runtime/*.postgresql.wasm"),
     ],
   },
 };
@@ -48,7 +46,5 @@ const config = {
   ...initialConfig,
   ...baseConfig,
 };
-
-console.dir(config, { depth: null });
 
 export default config;
