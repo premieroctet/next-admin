@@ -36,9 +36,7 @@ const baseConfig = {
   transpilePackages: ["@premieroctet/next-admin"],
   outputFileTracingRoot: monoRepoRoot,
   outputFileTracingIncludes: {
-    "/\\[locale\\]/admin/\\[\\[\\.\\.\\.nextadmin\\]\\]": [
-      path.join(prismaClientRequire, "runtime/*.postgresql.wasm"),
-    ],
+    "**/*": [path.join(prismaClientRequire, "runtime/*.postgresql.wasm")],
   },
 };
 
