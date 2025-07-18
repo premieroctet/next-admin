@@ -5,6 +5,8 @@ import {
   FilterWrapper,
   GetMainLayoutPropsParams,
   GetNextAdminPropsParams,
+  LayoutConfig,
+  LayoutType,
   MainLayoutProps,
   ModelAction,
   ModelIcon,
@@ -15,7 +17,7 @@ import {
 import type { Prisma, PrismaClient } from "../types-prisma";
 import { getSchema, initGlobals } from "./globals";
 import { getClientActionsComponents, getCustomInputs } from "./options";
-import { getDataItem, getMappedDataList, mapModelFilters } from "./prisma";
+import { getDataItem, getMappedData, mapModelFilters } from "./prisma";
 import {
   applyVisiblePropertiesInSchema,
   getEnableToExecuteActions,
@@ -117,15 +119,33 @@ export async function getPropsFromParams({
 
   switch (params.length) {
     case Page.LIST: {
-      const { data, total, error, rawData } = await getMappedDataList({
+      const query = new URLSearchParams(searchParams as Record<string, string>);
+      let queryLayout = query?.get("layout") as LayoutType;
+
+      if (queryLayout && queryLayout !== "grid" && queryLayout !== "table") {
+        queryLayout = "table";
+      }
+
+      if (
+        queryLayout === "grid" &&
+        !options?.model?.[resource]?.list?.layout?.grid
+      ) {
+        queryLayout = "table";
+      }
+
+      const layout =
+        queryLayout ??
+        options?.model?.[resource]?.list?.layout?.default ??
+        "table";
+
+      const { data, total, error, rawData } = await getMappedData({
         prisma,
         resource,
         options,
-        searchParams: new URLSearchParams(
-          searchParams as Record<string, string>
-        ),
+        searchParams: query,
         context: { locale },
         appDir: isAppDir,
+        layout,
       });
 
       if (options?.model?.[resource]?.list?.filters) {
@@ -135,8 +155,8 @@ export async function getPropsFromParams({
         );
       }
 
-      const dataIds = data.map(
-        (item) => item[getModelIdProperty(resource)].value
+      const dataIds = data.map((item) =>
+        layout === "grid" ? item.id : item[getModelIdProperty(resource)].value
       );
 
       const fullfilledAction = await getEnableToExecuteActions<typeof resource>(
@@ -167,6 +187,7 @@ export async function getPropsFromParams({
         listFilterOptions:
           (clientOptions?.model?.[resource]?.list
             ?.filters as FilterWrapper<ModelName>[]) ?? null,
+        layout,
       };
     }
     case Page.EDIT: {

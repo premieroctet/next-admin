@@ -22,6 +22,8 @@ import { useRouterInternal } from "../hooks/useRouterInternal";
 import {
   AdminComponentProps,
   FilterWrapper,
+  GridData,
+  LayoutType,
   ListData,
   ListDataItem,
   ModelIcon,
@@ -51,10 +53,13 @@ import {
   SelectItem,
   SelectTrigger,
 } from "./radix/Select";
+import DataGrid from "./DataGrid";
+import LayoutSwitch from "./LayoutSwitch";
+import ListActionsDropdown from "./ListActionsDropdown";
 
 export type ListProps = {
   resource: ModelName;
-  data: ListData<ModelName>;
+  data: ListData<ModelName> | GridData[];
   total: number;
   resourcesIdProperty: Record<ModelName, string>;
   title: string;
@@ -64,6 +69,7 @@ export type ListProps = {
   clientActionsComponents?: AdminComponentProps["dialogComponents"];
   rawData: any[];
   listFilterOptions?: Array<FilterWrapper<ModelName>>;
+  layout: LayoutType;
 };
 
 const itemsPerPageSizes = [10, 25, 50, 100];
@@ -80,6 +86,7 @@ function List({
   clientActionsComponents,
   rawData,
   listFilterOptions,
+  layout,
 }: ListProps) {
   const { router, query } = useRouterInternal();
   const [isPending, startTransition] = useTransition();
@@ -109,6 +116,7 @@ function List({
     sortDirection,
     rawData,
   });
+  const supportsGridLayout = modelOptions?.list?.layout?.grid;
 
   const allListSizes = useMemo(() => {
     if (modelDefaultListSize) {
@@ -187,53 +195,16 @@ function List({
     cell: ({ row }) => {
       const idProperty = resourcesIdProperty[resource];
 
-      if (!hasDeletePermission) return;
-
       return (
-        <Dropdown>
-          <DropdownTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="hover:bg-nextadmin-background-emphasis !px-2 py-2"
-            >
-              <EllipsisVerticalIcon className="text-nextadmin-content-default dark:text-dark-nextadmin-content-default h-6 w-6" />
-            </Button>
-          </DropdownTrigger>
-          <DropdownBody>
-            <DropdownContent
-              side="left"
-              align="start"
-              sideOffset={5}
-              className="z-50 space-y-1.5 px-2 py-2"
-            >
-              {actions?.map((action) => {
-                return (
-                  <ActionDropdownItem
-                    key={action.id}
-                    action={action}
-                    resourceIds={[row.original[idProperty].value as string]}
-                    resource={resource}
-                  />
-                );
-              })}
-              <DropdownItem
-                className={twMerge(
-                  clsx(
-                    "flex cursor-pointer items-center gap-2 rounded-md px-2 py-1 text-red-700 hover:bg-red-50 dark:text-red-400"
-                  )
-                )}
-                onClick={(evt) => {
-                  evt.stopPropagation();
-                  deleteItems([row.original[idProperty].value as string]);
-                }}
-              >
-                <TrashIcon className="h-5 w-5" />
-                {t("list.row.actions.delete.label")}
-              </DropdownItem>
-            </DropdownContent>
-          </DropdownBody>
-        </Dropdown>
+        <ListActionsDropdown
+          actions={actions}
+          onDelete={() =>
+            deleteItems([row.original[idProperty].value as string])
+          }
+          resource={resource}
+          canDelete={hasDeletePermission}
+          id={row.original[idProperty].value as string}
+        />
       );
     },
   };
@@ -251,9 +222,13 @@ function List({
 
     const idField = resourcesIdProperty[resource];
 
-    return selectedRows.map((row) => row[idField].value as string | number) as
-      | string[]
-      | number[];
+    return selectedRows.map((row) =>
+      layout === "grid"
+        ? row.id
+        : ((row as ListData<ModelName>[number])[idField].value as
+            | string
+            | number)
+    ) as string[] | number[];
   };
 
   const handleOrderChange = modelOptions?.list?.orderField
@@ -261,7 +236,7 @@ function List({
         startOrderTransition(async () => {
           const idField = resourcesIdProperty[resource];
           const newData = reorderData(
-            optimisticData,
+            optimisticData as ListData<ModelName>,
             value.currentId,
             value.moveOverId,
             modelOptions?.list?.orderField!,
@@ -299,19 +274,35 @@ function List({
         <div className="bg-nextadmin-background-default dark:bg-dark-nextadmin-background-default max-w-full p-4 align-middle sm:p-8">
           <div className="-mt-2 mb-2 space-y-4 sm:-mt-4 sm:mb-4">
             <Message />
-            <Filters filters={listFilterOptions!} />
+            <div className="flex flex-row items-center justify-between gap-4">
+              <Filters filters={listFilterOptions!} />
+              {supportsGridLayout && <LayoutSwitch selectedLayout={layout} />}
+            </div>
           </div>
-          <DataTable
-            resource={resource}
-            data={optimisticData}
-            columns={[checkboxColumn, ...columns, actionsColumn]}
-            resourcesIdProperty={resourcesIdProperty}
-            rowSelection={rowSelection}
-            setRowSelection={setRowSelection}
-            icon={icon}
-            onOrderChange={handleOrderChange!}
-            orderField={modelOptions?.list?.orderField!}
-          />
+          {layout === "table" && (
+            <DataTable
+              resource={resource}
+              data={optimisticData as ListData<ModelName>}
+              columns={[checkboxColumn, ...columns, actionsColumn]}
+              resourcesIdProperty={resourcesIdProperty}
+              rowSelection={rowSelection}
+              setRowSelection={setRowSelection}
+              icon={icon}
+              onOrderChange={handleOrderChange!}
+              orderField={modelOptions?.list?.orderField!}
+            />
+          )}
+          {layout === "grid" && (
+            <DataGrid
+              data={data as GridData[]}
+              resource={resource}
+              actions={actions}
+              canDelete={hasDeletePermission}
+              onDelete={(id) => deleteItems([id])}
+              selectedItems={rowSelection}
+              setSelectedItems={setRowSelection}
+            />
+          )}
           {optimisticData.length ? (
             <div className="flex flex-1 flex-wrap items-center justify-between gap-2 py-4">
               <div>

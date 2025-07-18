@@ -11,7 +11,6 @@ const Link = ({ children, onClick, ...props }: Props) => {
   return (
     <a
       onClick={(e) => {
-        e.persist();
         onClick?.(e);
 
         if ((e.target as HTMLAnchorElement).target === "_blank") {
@@ -21,6 +20,7 @@ const Link = ({ children, onClick, ...props }: Props) => {
 
         if (e.defaultPrevented) return;
 
+        e.preventDefault();
         router.push({
           pathname: props.href,
         });

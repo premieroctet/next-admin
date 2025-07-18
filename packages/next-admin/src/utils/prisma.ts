@@ -7,6 +7,9 @@ import type {
   Field,
   Filter,
   FilterWrapper,
+  GridData,
+  LayoutConfig,
+  LayoutType,
   ListOptions,
   Model,
   ModelName,
@@ -432,6 +435,7 @@ type GetMappedDataListParams = {
   searchParams: URLSearchParams;
   context: NextAdminContext;
   appDir?: boolean;
+  layout?: LayoutType;
 };
 
 type OptionsFromResourceParams = {
@@ -689,9 +693,38 @@ export const mapDataList = ({
   return data;
 };
 
-export const getMappedDataList = async ({
+export const mapDataGrid = async ({
+  context,
+  rawData,
+  model,
+  options,
+}: {
+  context: NextAdminContext;
+  rawData: any[];
+  model: ModelName;
+  options?: NextAdminOptions;
+}): Promise<GridData[]> => {
+  const listOptions = options?.model?.[model]?.list;
+  return Promise.all(
+    rawData.map(async (data) => {
+      return {
+        id: data[getModelIdProperty(model)],
+        thumbnail:
+          (await listOptions?.layout?.grid?.thumbnail({
+            row: data,
+            ...context,
+          })) ?? "",
+        title:
+          listOptions?.layout?.grid?.title?.({ row: data, ...context }) ?? "",
+      };
+    })
+  );
+};
+
+export const getMappedData = async ({
   context,
   appDir = false,
+  layout,
   ...args
 }: GetMappedDataListParams) => {
   const { data: fetchData, total, error } = await fetchDataList(args);
@@ -699,7 +732,15 @@ export const getMappedDataList = async ({
   const rawData = cloneDeep(fetchData);
 
   return {
-    data: mapDataList({ context, appDir, fetchData, ...args }),
+    data:
+      layout === "grid"
+        ? await mapDataGrid({
+            context,
+            rawData,
+            model: args.resource,
+            options: args.options,
+          })
+        : mapDataList({ context, appDir, fetchData, ...args }),
     total,
     error,
     rawData: extractSerializable(rawData),
