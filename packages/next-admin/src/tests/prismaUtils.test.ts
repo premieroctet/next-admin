@@ -2,7 +2,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 import cloneDeep from "lodash.clonedeep";
 import { afterEach, describe, expect, it } from "vitest";
 import { mockReset } from "vitest-mock-extended";
-import { getMappedDataList, optionsFromResource } from "../utils/prisma";
+import { getMappedData, optionsFromResource } from "../utils/prisma";
 import { extractSerializable } from "../utils/tools";
 import { options, prismaMock } from "./singleton";
 
@@ -40,13 +40,14 @@ describe("getMappedDataList", () => {
 
     prismaMock.post.count.mockResolvedValue(2);
 
-    const result = await getMappedDataList({
+    const result = await getMappedData({
       prisma: prismaMock,
       resource: "Post",
       options,
       searchParams: new URLSearchParams(),
       context: {},
       appDir: false,
+      layout: "table",
     });
 
     expect(result).toEqual({
