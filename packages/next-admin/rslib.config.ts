@@ -1,7 +1,6 @@
 import { RsbuildPluginAPI } from "@rsbuild/core";
 import { pluginReact } from "@rsbuild/plugin-react";
 import { defineConfig } from "@rslib/core";
-import { glob } from "glob";
 import { rmSync } from "node:fs";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -40,12 +39,18 @@ export default defineConfig({
         to: path.resolve(basePath, "dist/theme.css"),
       },
     ],
+    cleanDistPath: {
+      keep: [/schema\.cjs/, /schema\.mjs/],
+    },
   },
   source: {
     entry: {
-      index: glob.sync("src/**/*.{ts,tsx}", {
-        ignore: ["**/tests/*", "**/*.test.{ts,tsx}", "**/generated/*"],
-      }),
+      index: [
+        "src/**/*.{ts,tsx}",
+        "!**/tests/*",
+        "!**/*.test.{ts,tsx}",
+        "!**/generated/*",
+      ],
     },
     /**
      * TODO: try to get rid of this at some point.

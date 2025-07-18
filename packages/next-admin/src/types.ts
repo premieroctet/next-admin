@@ -455,6 +455,38 @@ export type VirtualField<T extends ModelName> = {
     }
 );
 
+export type GridLayoutConfig<T extends ModelName> = {
+  /**
+   * the item's thumbnail. If it's not a valid image, a fallback icon will be used.
+   */
+  thumbnail: (context: NextAdminContext<Model<T>>) => string | Promise<string>;
+  /**
+   * the item's title
+   */
+  title?: (context: NextAdminContext<Model<T>>) => string;
+};
+
+export type LayoutType = "table" | "grid";
+
+export type LayoutConfig<T extends ModelName> = {
+  /**
+   * sets the default layout that is displayed when accessing the list page.
+   *
+   * @default table
+   */
+  default?: LayoutType;
+  /**
+   * an object to configure the items in grid layout
+   */
+  grid?: GridLayoutConfig<T>;
+};
+
+export type GridData = {
+  id: string | number;
+  thumbnail: string;
+  title?: string;
+};
+
 export type ListOptions<T extends ModelName> = {
   /**
    * an url to export the list data as CSV.
@@ -501,6 +533,10 @@ export type ListOptions<T extends ModelName> = {
    * an optional number indicating the default amount of items in the list
    */
   defaultListSize?: number;
+  /**
+   * an optional object to configure the list layouts
+   */
+  layout?: LayoutConfig<T>;
 };
 
 export type RelationshipsRawData = Record<string, any>;
@@ -935,7 +971,7 @@ export type AdminComponentProps = {
   basePath: string;
   apiBasePath: string;
   schema: Schema;
-  data?: ListData<ModelName>;
+  data?: ListData<ModelName> | GridData[];
   rawData?: any[];
   relationshipsRawData?: RelationshipsRawData;
   listFilterOptions?: Array<FilterWrapper<ModelName>>;
@@ -985,6 +1021,7 @@ export type AdminComponentProps = {
     string,
     React.ReactElement<ClientActionDialogContentProps<ModelName>>
   > | null;
+  layout?: LayoutType;
 };
 
 export type AppRouterComponentProps = AdminComponentProps;

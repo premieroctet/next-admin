@@ -233,6 +233,51 @@ This property determines how your data is displayed in the [list View](/docs/glo
         </>
       ),
     },
+    {
+      name: "layout",
+      type: "Object",
+      description: (
+        <>
+          layout config for the list page. Useful to configure a grid view.
+        </>
+      ),
+    },
+    {
+      name: "layout.default",
+      type: "String",
+      description: (
+        <>
+          the default layout to use for the list view. It is optional. Either "table" or "grid". Defaults to "table".
+        </>
+      ),
+    },
+    {
+      name: "layout.grid",
+      type: "Object",
+      description: (
+        <>
+          an object to configure each items of the grid layout
+        </>
+      ),
+    },
+    {
+      name: "layout.grid.thumbnail",
+      type: "Function",
+      description: (
+        <>
+          A function that takes a <a href="#nextadmin-context">NextAdmin context</a> as parameter and returns a string representing the thumbnail URL. Can be a promise.
+        </>
+      ),
+    },
+    {
+      name: "layout.grid.title",
+      type: "Function",
+      description: (
+        <>
+          A function that takes a <a href="#nextadmin-context">NextAdmin context</a> as parameter and returns a string representing the title of the item.
+        </>
+      ),
+    },
   ]}
 />
 <Callout type="info">

@@ -38,6 +38,7 @@ export function NextAdmin({
   rawData,
   relationshipsRawData,
   listFilterOptions,
+  layout,
 }: AdminComponentProps & CustomUIProps) {
   if (!isAppDir && !options) {
     throw new Error(
@@ -77,6 +78,7 @@ export function NextAdmin({
           clientActionsComponents={dialogComponents}
           rawData={rawData!}
           listFilterOptions={listFilterOptions}
+          layout={layout!}
         />
       );
     }

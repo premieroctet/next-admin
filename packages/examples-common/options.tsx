@@ -38,6 +38,13 @@ export const createOptions = (
         display: ["id", "name", "email", "posts", "role", "birthDate"],
         search: ["name", "email", "role"],
         copy: ["email"],
+        layout: {
+          default: "table",
+          grid: {
+            title: ({ row }) => `${row?.name} (${row?.email})`,
+            thumbnail: ({ row }) => "https://picsum.photos/200",
+          },
+        },
         filters: [
           {
             name: "is Admin",
