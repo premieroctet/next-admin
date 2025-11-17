@@ -8,16 +8,12 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { createServerRootRoute } from '@tanstack/react-start/server'
-
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AdminCustomRouteImport } from './routes/admin.custom'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
-import { ServerRoute as ApiUsersExportServerRouteImport } from './routes/api/users.export'
-import { ServerRoute as ApiPostsExportServerRouteImport } from './routes/api/posts.export'
-import { ServerRoute as ApiAdminSplatServerRouteImport } from './routes/api/admin.$'
-
-const rootServerRouteImport = createServerRootRoute()
+import { Route as ApiUsersExportRouteImport } from './routes/api/users.export'
+import { Route as ApiPostsExportRouteImport } from './routes/api/posts.export'
+import { Route as ApiAdminSplatRouteImport } from './routes/api/admin.$'
 
 const AdminCustomRoute = AdminCustomRouteImport.update({
   id: '/admin/custom',
@@ -29,75 +25,74 @@ const AdminSplatRoute = AdminSplatRouteImport.update({
   path: '/admin/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiUsersExportServerRoute = ApiUsersExportServerRouteImport.update({
+const ApiUsersExportRoute = ApiUsersExportRouteImport.update({
   id: '/api/users/export',
   path: '/api/users/export',
-  getParentRoute: () => rootServerRouteImport,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPostsExportServerRoute = ApiPostsExportServerRouteImport.update({
+const ApiPostsExportRoute = ApiPostsExportRouteImport.update({
   id: '/api/posts/export',
   path: '/api/posts/export',
-  getParentRoute: () => rootServerRouteImport,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminSplatServerRoute = ApiAdminSplatServerRouteImport.update({
+const ApiAdminSplatRoute = ApiAdminSplatRouteImport.update({
   id: '/api/admin/$',
   path: '/api/admin/$',
-  getParentRoute: () => rootServerRouteImport,
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/admin/$': typeof AdminSplatRoute
   '/admin/custom': typeof AdminCustomRoute
+  '/api/admin/$': typeof ApiAdminSplatRoute
+  '/api/posts/export': typeof ApiPostsExportRoute
+  '/api/users/export': typeof ApiUsersExportRoute
 }
 export interface FileRoutesByTo {
   '/admin/$': typeof AdminSplatRoute
   '/admin/custom': typeof AdminCustomRoute
+  '/api/admin/$': typeof ApiAdminSplatRoute
+  '/api/posts/export': typeof ApiPostsExportRoute
+  '/api/users/export': typeof ApiUsersExportRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/admin/$': typeof AdminSplatRoute
   '/admin/custom': typeof AdminCustomRoute
+  '/api/admin/$': typeof ApiAdminSplatRoute
+  '/api/posts/export': typeof ApiPostsExportRoute
+  '/api/users/export': typeof ApiUsersExportRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/admin/$' | '/admin/custom'
+  fullPaths:
+    | '/admin/$'
+    | '/admin/custom'
+    | '/api/admin/$'
+    | '/api/posts/export'
+    | '/api/users/export'
   fileRoutesByTo: FileRoutesByTo
-  to: '/admin/$' | '/admin/custom'
-  id: '__root__' | '/admin/$' | '/admin/custom'
+  to:
+    | '/admin/$'
+    | '/admin/custom'
+    | '/api/admin/$'
+    | '/api/posts/export'
+    | '/api/users/export'
+  id:
+    | '__root__'
+    | '/admin/$'
+    | '/admin/custom'
+    | '/api/admin/$'
+    | '/api/posts/export'
+    | '/api/users/export'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AdminSplatRoute: typeof AdminSplatRoute
   AdminCustomRoute: typeof AdminCustomRoute
-}
-export interface FileServerRoutesByFullPath {
-  '/api/admin/$': typeof ApiAdminSplatServerRoute
-  '/api/posts/export': typeof ApiPostsExportServerRoute
-  '/api/users/export': typeof ApiUsersExportServerRoute
-}
-export interface FileServerRoutesByTo {
-  '/api/admin/$': typeof ApiAdminSplatServerRoute
-  '/api/posts/export': typeof ApiPostsExportServerRoute
-  '/api/users/export': typeof ApiUsersExportServerRoute
-}
-export interface FileServerRoutesById {
-  __root__: typeof rootServerRouteImport
-  '/api/admin/$': typeof ApiAdminSplatServerRoute
-  '/api/posts/export': typeof ApiPostsExportServerRoute
-  '/api/users/export': typeof ApiUsersExportServerRoute
-}
-export interface FileServerRouteTypes {
-  fileServerRoutesByFullPath: FileServerRoutesByFullPath
-  fullPaths: '/api/admin/$' | '/api/posts/export' | '/api/users/export'
-  fileServerRoutesByTo: FileServerRoutesByTo
-  to: '/api/admin/$' | '/api/posts/export' | '/api/users/export'
-  id: '__root__' | '/api/admin/$' | '/api/posts/export' | '/api/users/export'
-  fileServerRoutesById: FileServerRoutesById
-}
-export interface RootServerRouteChildren {
-  ApiAdminSplatServerRoute: typeof ApiAdminSplatServerRoute
-  ApiPostsExportServerRoute: typeof ApiPostsExportServerRoute
-  ApiUsersExportServerRoute: typeof ApiUsersExportServerRoute
+  ApiAdminSplatRoute: typeof ApiAdminSplatRoute
+  ApiPostsExportRoute: typeof ApiPostsExportRoute
+  ApiUsersExportRoute: typeof ApiUsersExportRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -116,30 +111,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-  }
-}
-declare module '@tanstack/react-start/server' {
-  interface ServerFileRoutesByPath {
     '/api/users/export': {
       id: '/api/users/export'
       path: '/api/users/export'
       fullPath: '/api/users/export'
-      preLoaderRoute: typeof ApiUsersExportServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiUsersExportRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/posts/export': {
       id: '/api/posts/export'
       path: '/api/posts/export'
       fullPath: '/api/posts/export'
-      preLoaderRoute: typeof ApiPostsExportServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiPostsExportRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/admin/$': {
       id: '/api/admin/$'
       path: '/api/admin/$'
       fullPath: '/api/admin/$'
-      preLoaderRoute: typeof ApiAdminSplatServerRouteImport
-      parentRoute: typeof rootServerRouteImport
+      preLoaderRoute: typeof ApiAdminSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -147,15 +138,19 @@ declare module '@tanstack/react-start/server' {
 const rootRouteChildren: RootRouteChildren = {
   AdminSplatRoute: AdminSplatRoute,
   AdminCustomRoute: AdminCustomRoute,
+  ApiAdminSplatRoute: ApiAdminSplatRoute,
+  ApiPostsExportRoute: ApiPostsExportRoute,
+  ApiUsersExportRoute: ApiUsersExportRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-const rootServerRouteChildren: RootServerRouteChildren = {
-  ApiAdminSplatServerRoute: ApiAdminSplatServerRoute,
-  ApiPostsExportServerRoute: ApiPostsExportServerRoute,
-  ApiUsersExportServerRoute: ApiUsersExportServerRoute,
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
 }
-export const serverRouteTree = rootServerRouteImport
-  ._addFileChildren(rootServerRouteChildren)
-  ._addFileTypes<FileServerRouteTypes>()

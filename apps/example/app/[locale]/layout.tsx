@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { PropsWithChildren, use } from "react";
-import "../../styles.css";
+import "../globals.css";
 
 type ParamsProps = Promise<{
   locale: "en" | "fr";

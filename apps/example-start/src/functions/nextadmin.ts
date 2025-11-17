@@ -9,7 +9,7 @@ import { options } from "../options";
 import prisma from "../prisma";
 
 export const getNextAdminPropsFn = createServerFn()
-  .validator((data: Record<string, string>) => {
+  .inputValidator((data: Record<string, string>) => {
     return {
       url: data.url as string,
       splat: data.splat as string,
@@ -56,7 +56,7 @@ export const getCategories = createServerFn().handler(async () => {
 });
 
 export const publishPosts = createServerFn()
-  .validator((data) => {
+  .inputValidator((data) => {
     if (!data) {
       throw json({ error: "Missing data" }, { status: 422 });
     }
@@ -71,7 +71,7 @@ export const publishPosts = createServerFn()
   });
 
 export const addTag = createServerFn()
-  .validator((data) => {
+  .inputValidator((data) => {
     if (!data) {
       throw json({ error: "Missing data" }, { status: 422 });
     }

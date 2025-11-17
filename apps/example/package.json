@@ -11,9 +11,6 @@
     "test:e2e": "playwright test",
     "clean": "rm -rf .next"
   },
-  "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
-  },
   "dependencies": {
     "@faker-js/faker": "^9.4.0",
     "@heroicons/react": "^2.0.18",
@@ -34,6 +31,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.37.0",
+    "@tailwindcss/postcss": "catalog:tailwind",
     "@types/node": "^17.0.12",
     "@types/react": "catalog:react19",
     "@types/react-datepicker": "^4.19.3",
@@ -41,8 +39,7 @@
     "autoprefixer": "^10.4.14",
     "eslint": "7.32.0",
     "eslint-config-custom": "workspace:*",
-    "postcss": "^8.4.24",
-    "tailwindcss": "^3.3.2",
+    "tailwindcss": "catalog:tailwind",
     "tsconfig": "workspace:*",
     "typescript": "^5.1.6"
   }

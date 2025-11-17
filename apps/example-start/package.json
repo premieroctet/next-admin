@@ -22,13 +22,12 @@
     "react-dom": "catalog:react19"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.1.4",
-    "@tailwindcss/vite": "^4.1.4",
+    "@tailwindcss/postcss": "catalog:tailwind",
+    "@tailwindcss/vite": "catalog:tailwind",
     "@types/react": "catalog:react19",
     "@types/react-dom": "catalog:react19",
-    "@vitejs/plugin-react": "^4.4.1",
-    "postcss": "^8.5.3",
-    "tailwindcss": "^4.1.4",
+    "@vitejs/plugin-react": "^4.6.0",
+    "tailwindcss": "catalog:tailwind",
     "typescript": "^5.8.3",
     "vite": "^6.0.0",
     "vite-tsconfig-paths": "^5.1.4"
