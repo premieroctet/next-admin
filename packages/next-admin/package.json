@@ -108,9 +108,14 @@
       }
     },
     "./inputs": {
-      "import": "./dist/inputs/index.js",
-      "types": "./dist/inputs/index.d.ts",
-      "require": "./dist/inputs/index.js"
+      "import": {
+        "types": "./dist/components/inputs/index.d.ts",
+        "default": "./dist/components/inputs/index.mjs"
+      },
+      "require": {
+        "types": "./dist/components/inputs/index.d.ts",
+        "default": "./dist/components/inputs/index.js"
+      }
     },
     "./utils": {
       "import": {
