@@ -2,20 +2,17 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider        = "prisma-client"
-  output          = "../generated/prisma"
-  previewFeatures = ["queryCompiler", "driverAdapters"]
+  provider = "prisma-client"
+  output   = "../generated/prisma"
 }
 
 generator libraryScopedClient {
-  provider        = "prisma-client"
-  output          = "../../next-admin/src/generated/prisma"
-  previewFeatures = ["queryCompiler", "driverAdapters"]
+  provider = "prisma-client"
+  output   = "../../next-admin/src/generated/prisma"
 }
 
 generator legacyClient {
-  provider        = "prisma-client-js"
-  previewFeatures = ["queryCompiler", "driverAdapters"]
+  provider = "prisma-client-js"
 }
 
 generator nextAdmin {
