@@ -59,13 +59,13 @@ export const createOptions = (
           },
         ],
         fields: {
-          role: {
-            formatter: (role) => {
-              return (
-                <strong className="dark:text-white">{role.toString()}</strong>
-              );
-            },
-          },
+          // role: {
+          //   formatter: (role) => {
+          //     return (
+          //       <strong className="dark:text-white">{role.toString()}</strong>
+          //     );
+          //   },
+          // },
           birthDate: {
             formatter: (date, context) => {
               return new Date(date as unknown as string)

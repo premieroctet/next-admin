@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge";
 import { CustomInputProps } from "../../../types";
 import BaseInput from "../BaseInput";
 import DndItem from "../DndItem";
+import { getClonableElement } from "../../../utils/react19-compat";
 
 type Props = {
   value: string;
@@ -24,14 +25,17 @@ const ScalarArrayFieldItem = ({
   scalarType,
   customInput = <BaseInput />,
 }: Props) => {
-  const renderInput = () => cloneElement(customInput, {
-    ...customInput.props,
-    value,
-    onChange: (evt: ChangeEvent<HTMLInputElement>) => onChange(evt.target.value),
-    disabled,
-    className: twMerge("w-full", customInput.props.className),
-    type: scalarType === "number" ? "number" : "text",
-  });
+  const clonableElement = getClonableElement(customInput);
+  const renderInput = () =>
+    cloneElement(clonableElement, {
+      ...clonableElement.props,
+      value,
+      onChange: (evt: ChangeEvent<HTMLInputElement>) =>
+        onChange(evt.target.value),
+      disabled,
+      className: twMerge("w-full", clonableElement.props.className),
+      type: scalarType === "number" ? "number" : "text",
+    });
 
   return (
     <DndItem

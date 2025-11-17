@@ -38,6 +38,7 @@ const baseConfig = {
   outputFileTracingIncludes: {
     "**/*": [path.join(prismaClientRequire, "runtime/*.postgresql.wasm")],
   },
+  serverExternalPackages: ["examples-common"],
 };
 
 const config = {

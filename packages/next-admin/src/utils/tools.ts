@@ -43,7 +43,7 @@ export const extractSerializable = <T>(obj: T, isAppDir?: boolean): T => {
     return obj;
   } else if (typeof obj === "object") {
     if (isAppDir && React.isValidElement(obj)) {
-      return obj;
+      return null as unknown as T;
     }
     let newObj = {} as T;
     for (const key in obj) {

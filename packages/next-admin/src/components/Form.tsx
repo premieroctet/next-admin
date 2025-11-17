@@ -70,6 +70,7 @@ import {
   TooltipTrigger,
 } from "./radix/Tooltip";
 import { getSubmitButtonOptions } from "../utils/rjsf";
+import { getClonableElement } from "../utils/react19-compat";
 
 const RichTextField = lazy(() => import("./inputs/RichText/RichTextField"));
 
@@ -305,8 +306,8 @@ const Form = ({
       ArrayField: (props: FieldProps) => {
         const customInput = customInputs?.[props.name as Field<ModelName>];
         const improvedCustomInput = customInput
-          ? cloneElement(customInput, {
-              ...customInput.props,
+          ? cloneElement(getClonableElement(customInput), {
+              ...getClonableElement(customInput).props,
               mode: edit ? "edit" : "create",
             })
           : undefined;
@@ -419,9 +420,9 @@ const Form = ({
         onChange(val === "" ? options.emptyValue || "" : val);
       };
 
-      const customInput = customInputs?.[props.name as Field<ModelName>];
+      let customInput = customInputs?.[props.name as Field<ModelName>];
       if (customInput) {
-        return cloneElement(customInput, {
+        return cloneElement(getClonableElement(customInput), {
           value: props.value,
           onChange: onChangeOverride || onTextChange,
           readonly,

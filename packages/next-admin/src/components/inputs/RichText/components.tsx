@@ -10,6 +10,7 @@ import {
   toggleBlock,
   toggleMark,
 } from "./utils";
+import { getClonableElement } from "../../../utils/react19-compat";
 
 interface BaseProps {
   className?: string;
@@ -67,7 +68,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         onMouseDown={handleMouseDown}
         onClick={(event) => event.preventDefault()}
       >
-        {React.cloneElement(icon, {
+        {React.cloneElement(getClonableElement(icon), {
           className:
             "fill-nextadmin-content-emphasis dark:fill-dark-nextadmin-content-emphasis",
         })}

@@ -1,6 +1,6 @@
 import { Transition, TransitionChild } from "@headlessui/react";
 import clsx from "clsx";
-import { cloneElement, Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, cloneElement } from "react";
 import { twMerge } from "tailwind-merge";
 import Loader from "../assets/icons/Loader";
 import { useConfig } from "../context/ConfigContext";
@@ -20,6 +20,7 @@ import {
   DialogTitle,
 } from "./radix/Dialog";
 import { VisuallyHiddenRoot } from "./radix/VisuallyHidden";
+import { getClonableElement } from "../utils/react19-compat";
 
 type Props<M extends ModelName> = {
   resource: M;
@@ -112,7 +113,7 @@ const ClientActionDialog = <M extends ModelName>({
                 </div>
               )}
               {data &&
-                cloneElement(action.component, {
+                cloneElement(getClonableElement(action.component), {
                   data: data,
                   resource,
                   resourceIds,
