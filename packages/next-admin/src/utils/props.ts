@@ -288,7 +288,7 @@ export const getMainLayoutProps = async ({
     {} as { [key in Prisma.ModelName]: ModelIcon }
   );
 
-  let translations = undefined;
+  let translations = null;
 
   if (getMessages) {
     const messages = await getMessages(locale!);
