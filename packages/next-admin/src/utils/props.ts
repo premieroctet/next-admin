@@ -54,12 +54,15 @@ export async function getPropsFromParams({
     sidebar,
     resourcesIcons,
     externalLinks,
+    translations,
   } = await getMainLayoutProps({
     basePath,
     apiBasePath,
     options,
     params,
     isAppDir,
+    getMessages,
+    locale,
   });
 
   const clientOptions: NextAdminOptions | undefined =
@@ -79,6 +82,7 @@ export async function getPropsFromParams({
     externalLinks,
     locale: locale ?? null,
     schema: getSchema(),
+    translations,
   };
 
   if (!params) return defaultProps;
@@ -91,25 +95,6 @@ export async function getPropsFromParams({
     const { action: _, ...actionRest } = action;
     return actionRest;
   });
-
-  if (getMessages) {
-    const messages = await getMessages(locale!);
-    const dottedProperty = {} as any;
-    const dot = (obj: object, prefix = "") => {
-      Object.entries(obj).forEach(([key, value]) => {
-        if (typeof value === "object") {
-          dot(value, `${prefix}${key}.`);
-        } else {
-          dottedProperty[`${prefix}${key}`] = value;
-        }
-      });
-    };
-    dot(messages as object);
-    defaultProps = {
-      ...defaultProps,
-      translations: dottedProperty,
-    };
-  }
 
   const dialogActionsComponents = isAppDir
     ? getClientActionsComponents(resource, options)
@@ -255,6 +240,8 @@ export const getMainLayoutProps = async ({
   options,
   params,
   isAppDir = true,
+  getMessages,
+  locale,
 }: GetMainLayoutPropsParams): Promise<MainLayoutProps> => {
   if (params !== undefined && !Array.isArray(params)) {
     throw new Error(
@@ -301,6 +288,24 @@ export const getMainLayoutProps = async ({
     {} as { [key in Prisma.ModelName]: ModelIcon }
   );
 
+  let translations = null;
+
+  if (getMessages) {
+    const messages = await getMessages(locale!);
+    const dottedProperty = {} as any;
+    const dot = (obj: object, prefix = "") => {
+      Object.entries(obj).forEach(([key, value]) => {
+        if (typeof value === "object") {
+          dot(value, `${prefix}${key}.`);
+        } else {
+          dottedProperty[`${prefix}${key}`] = value;
+        }
+      });
+    };
+    dot(messages as object);
+    translations = dottedProperty;
+  }
+
   return {
     resources,
     resource,
@@ -316,5 +321,6 @@ export const getMainLayoutProps = async ({
     options: extractSerializable(options, isAppDir),
     resourcesIdProperty: resourcesIdProperty,
     schema: getSchema(),
+    translations,
   };
 };
