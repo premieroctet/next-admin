@@ -53,7 +53,7 @@ export default async function AdminPage(props: PromisePageProps) {
         },
         logout: logoutRequest,
       }}
-      pageLoader={<PageLoader />}
+      pageLoader={<PageLoader key="loader" />}
     />
   );
 }

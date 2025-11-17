@@ -24,7 +24,7 @@
     "database": "workspace:*",
     "examples-common": "workspace:*",
     "next": "catalog:next",
-    "next-intl": "^3.3.2",
+    "next-intl": "^4.3.5",
     "next-superjson": "^1.0.7",
     "next-superjson-plugin": "^0.6.3",
     "react": "catalog:react19",

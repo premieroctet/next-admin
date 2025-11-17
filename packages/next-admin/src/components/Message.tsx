@@ -8,6 +8,7 @@ import {
 import clsx from "clsx";
 import { cloneElement, useEffect } from "react";
 import { useMessage } from "../context/MessageContext";
+import { getClonableElement } from "../utils/react19-compat";
 
 export const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
   const { message, hideMessage } = useMessage();
@@ -50,7 +51,9 @@ export const Message = (props: React.HTMLAttributes<HTMLDivElement>) => {
             {!message.component ? (
               <p>{message.message}</p>
             ) : (
-              cloneElement(message.component, { message: message.message })
+              cloneElement(getClonableElement(message.component), {
+                message: message.message,
+              })
             )}
           </div>
         </div>

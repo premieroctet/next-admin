@@ -21,7 +21,7 @@ catalogs:
     "@remix-run/serve": ^2.16.5
 
   next:
-    next: ^15.1.0
+    next: ^16
 
   prisma:
     prisma: ^6.12.0
@@ -30,3 +30,6 @@ catalogs:
 
 catalog:
   react-datepicker: ^8.3.0
+
+overrides:
+  next: ^16

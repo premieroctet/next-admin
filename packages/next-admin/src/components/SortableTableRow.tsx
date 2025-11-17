@@ -1,12 +1,8 @@
-import {
-  useSortable
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import React, { ComponentPropsWithRef } from 'react';
-import {
-  TableCell,
-  TableRow
-} from "./radix/Table";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import React, { ComponentPropsWithRef } from "react";
+import { TableCell, TableRow } from "./radix/Table";
+import { getClonableElement } from "../utils/react19-compat";
 
 interface SortableTableRowProps {
   id: string;
@@ -16,7 +12,13 @@ interface SortableTableRowProps {
   grabElement?: React.ReactNode;
 }
 
-const SortableTableRow = ({ id, children, onClick, className, grabElement }: SortableTableRowProps) => {
+const SortableTableRow = ({
+  id,
+  children,
+  onClick,
+  className,
+  grabElement,
+}: SortableTableRowProps) => {
   const {
     attributes,
     listeners,
@@ -39,10 +41,18 @@ const SortableTableRow = ({ id, children, onClick, className, grabElement }: Sor
       onClick={onClick}
       className={className}
     >
-      {grabElement && React.cloneElement(grabElement as React.ReactElement<ComponentPropsWithRef<typeof TableCell>>, {
-        ref: setActivatorNodeRef,
-        ...listeners
-      })}
+      {grabElement &&
+        React.cloneElement(
+          getClonableElement(
+            grabElement as React.ReactElement<
+              ComponentPropsWithRef<typeof TableCell>
+            >
+          ),
+          {
+            ref: setActivatorNodeRef,
+            ...listeners,
+          }
+        )}
       {children}
     </TableRow>
   );
