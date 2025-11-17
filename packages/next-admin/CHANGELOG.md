@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 8.4.0
+
+### Minor Changes
+
+- [5778ad6](https://github.com/premieroctet/next-admin/commit/5778ad62328d8bb7d57cbf7b0a1de4edde11bb43): fix: compat with next >15.5 & react 19
+
 ## 8.3.0
 
 ### Minor Changes
