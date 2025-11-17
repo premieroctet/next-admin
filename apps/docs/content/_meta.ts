@@ -1,10 +1,14 @@
+import { MetaRecord } from "nextra";
+
 export default {
   index: {
     type: "page",
     title: "Next Admin",
     display: "hidden",
     theme: {
-      layout: "raw",
+      copyPage: true,
+      toc: false,
+      sidebar: false,
     },
   },
   docs: {
@@ -24,6 +28,5 @@ export default {
     title: "Demo",
     type: "page",
     href: "https://next-admin-po.vercel.app",
-    newWindow: true,
   },
-};
+} satisfies MetaRecord;

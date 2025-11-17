@@ -1,8 +1,7 @@
 import nextra from "nextra";
 
 const config = nextra({
-  theme: "nextra-theme-docs",
-  themeConfig: "./theme.config.jsx",
+  contentDirBasePath: "/docs",
 });
 
 export default config({

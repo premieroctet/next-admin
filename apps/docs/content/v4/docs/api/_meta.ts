@@ -1,3 +1,5 @@
+import { MetaRecord } from "nextra";
+
 export default {
   "next-admin-component": {
     title: "<NextAdmin/>",
@@ -14,4 +16,4 @@ export default {
   "model-configuration": {
     title: "Model configuration",
   },
-};
+} satisfies MetaRecord;

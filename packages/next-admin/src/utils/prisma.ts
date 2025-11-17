@@ -848,7 +848,7 @@ export const getDataItem = async <M extends ModelName>({
   });
 
   // @ts-expect-error
-  let data = await prisma[resource].findUniqueOrThrow({
+  let data = await prisma[uncapitalize(resource)].findUniqueOrThrow({
     select,
     where: { [idProperty]: resourceId },
   });
@@ -946,7 +946,7 @@ export const getRawData = async <M extends ModelName>({
   const include = includeDataByDepth(modelProperties!, 1, maxDepth);
 
   // @ts-expect-error
-  const data = await prisma[resource].findMany({
+  const data = await prisma[uncapitalize(resource)].findMany({
     where: { id: { in: resourceIds } },
     include,
   });

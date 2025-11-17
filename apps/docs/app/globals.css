@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+/* Optional: import Nextra theme styles */
+@import "nextra-theme-docs/style.css"; /* or nextra-theme-blog/style.css */
+
+@variant dark (&:where(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-roboto-mono);
+}
+
+:root {
+  --nextra-content-width: 85vw !important;
+}
+
+@theme {
+  @keyframes meteor {
+    0% {
+      transform: rotate(215deg) translateX(0);
+      opacity: 1;
+    }
+    70% {
+      opacity: 1;
+    }
+    100% {
+      transform: rotate(215deg) translateX(-500px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes spotlight {
+    0% {
+      opacity: 0;
+      transform: translate(-72%, -62%) scale(0.5);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translate(-50%, -40%) scale(1);
+    }
+  }
+
+  --animate-meteor-effect: meteor 5s linear infinite;
+  --animate-spotlight: spotlight 2s ease 0.75s 1 forwards;
+}
