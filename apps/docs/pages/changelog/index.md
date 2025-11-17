@@ -1,5 +1,12 @@
 # @premieroctet/next-admin
 
+## 8.4.1
+
+### Patch Changes
+
+- [a0aded9](https://github.com/premieroctet/next-admin/commit/a0aded966d97f8ec0b850008d7371a40600abc48): fix: pass translations in custom pages ([#637](https://github.com/premieroctet/next-admin/issues/637))
+- [bd4dd55](https://github.com/premieroctet/next-admin/commit/bd4dd5553444463f2d3a8d2867baccac0bf84a92): fix: inputs export ([#636](https://github.com/premieroctet/next-admin/issues/636))
+
 ## 8.4.0
 
 ### Minor Changes
