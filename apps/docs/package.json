@@ -14,7 +14,7 @@
     "clsx": "^2.1.0",
     "framer-motion": "^11.13.5",
     "mini-svg-data-uri": "^1.4.4",
-    "next": "^15.0.3",
+    "next": "^15.0.5",
     "nextra": "3.2.5",
     "nextra-theme-docs": "3.2.5",
     "react": "^19.0.0",
