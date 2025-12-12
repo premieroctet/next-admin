@@ -4,8 +4,8 @@ packages:
 
 catalogs:
   react19:
-    react: ^19.0.1
-    react-dom: ^19.0.1
+    react: ^19.0.3
+    react-dom: ^19.0.3
     "@types/react": ^19.0.1
     "@types/react-dom": ^19.0.2
 
@@ -21,7 +21,7 @@ catalogs:
     "@remix-run/serve": ^2.16.5
 
   next:
-    next: ^16
+    next: ^16.0.10
 
   prisma:
     prisma: ^6.12.0
