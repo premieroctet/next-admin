@@ -1,5 +1,5 @@
 import type * as esbuild from "esbuild";
-import fs from "fs";
+import fs from "node:fs";
 
 const plugin: esbuild.Plugin = {
   name: "cliPlugin",

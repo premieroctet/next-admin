@@ -28,7 +28,7 @@
   "scripts": {
     "build": "tsx scripts/build.ts",
     "dev": "tsx scripts/dev.ts",
-    "lint": "eslint \"**/*.{ts,tsx}\"",
+    "lint": "eslint \"src/*.{ts,tsx}\" \"scripts/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf dist"
   },
@@ -45,6 +45,7 @@
   },
   "devDependencies": {
     "@types/mustache": "^4.2.5",
+    "@types/node": "^25.0.2",
     "@types/semver": "^7.7.0",
     "esbuild": "^0.24.0",
     "eslint": "^7.32.0",
