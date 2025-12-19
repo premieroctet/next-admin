@@ -944,10 +944,11 @@ export const getRawData = async <M extends ModelName>({
   const modelProperties = model.properties;
 
   const include = includeDataByDepth(modelProperties!, 1, maxDepth);
+  const idProperty = getModelIdProperty(resource);
 
   // @ts-expect-error
   const data = await prisma[resource].findMany({
-    where: { id: { in: resourceIds } },
+    where: { [idProperty]: { in: resourceIds } },
     include,
   });
 
