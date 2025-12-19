@@ -10,6 +10,6 @@
     "module": "ESNext",
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
+  "include": ["/**/*.ts"],
   "exclude": ["dist", "node_modules"]
 }
