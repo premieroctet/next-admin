@@ -1,5 +1,11 @@
 # @premieroctet/next-admin
 
+## 8.4.2
+
+### Patch Changes
+
+- [7f3f92b](https://github.com/premieroctet/next-admin/commit/7f3f92bd4a9f542d03d4d271b76c4ecec06617c0): fix: use dynamic ID property in Prisma query for resource filtering
+
 ## 8.4.1
 
 ### Patch Changes
