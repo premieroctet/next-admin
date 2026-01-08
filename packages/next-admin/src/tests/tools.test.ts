@@ -1,3 +1,4 @@
+import { Decimal } from "@prisma/client/runtime/library";
 import { describe, expect, it } from "vitest";
 import { extractSerializable, formatLabel } from "../utils/tools";
 
@@ -33,6 +34,45 @@ describe("extractSerializable", () => {
   it("should return the objet with null and undefined values", () => {
     const obj = { a: null, b: undefined };
     expect(extractSerializable(obj)).toEqual({ a: null, b: null });
+  });
+  it("should convert BigInt values to strings to preserve precision", () => {
+    const largeBigInt = BigInt("6302764515981008896");
+    const obj = { id: largeBigInt, count: BigInt(123) };
+    expect(extractSerializable(obj)).toEqual({
+      id: "6302764515981008896",
+      count: "123",
+    });
+  });
+  it("should convert Prisma Decimal values to strings to preserve precision", () => {
+    const largeDecimal = new Decimal("6302764515981008896");
+    const smallDecimal = new Decimal("5.25");
+    const obj = { id: largeDecimal, rate: smallDecimal };
+    expect(extractSerializable(obj)).toEqual({
+      id: "6302764515981008896",
+      rate: "5.25",
+    });
+  });
+  it("should handle nested objects with BigInt and Decimal values", () => {
+    const obj = {
+      user: {
+        id: BigInt("9223372036854775807"),
+        balance: new Decimal("1234567890.123456789"),
+      },
+      items: [
+        { id: BigInt(1), price: new Decimal("99.99") },
+        { id: BigInt(2), price: new Decimal("149.99") },
+      ],
+    };
+    expect(extractSerializable(obj)).toEqual({
+      user: {
+        id: "9223372036854775807",
+        balance: "1234567890.123456789",
+      },
+      items: [
+        { id: "1", price: "99.99" },
+        { id: "2", price: "149.99" },
+      ],
+    });
   });
 });
 
