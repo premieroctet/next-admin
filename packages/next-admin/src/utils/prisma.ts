@@ -337,8 +337,16 @@ const preparePrismaListRequest = async <M extends ModelName>(
         modelProperties[field as keyof typeof modelProperties];
       const modelFieldNextAdminData = modelFieldSortParam?.__nextadmin;
 
-      if (direction in Prisma.SortOrder) {
-        if (field in Prisma[`${capitalize(resource)}ScalarFieldEnum`]) {
+      // Validate sort direction - check if it's a valid Prisma.SortOrder value
+      const isValidSortDirection =
+        direction &&
+        (Prisma?.SortOrder && direction in Prisma.SortOrder ||
+        direction === "asc" ||
+        direction === "desc");
+
+      if (isValidSortDirection) {
+        const scalarFieldEnum = Prisma?.[`${capitalize(resource)}ScalarFieldEnum`];
+        if (scalarFieldEnum && field in scalarFieldEnum) {
           return { [field]: direction };
         } else if (modelFieldNextAdminData?.kind === "object") {
           if (modelFieldNextAdminData.isList) {
