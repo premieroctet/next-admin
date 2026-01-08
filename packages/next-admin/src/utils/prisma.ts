@@ -302,10 +302,16 @@ const preparePrismaListRequest = async <M extends ModelName>(
       : (JSON.parse(searchParams.get("filters")) as string[]);
   } catch {}
   const page = Number(searchParams.get("page")) || 1;
-  const itemsPerPage =
+  const modelMaxRows = options?.model?.[resource]?.list?.maxRows;
+  let itemsPerPage =
     Number(searchParams.get("itemsPerPage")) ||
     options?.model?.[resource]?.list?.defaultListSize ||
     ITEMS_PER_PAGE;
+
+  // Enforce maxRows limit if set
+  if (modelMaxRows && itemsPerPage > modelMaxRows) {
+    itemsPerPage = modelMaxRows;
+  }
 
   const fieldSort = options?.model?.[resource]?.list?.defaultSort;
 
