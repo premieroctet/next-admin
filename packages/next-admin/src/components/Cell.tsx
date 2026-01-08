@@ -89,6 +89,10 @@ export default function Cell({ cell, formatter, copyable, getRawData }: Props) {
           </div>
         );
       } else if (cell.type === "scalar" && typeof cell.value === "boolean") {
+        // Check if cellValue is a React element (from a custom formatter)
+        if (React.isValidElement(cellValue)) {
+          return renderCustomElement(cellValue);
+        }
         return (
           <div
             className={clsx(
