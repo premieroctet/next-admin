@@ -41,6 +41,7 @@ const config = {
     const path = asPath.split(/[?#]/)[0];
     const title = path === "/" ? "Next Admin" : `${pageTitle} – Next Admin`;
     const description = frontMatter.description ?? DEFAULT_DESCRIPTION;
+    const hasMarkdownVersion = path === "/docs" || path.startsWith("/docs/");
 
     return (
       <>
@@ -52,6 +53,8 @@ const config = {
         <meta name="keywords" content="next, prisma, admin, database, next.js, back-office, cms" />
         <meta name="publisher" content="Premier Octet" />
         <link rel="canonical" href={`${BASE_URL}${path}`} />
+        {hasMarkdownVersion && <link rel="alternate" type="text/markdown" href={`${path}.md`} />}
+        <link rel="describedby" href="/llms.txt" />
         <link rel="icon" href="/logo.svg" />
       </>
     );
