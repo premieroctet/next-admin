@@ -2,6 +2,9 @@
   "name": "docs",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "next dev --port 3001",
     "prebuild": "node scripts/generate-llms.mjs && node scripts/generate-sitemap.mjs",
