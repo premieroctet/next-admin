@@ -1,6 +1,11 @@
 import { useRouter } from "next/router";
+import { useConfig } from "nextra-theme-docs";
 import React from "react";
 import Logo from "./components/Logo";
+
+const BASE_URL = "https://next-admin-docs.vercel.app";
+const DEFAULT_DESCRIPTION =
+  "Next-Admin provides a customizable and turnkey admin dashboard for applications built with Next.js and powered by the Prisma ORM.";
 
 const config = {
   logo: (
@@ -30,28 +35,32 @@ const config = {
   darkMode: true,
   primaryHue: 209,
   primarySaturation: 100,
-  head: (
-    <>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta name="keywords" content="next, prisma, admin, database, next.js, back-office, cms" />
-      <meta name="publisher" content="Premier Octet" />
-      <link rel="canonical" href="https://next-admin.vercel.app" />
-      <link rel="icon" href="/logo.svg" />
-    </>
-  ),
+  head: function useHead() {
+    const { asPath } = useRouter();
+    const { frontMatter, title: pageTitle } = useConfig();
+    const path = asPath.split(/[?#]/)[0];
+    const title = path === "/" ? "Next Admin" : `${pageTitle} – Next Admin`;
+    const description = frontMatter.description ?? DEFAULT_DESCRIPTION;
+
+    return (
+      <>
+        <title>{title}</title>
+        <meta name="description" content={description} />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="keywords" content="next, prisma, admin, database, next.js, back-office, cms" />
+        <meta name="publisher" content="Premier Octet" />
+        <link rel="canonical" href={`${BASE_URL}${path}`} />
+        <link rel="icon" href="/logo.svg" />
+      </>
+    );
+  },
   editLink: {
     component: () => null,
   },
   toc: {
     float: false,
-  },
-  useNextSeoProps: () => {
-    const { asPath } = useRouter();
-    if (asPath !== "/") {
-      return {
-        titleTemplate: "%s – Next Admin",
-      };
-    }
   },
 };
 
