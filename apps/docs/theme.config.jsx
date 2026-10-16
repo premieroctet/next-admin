@@ -3,7 +3,7 @@ import { useConfig } from "nextra-theme-docs";
 import React from "react";
 import Logo from "./components/Logo";
 
-const BASE_URL = "https://next-admin-docs.vercel.app";
+const BASE_URL = "https://next-admin.js.org";
 const DEFAULT_DESCRIPTION =
   "Next-Admin provides a customizable and turnkey admin dashboard for applications built with Next.js and powered by the Prisma ORM.";
 

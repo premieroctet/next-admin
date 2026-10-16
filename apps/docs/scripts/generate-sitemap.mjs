@@ -2,7 +2,7 @@ import assert from "node:assert";
 import { readdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 
-const BASE_URL = "https://next-admin-docs.vercel.app";
+const BASE_URL = "https://next-admin.js.org";
 const docsRoot = path.join(import.meta.dirname, "..");
 const pagesDir = path.join(docsRoot, "pages");
 
