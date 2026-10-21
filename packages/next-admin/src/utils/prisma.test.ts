@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest";
 import { NextAdminOptions } from "../types";
 import "../tests/singleton";
-import { createWherePredicate } from "./prisma";
+import { createWherePredicate, selectPayloadForModel } from "./prisma";
 
 const options: NextAdminOptions = {
   model: {
@@ -58,6 +58,93 @@ describe("Prisma utils", () => {
           ],
         },
       ],
+    });
+  });
+
+  test("selectPayloadForModel fetches relation data for dependsOn fields", () => {
+    const options: NextAdminOptions = {
+      model: {
+        Post: {
+          list: {
+            display: [
+              {
+                key: "authorName",
+                label: "Author name",
+                type: "scalar",
+                dependsOn: ["author"],
+                formatter: ({ row }) => row?.author?.name ?? "",
+              },
+            ],
+          },
+        },
+      },
+      // @ts-expect-error
+    };
+
+    const select = selectPayloadForModel("Post", options.model!.Post!.list);
+
+    expect(select).toMatchObject({
+      author: {
+        select: expect.objectContaining({ name: true, email: true }),
+      },
+    });
+  });
+
+  test("selectPayloadForModel fetches scalar dependsOn fields", () => {
+    const options: NextAdminOptions = {
+      model: {
+        Post: {
+          list: {
+            display: [
+              {
+                key: "fullTitle",
+                label: "Full title",
+                type: "scalar",
+                dependsOn: ["author", "title"],
+                formatter: ({ row }) => `${row?.title}, by ${row?.author?.name}`,
+              },
+            ],
+          },
+        },
+      },
+      // @ts-expect-error
+    };
+
+    const select = selectPayloadForModel("Post", options.model!.Post!.list);
+
+    expect(select).toMatchObject({ title: true });
+  });
+
+  test("selectPayloadForModel fetches nested dotted dependsOn fields", () => {
+    const options: NextAdminOptions = {
+      model: {
+        User: {
+          list: {
+            display: [
+              {
+                key: "profileBio",
+                label: "Profile bio",
+                type: "scalar",
+                dependsOn: ["profile.user"],
+                formatter: ({ row }) => row?.profile?.user?.name ?? "",
+              },
+            ],
+          },
+        },
+      },
+      // @ts-expect-error
+    };
+
+    const select = selectPayloadForModel("User", options.model!.User!.list);
+
+    expect(select).toMatchObject({
+      profile: {
+        select: {
+          user: {
+            select: expect.objectContaining({ name: true, email: true }),
+          },
+        },
+      },
     });
   });
 });

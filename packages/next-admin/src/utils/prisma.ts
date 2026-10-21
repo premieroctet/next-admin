@@ -726,18 +726,77 @@ export const selectPayloadForModel = <M extends ModelName>(
   const displayKeys = options?.display;
   const orderField = (options as ListOptions<M>)?.orderField;
 
+  const buildDependencySelect = (
+    resource: M,
+    path: string
+  ): Record<string, unknown> | null => {
+    const [head, ...rest] = path.split(".");
+    if (!head) {
+      return null;
+    }
+
+    const model = getSchema().definitions[
+      resource
+    ] as SchemaDefinitions[ModelName];
+    const field =
+      model?.properties?.[head as keyof typeof model.properties]?.__nextadmin;
+
+    if (field?.kind !== "object" || !field.type) {
+      return { [head]: true };
+    }
+
+    const relatedModel = field.type as ModelName;
+    const select = selectPayloadForModel(
+      relatedModel,
+      {},
+      "scalar"
+    ) as Record<string, unknown>;
+
+    if (rest.length) {
+      const nested = buildDependencySelect(
+        relatedModel as unknown as M,
+        rest.join(".")
+      );
+      for (const [key, value] of Object.entries(nested ?? {})) {
+        if (value && typeof value === "object") {
+          select[key] = value;
+        }
+      }
+    }
+
+    return { [head]: { select } };
+  };
+
   const defaultSelectedKeysForVirtualFields =
     options?.display
       ?.filter(isVirtualField)
-      .flatMap((disp) => disp?.dependsOn)
+      .flatMap((disp) => disp?.dependsOn ?? [])
       ?.reduce(
         (acc, val) => {
           if (val) {
-            acc[val] = true;
+            const entry = buildDependencySelect(resource, String(val));
+            for (const [key, value] of Object.entries(entry ?? {})) {
+              const existing = acc[key as Field<M>];
+              if (
+                existing &&
+                typeof existing === "object" &&
+                value &&
+                typeof value === "object"
+              ) {
+                acc[key as Field<M>] = {
+                  select: {
+                    ...((existing as any).select ?? {}),
+                    ...((value as any).select ?? {}),
+                  },
+                };
+              } else {
+                acc[key as Field<M>] = value as true;
+              }
+            }
           }
           return acc;
         },
-        {} as Record<Field<M>, true>
+        {} as Record<Field<M>, true | { select: Record<string, unknown> }>
       ) ?? {};
 
   let selectedFields = Object.entries(properties).reduce(
@@ -787,9 +846,10 @@ export const selectPayloadForModel = <M extends ModelName>(
       }
       return acc;
     },
-    modelHasIdField(resource)
-      ? ({ [idProperty]: true, ...defaultSelectedKeysForVirtualFields } as any)
-      : {}
+    ({
+      ...(modelHasIdField(resource) ? { [idProperty]: true } : {}),
+      ...defaultSelectedKeysForVirtualFields,
+    } as any)
   );
 
   return selectedFields;
