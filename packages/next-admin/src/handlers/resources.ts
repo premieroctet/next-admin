@@ -1,8 +1,4 @@
 import {
-  PrismaClientKnownRequestError,
-  PrismaClientValidationError,
-} from "@prisma/client/runtime/library";
-import {
   EditFieldsOptions,
   ModelName,
   ModelOptions,
@@ -219,8 +215,8 @@ export const submitResource = async ({
     };
   } catch (error: any) {
     if (
-      error.constructor.name === PrismaClientValidationError.name ||
-      error.constructor.name === PrismaClientKnownRequestError.name ||
+      error.constructor.name === "PrismaClientValidationError" ||
+      error.constructor.name === "PrismaClientKnownRequestError" ||
       error.name === "ValidationError"
     ) {
       let data = parsedFormData;
