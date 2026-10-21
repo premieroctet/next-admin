@@ -2,7 +2,7 @@ import { Decimal } from "@prisma/client/runtime/library";
 import cloneDeep from "lodash.clonedeep";
 import { afterEach, describe, expect, it } from "vitest";
 import { mockReset } from "vitest-mock-extended";
-import { getMappedDataList, optionsFromResource } from "../utils/prisma";
+import { getMappedDataList, optionsFromResource, selectPayloadForModel } from "../utils/prisma";
 import { extractSerializable } from "../utils/tools";
 import { options, prismaMock } from "./singleton";
 
@@ -120,5 +120,34 @@ describe("optionsFromResource", () => {
 
   afterEach(() => {
     mockReset(prismaMock);
+  });
+});
+
+describe("selectPayloadForModel", () => {
+  it("should not select relations at scalar level", () => {
+    const select = selectPayloadForModel("User", {}, "scalar");
+
+    expect(select.posts).toBeUndefined();
+    expect(select.profile).toBeUndefined();
+    expect(select.id).toBe(true);
+    expect(select.email).toBe(true);
+  });
+
+  it("should select relations with only their scalar fields at object level", () => {
+    const select = selectPayloadForModel(
+      "User",
+      { display: ["posts", "profile"] } as any,
+      "object"
+    );
+
+    expect(select.posts).toEqual(
+      expect.objectContaining({
+        select: expect.objectContaining({ id: true, title: true }),
+      })
+    );
+    // Nested relations of the related model must not be selected
+    expect(select.posts.select.posts).toBeUndefined();
+    expect(select.posts.select.profile).toBeUndefined();
+    expect(select._count?.select?.posts).toBe(true);
   });
 });
