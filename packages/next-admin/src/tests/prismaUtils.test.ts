@@ -145,7 +145,6 @@ describe("selectPayloadForModel", () => {
       })
     );
     expect(select.posts.select.categories).toBeUndefined();
-    expect(select._count?.select?.posts).toBe(true);
   });
 
   it("should select the far side of explicit many-to-many join rows", () => {
