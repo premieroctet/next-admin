@@ -689,6 +689,29 @@ export const mapDataList = ({
   return data;
 };
 
+// Only Page Router formatters run in the browser, so rawData keeps just the values they read
+const getClientRawData = (
+  fetchData: any[],
+  resource: ModelName,
+  options?: NextAdminOptions
+) => {
+  const list = options?.model?.[resource]?.list;
+
+  if (list?.display?.some((displayOpt) => typeof displayOpt === "object")) {
+    return fetchData;
+  }
+
+  const formattedKeys = Object.entries(list?.fields ?? {})
+    .filter(([, field]) => field?.formatter)
+    .map(([key]) => key);
+
+  return fetchData.map((row) =>
+    Object.fromEntries(
+      formattedKeys.filter((key) => key in row).map((key) => [key, row[key]])
+    )
+  );
+};
+
 export const getMappedDataList = async ({
   context,
   appDir = false,
@@ -696,13 +719,17 @@ export const getMappedDataList = async ({
 }: GetMappedDataListParams) => {
   const { data: fetchData, total, error } = await fetchDataList(args);
 
-  const rawData = cloneDeep(fetchData);
+  const rawData = appDir
+    ? undefined
+    : extractSerializable(
+        getClientRawData(fetchData, args.resource, args.options)
+      );
 
   return {
     data: mapDataList({ context, appDir, fetchData, ...args }),
     total,
     error,
-    rawData: extractSerializable(rawData),
+    rawData,
   };
 };
 
