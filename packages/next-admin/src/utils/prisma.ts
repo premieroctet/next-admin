@@ -762,13 +762,22 @@ export const selectPayloadForModel = <M extends ModelName>(
               },
             };
           }
-          acc[name] = {
-            select: selectPayloadForModel(
-              fieldNextAdmin.type as ModelName,
-              {},
-              "scalar"
-            ),
-          };
+          const relationSelect = selectPayloadForModel(
+            fieldNextAdmin.type as ModelName,
+            {},
+            "scalar"
+          );
+
+          /**
+           * If the related model has no id/primaryKey field, the scalar
+           * payload comes back empty; falling back to an empty select object
+           * selects the relation's scalars so required fields (id) can still
+           * be rendered by formatters.
+           */
+          acc[name] =
+            Object.keys(relationSelect).length > 0
+              ? { select: relationSelect }
+              : {};
 
           const orderField =
             (options as EditOptions<M>)?.fields?.[
