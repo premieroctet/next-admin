@@ -401,7 +401,7 @@ const preparePrismaListRequest = async <M extends ModelName>(
   let select: Select<M> | undefined;
   let where = {};
   const list = options?.model?.[resource]?.list as ListOptions<M>;
-  select = selectPayloadForModel(resource, list, "object");
+  select = selectPayloadForModel(resource, list, "object", "list");
   where = createWherePredicate({
     resource,
     options,
@@ -715,7 +715,8 @@ const isVirtualField = <M extends ModelName>(
 export const selectPayloadForModel = <M extends ModelName>(
   resource: M,
   options?: EditOptions<M> | ListOptions<M>,
-  level: "scalar" | "object" = "scalar"
+  level: "scalar" | "object" = "scalar",
+  context: "list" | "edit" = "edit"
 ) => {
   const model = getSchema().definitions[
     resource
@@ -753,7 +754,7 @@ export const selectPayloadForModel = <M extends ModelName>(
         !displayKeys
       ) {
         if (fieldNextAdmin?.kind === "object" && level === "object") {
-          if (fieldNextAdmin?.isList) {
+          if (fieldNextAdmin?.isList && context === "list") {
             const countFields = acc["_count"]?.select ?? {};
             acc["_count"] = {
               select: {
@@ -761,25 +762,26 @@ export const selectPayloadForModel = <M extends ModelName>(
                 [name]: true,
               },
             };
-          }
-          acc[name] = {
-            select: selectPayloadForModel(
-              fieldNextAdmin.type as ModelName,
-              {},
-              "scalar"
-            ),
-          };
-
-          const orderField =
-            (options as EditOptions<M>)?.fields?.[
-              name as Field<M>
-              // @ts-expect-error
-            ]?.orderField || (options as ListOptions<M>)?.orderField;
-
-          if (orderField) {
-            acc[name].orderBy = {
-              [orderField]: "asc",
+          } else {
+            acc[name] = {
+              select: selectPayloadForModel(
+                fieldNextAdmin.type as ModelName,
+                {},
+                "scalar"
+              ),
             };
+
+            const orderField =
+              (options as EditOptions<M>)?.fields?.[
+                name as Field<M>
+                // @ts-expect-error
+              ]?.orderField || (options as ListOptions<M>)?.orderField;
+
+            if (orderField) {
+              acc[name].orderBy = {
+                [orderField]: "asc",
+              };
+            }
           }
         } else {
           acc[name] = true;
