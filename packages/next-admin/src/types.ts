@@ -446,7 +446,7 @@ type VirtualFieldWithType<T extends ModelName> = {
 export type VirtualField<T extends ModelName> = {
   key: string;
   label: string;
-  dependsOn?: Field<T>[];
+  dependsOn?: (Field<T> | (string & {}))[];
 } & (
   | VirtualFieldWithType<T>
   | {

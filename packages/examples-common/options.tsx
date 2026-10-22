@@ -244,6 +244,14 @@ export const createOptions = (
           "rate",
           "tags",
           "author",
+          {
+            key: "author_profile_bio",
+            label: "Author profile bio",
+            formatter: ({ row: post }) => {
+              return (post as any)?.author?.profile?.bio ?? "-";
+            },
+            dependsOn: ["author.profile.bio"],
+          },
         ],
         filters: [
           {

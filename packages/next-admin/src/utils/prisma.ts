@@ -1,5 +1,6 @@
 import type { NextAdminJsonSchemaData } from "@premieroctet/next-admin-json-schema";
 import cloneDeep from "lodash.clonedeep";
+import merge from "lodash.merge";
 import { ITEMS_PER_PAGE } from "../config";
 import type {
   EditOptions,
@@ -726,18 +727,57 @@ export const selectPayloadForModel = <M extends ModelName>(
   const displayKeys = options?.display;
   const orderField = (options as ListOptions<M>)?.orderField;
 
+  const buildDependencySelect = (
+    resource: M,
+    path: string
+  ): Record<string, unknown> | null => {
+    const [head, ...rest] = path.split(".");
+    if (!head) {
+      return null;
+    }
+
+    const model = getSchema().definitions[
+      resource
+    ] as SchemaDefinitions[ModelName];
+    const field =
+      model?.properties?.[head as keyof typeof model.properties]?.__nextadmin;
+
+    if (field?.kind !== "object" || !field.type) {
+      return { [head]: true };
+    }
+
+    const relatedModel = field.type as ModelName;
+    const relatedProperties = (
+      getSchema().definitions[relatedModel] as SchemaDefinitions[ModelName]
+    ).properties;
+    const select: Record<string, unknown> = Object.fromEntries(
+      Object.entries(relatedProperties)
+        .filter(([, property]) => property.__nextadmin?.kind !== "object")
+        .map(([name]) => [name, true])
+    );
+
+    if (rest.length) {
+      Object.assign(
+        select,
+        buildDependencySelect(relatedModel as unknown as M, rest.join("."))
+      );
+    }
+
+    return { [head]: { select } };
+  };
+
   const defaultSelectedKeysForVirtualFields =
     options?.display
       ?.filter(isVirtualField)
-      .flatMap((disp) => disp?.dependsOn)
+      .flatMap((disp) => disp?.dependsOn ?? [])
       ?.reduce(
         (acc, val) => {
           if (val) {
-            acc[val] = true;
+            merge(acc, buildDependencySelect(resource, String(val)));
           }
           return acc;
         },
-        {} as Record<Field<M>, true>
+        {} as Record<Field<M>, true | { select: Record<string, unknown> }>
       ) ?? {};
 
   let selectedFields = Object.entries(properties).reduce(
@@ -762,13 +802,16 @@ export const selectPayloadForModel = <M extends ModelName>(
               },
             };
           }
-          acc[name] = {
-            select: selectPayloadForModel(
-              fieldNextAdmin.type as ModelName,
-              {},
-              "scalar"
-            ),
-          };
+          acc[name] = merge(
+            {
+              select: selectPayloadForModel(
+                fieldNextAdmin.type as ModelName,
+                {},
+                "scalar"
+              ),
+            },
+            acc[name]
+          );
 
           const orderField =
             (options as EditOptions<M>)?.fields?.[
@@ -787,9 +830,10 @@ export const selectPayloadForModel = <M extends ModelName>(
       }
       return acc;
     },
-    modelHasIdField(resource)
-      ? ({ [idProperty]: true, ...defaultSelectedKeysForVirtualFields } as any)
-      : {}
+    ({
+      ...(modelHasIdField(resource) ? { [idProperty]: true } : {}),
+      ...defaultSelectedKeysForVirtualFields,
+    } as any)
   );
 
   return selectedFields;
