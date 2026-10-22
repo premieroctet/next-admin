@@ -441,7 +441,7 @@ export const transformData = <M extends ModelName>(
         } else if (fieldTypes === "Json") {
           acc[key] = data[key] ? JSON.stringify(data[key]) : null;
         } else if (fieldTypes === "Decimal") {
-          acc[key] = data[key] ? Number(data[key]) : null;
+          acc[key] = data[key] ? data[key].toFixed() : null;
         } else if (fieldTypes === "BigInt") {
           acc[key] = data[key] ? BigInt(data[key]).toString() : null;
         } else {
@@ -531,7 +531,7 @@ export const findRelationInData = (
               value: item[property].toISOString(),
             };
           } else if (propertyType === "Decimal") {
-            item[property] = Number(item[property]);
+            item[property] = item[property].toFixed();
           } else if (propertyType === "BigInt") {
             item[property] = BigInt(item[property]).toString();
           }

@@ -41,7 +41,19 @@ export const extractSerializable = <T>(obj: T, isAppDir?: boolean): T => {
     return obj.toISOString() as unknown as T;
   } else if (obj === null) {
     return obj;
+  } else if (typeof obj === "bigint") {
+    return obj.toString() as unknown as T;
   } else if (typeof obj === "object") {
+    // Handle Prisma Decimal objects BEFORE React elements check
+    // Decimal objects have properties 'd', 's', 'e' and a toFixed method
+    if (
+      "d" in obj &&
+      "s" in obj &&
+      "e" in obj &&
+      typeof (obj as any).toFixed === "function"
+    ) {
+      return (obj as any).toFixed() as unknown as T;
+    }
     if (isAppDir && React.isValidElement(obj)) {
       return null as unknown as T;
     }
