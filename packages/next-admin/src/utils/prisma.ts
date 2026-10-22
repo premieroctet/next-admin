@@ -747,22 +747,20 @@ export const selectPayloadForModel = <M extends ModelName>(
     }
 
     const relatedModel = field.type as ModelName;
-    const select = selectPayloadForModel(
-      relatedModel,
-      {},
-      "scalar"
-    ) as Record<string, unknown>;
+    const relatedProperties = (
+      getSchema().definitions[relatedModel] as SchemaDefinitions[ModelName]
+    ).properties;
+    const select: Record<string, unknown> = Object.fromEntries(
+      Object.entries(relatedProperties)
+        .filter(([, property]) => property.__nextadmin?.kind !== "object")
+        .map(([name]) => [name, true])
+    );
 
     if (rest.length) {
-      const nested = buildDependencySelect(
-        relatedModel as unknown as M,
-        rest.join(".")
+      Object.assign(
+        select,
+        buildDependencySelect(relatedModel as unknown as M, rest.join("."))
       );
-      for (const [key, value] of Object.entries(nested ?? {})) {
-        if (value && typeof value === "object") {
-          select[key] = value;
-        }
-      }
     }
 
     return { [head]: { select } };
@@ -775,25 +773,7 @@ export const selectPayloadForModel = <M extends ModelName>(
       ?.reduce(
         (acc, val) => {
           if (val) {
-            const entry = buildDependencySelect(resource, String(val));
-            for (const [key, value] of Object.entries(entry ?? {})) {
-              const existing = acc[key as Field<M>];
-              if (
-                existing &&
-                typeof existing === "object" &&
-                value &&
-                typeof value === "object"
-              ) {
-                acc[key as Field<M>] = {
-                  select: {
-                    ...((existing as any).select ?? {}),
-                    ...((value as any).select ?? {}),
-                  },
-                };
-              } else {
-                acc[key as Field<M>] = value as true;
-              }
-            }
+            merge(acc, buildDependencySelect(resource, String(val)));
           }
           return acc;
         },

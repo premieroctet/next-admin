@@ -186,4 +186,68 @@ describe("Prisma utils", () => {
       },
     });
   });
+
+  test("selectPayloadForModel fetches only the relation's own fields for a bare dependsOn relation", () => {
+    const options: NextAdminOptions = {
+      model: {
+        Post: {
+          list: {
+            display: [
+              {
+                key: "authorName",
+                label: "Author name",
+                type: "scalar",
+                dependsOn: ["author"],
+                formatter: ({ row }) => row?.author?.name ?? "",
+              },
+            ],
+          },
+        },
+      },
+      // @ts-expect-error
+    };
+
+    const select = selectPayloadForModel("Post", options.model!.Post!.list);
+
+    expect(select.author.select).not.toHaveProperty("posts");
+  });
+
+  test("selectPayloadForModel keeps every hop of overlapping dotted dependsOn paths", () => {
+    const options: NextAdminOptions = {
+      model: {
+        Post: {
+          list: {
+            display: [
+              {
+                key: "authorProfile",
+                label: "Author profile",
+                type: "scalar",
+                dependsOn: ["author.profile.user.posts", "author.profile.bio"],
+                formatter: ({ row }) => row?.author?.profile?.bio ?? "",
+              },
+            ],
+          },
+        },
+      },
+      // @ts-expect-error
+    };
+
+    const select = selectPayloadForModel("Post", options.model!.Post!.list);
+
+    expect(select).toMatchObject({
+      author: {
+        select: {
+          profile: {
+            select: {
+              user: {
+                select: {
+                  posts: { select: expect.objectContaining({ title: true }) },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+  });
 });
