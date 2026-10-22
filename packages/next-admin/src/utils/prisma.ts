@@ -627,10 +627,11 @@ export const mapDataList = ({
 
         item[key].__nextadmin_formatted = itemValue;
       } else if (isScalar(item[key]) && item[key] !== null) {
+        const originalValue = item[key];
         item[key] = {
           type: "scalar",
-          value: item[key],
-          __nextadmin_formatted: item[key].toString(),
+          value: originalValue,
+          __nextadmin_formatted: originalValue.toString(),
         };
         itemValue = item[key].value;
       }
