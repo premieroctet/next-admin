@@ -1,5 +1,6 @@
 import type { NextAdminJsonSchemaData } from "@premieroctet/next-admin-json-schema";
 import cloneDeep from "lodash.clonedeep";
+import merge from "lodash.merge";
 import { ITEMS_PER_PAGE } from "../config";
 import type {
   EditOptions,
@@ -821,13 +822,16 @@ export const selectPayloadForModel = <M extends ModelName>(
               },
             };
           }
-          acc[name] = {
-            select: selectPayloadForModel(
-              fieldNextAdmin.type as ModelName,
-              {},
-              "scalar"
-            ),
-          };
+          acc[name] = merge(
+            {
+              select: selectPayloadForModel(
+                fieldNextAdmin.type as ModelName,
+                {},
+                "scalar"
+              ),
+            },
+            acc[name]
+          );
 
           const orderField =
             (options as EditOptions<M>)?.fields?.[

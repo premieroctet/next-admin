@@ -147,4 +147,43 @@ describe("Prisma utils", () => {
       },
     });
   });
+
+  test("selectPayloadForModel keeps dotted dependsOn when the relation is also displayed", () => {
+    const options: NextAdminOptions = {
+      model: {
+        Post: {
+          list: {
+            display: [
+              "author",
+              {
+                key: "authorBio",
+                label: "Author bio",
+                type: "scalar",
+                dependsOn: ["author.profile.bio"],
+                formatter: ({ row }) => row?.author?.profile?.bio ?? "",
+              },
+            ],
+          },
+        },
+      },
+      // @ts-expect-error
+    };
+
+    const select = selectPayloadForModel(
+      "Post",
+      options.model!.Post!.list,
+      "object"
+    );
+
+    expect(select).toMatchObject({
+      author: {
+        select: {
+          name: true,
+          profile: {
+            select: expect.objectContaining({ bio: true }),
+          },
+        },
+      },
+    });
+  });
 });
