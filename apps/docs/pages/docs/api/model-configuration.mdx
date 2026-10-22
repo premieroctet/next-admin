@@ -233,6 +233,18 @@ This property determines how your data is displayed in the [list View](/docs/glo
         </>
       ),
     },
+    {
+      name: "maxRows",
+      type: "Number",
+      description: (
+        <>
+          the maximum number of items that can be displayed per page. When set,
+          the items per page dropdown will only show options up to this value, and
+          server-side enforcement prevents fetching more rows than this limit.
+          Useful for memory-constrained environments.
+        </>
+      ),
+    },
   ]}
 />
 <Callout type="info">

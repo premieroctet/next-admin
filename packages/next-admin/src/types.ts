@@ -501,6 +501,11 @@ export type ListOptions<T extends ModelName> = {
    * an optional number indicating the default amount of items in the list
    */
   defaultListSize?: number;
+  /**
+   * an optional number indicating the maximum amount of items that can be displayed per page
+   * When set, the items per page dropdown will only show options up to this value
+   */
+  maxRows?: number;
 };
 
 export type RelationshipsRawData = Record<string, any>;
