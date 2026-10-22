@@ -781,16 +781,12 @@ export const selectPayloadForModel = <M extends ModelName>(
               [orderField]: "asc",
             };
           }
-        } else if (level === "object" || fieldNextAdmin?.kind !== "object") {
+        } else if (
+          fieldNextAdmin?.kind !== "object" ||
+          !fieldNextAdmin.isList
+        ) {
           acc[name] = true;
         }
-        /**
-         * At "scalar" level, object-kind fields are intentionally skipped:
-         * selecting them (`true`) would make Prisma fetch every scalar of
-         * every related row (including full to-many back-relation arrays),
-         * while the UI only reads the related model's id property, which is
-         * always selected.
-         */
       }
       return acc;
     },

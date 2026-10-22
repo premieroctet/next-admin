@@ -124,11 +124,10 @@ describe("optionsFromResource", () => {
 });
 
 describe("selectPayloadForModel", () => {
-  it("should not select relations at scalar level", () => {
+  it("should not select to-many relations at scalar level", () => {
     const select = selectPayloadForModel("User", {}, "scalar");
 
     expect(select.posts).toBeUndefined();
-    expect(select.profile).toBeUndefined();
     expect(select.id).toBe(true);
     expect(select.email).toBe(true);
   });
@@ -145,9 +144,17 @@ describe("selectPayloadForModel", () => {
         select: expect.objectContaining({ id: true, title: true }),
       })
     );
-    // Nested relations of the related model must not be selected
-    expect(select.posts.select.posts).toBeUndefined();
-    expect(select.posts.select.profile).toBeUndefined();
+    expect(select.posts.select.categories).toBeUndefined();
     expect(select._count?.select?.posts).toBe(true);
+  });
+
+  it("should select the far side of explicit many-to-many join rows", () => {
+    const select = selectPayloadForModel(
+      "Post",
+      { display: ["categories"] },
+      "object"
+    );
+
+    expect(select.categories.select.category).toBe(true);
   });
 });
