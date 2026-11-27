@@ -845,14 +845,15 @@ export const selectPayloadForModel = <M extends ModelName>(
           fieldNextAdmin?.kind !== "object" ||
           !fieldNextAdmin.isList
         ) {
-          acc[name] = true;
+          acc[name] = mergeSelections(acc[name], true);
         }
       }
       return acc;
     },
-    modelHasIdField(resource)
-      ? ({ [idProperty]: true, ...defaultSelectedKeysForVirtualFields } as any)
-      : {}
+    {
+      ...(modelHasIdField(resource) ? { [idProperty]: true } : {}),
+      ...defaultSelectedKeysForVirtualFields,
+    } as any
   );
 
   return selectedFields;

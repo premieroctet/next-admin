@@ -1,6 +1,6 @@
 import { Decimal } from "@prisma/client/runtime/library";
 import cloneDeep from "lodash.clonedeep";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { mockReset } from "vitest-mock-extended";
 import {
   getMappedDataList,
@@ -9,6 +9,19 @@ import {
 } from "../utils/prisma";
 import { extractSerializable } from "../utils/tools";
 import { options, prismaMock } from "./singleton";
+
+const idFieldOverride = vi.hoisted(() => ({
+  value: undefined as boolean | undefined,
+}));
+
+vi.mock("../utils/server", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../utils/server")>();
+  return {
+    ...actual,
+    modelHasIdField: (model: Parameters<typeof actual.modelHasIdField>[0]) =>
+      idFieldOverride.value ?? actual.modelHasIdField(model),
+  };
+});
 
 describe("getMappedDataList", () => {
   it("should return the data list, total and error", async () => {
@@ -221,5 +234,46 @@ describe("selectPayloadForModel", () => {
     );
 
     expect(select.author).toBe(true);
+  });
+
+  it("should keep a dotted dependsOn when the to-one relation is displayed at scalar level", () => {
+    const select = selectPayloadForModel("Post", {
+      display: [
+        "author",
+        {
+          key: "authorPosts",
+          label: "Author posts",
+          dependsOn: ["author.posts"],
+          formatter: () => "",
+        },
+      ],
+    });
+
+    expect(select.author).toEqual({ include: { posts: true } });
+  });
+
+  it("should keep virtual field dependencies for models without a single id field", () => {
+    idFieldOverride.value = false;
+    try {
+      const select = selectPayloadForModel(
+        "CategoriesOnPosts",
+        {
+          display: [
+            {
+              key: "postAuthor",
+              label: "Post author",
+              dependsOn: ["post.author"],
+              formatter: () => "",
+            },
+          ],
+        },
+        "object"
+      );
+
+      expect(select.id).toBeUndefined();
+      expect(select.post).toEqual({ include: { author: true } });
+    } finally {
+      idFieldOverride.value = undefined;
+    }
   });
 });
