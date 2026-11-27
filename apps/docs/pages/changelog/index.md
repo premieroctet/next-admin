@@ -1,5 +1,16 @@
 # @premieroctet/next-admin
 
+## 8.4.3
+
+### Patch Changes
+
+- [febed9b](https://github.com/premieroctet/next-admin/commit/febed9b629f30bb335edc36a9013dd839abb2167): Stop fetching the to-many relations of related rows in relation columns of list and edit views ([#635](https://github.com/premieroctet/next-admin/issues/635)). A related row now comes with its scalars and its to-one relations only.
+
+  A formatter, `toString` or `optionFormatter` that reads a to-many relation of a related row (for example `row.author.posts`) now gets `undefined`. In list views, add a virtual field to the same `list.display` with a dotted path in `dependsOn`, such as `dependsOn: ["author.posts"]`, to fetch it again. `dependsOn` now accepts dotted paths through relations. Edit views have no equivalent yet: `edit.display` does not accept virtual fields, so edit-form relation labels cannot read those arrays.
+
+- [2330081](https://github.com/premieroctet/next-admin/commit/233008189d5679b03b085d8ef523147a8e8af599): fix: resolve `@prisma/client/runtime/library` import breaking Prisma 7 consumers
+- [6372cd4](https://github.com/premieroctet/next-admin/commit/6372cd48debbd265ec3dd1b377d05fe8dbf51800): Stop sending unused raw list rows to the browser. Displaying a relation in a list fetched every column of the related row, such as a user's `hashedPassword` behind a post's `author`, and serialized it into the page through `rawData`. The App Router no longer sends `rawData`, since its formatters run on the server. The Page Router (also used by Remix and TanStack Start) only sends the fields that have a `list.fields` formatter, or the whole row when the list has a virtual field. A relation field with a Page Router formatter still receives every column of the related row. If you read `rawData` from the props returned by `getNextAdminProps`, it is now `null` in the App Router and only holds those fields in the Page Router.
+
 ## 8.4.2
 
 ### Patch Changes
