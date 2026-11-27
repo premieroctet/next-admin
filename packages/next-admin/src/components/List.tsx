@@ -89,6 +89,7 @@ function List({
   const pageIndex = typeof query.page === "string" ? Number(query.page) - 1 : 0;
   const modelDefaultListSize =
     options?.model?.[resource]?.list?.defaultListSize;
+  const modelMaxRows = options?.model?.[resource]?.list?.maxRows;
   const pageSize =
     Number(query.itemsPerPage) || modelDefaultListSize || ITEMS_PER_PAGE;
   const modelOptions = options?.["model"]?.[resource];
@@ -111,12 +112,16 @@ function List({
   });
 
   const allListSizes = useMemo(() => {
-    if (modelDefaultListSize) {
-      return [...itemsPerPageSizes, modelDefaultListSize].sort((a, b) => a - b);
+    let sizes = modelDefaultListSize
+      ? [...itemsPerPageSizes, modelDefaultListSize].sort((a, b) => a - b)
+      : itemsPerPageSizes;
+
+    if (modelMaxRows) {
+      sizes = sizes.filter((size) => size <= modelMaxRows);
     }
 
-    return itemsPerPageSizes;
-  }, [modelDefaultListSize]);
+    return sizes;
+  }, [modelDefaultListSize, modelMaxRows]);
 
   let onSearchChange;
 
