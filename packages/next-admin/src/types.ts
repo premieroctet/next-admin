@@ -431,12 +431,41 @@ export type FieldSort<T extends ModelName> = {
   direction?: Prisma.SortOrder;
 };
 
+type NestedRowDepth = [never, 0, 1, 2];
+
+type RelationRow<R, Depth extends number> = R extends (infer E extends
+  Payload)[]
+  ? NestedRow<E, Depth>[]
+  : R extends Payload
+    ? NestedRow<R, Depth>
+    : R extends null
+      ? null
+      : never;
+
+type NestedRow<P extends Payload, Depth extends number> = {
+  [K in keyof P["scalars"]]: P["scalars"][K];
+} & ([Depth] extends [never]
+  ? unknown
+  : {
+      [K in keyof P["objects"]]?: RelationRow<
+        P["objects"][K],
+        NestedRowDepth[Depth]
+      >;
+    });
+
+// Relations of related rows are only fetched through a dotted `dependsOn`, hence optional
+export type VirtualFieldRow<T extends ModelName> = {
+  [K in keyof ScalarField<T>]: ScalarField<T>[K];
+} & {
+  [K in keyof ObjectField<T>]: RelationRow<ObjectField<T>[K], 3>;
+};
+
 type VirtualFieldWithType<T extends ModelName> = {
-  formatter: (context: NextAdminContext<Model<T>>) => string;
+  formatter: (context: NextAdminContext<VirtualFieldRow<T>>) => string;
 } & (
   | {
       type?: "link";
-      url: (context: NextAdminContext<Model<T>>) => string;
+      url: (context: NextAdminContext<VirtualFieldRow<T>>) => string;
     }
   | {
       type?: Exclude<ListDataFieldValue["type"], "link">;
@@ -446,11 +475,13 @@ type VirtualFieldWithType<T extends ModelName> = {
 export type VirtualField<T extends ModelName> = {
   key: string;
   label: string;
-  dependsOn?: Field<T>[];
+  dependsOn?: (Field<T> | `${Field<T> & string}.${string}`)[];
 } & (
   | VirtualFieldWithType<T>
   | {
-      formatter: (context: NextAdminContext<Model<T>>) => React.ReactElement;
+      formatter: (
+        context: NextAdminContext<VirtualFieldRow<T>>
+      ) => React.ReactElement;
       type?: never;
     }
 );

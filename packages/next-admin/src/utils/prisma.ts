@@ -712,6 +712,67 @@ const isVirtualField = <M extends ModelName>(
   return typeof displayOpts === "object" && "dependsOn" in displayOpts;
 };
 
+type RelationSelection =
+  | true
+  | { select?: SelectionMap; include?: SelectionMap; orderBy?: unknown };
+type SelectionMap = Record<string, RelationSelection>;
+
+const mergeSelectionMaps = (
+  base: SelectionMap = {},
+  extra: SelectionMap = {}
+): SelectionMap =>
+  Object.entries(extra).reduce<SelectionMap>(
+    (acc, [key, value]) => ({
+      ...acc,
+      [key]: mergeSelections(acc[key], value),
+    }),
+    { ...base }
+  );
+
+const mergeSelections = (
+  base: RelationSelection | undefined,
+  extra: RelationSelection
+): RelationSelection => {
+  if (base === undefined || base === true) return extra;
+  if (extra === true) return base;
+
+  const nested = mergeSelectionMaps(
+    base.select ?? base.include,
+    extra.select ?? extra.include
+  );
+  const merged = { ...base, ...extra };
+  delete merged.select;
+  delete merged.include;
+
+  return base.select || extra.select
+    ? { ...merged, select: nested }
+    : { ...merged, include: nested };
+};
+
+const getFieldNextAdmin = (resource: ModelName, fieldName: string) =>
+  (getSchema().definitions[resource] as SchemaDefinitions[ModelName])
+    .properties[fieldName as keyof SchemaDefinitions[ModelName]["properties"]]
+    ?.__nextadmin;
+
+const selectionForDependency = (
+  resource: ModelName,
+  [head, ...rest]: string[]
+): SelectionMap => {
+  const field = getFieldNextAdmin(resource, head);
+
+  if (!rest.length || field?.kind !== "object") {
+    return { [head]: true };
+  }
+
+  const relatedModel = field.type as ModelName;
+  if (getFieldNextAdmin(relatedModel, rest[0])?.kind !== "object") {
+    return { [head]: true };
+  }
+
+  // `include` keeps the related row's scalars and still honours Prisma's `omit`
+  return { [head]: { include: selectionForDependency(relatedModel, rest) } };
+};
+
 export const selectPayloadForModel = <M extends ModelName>(
   resource: M,
   options?: EditOptions<M> | ListOptions<M>,
@@ -729,15 +790,14 @@ export const selectPayloadForModel = <M extends ModelName>(
   const defaultSelectedKeysForVirtualFields =
     options?.display
       ?.filter(isVirtualField)
-      .flatMap((disp) => disp?.dependsOn)
-      ?.reduce(
-        (acc, val) => {
-          if (val) {
-            acc[val] = true;
-          }
-          return acc;
-        },
-        {} as Record<Field<M>, true>
+      .flatMap((disp) => disp?.dependsOn ?? [])
+      .reduce<SelectionMap>(
+        (acc, path) =>
+          mergeSelectionMaps(
+            acc,
+            selectionForDependency(resource, String(path).split("."))
+          ),
+        {}
       ) ?? {};
 
   let selectedFields = Object.entries(properties).reduce(
@@ -762,13 +822,13 @@ export const selectPayloadForModel = <M extends ModelName>(
               },
             };
           }
-          acc[name] = {
+          acc[name] = mergeSelections(acc[name], {
             select: selectPayloadForModel(
               fieldNextAdmin.type as ModelName,
               {},
               "scalar"
             ),
-          };
+          });
 
           const orderField =
             (options as EditOptions<M>)?.fields?.[
@@ -781,15 +841,19 @@ export const selectPayloadForModel = <M extends ModelName>(
               [orderField]: "asc",
             };
           }
-        } else {
-          acc[name] = true;
+        } else if (
+          fieldNextAdmin?.kind !== "object" ||
+          !fieldNextAdmin.isList
+        ) {
+          acc[name] = mergeSelections(acc[name], true);
         }
       }
       return acc;
     },
-    modelHasIdField(resource)
-      ? ({ [idProperty]: true, ...defaultSelectedKeysForVirtualFields } as any)
-      : {}
+    {
+      ...(modelHasIdField(resource) ? { [idProperty]: true } : {}),
+      ...defaultSelectedKeysForVirtualFields,
+    } as any
   );
 
   return selectedFields;
