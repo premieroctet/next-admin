@@ -2,7 +2,11 @@ import { Decimal } from "@prisma/client/runtime/library";
 import cloneDeep from "lodash.clonedeep";
 import { afterEach, describe, expect, it } from "vitest";
 import { mockReset } from "vitest-mock-extended";
-import { getMappedDataList, optionsFromResource, selectPayloadForModel } from "../utils/prisma";
+import {
+  getMappedDataList,
+  optionsFromResource,
+  selectPayloadForModel,
+} from "../utils/prisma";
 import { extractSerializable } from "../utils/tools";
 import { options, prismaMock } from "./singleton";
 
@@ -155,5 +159,67 @@ describe("selectPayloadForModel", () => {
     );
 
     expect(select.categories.select.category).toBe(true);
+  });
+
+  it("should fetch a to-many relation of a related row requested with a dotted dependsOn", () => {
+    const select = selectPayloadForModel(
+      "Post",
+      {
+        display: [
+          "author",
+          {
+            key: "authorPostCount",
+            label: "Author posts",
+            dependsOn: ["author.posts"],
+            formatter: () => "",
+          },
+        ],
+      },
+      "object"
+    );
+
+    expect(select.author.select.posts).toBe(true);
+    expect(select.author.select.name).toBe(true);
+  });
+
+  it("should use include for a dotted dependsOn on a relation absent from display", () => {
+    const select = selectPayloadForModel(
+      "Post",
+      {
+        display: [
+          {
+            key: "authorCategories",
+            label: "Author categories",
+            dependsOn: ["author.posts.categories", "title"],
+            formatter: () => "",
+          },
+        ],
+      },
+      "object"
+    );
+
+    expect(select.author).toEqual({
+      include: { posts: { include: { categories: true } } },
+    });
+    expect(select.title).toBe(true);
+  });
+
+  it("should select the whole relation when a dotted dependsOn ends on a scalar", () => {
+    const select = selectPayloadForModel(
+      "Post",
+      {
+        display: [
+          {
+            key: "authorName",
+            label: "Author name",
+            dependsOn: ["author.name"],
+            formatter: () => "",
+          },
+        ],
+      },
+      "object"
+    );
+
+    expect(select.author).toBe(true);
   });
 });

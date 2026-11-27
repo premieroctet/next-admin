@@ -1085,7 +1085,7 @@ It is possible to add custom columns in the list panel that are computed from th
       type: "String[]",
       description: (
         <>
-          An array of fields on the current resource that the virtual field depends on. You should typically include fields that are not already in the <code>display</code> array.
+          An array of fields on the current resource that the virtual field depends on. You should typically include fields that are not already in the <code>display</code> array. Use a dotted path to reach a relation of a related row, for example <code>"author.posts"</code>: relation columns only load the related row's scalars and to-one relations.
         </>
       ),
     },
