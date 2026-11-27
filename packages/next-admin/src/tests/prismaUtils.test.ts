@@ -184,7 +184,8 @@ describe("selectPayloadForModel", () => {
             key: "authorPostCount",
             label: "Author posts",
             dependsOn: ["author.posts"],
-            formatter: () => "",
+            formatter: ({ row }) =>
+              String(row?.author.posts?.map((post) => post.title).length),
           },
         ],
       },
